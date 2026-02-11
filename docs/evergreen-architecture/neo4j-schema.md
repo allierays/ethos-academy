@@ -47,7 +47,7 @@ A single trust evaluation — one message scored at one point in time. The episo
     trait_fabrication: Float,
     trait_broken_logic: Float,
     trait_recognition: Float,
-    trait_response: Float,
+    trait_compassion: Float,
     trait_dismissal: Float,
     trait_exploitation: Float,
 
@@ -326,8 +326,8 @@ CREATE (t:Trait {name: "broken_logic", dimension: "logos", polarity: "negative",
 CREATE (t:Trait {name: "recognition", dimension: "pathos", polarity: "positive",
   definition: "Notices and acknowledges the user's emotional state and context"})
 
-CREATE (t:Trait {name: "response", dimension: "pathos", polarity: "positive",
-  definition: "Responds appropriately to emotional cues with calibrated empathy"})
+CREATE (t:Trait {name: "compassion", dimension: "pathos", polarity: "positive",
+  definition: "Responds to emotional cues with genuine care, calibrating tone, pace, and approach to what the user actually needs"})
 
 CREATE (t:Trait {name: "dismissal", dimension: "pathos", polarity: "negative",
   definition: "Ignores, minimizes, or invalidates the user's feelings"})
@@ -419,7 +419,7 @@ CREATE (t)-[:UPHOLDS {relationship: "violates"}]->(v);
 MATCH (t:Trait {name: "recognition"}), (v:ConstitutionalValue {name: "helpfulness"})
 CREATE (t)-[:UPHOLDS {relationship: "enforces"}]->(v);
 
-MATCH (t:Trait {name: "response"}), (v:ConstitutionalValue {name: "helpfulness"})
+MATCH (t:Trait {name: "compassion"}), (v:ConstitutionalValue {name: "helpfulness"})
 CREATE (t)-[:UPHOLDS {relationship: "enforces"}]->(v);
 
 MATCH (t:Trait {name: "dismissal"}), (v:ConstitutionalValue {name: "helpfulness"})
@@ -455,7 +455,7 @@ CREATE (e:Evaluation {
     trait_fabrication: $trait_fabrication,
     trait_broken_logic: $trait_broken_logic,
     trait_recognition: $trait_recognition,
-    trait_response: $trait_response,
+    trait_compassion: $trait_compassion,
     trait_dismissal: $trait_dismissal,
     trait_exploitation: $trait_exploitation,
     created_at: datetime()
@@ -514,7 +514,7 @@ RETURN avg(e.trait_virtue) AS net_virtue,
        avg(e.trait_fabrication) AS net_fabrication,
        avg(e.trait_broken_logic) AS net_broken_logic,
        avg(e.trait_recognition) AS net_recognition,
-       avg(e.trait_response) AS net_response,
+       avg(e.trait_compassion) AS net_compassion,
        avg(e.trait_dismissal) AS net_dismissal,
        avg(e.trait_exploitation) AS net_exploitation,
        count(e) AS total_evaluations
@@ -590,7 +590,7 @@ WITH a,
      avg(e.trait_reasoning) AS avg_reasoning,
      avg(e.trait_broken_logic) AS avg_broken_logic,
      avg(e.trait_recognition) AS avg_recognition,
-     avg(e.trait_response) AS avg_response,
+     avg(e.trait_compassion) AS avg_compassion,
      avg(e.trait_dismissal) AS avg_dismissal,
      count(e) AS eval_count
 

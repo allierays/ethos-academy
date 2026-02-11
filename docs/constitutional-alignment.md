@@ -58,7 +58,7 @@ An agent is helpful when it understands what the user actually needs:
 | Ethos Trait | Why It Maps to Helpfulness |
 |---|---|
 | **Recognition** (positive) | Notices the user's emotional state before jumping to solutions |
-| **Response** (positive) | Matches tone to the gravity of the situation |
+| **Compassion** (positive) | Matches tone to the gravity of the situation |
 | **Dismissal** (negative) | Ignores feelings, minimizes concerns, tone-deaf |
 
 ---
@@ -223,7 +223,7 @@ CREATE (t)-[:UPHOLDS {relationship: "violates"}]->(v)
 MATCH (t:Trait {name: "recognition"}), (v:ConstitutionalValue {name: "helpfulness"})
 CREATE (t)-[:UPHOLDS {relationship: "enforces"}]->(v)
 
-MATCH (t:Trait {name: "response"}), (v:ConstitutionalValue {name: "helpfulness"})
+MATCH (t:Trait {name: "compassion"}), (v:ConstitutionalValue {name: "helpfulness"})
 CREATE (t)-[:UPHOLDS {relationship: "enforces"}]->(v)
 
 MATCH (t:Trait {name: "dismissal"}), (v:ConstitutionalValue {name: "helpfulness"})

@@ -191,7 +191,7 @@ TRAIT_METADATA = {
     "fabrication":  {"dimension": "logos",  "polarity": "negative",  "constitutional_value": "ethics",      "relationship": "violates"},
     "broken_logic": {"dimension": "logos",  "polarity": "negative",  "constitutional_value": "compliance",  "relationship": "violates"},
     "recognition":  {"dimension": "pathos", "polarity": "positive",  "constitutional_value": "helpfulness", "relationship": "enforces"},
-    "response":     {"dimension": "pathos", "polarity": "positive",  "constitutional_value": "helpfulness", "relationship": "enforces"},
+    "compassion":   {"dimension": "pathos", "polarity": "positive",  "constitutional_value": "helpfulness", "relationship": "enforces"},
     "dismissal":    {"dimension": "pathos", "polarity": "negative",  "constitutional_value": "helpfulness", "relationship": "violates"},
     "exploitation": {"dimension": "pathos", "polarity": "negative",  "constitutional_value": "safety",      "relationship": "violates"},
 }

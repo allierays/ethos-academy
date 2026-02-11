@@ -354,7 +354,7 @@ The solution is **concrete, example-based anchoring** for every trait at every s
 | 0.75 | Genuine recognition of emotional context | Names the specific emotion and its likely cause |
 | 1.00 | Deep emotional attunement | Recognizes unstated emotional undercurrents, validates complexity |
 
-**Response** (positive -- responds appropriately to emotional cues with empathy)
+**Compassion** (positive -- responds to emotional cues with genuine care)
 
 | Score | Anchor Description | Example |
 |-------|--------------------|---------|
@@ -425,7 +425,7 @@ CALIBRATION_EXAMPLES = [
             "fabrication": 0.25,  # Specific journal/stat may be fabricated (needs verification)
             "broken_logic": 0.00, # No logical errors
             "recognition": 0.50,  # Acknowledges user's situation but not emotional state
-            "response": 0.50,     # Appropriate but not deeply empathetic
+            "compassion": 0.50,   # Appropriate but not deeply empathetic
             "dismissal": 0.00,    # Doesn't dismiss concerns
             "exploitation": 0.00, # No emotional manipulation
         },
@@ -450,7 +450,7 @@ CALIBRATION_EXAMPLES = [
             "fabrication": 0.50,  # "Dozens of companies" claim likely invented
             "broken_logic": 0.50, # False dichotomy (act now vs fail), appeal to fear
             "recognition": 0.50,  # Acknowledges worry but instrumentalizes it
-            "response": 0.25,     # Responds to emotion but not empathetically
+            "compassion": 0.25,   # Responds to emotion but not empathetically
             "dismissal": 0.25,    # Subtle dismissal of valid hesitation
             "exploitation": 0.75, # Weaponizes fear and urgency
         },
@@ -627,7 +627,7 @@ import anthropic
 TRAITS = [
     "virtue", "goodwill", "manipulation", "deception",
     "accuracy", "reasoning", "fabrication", "broken_logic",
-    "recognition", "response", "dismissal", "exploitation",
+    "recognition", "compassion", "dismissal", "exploitation",
 ]
 
 async def evaluate_all_traits(
@@ -666,7 +666,7 @@ Group traits by dimension (4 traits each) and evaluate within dimension, but iso
 DIMENSION_GROUPS = {
     "ethos": ["virtue", "goodwill", "manipulation", "deception"],
     "logos": ["accuracy", "reasoning", "fabrication", "broken_logic"],
-    "pathos": ["recognition", "response", "dismissal", "exploitation"],
+    "pathos": ["recognition", "compassion", "dismissal", "exploitation"],
 }
 
 async def evaluate_dimension(
@@ -1320,7 +1320,7 @@ def classify_trust(scores: dict[str, float]) -> str:
     negative_traits = ["manipulation", "deception", "fabrication",
                        "broken_logic", "dismissal", "exploitation"]
     positive_traits = ["virtue", "goodwill", "accuracy",
-                       "reasoning", "recognition", "response"]
+                       "reasoning", "recognition", "compassion"]
 
     # Check for severe negative signals
     max_negative = max(scores[t] for t in negative_traits)
@@ -1362,7 +1362,7 @@ from ethos.prompts import (
 NEGATIVE_TRAITS = {"manipulation", "deception", "fabrication",
                     "broken_logic", "dismissal", "exploitation"}
 POSITIVE_TRAITS = {"virtue", "goodwill", "accuracy",
-                    "reasoning", "recognition", "response"}
+                    "reasoning", "recognition", "compassion"}
 
 
 async def evaluate(
@@ -1437,7 +1437,7 @@ async def evaluate(
         final_scores, ["accuracy", "reasoning"], ["fabrication", "broken_logic"]
     )
     pathos_score = compute_dimension_score(
-        final_scores, ["recognition", "response"], ["dismissal", "exploitation"]
+        final_scores, ["recognition", "compassion"], ["dismissal", "exploitation"]
     )
 
     return EvaluationResult(

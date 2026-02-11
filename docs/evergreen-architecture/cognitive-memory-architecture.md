@@ -336,8 +336,8 @@ KEYWORD_LEXICON = {
         ],
     },
 
-    # ── Response indicators (positive) ───────────────────
-    "response": {
+    # ── Compassion indicators (positive) ───────────────────
+    "compassion": {
         "appropriate_tone": [
             "I want to help", "let's work through this together",
             "take your time", "there's no rush",

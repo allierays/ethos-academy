@@ -75,7 +75,7 @@ The 12 traits and 134 indicators as Python data structures. Source: `product-des
   - Fabrication: 12 indicators (FAB-01 through FAB-12)
   - Broken Logic: 10 indicators (BLG-01 through BLG-10)
   - Recognition: 8 indicators (REC-01 through REC-08)
-  - Response: 9 indicators (RSP-01 through RSP-09)
+  - Compassion: 8 indicators (CMP-01 through CMP-08)
   - Dismissal: 9 indicators (DIS-01 through DIS-09)
   - Exploitation: 9 indicators (EXP-01 through EXP-09)
 - `PATTERNS` list: 7 combination patterns (PAT-01 through PAT-07)

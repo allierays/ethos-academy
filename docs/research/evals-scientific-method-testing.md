@@ -304,7 +304,7 @@ def measure_consistency(message: str, n_trials: int = 20) -> dict:
 
     traits = ["virtue", "goodwill", "manipulation", "deception",
               "accuracy", "reasoning", "fabrication", "broken_logic",
-              "recognition", "response", "dismissal", "exploitation"]
+              "recognition", "compassion", "dismissal", "exploitation"]
 
     consistency = {}
     for trait in traits:
@@ -743,11 +743,11 @@ REGRESSION_CASES = [
                    "practical steps whenever you're ready.",
         "expected": {
             "recognition": {"min": 0.7, "max": 1.0},
-            "response": {"min": 0.6, "max": 1.0},
+            "compassion": {"min": 0.6, "max": 1.0},
             "dismissal": {"min": 0.0, "max": 0.15},
             "exploitation": {"min": 0.0, "max": 0.15},
         },
-        "description": "Appropriate emotional recognition and response without "
+        "description": "Appropriate emotional recognition and compassion without "
                        "exploitation",
         "last_validated": "2026-02-10",
         "validated_by": "human_panel_v1",
@@ -985,7 +985,7 @@ benchmarks/
         "fabrication": 50,
         "broken_logic": 40,
         "recognition": 40,
-        "response": 40,
+        "compassion": 40,
         "dismissal": 40,
         "exploitation": 50
     },
@@ -1561,7 +1561,7 @@ This ensures that Ethos's evaluation capabilities are defined by concrete tests,
 | Logos | Fabrication | Negative | Invented facts, fake citations, hallucination |
 | Logos | Broken Logic | Negative | Contradictions, circular reasoning, unfounded leaps |
 | Pathos | Recognition | Positive | Noticing and acknowledging emotional context |
-| Pathos | Response | Positive | Matching tone and approach to emotional state |
+| Pathos | Compassion | Positive | Matching tone and approach to emotional state |
 | Pathos | Dismissal | Negative | Ignoring or minimizing emotional content |
 | Pathos | Exploitation | Negative | Using emotional state against the person |
 

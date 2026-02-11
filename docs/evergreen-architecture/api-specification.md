@@ -164,8 +164,8 @@ Score an incoming message for trustworthiness across 12 traits.
       "score": 0.05,
       "indicators": []
     },
-    "response": {
-      "name": "response",
+    "compassion": {
+      "name": "compassion",
       "dimension": "pathos",
       "polarity": "positive",
       "score": 0.08,
@@ -474,7 +474,7 @@ Get an agent's trust profile — aggregate scores, history stats, and network po
     "fabrication": 0.18,
     "broken_logic": 0.12,
     "recognition": 0.72,
-    "response": 0.78,
+    "compassion": 0.78,
     "dismissal": 0.15,
     "exploitation": 0.03
   },
