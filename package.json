@@ -1,0 +1,27 @@
+{
+  "name": "ethos",
+  "version": "1.0.0",
+  "description": "*Better agents. Better data. Better alignment.*",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allierays/ethos.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/allierays/ethos/issues"
+  },
+  "homepage": "https://github.com/allierays/ethos#readme",
+  "dependencies": {
+    "agentic-loop": "^3.21.0"
+  }
+}
