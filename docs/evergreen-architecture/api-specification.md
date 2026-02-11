@@ -2,7 +2,7 @@
 
 > Complete endpoint definitions, request/response schemas, and examples for the Ethos API.
 
-**Base URL:** `https://api.ethos-ai.org` (production) / `http://localhost:8000` (local)
+**Base URL:** `https://api.ethos-ai.org` (production) / `http://localhost:8917` (Docker) / `http://localhost:8000` (local dev)
 
 ---
 

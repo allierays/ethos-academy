@@ -105,7 +105,7 @@ Aristotle didn't think pathos was manipulation. He catalogued specific emotional
 
 ### Reflection — "Is my agent Ethos Aligned?"
 
-The developer installs Ethos to look inward. Dashboard shows alignment status (aligned, drifting, or misaligned), scores across all four constitutional tiers (safety, ethics, soundness, helpfulness), trends over time, specific incidents where scores dipped, and comparison to network averages.
+The developer installs Ethos to look inward. The Academy shows alignment status (aligned, drifting, or misaligned), scores across all four constitutional tiers (safety, ethics, soundness, helpfulness), trends over time, specific incidents where scores dipped, and comparison to network averages.
 
 ### Protection — "Can I trust the agent talking to me?"
 

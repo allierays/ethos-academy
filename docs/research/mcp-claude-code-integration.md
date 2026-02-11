@@ -1473,7 +1473,7 @@ No existing project integrates at all five layers. Most MCP servers provide tool
 - Deliverable: Python SDK middleware
 
 **Day 6: Dashboard and Demo**
-- Build the evaluation dashboard (existing `dashboard/` dir)
+- Build the evaluation dashboard (existing `academy/` dir)
 - Create compelling demo scenarios
 - Record demo video
 - Deliverable: Visual demo of all integration points

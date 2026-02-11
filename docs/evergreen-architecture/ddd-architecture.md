@@ -9,15 +9,17 @@
 Ethos has six bounded contexts. Each domain has a clear responsibility, owns its data, and communicates with other domains through well-defined interfaces.
 
 ```
-ethos/
+ethos/                   # Python package (pip install ethos)
 ├── evaluation/      # Core scoring — the heart of the product
-├── reflection/      # Self-examination and insights
+├── reflection/      # Self-examination and insights (planned)
 ├── graph/           # Neo4j persistence and network intelligence
 ├── taxonomy/        # Semantic memory — traits, indicators, patterns
 ├── identity/        # Agent identity and hashing
 ├── config/          # Developer configuration and priorities
-├── api/             # HTTP interface (FastAPI)
 └── shared/          # Cross-cutting models and utilities
+api/                     # FastAPI server (at repo root, NOT inside ethos/)
+sdk/                     # ethos-ai npm package (SDK + CLI)
+academy/                 # Next.js trust visualization UI
 ```
 
 ---
@@ -297,6 +299,18 @@ PRESETS = {
 
 ## The API Layer
 
+The API lives at the repo root (`api/`), **not inside `ethos/`**. This keeps `ethos/` as a clean pip-installable library — no FastAPI dependency for users who just want `evaluate()`.
+
+```
+api/                             # At repo root
+├── __init__.py
+└── main.py              # FastAPI app, routes, request/response models
+```
+
+**Current state:** All routes live in `main.py` (3 endpoints: `/health`, `/evaluate`, `/reflect`).
+
+**Target state** (as the API grows):
+
 ```
 api/
 ├── __init__.py
@@ -314,8 +328,9 @@ api/
 ### Key Rules
 
 - API is a thin layer. No business logic in route handlers — they delegate to domain functions.
-- API has its own request/response models (in `schemas.py`) that translate to/from domain models. The API schema can evolve independently of the domain models.
-- API depends on all domains but no domain depends on API. The package works without the API (as a Python library).
+- API has its own request/response models that translate to/from domain models.
+- API depends on all domains but no domain depends on API. The `ethos/` package works without the API (as a Python library).
+- The one-way dependency: `sdk/ → api/ → ethos/`. Nothing points backwards.
 
 ---
 
@@ -372,47 +387,51 @@ ethos/shared/
 
 ---
 
-## Mapping to Current Codebase
+## Current Codebase Status
 
-The current flat structure maps to the DDD structure like this:
+The DDD domain structure is in place. Here's what exists and what's planned.
 
-| Current File | DDD Domain | New Location |
-|-------------|-----------|-------------|
-| `ethos/evaluate.py` | Evaluation | `ethos/evaluation/evaluate.py` |
-| `ethos/reflect.py` | Reflection | `ethos/reflection/reflect.py` |
-| `ethos/prompts.py` | Evaluation | `ethos/evaluation/prompts.py` |
-| `ethos/graph.py` | Graph | `ethos/graph/service.py` |
-| `ethos/models.py` | Shared | `ethos/shared/models.py` |
-| `api/main.py` | API | `api/main.py` + `api/routes/` |
+### Built
 
-New files needed:
-- `ethos/evaluation/scanner.py` — from cognitive-memory-architecture.md
-- `ethos/evaluation/router.py` — model selection logic
-- `ethos/evaluation/parser.py` — response parsing
-- `ethos/reflection/insights.py` — Claude-powered insights
-- `ethos/reflection/history.py` — history queries
-- `ethos/graph/write.py`, `read.py`, `network.py`, `seed.py`
-- `ethos/taxonomy/traits.py`, `indicators.py`, `patterns.py`, `rubrics.py`
-- `ethos/identity/hashing.py`, `profile.py`
-- `ethos/config/config.py`, `priorities.py`, `presets.py`
+| Domain | Directory | Key Files |
+|--------|-----------|-----------|
+| Evaluation | `ethos/evaluation/` | `scanner.py`, `prompts.py` |
+| Graph | `ethos/graph/` | `service.py`, `write.py`, `read.py`, `network.py` |
+| Taxonomy | `ethos/taxonomy/` | `traits.py`, `indicators.py`, `constitution.py`, `rubrics.py` |
+| Identity | `ethos/identity/` | `hashing.py` |
+| Config | `ethos/config/` | `config.py`, `priorities.py` |
+| Shared | `ethos/shared/` | `models.py`, `errors.py` |
+| API | `api/` | `main.py` (3 endpoints) |
+| SDK | `sdk/` | TypeScript scaffold (client, types, CLI stub) |
 
----
+Top-level convenience files in `ethos/`: `evaluate.py`, `reflect.py`, `models.py`, `prompts.py`, `graph.py`
 
-## Hackathon Pragmatism
+### Planned
 
-DDD is the target architecture. For the hackathon, if the domain structure adds friction, a flat structure with clear naming is acceptable:
+| Domain | What's Needed |
+|--------|---------------|
+| Evaluation | `router.py` (model selection), `parser.py` (response parsing) |
+| Reflection | `ethos/reflection/` domain — `reflect.py`, `insights.py`, `history.py` |
+| Graph | `seed.py` (schema creation + taxonomy seeding) |
+| Taxonomy | `patterns.py` (7 combination patterns) |
+| Identity | `profile.py` (AgentProfile model) |
+| Config | `presets.py` (industry presets: financial, healthcare, research) |
+| API | `routes/`, `schemas.py`, `deps.py` (as endpoints grow) |
+| SDK | Full TypeScript implementation |
+| Academy | Next.js trust visualization UI |
+
+### Repo Layout
 
 ```
-ethos/
-├── evaluate.py      # includes scanner + router + parser inline
-├── reflect.py       # includes history + insights inline
-├── graph.py         # all Neo4j operations
-├── taxonomy.py      # all traits, indicators, patterns
-├── prompts.py       # prompt builder
-├── config.py        # config + priorities + presets
-├── models.py        # all models
-├── identity.py      # hashing
-└── __init__.py      # public API
+~/Sites/ethos/
+├── ethos/              # Python package — pip install ethos
+├── api/                # FastAPI server — serves ethos/ over HTTP
+├── sdk/                # ethos-ai npm package — SDK + CLI
+├── academy/            # Next.js — trust visualization UI
+├── docs/               # Architecture, research
+├── scripts/            # seed_graph.py, scrape_moltbook.py
+├── tests/              # Python tests
+└── data/               # Moltbook scraped data
 ```
 
-This is the same logical separation — each file IS a domain — just without the subdirectory nesting. The DDD structure is what we refactor into post-hackathon. The domain boundaries and dependency rules apply either way.
+Dependency flow (always one-way): `sdk/ → api/ → ethos/`, `academy/ → api/ → ethos/`

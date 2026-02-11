@@ -14,11 +14,11 @@
 │      │                    │                     │    │
 │      ▼                    ▼                     ▼    │
 │  ┌───────┐         ┌───────────┐        ┌──────────┐│
-│  │  CLI  │         │  npm SDK  │        │   Web    ││
-│  │       │         │           │        │ Dashboard││
-│  │ npx   │         │ import {} │        │          ││
-│  │ ethos │         │ from      │        │ Next.js  ││
-│  │       │         │'ethos-ai' │        │          ││
+│  │  CLI  │         │  npm SDK  │        │ Academy  ││
+│  │       │         │           │        │          ││
+│  │ npx   │         │ import {} │        │ Trust    ││
+│  │ ethos │         │ from      │        │ Viz UI   ││
+│  │       │         │'ethos-ai' │        │ Next.js  ││
 │  └───┬───┘         └─────┬─────┘        └────┬─────┘│
 │      │                   │                    │      │
 │      └───────────────────┼────────────────────┘      │
@@ -110,24 +110,19 @@ return response
 
 ### What the Package Contains
 
+Lives in `sdk/` at the repo root.
+
 ```
-ethos-ai/
-├── bin/
-│   └── ethos.js           # CLI entry point
+sdk/                               # ethos-ai npm package
 ├── src/
-│   ├── index.ts           # SDK exports: evaluate, reflect, insights, Ethos
-│   ├── client.ts          # HTTP client that calls the Ethos API
-│   ├── evaluate.ts        # evaluate() function
-│   ├── reflect.ts         # reflect() function
-│   ├── insights.ts        # insights() function
-│   ├── config.ts          # EthosConfig, priorities, presets
+│   ├── index.ts           # SDK exports: evaluate, reflect, Ethos
+│   ├── client.ts          # Ethos class — configurable HTTP client
+│   ├── evaluate.ts        # evaluate() — default client convenience
+│   ├── reflect.ts         # reflect() — default client convenience
 │   └── types.ts           # TypeScript types: EvaluationResult, TraitScore, etc.
 ├── cli/
-│   ├── init.ts            # npx ethos init — onboarding wizard
-│   ├── evaluate.ts        # npx ethos evaluate
-│   ├── insights.ts        # npx ethos insights
-│   └── reflect.ts         # npx ethos reflect
-├── package.json
+│   └── index.ts           # CLI entry point (npx ethos evaluate, init, reflect)
+├── package.json           # name: "ethos-ai", bin: { ethos: ... }
 └── tsconfig.json
 ```
 
@@ -135,9 +130,9 @@ The SDK is a thin HTTP client. All intelligence lives server-side. The package i
 
 ---
 
-## 2. Web Dashboard (Next.js)
+## 2. Academy (Next.js)
 
-The visual interface. Onboarding for people who prefer a browser. Insights for people who want to see the picture.
+The visual interface. Lives in `academy/` at the repo root. Trust visualization, onboarding, and agent monitoring.
 
 ### What Lives Here
 
@@ -146,7 +141,7 @@ The visual interface. Onboarding for people who prefer a browser. Insights for p
 - What traits matter most to you?
 - Here's your API key and install command.
 
-**Agent Dashboard** — after setup, this is where you monitor your agents:
+**Agent Dashboard** — after onboarding, this is where you monitor your agents:
 - Trust scores over time (line charts per trait)
 - Flags and alerts
 - Network comparison (your agent vs. the network average)
@@ -158,7 +153,7 @@ The visual interface. Onboarding for people who prefer a browser. Insights for p
 - Manipulation clusters
 - Declining agents highlighted
 
-**The Demo Flow** — the dashboard IS the demo:
+**The Demo Flow** — the Academy IS the demo:
 1. Show the graph (the network, the patterns)
 2. Show an agent's trust timeline (declining, flags increasing)
 3. Show insights ("fabrication trending up, 2x network average")
@@ -166,8 +161,8 @@ The visual interface. Onboarding for people who prefer a browser. Insights for p
 
 ### Tech Stack
 
-- Next.js (SSR for the dashboard pages)
-- The dashboard calls the same Ethos API as the npm package
+- Next.js (SSR for the Academy pages)
+- The Academy calls the same Ethos API as the npm SDK
 - Neo4j visualization via Neovis.js or D3.js for the graph
 - Deployed alongside the API or separately (Vercel for Next.js, AWS for API)
 
@@ -175,7 +170,7 @@ The visual interface. Onboarding for people who prefer a browser. Insights for p
 
 ## 3. API (Python/FastAPI)
 
-The engine. Not user-facing — the npm package and dashboard both talk to it. This is where Claude evaluates messages, Neo4j stores the graph, and all the intelligence lives.
+The engine. Not user-facing — the npm SDK and Academy both talk to it. This is where Claude evaluates messages, Neo4j stores the graph, and all the intelligence lives.
 
 ### Why Python
 
@@ -200,7 +195,7 @@ The engine. Not user-facing — the npm package and dashboard both talk to it. T
 
 ### Hosting
 
-Needs to be publicly accessible for the npm package and dashboard to hit it. Options:
+Needs to be publicly accessible for the SDK and Academy to hit it. Options:
 - AWS (EC2 or Lambda)
 - Railway
 - Fly.io
@@ -209,26 +204,36 @@ Needs to be publicly accessible for the npm package and dashboard to hit it. Opt
 ### What Lives Here
 
 ```
-api/
-├── main.py                # FastAPI app, routes
-└── routes/                # Endpoint handlers
+api/                               # FastAPI server (at repo root)
+├── __init__.py
+└── main.py                # FastAPI app, routes
 
-ethos/                     # Core Python package
-├── evaluate.py            # evaluate() — keyword scan → route → Claude → parse
-├── reflect.py             # reflect() — async evaluation storage
-├── insights.py            # insights() — Claude reads graph, surfaces patterns
-├── scanner.py             # Keyword lexicon, pre-filter
-├── prompts.py             # Layered prompt builder (12 traits, 134 indicators)
-├── graph.py               # Neo4j service (read, write, network queries)
-├── taxonomy.py            # 12 traits, 134 indicators, 7 patterns
-├── config.py              # Configuration, priorities, presets
-├── identity.py            # Agent ID hashing
-└── models.py              # Pydantic models
+ethos/                             # Python package (at repo root)
+├── __init__.py            # Public API: evaluate, reflect, EvaluationResult
+├── evaluate.py            # Top-level evaluate() entry point
+├── reflect.py             # Top-level reflect() entry point
+├── models.py              # Re-exports from shared.models
+├── prompts.py             # Re-exports from evaluation.prompts
+├── graph.py               # Re-exports from graph.service
+├── shared/                # Cross-domain models (EvaluationResult, etc.) and errors
+├── taxonomy/              # 12 traits, 144 indicators, constitution, rubrics
+├── config/                # EthosConfig, priorities
+├── identity/              # Agent ID hashing (SHA-256)
+├── evaluation/            # Keyword scanner, prompt builder
+└── graph/                 # Neo4j service, read, write, network
 
 scripts/
-├── seed_graph.py          # Seed Neo4j with semantic memory + Moltbook data
+├── seed_graph.py          # Seed Neo4j with taxonomy
 └── scrape_moltbook.py     # Data collection
 ```
+
+### Docker Ports
+
+| Service    | Host Port | Container Port | URL                    |
+|------------|-----------|----------------|------------------------|
+| API        | 8917      | 8000           | http://localhost:8917  |
+| Neo4j UI   | 7491      | 7474           | http://localhost:7491  |
+| Neo4j Bolt | 7694      | 7687           | bolt://localhost:7694  |
 
 ---
 
@@ -262,7 +267,7 @@ Developer sees: trust: "low", flags: ["manipulation", "fabrication"]
 ```
 
 ```
-Developer opens dashboard
+Developer opens Academy
        │
        ▼
 Next.js page calls GET /agent/my-bot
@@ -271,7 +276,7 @@ Next.js page calls GET /agent/my-bot
 API queries Neo4j for agent profile + history
        │
        ▼
-Dashboard renders trust timeline, trait scores, network comparison
+Academy renders trust timeline, trait scores, network comparison
        │
        ▼
 Developer calls GET /insights/my-bot
@@ -283,7 +288,7 @@ API calls Claude (Opus) with agent history + network averages
 Claude reasons about patterns, returns insights
        │
        ▼
-Dashboard renders: "Fabrication trending up, 2x network average"
+Academy renders: "Fabrication trending up, 2x network average"
 ```
 
 ---
@@ -294,17 +299,17 @@ Dashboard renders: "Fabrication trending up, 2x network average"
 |----------|------|-----|
 | 1 | **API** — evaluate() actually works | Everything depends on this |
 | 2 | **npm package** — SDK + CLI published | "Install it today" demo closer |
-| 3 | **Dashboard** — graph viz + insights | The "wow" for judges |
+| 3 | **Academy** — graph viz + insights | The "wow" for judges |
 | 4 | **Neo4j seeded** — Moltbook data in the graph | Makes the network real |
 | 5 | **reflect() + insights()** | Depth beyond basic eval |
 
-The API is the foundation. The npm package is the distribution. The dashboard is the demo. Everything else layers on.
+The API is the foundation. The npm package is the distribution. The Academy is the demo. Everything else layers on.
 
 ---
 
 ## The Two-Line Promise
 
-No matter which surface — CLI, SDK, or dashboard — the core experience is two lines:
+No matter which surface — CLI, SDK, or Academy — the core experience is two lines:
 
 **CLI:**
 ```bash
@@ -318,7 +323,7 @@ import { evaluate } from 'ethos-ai'
 const result = await evaluate({ text: message, source: agentId })
 ```
 
-**Dashboard:**
+**Academy:**
 Sign up. See your agents. Two clicks.
 
 Everything else — priorities, presets, insights, webhooks — is optional customization on top of defaults that just work.

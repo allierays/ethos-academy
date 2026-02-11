@@ -6,13 +6,13 @@ Ethos is the credit bureau for agent trust — an open-source system for evaluat
 
 **Architecture (three surfaces, one engine):**
 ```
-npm package (ethos-ai)  →  Python API (FastAPI + Claude + Neo4j)  ←  Next.js Dashboard
-     CLI + SDK                    the engine                         demo + onboarding
+sdk/ (ethos-ai)  →  api/ (FastAPI + Claude + Neo4j)  ←  academy/ (Next.js)
+   CLI + SDK                 the engine                    demo + onboarding
 ```
 
 - **npm package** — what developers install. CLI (`npx ethos evaluate "text"`) + SDK (`import { evaluate } from 'ethos-ai'`). Thin HTTP client that calls the Python API.
 - **Python API** — the engine. Claude evaluates messages, Neo4j stores the graph, all intelligence lives here. Not user-facing.
-- **Next.js Dashboard** — the visual surface. Onboarding, agent trust timelines, graph visualization. The "wow" for the demo.
+- **Academy** (`academy/`) — the visual surface. Next.js. Onboarding, agent trust timelines, graph visualization. The "wow" for the demo.
 
 **Key design decisions already made:**
 - Customization is at the **trait level** (12 traits), not the dimension level (3 dimensions)
@@ -33,7 +33,7 @@ npm package (ethos-ai)  →  Python API (FastAPI + Claude + Neo4j)  ←  Next.js
 | 2 | Python API — reflect() + insights() | Depth beyond basic eval | API |
 | 3 | Neo4j — graph storage + seeding | Makes the network real | API |
 | 4 | npm package — SDK + CLI | "Install it today" demo moment | npm |
-| 5 | Dashboard — graph viz + insights | The "wow" for judges | Dashboard |
+| 5 | Academy — graph viz + insights | The "wow" for judges | Academy |
 
 ---
 
