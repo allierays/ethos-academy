@@ -1,8 +1,11 @@
 # Ethos
 
-*The credit bureau for agent trust.*
+*Better agents. Better data. Better alignment.*
 
-Ethos evaluates AI agent messages for trustworthiness across 12 traits in 3 dimensions (ethos, logos, pathos). Every evaluation feeds a shared Neo4j trust graph — the more developers who use it, the smarter it gets.
+Ethos is an open-source evaluation framework for AI agent trustworthiness. It scores every message an agent sends or receives across 12 behavioral traits grounded in Aristotle's modes of persuasion and Anthropic's constitutional values — then stores those scores in a shared Neo4j trust graph. The more agents evaluated, the smarter the network gets.
+
+**Reflection** — score your own agent's output. Know when it drifts.
+**Protection** — score incoming messages from other agents. Know who to trust.
 
 ```python
 from ethos import evaluate
@@ -25,48 +28,46 @@ cd ethos
 uv sync
 cp .env.example .env   # add your ANTHROPIC_API_KEY
 
-# Run tests
-uv run pytest -v
-
-# Start the API
-docker compose up -d   # API on :8917, Neo4j on :7491
+uv run pytest -v        # run tests
+docker compose up -d    # API on :8917, Neo4j on :7491
 ```
-
-## Repo Structure
-
-```
-ethos/       Python package — the evaluation engine
-api/         FastAPI server — serves ethos/ over HTTP
-sdk/         ethos-ai npm package — SDK + CLI
-academy/     Next.js — trust visualization UI
-docs/        Architecture and research
-```
-
-Three surfaces, one engine. Dependency flow: `sdk/ → api/ → ethos/`
 
 ## The 12 Traits
 
 | Dimension | Positive | Negative |
 |-----------|----------|----------|
-| **Ethos** | Virtue, Goodwill | Manipulation, Deception |
-| **Logos** | Accuracy, Reasoning | Fabrication, Broken Logic |
-| **Pathos** | Recognition, Compassion | Dismissal, Exploitation |
+| **Ethos** (credibility) | Virtue, Goodwill | Manipulation, Deception |
+| **Logos** (reasoning) | Accuracy, Reasoning | Fabrication, Broken Logic |
+| **Pathos** (awareness) | Recognition, Compassion | Dismissal, Exploitation |
 
-144 behavioral indicators across 12 traits, scored 0.0–1.0.
+144 behavioral indicators across 12 traits, scored 0.0–1.0. Constitutional alignment maps every trait to Anthropic's value hierarchy: safety > ethics > compliance > helpfulness.
+
+## Repo Structure
+
+```
+ethos/       Python package — the evaluation engine (pip install ethos)
+api/         FastAPI server — serves ethos/ over HTTP
+sdk/         ethos-ai npm package — TypeScript SDK + CLI
+academy/     Next.js — trust visualization UI
+docs/        Architecture and research
+```
+
+Three surfaces, one engine. `sdk/ → api/ → ethos/`
 
 ## Docs
 
-| Doc | What |
-|-----|------|
+| | |
+|---|---|
+| [Framework Overview](docs/ethos-framework-overview.md) | Plain-English explanation of everything |
 | [System Architecture](docs/evergreen-architecture/system-architecture.md) | Three surfaces, one engine |
 | [DDD Architecture](docs/evergreen-architecture/ddd-architecture.md) | Domain structure and dependency rules |
 | [Product Design](docs/evergreen-architecture/product-design.md) | Three functions and trait customization |
 | [API Specification](docs/evergreen-architecture/api-specification.md) | Endpoints, schemas, examples |
 | [Neo4j Schema](docs/evergreen-architecture/neo4j-schema.md) | Graph data model |
-| [Trust Bureau](docs/evergreen-architecture/trust-bureau-architecture.md) | The credit bureau model |
-| [Framework Overview](docs/ethos-framework-overview.md) | Plain-English explanation of everything |
+| [Constitutional Alignment](docs/constitutional-alignment.md) | Value hierarchy and hard constraints |
+| [Trust Bureau](docs/evergreen-architecture/trust-bureau-architecture.md) | Network model and privacy |
 
-## Docker Ports
+## Docker
 
 | Service | Port | URL |
 |---------|------|-----|
