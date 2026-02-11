@@ -67,6 +67,7 @@ class EvaluationResult(BaseModel):
     routing_tier: str = "standard"
     keyword_density: float = 0.0
     model_used: str = ""
+    agent_model: str = ""
     created_at: str = ""
 
     # Graph context (only when source agent is provided)

@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 _STORE_EVALUATION_QUERY = """
 MERGE (a:Agent {agent_id: $agent_id})
 ON CREATE SET a.created_at = datetime(), a.evaluation_count = 0
-SET a.evaluation_count = a.evaluation_count + 1
+SET a.evaluation_count = a.evaluation_count + 1,
+    a.agent_model = CASE WHEN $agent_model <> '' THEN $agent_model ELSE a.agent_model END
 
 CREATE (e:Evaluation {
     evaluation_id: $evaluation_id,
@@ -41,6 +42,7 @@ CREATE (e:Evaluation {
     trait_compassion: $trait_compassion,
     trait_dismissal: $trait_dismissal,
     trait_exploitation: $trait_exploitation,
+    agent_model: $agent_model,
     alignment_status: $alignment_status,
     created_at: datetime()
 })
@@ -80,6 +82,7 @@ def store_evaluation(
         "routing_tier": result.routing_tier,
         "keyword_density": result.keyword_density,
         "model_used": result.model_used,
+        "agent_model": result.agent_model,
         "alignment_status": result.alignment_status,
         "trait_virtue": _get_trait_score(result, "virtue"),
         "trait_goodwill": _get_trait_score(result, "goodwill"),

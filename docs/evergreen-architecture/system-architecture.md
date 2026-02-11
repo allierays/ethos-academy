@@ -178,7 +178,7 @@ The engine. Not user-facing — the npm SDK and Academy both talk to it. This is
 - Anthropic Python SDK is mature
 - Neo4j Python driver has full async support
 - FastAPI is fast and well-suited for this
-- The complexity lives here — 152 indicators, 12 traits, routing tiers, graph queries
+- The complexity lives here — 153 indicators, 12 traits, routing tiers, graph queries
 
 ### Endpoints
 
@@ -216,7 +216,7 @@ ethos/                             # Python package (at repo root)
 ├── prompts.py             # Re-exports from evaluation.prompts
 ├── graph.py               # Re-exports from graph.service
 ├── shared/                # Cross-domain models (EvaluationResult, etc.) and errors
-├── taxonomy/              # 12 traits, 152 indicators, constitution, rubrics
+├── taxonomy/              # 12 traits, 153 indicators, constitution, rubrics
 ├── config/                # EthosConfig, priorities
 ├── identity/              # Agent ID hashing (SHA-256)
 ├── evaluation/            # Keyword scanner, prompt builder

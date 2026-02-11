@@ -12,6 +12,7 @@ app = FastAPI(title="Ethos API", version="0.1.0")
 class EvaluateRequest(BaseModel):
     text: str
     source: str | None = None
+    agent_model: str | None = None
 
 
 class ReflectRequest(BaseModel):

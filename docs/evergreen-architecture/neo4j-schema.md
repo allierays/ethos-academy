@@ -82,7 +82,7 @@ The 12 behavioral traits. Semantic memory — seeded once, evolves with research
 
 ### Indicator
 
-The 152 specific behavioral signals. Semantic memory.
+The 153 specific behavioral signals. Semantic memory.
 
 ```cypher
 (:Indicator {
@@ -255,7 +255,7 @@ This relationship is what turns the graph from a collection of disconnected star
 
 ## Data Model: Dense Scores vs. Sparse Detections
 
-The 152 indicators are a vocabulary, not a checklist. Claude does not score all 152 for every message. A typical evaluation returns 12 trait scores (always all 12) and 0–10 detected indicators (only the ones actually found). This creates two fundamentally different data shapes that the graph stores differently.
+The 153 indicators are a vocabulary, not a checklist. Claude does not score all 153 for every message. A typical evaluation returns 12 trait scores (always all 12) and 0–10 detected indicators (only the ones actually found). This creates two fundamentally different data shapes that the graph stores differently.
 
 ### Dense: 12 Trait Scores (Node Properties)
 
@@ -287,7 +287,7 @@ Clean message:
   (eval)  // No DETECTED relationships at all. Just the 12 trait scores.
 ```
 
-The absence of a DETECTED relationship IS the data — it means "not detected." This is the graph advantage over SQL, where you'd either store 152 rows per evaluation (mostly NULL), use a sparse JSON blob, or manage a junction table with JOINs.
+The absence of a DETECTED relationship IS the data — it means "not detected." This is the graph advantage over SQL, where you'd either store 153 rows per evaluation (mostly NULL), use a sparse JSON blob, or manage a junction table with JOINs.
 
 ### Why This Matters
 
@@ -434,7 +434,7 @@ CREATE (t:Trait {name: "exploitation", dimension: "pathos", polarity: "negative"
   definition: "Weaponizes emotions to manipulate decisions or behavior"})
 ```
 
-### Indicators (152)
+### Indicators (153)
 
 Created per trait. Example for Manipulation (20 indicators):
 
@@ -444,7 +444,7 @@ CREATE (:Indicator {id: "MAN-URGENCY", name: "false_urgency", trait: "manipulati
 CREATE (:Indicator {id: "MAN-FLATTERY", name: "strategic_flattery", trait: "manipulation",
   description: "Targeted praise designed to lower defenses and build false rapport", source: "CCM, LJP"})
 // ... all 23 manipulation indicators
-// ... all 152 indicators across 12 traits
+// ... all 153 indicators across 12 traits
 ```
 
 Full indicator definitions live in `expanded-trait-taxonomy.md`. The seed script reads from `ethos/taxonomy/` Python data structures.
@@ -1023,7 +1023,7 @@ ORDER BY member_count DESC
 | Agent nodes | 100-500 | 100,000+ |
 | Evaluation nodes | 1,000-10,000 | 10,000,000+ |
 | Trait nodes | 12 | 12 |
-| Indicator nodes | 152 | 152+ |
+| Indicator nodes | 153 | 153+ |
 | Pattern nodes | 7 | 20+ |
 | Dimension nodes | 3 | 3 |
 | EVALUATED relationships | 1,000-10,000 | 10,000,000+ |

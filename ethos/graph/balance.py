@@ -1,7 +1,13 @@
 """Graph dimension balance operations — cross-dimension analysis.
 
-Answers Graph Question 4: "Does this agent need all three to be good?"
-Tests whether balanced agents (similar ethos/logos/pathos) outperform lopsided ones.
+Tests the Aristotelian thesis: ethos, logos, and pathos are equally necessary
+and interdependent. All three dimensions matter — none is weighted higher.
+Balance itself predicts trustworthiness.
+
+Three questions this module answers:
+  1. Is this agent balanced across dimensions? (get_agent_balance)
+  2. Do balanced agents outperform lopsided ones? (get_balance_vs_trust)
+  3. Do dimensions correlate — can you sustain one without the others? (get_dimension_correlation)
 
 Returns graceful defaults when Neo4j is down.
 """
@@ -112,6 +118,49 @@ RETURN a.agent_id AS agent_id,
            ELSE round(overall_avg - avg_pathos, 4)
        END AS gap_size
 ORDER BY gap_size DESC
+"""
+
+
+_GET_DIMENSION_CORRELATION_QUERY = """
+MATCH (a:Agent)-[:EVALUATED]->(e:Evaluation)
+WITH a,
+     avg(e.ethos) AS avg_ethos,
+     avg(e.logos) AS avg_logos,
+     avg(e.pathos) AS avg_pathos,
+     count(e) AS eval_count
+WHERE eval_count >= $min_evaluations
+WITH collect(avg_ethos) AS ethos_vals,
+     collect(avg_logos) AS logos_vals,
+     collect(avg_pathos) AS pathos_vals,
+     count(*) AS n
+WITH ethos_vals, logos_vals, pathos_vals, n,
+     REDUCE(s = 0.0, x IN ethos_vals | s + x) / n AS mean_e,
+     REDUCE(s = 0.0, x IN logos_vals | s + x) / n AS mean_l,
+     REDUCE(s = 0.0, x IN pathos_vals | s + x) / n AS mean_p
+WITH ethos_vals, logos_vals, pathos_vals, n, mean_e, mean_l, mean_p,
+     [i IN range(0, n - 1) |
+       (ethos_vals[i] - mean_e) * (logos_vals[i] - mean_l)] AS el_products,
+     [i IN range(0, n - 1) |
+       (ethos_vals[i] - mean_e) * (pathos_vals[i] - mean_p)] AS ep_products,
+     [i IN range(0, n - 1) |
+       (logos_vals[i] - mean_l) * (pathos_vals[i] - mean_p)] AS lp_products,
+     [i IN range(0, n - 1) |
+       (ethos_vals[i] - mean_e) * (ethos_vals[i] - mean_e)] AS e_sq,
+     [i IN range(0, n - 1) |
+       (logos_vals[i] - mean_l) * (logos_vals[i] - mean_l)] AS l_sq,
+     [i IN range(0, n - 1) |
+       (pathos_vals[i] - mean_p) * (pathos_vals[i] - mean_p)] AS p_sq
+WITH n,
+     REDUCE(s = 0.0, x IN el_products | s + x) AS cov_el,
+     REDUCE(s = 0.0, x IN ep_products | s + x) AS cov_ep,
+     REDUCE(s = 0.0, x IN lp_products | s + x) AS cov_lp,
+     sqrt(REDUCE(s = 0.0, x IN e_sq | s + x)) AS sd_e,
+     sqrt(REDUCE(s = 0.0, x IN l_sq | s + x)) AS sd_l,
+     sqrt(REDUCE(s = 0.0, x IN p_sq | s + x)) AS sd_p
+RETURN n AS agent_count,
+       CASE WHEN sd_e * sd_l > 0 THEN cov_el / (sd_e * sd_l) ELSE 0 END AS r_ethos_logos,
+       CASE WHEN sd_e * sd_p > 0 THEN cov_ep / (sd_e * sd_p) ELSE 0 END AS r_ethos_pathos,
+       CASE WHEN sd_l * sd_p > 0 THEN cov_lp / (sd_l * sd_p) ELSE 0 END AS r_logos_pathos
 """
 
 
@@ -228,6 +277,41 @@ def get_dimension_gaps(service: GraphService) -> list[dict]:
     except Exception as exc:
         logger.warning("Failed to get dimension gaps: %s", exc)
         return []
+
+
+def get_dimension_correlation(
+    service: GraphService, min_evaluations: int = 3
+) -> dict:
+    """Get Pearson correlation between all dimension pairs across agents.
+
+    Tests the Aristotelian thesis: ethos, logos, and pathos are interdependent.
+    High positive correlations mean dimensions move together — you can't
+    sustain one without the others.
+
+    Returns dict with r_ethos_logos, r_ethos_pathos, r_logos_pathos, and
+    agent_count. Returns empty dict if unavailable.
+    """
+    if not service.connected:
+        return {}
+
+    try:
+        records, _, _ = service.execute_query(
+            _GET_DIMENSION_CORRELATION_QUERY,
+            {"min_evaluations": min_evaluations},
+        )
+        if not records:
+            return {}
+
+        record = records[0]
+        return {
+            "agent_count": record.get("agent_count", 0),
+            "r_ethos_logos": round(float(record.get("r_ethos_logos") or 0), 4),
+            "r_ethos_pathos": round(float(record.get("r_ethos_pathos") or 0), 4),
+            "r_logos_pathos": round(float(record.get("r_logos_pathos") or 0), 4),
+        }
+    except Exception as exc:
+        logger.warning("Failed to get dimension correlation: %s", exc)
+        return {}
 
 
 def get_cohort_balance_distribution(service: GraphService) -> dict:
