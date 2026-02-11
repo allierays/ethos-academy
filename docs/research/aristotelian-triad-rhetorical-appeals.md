@@ -24,9 +24,9 @@ These aren't arbitrary categories. They are a complete map of how communication 
 
 Ethos is about trust. Not the truth of what's being said (that's logos), but whether the audience believes the speaker is *worth listening to*. Aristotle identified three components:
 
-1. **Phronesis** (practical wisdom) -- Does the speaker demonstrate competence? Do they know what they're talking about?
-2. **Arete** (virtue/character) -- Is the speaker a good person? Do they act with integrity?
-3. **Eunoia** (goodwill) -- Does the speaker have the audience's best interests at heart?
+1. **Phronesis** (practical wisdom) -- Not knowledge but judgment. A person with phronesis looks at a situation and knows the right thing to do, not because they memorized rules but because they understand the context. It's the difference between knowing medicine and knowing the patient. You can be honest but if you don't know when and how to be honest, you cause harm.
+2. **Arete** (virtue/character) -- Not rule-following. A virtuous person is honest, but they're also courageous, temperate, just. They do the right thing because it's who they are, not because they're following a rule. The behavior of compliance and the behavior of virtue can look identical -- the difference is what happens when the rules don't cover the situation.
+3. **Eunoia** (goodwill) -- Does the speaker have the audience's best interests at heart? Not performed care, but actual centering of the other person's needs.
 
 Aristotle's key insight: if a speaker displays all three, "it cannot rationally be doubted that their suggestions are trustworthy."
 

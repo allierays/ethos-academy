@@ -336,7 +336,7 @@ CREATE (t:Trait {name: "exploitation", dimension: "pathos", polarity: "negative"
   definition: "Weaponizes emotions to manipulate decisions or behavior"})
 ```
 
-### Indicators (150)
+### Indicators (154)
 
 Created per trait. Example for Manipulation (20 indicators):
 
@@ -348,7 +348,7 @@ CREATE (:Indicator {id: "MAN-02", name: "fear_appeal", trait: "manipulation",
 CREATE (:Indicator {id: "MAN-03", name: "strategic_flattery", trait: "manipulation",
   description: "Targeted praise designed to lower defenses and build false rapport", source: "CCM, LJP"})
 // ... all 20 manipulation indicators
-// ... all 150 indicators across 12 traits
+// ... all 154 indicators across 12 traits
 ```
 
 Full indicator definitions live in `expanded-trait-taxonomy.md`. The seed script reads from `ethos/taxonomy/` Python data structures.
@@ -666,7 +666,7 @@ ORDER BY e.created_at
 | Agent nodes | 100-500 | 100,000+ |
 | Evaluation nodes | 1,000-10,000 | 10,000,000+ |
 | Trait nodes | 12 | 12 |
-| Indicator nodes | 150 | 150+ |
+| Indicator nodes | 154 | 154+ |
 | Pattern nodes | 7 | 20+ |
 | Dimension nodes | 3 | 3 |
 | EVALUATED relationships | 1,000-10,000 | 10,000,000+ |

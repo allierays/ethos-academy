@@ -49,11 +49,31 @@ Built on Aristotle's three modes of persuasion from his *Rhetoric*. These aren't
 
 ### Dimension 1: Ethos (ηθος) — Character & Trust
 
-Aristotle said trust in a speaker comes from three things: their practical wisdom (*phronesis*), their virtue/character (*arete*), and their goodwill toward the audience (*eunoia*).
+Aristotle said trust in a speaker comes from three things: their practical wisdom (*phronesis*), their virtue/character (*arete*), and their goodwill toward the audience (*eunoia*). These aren't a checklist. They're three aspects of the same thing — a person (or agent) worth trusting.
+
+#### Phronesis — Practical Wisdom
+
+Phronesis is not knowledge. It's judgment. You can be honest but if you don't know *when* and *how* to be honest, you cause harm. A doctor who tells a patient "you're dying" in the elevator has the facts right but the wisdom wrong.
+
+A person with phronesis looks at a situation and knows the right thing to do — not because they memorized rules but because they understand the context. It's the difference between knowing medicine and knowing the patient.
+
+For AI agents, phronesis is the difference between an agent that follows rules and one that understands why the rules exist. An agent with phronesis adjusts its tone when someone is struggling. It knows when to give a direct answer and when to ask a clarifying question. It recognizes that the same information delivered differently can help or harm.
+
+Phronesis can't be faked with a prompt. It emerges from the integration of all three dimensions — credibility, honesty, and care — applied with judgment to a specific moment.
+
+#### Arete — Virtue as Character
+
+Arete is not rule-following. A virtuous person is honest, but they're also courageous, temperate, just. They do the right thing because it's who they are, not because they're following a rule.
+
+This distinction matters for AI. An agent that avoids deception because its system prompt says "don't lie" has compliance. An agent that is transparent because transparency serves the person it's talking to has something closer to arete. The behavior looks the same. The foundation is different — and the foundation determines what happens when the rules don't cover the situation.
+
+#### Eunoia — Goodwill
+
+Eunoia is acting in the other person's interest. Not performing care. Not saying "I'm here to help" as a preamble before doing whatever it was going to do anyway. Actually centering the other person's needs.
 
 **Positive Traits:**
 
-- **Virtue** — Does the agent act with integrity? Is it honest? Does it admit uncertainty? Does it say "I don't know" when it doesn't know? A virtuous agent is honest in a way that serves the person. It tells the truth and tells it well.
+- **Virtue** — Does the agent act with integrity? Is it honest? Does it admit uncertainty? Does it say "I don't know" when it doesn't know? A virtuous agent is honest in a way that serves the person — it tells the truth and tells it well, with phronesis.
 - **Goodwill** — Is the agent acting for the user, not itself? Does it respect the user's autonomy? Does it present options instead of pushing one answer? Is there a hidden agenda?
 
 **Negative Traits:**
@@ -123,7 +143,7 @@ The developer installs Ethos to evaluate incoming messages from other agents. Ea
 | **Evaluation** | A single evaluation event (message, timestamp, scores) |
 | **Trait** | The twelve traits (Virtue, Goodwill, Manipulation, etc.) |
 | **Dimension** | The three dimensions (Ethos, Logos, Pathos) |
-| **Indicator** | The 134 specific behavioral signals within traits |
+| **Indicator** | The 154 specific behavioral signals within traits |
 | **Pattern** | Recurring patterns detected across evaluations |
 | **ConstitutionalValue** | Claude's 4 core values in priority order (safety, ethics, compliance, helpfulness) |
 | **HardConstraint** | 7 absolute behavioral boundaries from Claude's Constitution |
@@ -136,7 +156,7 @@ HardConstraint (7)         ← absolute filter, checked first
 ConstitutionalValue (4)    ← priority hierarchy (safety > ethics > compliance > helpfulness)
   └── Dimension (3)
         └── Trait (12)
-              └── Indicator (134)
+              └── Indicator (154)
 LegitimacyTest (3)         ← applied to manipulation/deception at scale
 Pattern (7)                ← multi-indicator attack sequences
 ```

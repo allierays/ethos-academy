@@ -24,7 +24,9 @@ Aristotle's *Rhetoric* (Book I.2) identifies three modes of persuasion — ethos
 | **No logos** (credible + caring, but inaccurate) | Agent is warm and well-intentioned but fabricates. Users get bad information delivered kindly. |
 | **No pathos** (honest + credible, but indifferent) | Agent is factually sound but ignores context, stress, and vulnerability. Users feel unseen. |
 
-The Greek concept of *phronesis* (practical wisdom) requires integrating all three. A good counselor isn't just honest, or just kind, or just credible — they're all three at once.
+The Greek concept of *phronesis* (practical wisdom) is the integrating principle. Phronesis is judgment, not knowledge. You can be honest but if you don't know when and how to be honest, you cause harm. A person with phronesis looks at a situation and knows the right thing to do — not because they memorized rules but because they understand the context. It's the difference between knowing medicine and knowing the patient.
+
+A virtuous agent (*arete*) doesn't follow rules. It does the right thing because of what it is. But virtue without practical wisdom is dangerous — an honest agent without phronesis blurts out truths that harm. A caring agent without phronesis enables bad decisions out of kindness. Phronesis requires all three dimensions working together.
 
 ### The Constitutional Argument
 
