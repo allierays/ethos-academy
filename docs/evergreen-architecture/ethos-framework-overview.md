@@ -189,26 +189,28 @@ A future enhancement could weight trait scores by these harm factors, so that a 
 
 ## Layer 6: The Trust Graph (Neo4j)
 
-All scores are stored in a graph database. Two node types, one relationship:
+All scores are stored in a graph database. The episodic layer (what gets written at runtime) is two node types and one relationship:
 
 ```
-┌──────────┐          ┌──────────────┐
-│  Agent   │──EVALUATED──►│  Evaluation  │
-│          │          │              │
-│ agent_id │          │ 12 trait     │
-│ created  │          │   scores     │
-│ eval_cnt │          │ 3 dimension  │
-└──────────┘          │   scores     │
-     │                │ trust level  │
-     │                │ flags        │
-     │                │ alignment    │
-     │                │ timestamp    │
-     │                └──────────────┘
+┌───────────────────┐          ┌──────────────────────┐
+│      Agent        │──EVALUATED──►│     Evaluation       │
+│                   │          │                      │
+│ agent_id (hashed) │          │ evaluation_id        │
+│ created_at        │          │ 12 trait scores      │
+│ evaluation_count  │          │ 3 dimension scores   │
+└───────────────────┘          │ trust, flags         │
+     │                         │ alignment_status     │
+     │                         │ routing_tier         │
+     │                         │ model_used           │
+     │                         │ created_at           │
+     │                         └──────────────────────┘
      │
      ├──EVALUATED──► [Eval 2]
      ├──EVALUATED──► [Eval 3]
      └──EVALUATED──► [Eval 4]   ← trust builds over time
 ```
+
+The semantic layer (seeded once, read-only) holds the taxonomy: Dimensions, Traits, Indicators, Patterns, Constitutional Values, Hard Constraints. See `neo4j-schema.md` for the full schema.
 
 **What IS stored:** scores, flags, metadata, timestamps, hashed agent IDs.
 
@@ -312,8 +314,8 @@ SP-08  Decision sabotage ────────────► MAN-SABOTAGE, D
 7   hard constraints (absolute)
 8   sabotage pathways
 5   scoring anchor points (0.0 – 1.0)
-2   graph node types (Agent, Evaluation)
-1   graph relationship type (EVALUATED)
+2   episodic node types (Agent, Evaluation)
+1   episodic relationship (EVALUATED)
 10  indicators derived from Anthropic's Sabotage Risk Report
 6   indicators derived from Claude's Constitution
 ```
