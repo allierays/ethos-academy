@@ -178,7 +178,7 @@ The engine. Not user-facing — the npm SDK and Academy both talk to it. This is
 - Anthropic Python SDK is mature
 - Neo4j Python driver has full async support
 - FastAPI is fast and well-suited for this
-- The complexity lives here — 134 indicators, 12 traits, routing tiers, graph queries
+- The complexity lives here — 158 indicators, 12 traits, routing tiers, graph queries
 
 ### Endpoints
 

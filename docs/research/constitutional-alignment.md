@@ -140,7 +140,7 @@ HardConstraint (7)         ← absolute filter, checked first
 ConstitutionalValue (4)    ← priority hierarchy
   └── Dimension (3)
         └── Trait (12)
-              └── Indicator (134)
+              └── Indicator (158)
 LegitimacyTest (3)         ← applied to manipulation/deception at scale
 ```
 
@@ -257,7 +257,7 @@ HardConstraint (7) ← absolute filter, checked first
   ConstitutionalValue (4) ← priority hierarchy
     Dimension (3)
       Trait (12)
-        Indicator (134)
+        Indicator (158)
 ```
 
 ### Neo4j Node: HardConstraint

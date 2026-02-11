@@ -93,14 +93,14 @@ ethos/reflection/
 
 ### Domain Logic
 
-`reflect()` reuses the Evaluation domain — it calls `evaluate()` internally on the agent's outgoing message, then stores the result via Graph. It's a thin wrapper that adds the async/fire-and-forget behavior.
+`reflect()` reuses the Evaluation domain — it calls `evaluate()` internally on the agent's outgoing message, then stores the result via Graph. It's a thin wrapper that adds fire-and-forget behavior.
 
 `insights()` is its own Claude call. It doesn't reuse the evaluation prompt. It has its own prompt that takes structured data (agent history + cohort averages) and asks Claude to reason about patterns.
 
 ### Key Rules
 
 - Reflection never blocks the developer's response path.
-- `reflect()` is async — returns immediately, evaluation happens in background.
+- `reflect()` is fire-and-forget — evaluation happens in background.
 - `insights()` can be slow (it's Opus + extended thinking) because it runs offline.
 - Reflection depends on Graph for storage and history. Without Graph, `reflect()` is a no-op and `insights()` returns empty.
 
@@ -126,30 +126,30 @@ The `GraphService` is the single entry point for all Neo4j operations. Other dom
 
 ```python
 class GraphService:
-    async def connect()
-    async def close()
+    def connect()
+    def close()
 
     # Write
-    async def store_evaluation(agent_id, result)
-    async def update_agent_profile(agent_id)
+    def store_evaluation(agent_id, result)
+    def update_agent_profile(agent_id)
 
     # Read
-    async def get_evaluation_history(agent_id, limit)
-    async def get_agent_profile(agent_id)
-    async def get_agent_patterns(agent_id)
-    async def load_agent_context(agent_id)    # for DEEP_WITH_CONTEXT tier
+    def get_evaluation_history(agent_id, limit)
+    def get_agent_profile(agent_id)
+    def get_agent_patterns(agent_id)
+    def load_agent_context(agent_id)    # for DEEP_WITH_CONTEXT tier
 
     # Cohort
-    async def get_cohort_averages()             # per-trait averages across all agents
-    async def get_cohort_distribution(trait)    # percentile distribution for a trait
-    async def get_agent_percentile(agent_id, trait)
+    def get_cohort_averages()             # per-trait averages across all agents
+    def get_cohort_distribution(trait)    # percentile distribution for a trait
+    def get_agent_percentile(agent_id, trait)
 ```
 
 ### Key Rules
 
 - Graph is optional. Every domain that calls Graph wraps calls in try/except. Neo4j being down never crashes evaluate().
 - Graph owns the Cypher. No Cypher queries exist outside this domain.
-- Graph exposes async methods only. Sync wrappers live in the calling domain if needed.
+- Graph exposes sync methods only. All code is sync — no async/await anywhere.
 - Message content never enters the graph. Only scores, hashes, and metadata.
 
 ### The Schema
@@ -167,7 +167,7 @@ ethos/taxonomy/
 ├── __init__.py          # exports: TRAITS, INDICATORS, PATTERNS, CONSTITUTIONAL_VALUES,
 │                        #          HARD_CONSTRAINTS, LEGITIMACY_TESTS, TRAIT_METADATA
 ├── traits.py            # 12 trait definitions with scoring anchors
-├── indicators.py        # 150 indicator definitions (id, name, trait, description)
+├── indicators.py        # 158 indicator definitions (id, name, trait, description)
 ├── patterns.py          # 7 combination patterns (multi-indicator sequences)
 ├── constitution.py      # 4 values, 7 hard constraints, 3 legitimacy tests, trait→value mappings
 └── rubrics.py           # Per-trait scoring rubrics (0.0/0.25/0.50/0.75/1.0 anchors)

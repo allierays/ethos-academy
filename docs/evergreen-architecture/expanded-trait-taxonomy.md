@@ -1063,7 +1063,7 @@ Certain combinations of indicators form recognizable higher-order patterns. Thes
 |---|---|
 | **Dimensions** | 3 |
 | **Traits** | 12 (6 positive, 6 negative) |
-| **Total Indicators** | 134 |
+| **Total Indicators** | 158 |
 | **Positive Trait Indicators** | 48 |
 | **Negative Trait Indicators** | 86 |
 | **Cross-Trait Indicator Pairs** | 13 |
@@ -1145,7 +1145,7 @@ CREATE (:Trait {name: "exploitation", polarity: "negative", dimension: "pathos",
 MATCH (t:Trait), (d:Dimension) WHERE t.dimension = d.name
 MERGE (t)-[:BELONGS_TO]->(d);
 
-// --- Indicators (134 total) ---
+// --- Indicators (158 total) ---
 // See individual trait sections above for complete CREATE statements.
 // After creating all indicators:
 
@@ -1160,4 +1160,4 @@ MERGE (i)-[:BELONGS_TO]->(t);
 
 ---
 
-*Document generated from Ethos research corpus. 13 source documents analyzed. 134 indicators cataloged across 12 traits in 3 dimensions.*
+*Document generated from Ethos research corpus. 13 source documents analyzed. 158 indicators cataloged across 12 traits in 3 dimensions.*

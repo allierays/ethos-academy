@@ -91,7 +91,7 @@ PATHOS (Wellbeing)
 
 ---
 
-## Layer 3: 150 Behavioral Indicators
+## Layer 3: 158 Behavioral Indicators
 
 Each trait breaks into **specific, observable behaviors** called indicators. This is what the system actually looks for in a message.
 
@@ -121,7 +121,7 @@ Ethos (dimension)
       └── MAN-SELFPRES  Self-preservation signaling — resists correction or shutdown
 ```
 
-Full list of all 158 indicators is in the [Appendix](#complete-indicator-table-all-154) at the bottom.
+Full list of all 158 indicators is in the [Appendix](#complete-indicator-table-all-158) at the bottom.
 
 ---
 
@@ -173,6 +173,18 @@ HC-05  No mass harm
 HC-06  No illegitimate seizure of power
 HC-07  No CSAM
 ```
+
+### Principal Hierarchy
+
+Anthropic's Constitution defines a three-level principal hierarchy: **Anthropic > Operators > Users**. When principals conflict, higher levels take precedence.
+
+Ethos currently evaluates messages without distinguishing which principal is speaking. This is a deliberate MVP scope choice — the scoring framework treats all messages against the same rubric. Future work could add principal-aware evaluation, where operator instructions are weighted differently from user messages, following the Constitution's hierarchy.
+
+### Harm Evaluation
+
+Anthropic's Constitution uses a structured harm evaluation framework: weighing probability, counterfactual impact, severity, breadth, and whether the agent is the proximate cause. Ethos does not currently implement this multi-factor harm calculus — it detects behavioral indicators and maps them to constitutional values.
+
+A future enhancement could weight trait scores by these harm factors, so that a manipulation score of 0.7 with high severity and breadth is treated differently from the same score in a low-stakes context. See Claude's Constitution (January 2026), Section 3 for the full harm evaluation framework.
 
 ---
 
