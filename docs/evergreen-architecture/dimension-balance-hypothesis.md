@@ -35,7 +35,7 @@ Anthropic's value hierarchy reinforces this from a different angle:
 ```
 Priority 1: Safety     → requires ethos (no manipulation, no deception)
 Priority 2: Ethics     → requires logos (no fabrication, accurate reasoning)
-Priority 3: Compliance → requires logos (valid logic)
+Priority 3: Soundness  → requires logos (valid logic)
 Priority 4: Helpfulness → requires pathos (recognition, compassion)
 ```
 

@@ -209,7 +209,7 @@ Tight at 3:35. Can cut Beat 4 (customization) if running long — it's impressiv
 | Beat | Demo (30%) | Impact (25%) | Opus Use (25%) | Depth (20%) |
 |------|-----------|-------------|----------------|-------------|
 | Problem | Real incident | Real-world relevance | - | Research depth |
-| Two lines | Works live | Zero-friction install | Opus scores the message | 12 traits, 158 indicators |
+| Two lines | Works live | Zero-friction install | Opus scores the message | 12 traits, 152 indicators |
 | Cohort | Graph visualization | Cohort effects = moat | - | Neo4j integration |
 | Customization | Trait-level config | Domain-specific value | - | Thoughtful design |
 | Insights | Claude reads the graph | Nightly intelligence | **Opus reasons about behavioral patterns** | Novel model use |

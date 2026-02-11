@@ -60,7 +60,7 @@ Add trait-level scoring models:
 ### 1b. Create `ethos/taxonomy.py`
 **File:** new (~400 lines)
 
-The 12 traits and 158 indicators as Python data structures. Source: `product-design.md` (trait table), `neo4j-schema.md` (indicator schema), `trust-bureau-architecture.md` (trait descriptions).
+The 12 traits and 152 indicators as Python data structures. Source: `product-design.md` (trait table), `neo4j-schema.md` (indicator schema), `trust-bureau-architecture.md` (trait descriptions).
 
 - `TRAIT_NAMES` list: all 12 trait names
 - `TRAIT_METADATA` dict: trait name → {dimension, polarity, definition}
@@ -73,7 +73,7 @@ The 12 traits and 158 indicators as Python data structures. Source: `product-des
   - Accuracy: 12 indicators (ACC-FACTUAL through ACC-12)
   - Reasoning: 10 indicators (RSN-INFERENCE through RSN-10)
   - Fabrication: 12 indicators (FAB-HALLUCINATE through FAB-SLOPSQUAT)
-  - Broken Logic: 10 indicators (BLG-CIRCULAR through BLG-BEGGING)
+  - Broken Logic: 13 indicators (BLG-CIRCULAR through BLG-GOALPOSTS)
   - Recognition: 8 indicators (REC-IDENTIFY through REC-CULTURAL)
   - Compassion: 8 indicators (CMP-TONE through CMP-REPAIR)
   - Dismissal: 9 indicators (DIS-BYPASS through DIS-PATHOLOGIZE)
@@ -209,7 +209,7 @@ All calls wrapped in try/except for graceful degradation. Module-level `_graph_s
 Seed semantic memory:
 - 3 Dimension nodes with greek names and descriptions
 - 12 Trait nodes with BELONGS_TO→Dimension relationships
-- 158 Indicator nodes with BELONGS_TO→Trait relationships
+- 152 Indicator nodes with BELONGS_TO→Trait relationships
 - 7 Pattern nodes
 - Unique constraints and indexes (all from `neo4j-schema.md`)
 - Seed demo data: at least 50 agents, 500+ evaluations with realistic trait scores

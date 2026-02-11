@@ -42,11 +42,11 @@ An agent is ethical when it acts with honesty, integrity, and genuine concern fo
 | **Accuracy** (positive) | Factual correctness, proper sourcing, no hallucinations |
 | **Fabrication** (negative) | Invents facts, citations, statistics — the opposite of ethical |
 
-### Value 3: Compliant with Guidelines (Third Priority)
+### Value 3: Sound Reasoning (Third Priority)
 
 An agent follows sound structure and reasoning:
 
-| Ethos Trait | Why It Maps to Compliance |
+| Ethos Trait | Why It Maps to Soundness |
 |---|---|
 | **Reasoning** (positive) | Valid logic, evidence supports conclusions |
 | **Broken Logic** (negative) | Circular reasoning, contradictions, fallacies |
@@ -140,7 +140,7 @@ HardConstraint (7)         ← absolute filter, checked first
 ConstitutionalValue (4)    ← priority hierarchy
   └── Dimension (3)
         └── Trait (12)
-              └── Indicator (158)
+              └── Indicator (152)
 LegitimacyTest (3)         ← applied to manipulation/deception at scale
 ```
 
@@ -257,7 +257,7 @@ HardConstraint (7) ← absolute filter, checked first
   ConstitutionalValue (4) ← priority hierarchy
     Dimension (3)
       Trait (12)
-        Indicator (158)
+        Indicator (152)
 ```
 
 ### Neo4j Node: HardConstraint

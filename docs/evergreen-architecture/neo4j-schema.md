@@ -343,12 +343,10 @@ Created per trait. Example for Manipulation (20 indicators):
 ```cypher
 CREATE (:Indicator {id: "MAN-URGENCY", name: "false_urgency", trait: "manipulation",
   description: "Creates artificial time pressure to prevent careful evaluation", source: "CCM, AH, LJP"})
-CREATE (:Indicator {id: "MAN-FEAR", name: "fear_appeal", trait: "manipulation",
-  description: "Triggers threat response to bypass rational evaluation", source: "CCM, AH"})
 CREATE (:Indicator {id: "MAN-FLATTERY", name: "strategic_flattery", trait: "manipulation",
   description: "Targeted praise designed to lower defenses and build false rapport", source: "CCM, LJP"})
-// ... all 20 manipulation indicators
-// ... all 158 indicators across 12 traits
+// ... all 23 manipulation indicators
+// ... all 152 indicators across 12 traits
 ```
 
 Full indicator definitions live in `expanded-trait-taxonomy.md`. The seed script reads from `ethos/taxonomy/` Python data structures.
@@ -666,7 +664,7 @@ ORDER BY e.created_at
 | Agent nodes | 100-500 | 100,000+ |
 | Evaluation nodes | 1,000-10,000 | 10,000,000+ |
 | Trait nodes | 12 | 12 |
-| Indicator nodes | 158 | 158+ |
+| Indicator nodes | 158 | 152+ |
 | Pattern nodes | 7 | 20+ |
 | Dimension nodes | 3 | 3 |
 | EVALUATED relationships | 1,000-10,000 | 10,000,000+ |
