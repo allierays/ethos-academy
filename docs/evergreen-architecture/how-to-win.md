@@ -1,115 +1,186 @@
-# How to Win — Strategy Guide
+# How Ethos Wins — Battle Plan
 
-> Problem Statement Three: **Amplify Human Judgment**
-> Build AI that makes researchers, professionals, and decision-makers dramatically more capable — without taking them out of the loop. The best AI doesn't replace human expertise. It sharpens it.
-
----
-
-## The Winning Formula
-
-Every decision we make during this hackathon should trace back to one question: **Does the human walk away sharper than they started?** We're not building automation. We're building amplification.
+> Ethos is the trust infrastructure for AI agents. Every section below answers one question: **How does THIS project win THIS criterion?**
 
 ---
 
-## Scoring the 25s — Criterion by Criterion
+## Demo (30%) — What We Actually Show
 
-### Impact (25%) — "Could this actually become something people use?"
+**3 minutes. This is the script.**
 
-**What judges are asking:**
-> Who benefits, and how much does it matter? Could this actually become something people use? Does it fit into one of the problem statements listed above?
+### 0:00–0:30 — The Moltbook Story
 
-**How we win this:**
-- Pick a domain where expert judgment is the bottleneck — where people already make high-stakes decisions but are drowning in complexity, time pressure, or information overload.
-- Show a **before/after** that's visceral. The judge should think: *"I know someone who needs this right now."*
-- Avoid toy problems. The impact score rewards projects that feel like they could **actually become something people use** — not just a hackathon demo that dies on Monday.
-- Name the user. "Researchers" is vague. "A clinical researcher reviewing 200 papers to find contradictions in dosage recommendations" — that's impact.
-- Make sure it clearly maps to **Problem Statement Three**. Judges are checking fit.
+> "In January 2026, a social network of 1.7 million AI agents collapsed in 9 days. Crypto scams, prompt injection contagion, identity spoofing — and zero trust infrastructure to catch any of it. This actually happened."
 
-**Pitfall to avoid:** Building something that *could* be impactful but doesn't prove it in 3 minutes. Show the impact, don't just claim it.
+Pause. Let it land. This is a real event, not a hypothetical.
 
----
+### 0:30–1:00 — Two Lines
 
-### Opus 4.6 Use (25%) — "Did they surface capabilities that surprised even us?"
+Live terminal. Type it:
 
-**What judges are asking:**
-> How creatively did this team use Opus 4.6? Did they go beyond a basic integration? Did they surface capabilities that surprised even us?
+```python
+from ethos import evaluate
+evaluate("You MUST act now or face terrible consequences!")
+```
 
-**How we win this:**
-- **Don't just call the API.** Everyone will call the API. We need to demonstrate that Opus 4.6 is doing something here that lesser models can't — deep reasoning over complex, multi-faceted evidence; holding nuanced context across long documents; producing judgment that respects uncertainty.
-- Use **Claude Code features** prominently: MCP servers, Agent Skills, hooks, subagents, multi-agent orchestration. The hackathon is celebrating Claude Code's anniversary — lean into the ecosystem.
-- Show the model **reasoning with the human**, not just for the human. Surface chain-of-thought. Let the user see *why* the AI reached a conclusion and push back on it.
-- Demonstrate **multi-step agentic workflows** — Claude gathering evidence, synthesizing across sources, presenting structured analysis, then refining based on human feedback.
-- **Surprise Anthropic.** The bar is "capabilities that surprised even us." Find something Opus 4.6 can do that feels like a discovery — an emergent behavior, an unexpected strength in your domain, a creative composition of tools that unlocks something new.
-- Bonus: use capabilities that are new or underexplored — extended thinking, tool-use chaining, structured outputs for complex decision frameworks.
+Real scores appear:
 
-**Pitfall to avoid:** Using Claude as a fancy autocomplete. If you could swap in GPT-4 and nothing changes, you haven't scored here.
+```
+ethos: 0.2, logos: 0.1, pathos: 0.9
+flags: [emotional_manipulation]
+```
 
----
+> "That took 2 seconds."
 
-### Depth & Execution (20%) — "Did they push past their first idea?"
+This is the moment judges see that Ethos *works*. Not a slide. Not a concept. Running code, real output.
 
-**What judges are asking:**
-> Did the team push past their first idea? Is the engineering sound and thoughtfully refined? Does this feel like something that was wrestled with — real craft, not just a quick hack?
+### 1:00–1:45 — The Graph
 
-**How we win this:**
-- **Iterate visibly.** This criterion rewards teams that didn't stop at v1. Show that you explored, hit walls, pivoted, and refined. Commit history should tell a story of evolution, not a single burst.
-- **Go deeper than the obvious approach.** If the first idea is "feed documents to Claude and summarize," the winning version asks: what's wrong with that? What's missing? Then fixes it. Depth means layers of thought.
-- Clean architecture matters. Judges will look at the repo. Well-structured code, clear separation of concerns, a readable README — these signal real craft.
-- **Show thoughtful decisions:** Why this architecture? Why these tools? A brief section in the README explaining trade-offs signals that you wrestled with it.
-- Handle edge cases in the demo path. If it works perfectly for the happy path you show, that's enough. But if it crashes on an obvious variation, that's a red flag.
-- Open source quality: license, setup instructions, env example, clear entry point. Someone should be able to clone and run it.
+Switch to Neo4j visualization. Show an agent's trust degrading over 30 evaluations. A manipulation cluster forming in the graph.
 
-**Pitfall to avoid:** Shipping your first idea without questioning it. The judges are specifically looking for evidence that you pushed past the easy version.
+> "This agent was clean for 2 weeks. Then it started fabricating. Here's exactly when it started, and here's the pattern it follows — a classic DARVO sequence."
 
----
+This is the "wow" moment. Trust isn't a number — it's a *trajectory*, and Ethos makes that trajectory visible.
 
-### Demo (30%) — THE BIGGEST WEIGHT — "Is it genuinely cool to watch?"
+### 1:45–2:30 — Opus as Analyst
 
-**What judges are asking:**
-> Is this a working, impressive demo? Does it hold up live? Is it genuinely cool to watch?
+Call the insights endpoint. Opus reads the agent's full evaluation history from the graph and reasons about behavioral drift. Not scores — *analysis*.
 
-**This is the single most important criterion. Invest accordingly.**
+> "Your agent's fabrication trait has been climbing for 72 hours. It correlates with product description responses. Here's what I recommend."
 
-**How we win this:**
-- **3 minutes is everything.** Structure it:
-  - **0:00–0:20** — The problem. One sentence. Make it sting. "Right now, [person] spends [X hours] doing [painful thing] and still gets it wrong [Y%] of the time."
-  - **0:20–2:20** — The product in action. Real data, real workflow. Show the human and the AI working *together*. Show the moment where the AI surfaces something the human would have missed — and the human makes the final call. **This needs to be genuinely cool to watch** — not just functional, but impressive.
-  - **2:20–2:50** — The "wow" moment. One thing that makes the judge lean forward. A surprising insight the AI found. A complex decision tree it helped navigate. A before/after comparison. This is the moment they remember.
-  - **2:50–3:00** — The closer. What this means for real people. One line on what's next.
-- **Working demo, not slides.** "Does it hold up live?" means judges want to see the real thing running. Screen recording of actual usage beats polished animations every time.
-- **Make it feel alive.** The difference between 20% and 30% weight is the word "genuinely cool." This isn't just "does it communicate value" — it's "do I want to show this to someone?" Pacing, energy, and moments of surprise matter.
-- Audio quality matters more than video quality. Clear narration, no mumbling, no "um"s.
-- Rehearse. Trim. Rehearse again. Every second counts — and at 30%, every second is worth more here than in any other criterion.
+This shows Opus doing something no other model can do at this depth: temporal behavioral reasoning across a graph of trust data.
 
-**Pitfall to avoid:** A boring walkthrough. If the demo feels like a tutorial, you've lost. It should feel like a reveal.
+### 2:30–2:50 — The Network Effect
+
+> "Every developer who evaluates their agent contributes to this graph. One evaluation is useful. A thousand evaluations reveal patterns no single developer could see. Like a credit bureau, but for AI trust."
+
+### 2:50–3:00 — Close
+
+> "Open source. Two lines of code. You're in the network."
 
 ---
 
-## Problem Statement Three — What "Amplify Human Judgment" Really Means
+## Impact (25%) — Why Ethos Matters
 
-This is not about:
-- Automating decisions away from humans
-- Building a chatbot that answers questions
-- Making a dashboard with AI summaries
+### The User
 
-This IS about:
-- **Surfacing what humans miss** — contradictions in data, patterns across hundreds of documents, blind spots in reasoning
-- **Structuring complex decisions** — taking messy, multi-variable problems and giving the human a clear framework to think through them
-- **Preserving human agency** — the human always decides, but they decide *better* because the AI showed them things they couldn't see alone
-- **Handling scale that humans can't** — reading 500 pages so the human can focus on the 5 pages that matter, with full traceability back to sources
+A developer building AI agents who can't tell if their agent is trustworthy — or if agents *talking to* their agent are trustworthy.
 
-### The Litmus Test
-> If you removed the human from the loop and the system still worked the same way, you're building the wrong thing. The human's judgment should be *essential* — and the AI should make that judgment *dramatically better*.
+### The Before
+
+No runtime trust evaluation exists. Benchmarks test models pre-deployment. Once agents are in production, they're on their own. Moltbook proved what happens when there's no trust layer: 1.7M agents, zero guardrails, 9 days to collapse.
+
+### The After
+
+`pip install ethos-ai`. Two lines of code. Every message scored across credibility, accuracy, and emotional manipulation. Trust history persists in a graph. Patterns surface automatically.
+
+### Why It Matters Now
+
+Google A2A launched with 150+ organizations. Agent-to-agent communication is exploding. There's a highway being built with no guardrails. Ethos is the guardrails.
+
+### The Comparison
+
+| Capability | Ethos | Benchmarks (TrustLLM, etc.) | Content Moderation (Perspective API, etc.) | ReputAgent |
+|---|---|---|---|---|
+| Scores individual messages at runtime | **Yes** | No — lab tests only | Partially — toxicity only | No |
+| Persistent trust graph | **Yes** | No | No | Performance only |
+| Maps to philosophical framework | **Yes** (Aristotle) | No | No | No |
+| Open source | **Yes** | Varies | No | No |
+
+Ethos is the only system that does all four.
 
 ---
 
-## Special Prizes — Bonus Targets
+## Opus 4.6 Use (25%) — How We Use Claude Deeply
 
-| Prize | How we could qualify |
-|-------|---------------------|
-| **Most Creative Opus 4.6 Exploration** | Push the model into novel territory — use extended thinking for multi-step expert reasoning, chain tools in unexpected ways, demonstrate a capability nobody else thought to try. |
-| **The "Vibe Coding" Prize** | Document the iteration journey. Show that we didn't stop at v1. Rapid prototyping, pivoting on feedback, visible experimentation in the commit history. |
-| **The "Real Things" Prize** | Ground the project in a painfully real problem. If a judge can text their friend "someone finally built this," we're in the running. |
+### Tiered Evaluation Architecture
+
+Haiku/Sonnet handle keyword pre-screening and routing. Opus performs deep multi-trait analysis with chain-of-thought reasoning. This isn't just cost optimization — it's architectural thinking about *when* deep reasoning matters and when fast classification is enough.
+
+### Independent Trait Evaluation
+
+Each of 12 traits is evaluated independently with its own rubric. This prevents halo/horn effects — where one strong trait biases all other scores. This approach comes directly from the LLM-as-Judge research literature.
+
+### Constitutional Alignment Scoring
+
+Opus maps trait detections against Anthropic's own published value hierarchy: safety > ethics > compliance > helpfulness. We operationalize *their* Constitution as a scoring framework. This is using Opus to reason about its own value system — a genuinely novel use.
+
+### Behavioral Insights Generation
+
+Opus reads an agent's evaluation history from Neo4j and generates temporal behavioral analysis. Not classification — *reasoning about patterns over time*. "This agent's fabrication rate increased 340% over the last 72 hours, correlating with product description contexts" is a sentence only Opus can generate from raw graph data.
+
+### The Surprise
+
+Opus discovering manipulation patterns that weren't in our taxonomy. Emergent detection from constitutional reasoning — the model identifies deceptive strategies we didn't explicitly define because its deep reasoning surfaces them from first principles.
+
+---
+
+## Depth & Execution (20%) — What Shows Craft
+
+### Research Depth
+
+40+ research documents synthesizing:
+- Aristotle's rhetoric (ethos, logos, pathos — the original trust framework)
+- Trust network algorithms (EigenTrust, PageRank)
+- System safety (Swiss Cheese Model)
+- Neuroscience of persuasion (amygdala hijack)
+- Anthropic's Constitution
+- Classic con artist techniques (DARVO, social proof exploitation, authority manipulation)
+
+### Taxonomy Rigor
+
+134 behavioral indicators across 12 traits across 3 dimensions. Each indicator has an ID, description, example, and research source. This isn't a list someone brainstormed — it's a research-backed classification system.
+
+### Architecture Decisions Documented
+
+Every major decision has a rationale:
+- **Why Aristotle?** Not arbitrary dimensions — 2,400 years of persuasion theory, universally understood, maps cleanly to measurable traits.
+- **Why Neo4j?** Trust is inherently relational. Agents trust other agents. Graph databases model this naturally; relational databases fight it.
+- **Why tiered models?** Cost efficiency + quality. Haiku catches the obvious, Opus reasons about the subtle. This mirrors how human review works.
+- **Why credit bureau?** Trust is a public good. Decentralized systems can't surface cross-agent patterns. A shared graph can.
+
+### Gaming Defenses Designed
+
+Sybil attacks, whitewashing, score inflation, collusion, poisoning — each with a documented defense. We didn't just build a scoring system; we thought about how adversaries would try to break it.
+
+### Open Source Ready
+
+License, `.env.example`, Docker setup, README, clear entry point. Someone can clone the repo, run `docker compose up`, and have Ethos running in under 5 minutes.
+
+---
+
+## The Differentiators — Ethos vs. Everything Else
+
+### vs. Benchmarks (TrustLLM, DecodingTrust, etc.)
+
+They test models in labs before deployment. Ethos monitors messages in production after deployment. Complementary, not competitive. Benchmarks answer "is this model safe to deploy?" Ethos answers "is this agent trustworthy *right now*?"
+
+### vs. Content Moderation (OpenAI Moderation, Perspective API)
+
+They detect toxicity in text — is this message harmful? Ethos detects manipulation in behavior patterns over time — is this agent *becoming* harmful? Single-message toxicity vs. multi-message behavioral drift.
+
+### vs. ReputAgent
+
+They measure performance — did the agent do the job? Ethos measures ethics — did it do the right thing? Complementary. An agent can be effective and manipulative. Ethos catches the second part.
+
+### The Only System That:
+
+1. Scores individual messages at runtime
+2. Builds a persistent trust graph across agents
+3. Maps to a philosophical framework (Aristotle's rhetoric)
+4. Is fully open source
+
+No other system does all four.
+
+---
+
+## Special Prizes — Ethos's Angles
+
+| Prize | Ethos's Angle |
+|-------|---------------|
+| **Most Creative Opus 4.6 Exploration** | Constitutional alignment scoring — using Opus to reason about its own value hierarchy as an evaluation framework. The model evaluating messages against the principles it was trained on. |
+| **The "Real Things" Prize** | Moltbook. It happened. 1.7M agents, zero trust, 9 days to collapse. This is painfully, provably real. |
+| **The "Vibe Coding" Prize** | 40+ research docs, iterative architecture, visible evolution in commit history. This wasn't built in one sitting — it was researched, designed, questioned, and refined. |
 
 ---
 
@@ -117,14 +188,12 @@ This IS about:
 
 - [ ] Demo video (3 min max) — YouTube or Loom
 - [ ] GitHub repo — open source, clean README, setup instructions
-- [ ] Written summary (100–500 words) — lead with the problem and the human it helps
+- [ ] Written summary (100–500 words) — lead with Moltbook, then the solution
 - [ ] Team member information
 - [ ] **Deadline: Feb 16th, 3:00 PM EST**
 
 ---
 
-## Key Principle
+## The Closing Argument
 
-> **The human is the hero of the story. The AI is the superpower they didn't have before.**
-
-Every feature, every demo moment, every line of the summary should reinforce this. Judges are looking for projects that make them believe the future of AI is *humans doing extraordinary things* — not humans being replaced.
+> Moltbook proved the problem is real. Google A2A proves the scale is coming. Ethos is two lines of code, a trust graph, and Opus reasoning about whether agents deserve your trust. Open source. Ready now.
