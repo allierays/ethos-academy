@@ -18,9 +18,13 @@ class ReflectRequest(BaseModel):
     agent_id: str
 
 
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+class HealthResponse(BaseModel):
+    status: str
+
+
+@app.get("/health", response_model=HealthResponse)
+def health() -> HealthResponse:
+    return HealthResponse(status="ok")
 
 
 @app.post("/evaluate", response_model=EvaluationResult)
