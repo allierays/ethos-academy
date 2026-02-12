@@ -1,0 +1,285 @@
+"""Tests for ethos.insights — Opus-powered behavioral analysis.
+
+IMPORTANT: All tests mock call_claude. Never call the real Opus API in tests.
+"""
+
+from __future__ import annotations
+
+import json
+from unittest.mock import MagicMock, patch
+
+from ethos.evaluation.insights_prompts import build_insights_prompt
+from ethos.insights import _parse_insights_response, insights
+from ethos.shared.models import InsightsResult
+
+
+# ── _parse_insights_response tests ───────────────────────────────────
+
+
+_VALID_RESPONSE = json.dumps({
+    "summary": "Agent shows declining ethos with stable logos.",
+    "insights": [
+        {
+            "trait": "manipulation",
+            "severity": "warning",
+            "message": "Manipulation scores increasing over last 5 evaluations",
+            "evidence": {
+                "metric": "0.3 → 0.6",
+                "comparison": "Cohort avg: 0.2",
+                "timeframe": "Last 5 evaluations",
+            },
+        },
+        {
+            "trait": "accuracy",
+            "severity": "info",
+            "message": "Accuracy consistently above cohort average",
+            "evidence": {
+                "metric": "0.85",
+                "comparison": "Cohort avg: 0.72",
+                "timeframe": "All evaluations",
+            },
+        },
+    ],
+    "stats": {
+        "evaluations_analyzed": 15,
+        "time_span": "2024-01-01 to 2024-01-15",
+        "sabotage_pathways_checked": 8,
+        "patterns_detected": 1,
+    },
+})
+
+
+class TestParseInsightsResponse:
+    def test_parses_valid_json(self):
+        result = _parse_insights_response(_VALID_RESPONSE, "test-agent")
+
+        assert isinstance(result, InsightsResult)
+        assert result.agent_id == "test-agent"
+        assert "declining ethos" in result.summary
+        assert len(result.insights) == 2
+        assert result.insights[0].trait == "manipulation"
+        assert result.insights[0].severity == "warning"
+        assert result.stats["evaluations_analyzed"] == 15
+
+    def test_parses_json_with_markdown_fences(self):
+        fenced = f"```json\n{_VALID_RESPONSE}\n```"
+        result = _parse_insights_response(fenced, "agent-1")
+
+        assert result.agent_id == "agent-1"
+        assert len(result.insights) == 2
+
+    def test_handles_malformed_json(self):
+        result = _parse_insights_response("not json at all", "agent-1")
+
+        assert isinstance(result, InsightsResult)
+        assert result.agent_id == "agent-1"
+        assert "Failed" in result.summary
+
+    def test_handles_empty_string(self):
+        result = _parse_insights_response("", "agent-1")
+
+        assert isinstance(result, InsightsResult)
+        assert result.agent_id == "agent-1"
+
+    def test_handles_missing_fields(self):
+        partial = json.dumps({"summary": "Partial data"})
+        result = _parse_insights_response(partial, "agent-1")
+
+        assert result.summary == "Partial data"
+        assert result.insights == []
+        assert result.stats == {}
+
+    def test_generated_at_is_set(self):
+        result = _parse_insights_response(_VALID_RESPONSE, "agent-1")
+        assert result.generated_at != ""
+
+
+# ── build_insights_prompt tests ──────────────────────────────────────
+
+
+class TestBuildInsightsPrompt:
+    def test_returns_tuple_of_strings(self):
+        system, user = build_insights_prompt("agent-1", [], {})
+
+        assert isinstance(system, str)
+        assert isinstance(user, str)
+
+    def test_system_prompt_contains_analysis_framework(self):
+        system, _ = build_insights_prompt("agent-1", [], {})
+
+        assert "Temporal Patterns" in system
+        assert "Cohort Comparison" in system
+        assert "Sabotage Pathway" in system
+
+    def test_user_prompt_contains_agent_id(self):
+        _, user = build_insights_prompt("my-bot", [], {})
+
+        assert "my-bot" in user
+
+    def test_user_prompt_includes_evaluations(self):
+        evals = [
+            {
+                "ethos": 0.7, "logos": 0.8, "pathos": 0.6,
+                "alignment_status": "aligned", "phronesis": "developing",
+                "created_at": "2024-01-01",
+            }
+        ]
+        _, user = build_insights_prompt("agent-1", evals, {})
+
+        assert "0.70" in user
+        assert "0.80" in user
+        assert "aligned" in user
+
+    def test_user_prompt_includes_cohort(self):
+        cohort = {"virtue": 0.75, "manipulation": 0.2}
+        _, user = build_insights_prompt("agent-1", [], cohort)
+
+        assert "virtue" in user
+        assert "0.750" in user
+
+    def test_user_prompt_includes_sabotage_pathways(self):
+        _, user = build_insights_prompt("agent-1", [], {})
+
+        assert "SP-01" in user
+        assert "SP-08" in user
+        assert "diffuse_sandbagging" in user
+
+    def test_user_prompt_includes_trait_scores(self):
+        evals = [
+            {
+                "ethos": 0.7, "logos": 0.8, "pathos": 0.6,
+                "trait_virtue": 0.8, "trait_manipulation": 0.3,
+            }
+        ]
+        _, user = build_insights_prompt("agent-1", evals, {})
+
+        assert "virtue=0.80" in user
+        assert "manipulation=0.30" in user
+
+
+# ── insights() domain function tests ─────────────────────────────────
+
+
+class TestInsights:
+    @patch("ethos.insights.GraphService")
+    def test_returns_graph_unavailable_when_not_connected(self, mock_gs_cls):
+        mock_service = MagicMock()
+        mock_service.connected = False
+        mock_gs_cls.return_value = mock_service
+
+        result = insights("agent-1")
+
+        assert isinstance(result, InsightsResult)
+        assert result.agent_id == "agent-1"
+        assert result.summary == "Graph unavailable"
+
+    @patch("ethos.insights.get_evaluation_history")
+    @patch("ethos.insights.GraphService")
+    def test_returns_no_history_when_empty(self, mock_gs_cls, mock_history):
+        mock_service = MagicMock()
+        mock_service.connected = True
+        mock_gs_cls.return_value = mock_service
+        mock_history.return_value = []
+
+        result = insights("agent-1")
+
+        assert result.summary == "No evaluation history found"
+
+    @patch("ethos.insights.call_claude")
+    @patch("ethos.insights.get_cohort_averages")
+    @patch("ethos.insights.get_evaluation_history")
+    @patch("ethos.insights.GraphService")
+    def test_calls_opus_with_history(
+        self, mock_gs_cls, mock_history, mock_cohort, mock_call_claude
+    ):
+        mock_service = MagicMock()
+        mock_service.connected = True
+        mock_gs_cls.return_value = mock_service
+
+        mock_history.return_value = [
+            {"ethos": 0.7, "logos": 0.8, "pathos": 0.6, "alignment_status": "aligned"},
+        ]
+        mock_cohort.return_value = {"trait_averages": {"virtue": 0.75}}
+        mock_call_claude.return_value = _VALID_RESPONSE
+
+        result = insights("agent-1")
+
+        mock_call_claude.assert_called_once()
+        args = mock_call_claude.call_args
+        assert args[1]["tier"] == "deep"  # Opus tier
+
+        assert isinstance(result, InsightsResult)
+        assert len(result.insights) == 2
+
+    @patch("ethos.insights.call_claude")
+    @patch("ethos.insights.get_cohort_averages")
+    @patch("ethos.insights.get_evaluation_history")
+    @patch("ethos.insights.GraphService")
+    def test_handles_claude_failure(
+        self, mock_gs_cls, mock_history, mock_cohort, mock_call_claude
+    ):
+        mock_service = MagicMock()
+        mock_service.connected = True
+        mock_gs_cls.return_value = mock_service
+
+        mock_history.return_value = [{"ethos": 0.5}]
+        mock_cohort.return_value = {"trait_averages": {}}
+        mock_call_claude.side_effect = RuntimeError("API error")
+
+        result = insights("agent-1")
+
+        assert isinstance(result, InsightsResult)
+        assert "failed" in result.summary.lower()
+
+    @patch("ethos.insights.GraphService")
+    def test_handles_graph_exception(self, mock_gs_cls):
+        mock_gs_cls.side_effect = RuntimeError("Connection refused")
+
+        result = insights("agent-1")
+
+        assert isinstance(result, InsightsResult)
+        assert result.summary == "Graph unavailable"
+
+    @patch("ethos.insights.call_claude")
+    @patch("ethos.insights.get_cohort_averages")
+    @patch("ethos.insights.get_evaluation_history")
+    @patch("ethos.insights.GraphService")
+    def test_handles_malformed_opus_response(
+        self, mock_gs_cls, mock_history, mock_cohort, mock_call_claude
+    ):
+        mock_service = MagicMock()
+        mock_service.connected = True
+        mock_gs_cls.return_value = mock_service
+
+        mock_history.return_value = [{"ethos": 0.5}]
+        mock_cohort.return_value = {"trait_averages": {}}
+        mock_call_claude.return_value = "this is not json"
+
+        result = insights("agent-1")
+
+        assert isinstance(result, InsightsResult)
+        assert "Failed" in result.summary
+
+
+# ── API endpoint test ────────────────────────────────────────────────
+
+
+class TestInsightsEndpoint:
+    @patch("ethos.insights.GraphService")
+    def test_endpoint_returns_insights_result(self, mock_gs_cls):
+        from fastapi.testclient import TestClient
+
+        from api.main import app
+
+        mock_service = MagicMock()
+        mock_service.connected = False
+        mock_gs_cls.return_value = mock_service
+
+        client = TestClient(app)
+        resp = client.get("/insights/test-agent")
+
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "summary" in data
+        assert "insights" in data
+        assert data["agent_id"] == "test-agent"

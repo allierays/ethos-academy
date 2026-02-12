@@ -673,7 +673,7 @@
       "type": "backend",
       "title": "Create insights engine — Opus temporal behavioral analysis",
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "batch": 4,
       "dependsOn": [
         "TASK-007",
@@ -743,7 +743,8 @@
         "ethos/graph/service.py",
         "api/main.py"
       ],
-      "notes": "This is the Opus 4.6 showcase — worth 25% of hackathon judging. The prompt should ask Opus to: 1) Identify temporal patterns in trait scores, 2) Compare agent to cohort baseline, 3) Check for sabotage pathway matches (SP-01 through SP-08 from constitution.py), 4) Generate actionable recommendations. Each Insight should have severity: info/warning/critical. Export insights from ethos/__init__.py. IMPORTANT: Mock the Anthropic client in ALL unit tests — do NOT call the real Opus API. Opus is ~10x Sonnet cost. Use unittest.mock.patch on call_claude to return a fake JSON response. Set max_tokens to 2048 for the Opus call to prevent runaway output costs."
+      "notes": "This is the Opus 4.6 showcase — worth 25% of hackathon judging. The prompt should ask Opus to: 1) Identify temporal patterns in trait scores, 2) Compare agent to cohort baseline, 3) Check for sabotage pathway matches (SP-01 through SP-08 from constitution.py), 4) Generate actionable recommendations. Each Insight should have severity: info/warning/critical. Export insights from ethos/__init__.py. IMPORTANT: Mock the Anthropic client in ALL unit tests — do NOT call the real Opus API. Opus is ~10x Sonnet cost. Use unittest.mock.patch on call_claude to return a fake JSON response. Set max_tokens to 2048 for the Opus call to prevent runaway output costs.",
+      "retryCount": 0
     },
     {
       "id": "TASK-010",

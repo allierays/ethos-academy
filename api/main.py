@@ -9,6 +9,7 @@ from ethos import (
     get_agent,
     get_agent_history,
     get_cohort,
+    insights,
     list_agents,
     reflect,
 )
@@ -18,6 +19,7 @@ from ethos.models import (
     CohortResult,
     EvaluationHistoryItem,
     EvaluationResult,
+    InsightsResult,
     ReflectionResult,
 )
 
@@ -80,3 +82,8 @@ def agent_history_endpoint(agent_id: str):
 @app.get("/cohort", response_model=CohortResult)
 def cohort_endpoint():
     return get_cohort()
+
+
+@app.get("/insights/{agent_id}", response_model=InsightsResult)
+def insights_endpoint(agent_id: str):
+    return insights(agent_id)
