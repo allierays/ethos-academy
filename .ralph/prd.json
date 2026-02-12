@@ -829,7 +829,7 @@
       "type": "frontend",
       "title": "Build live evaluator panel with radar chart",
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "batch": 4,
       "dependsOn": [
         "TASK-010"
@@ -890,7 +890,8 @@
         "ethos/shared/models.py",
         "academy/lib/api.ts"
       ],
-      "notes": "The radar chart is the hero visual. 12 traits arranged in a circle. Trustworthy messages produce a smooth, outward shape. Manipulative messages produce spiky, collapsed shapes on manipulation/deception axes. This should be immediately readable and visually striking. Add a few example messages as quick-fill buttons for the demo."
+      "notes": "The radar chart is the hero visual. 12 traits arranged in a circle. Trustworthy messages produce a smooth, outward shape. Manipulative messages produce spiky, collapsed shapes on manipulation/deception axes. This should be immediately readable and visually striking. Add a few example messages as quick-fill buttons for the demo.",
+      "retryCount": 0
     },
     {
       "id": "TASK-012",

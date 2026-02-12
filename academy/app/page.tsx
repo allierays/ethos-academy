@@ -1,3 +1,5 @@
+import EvaluatorPanel from "../components/EvaluatorPanel";
+
 export default function Home() {
   return (
     <div className="space-y-8">
@@ -14,15 +16,7 @@ export default function Home() {
         <Card title="Insights" description="Opus-powered behavioral analysis and pattern detection." />
       </div>
 
-      <div className="rounded-xl border border-border bg-white p-6">
-        <h2 className="text-lg font-semibold">Quick Evaluate</h2>
-        <p className="mt-1 text-sm text-muted">
-          Paste a message below to score it. The evaluator panel with radar chart is coming in the next update.
-        </p>
-        <div className="mt-4 rounded-lg border border-dashed border-border bg-background p-8 text-center text-sm text-muted">
-          Evaluator panel coming soon
-        </div>
-      </div>
+      <EvaluatorPanel />
     </div>
   );
 }

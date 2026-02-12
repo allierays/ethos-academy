@@ -52,8 +52,13 @@
     "mobileViewport": 375,
     "screenshotOnFailure": false
   },
+  "directories": {
+    "backend": ".",
+    "frontend": "academy"
+  },
   "urls": {
-    "app": "http://localhost:8917"
+    "app": "http://localhost:8917",
+    "frontend": "http://localhost:3000"
   },
   "env": {
     "required": [
