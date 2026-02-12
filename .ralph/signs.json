@@ -48,6 +48,14 @@
       "category": "testing",
       "learnedFrom": null,
       "createdAt": "2026-01-25T00:00:00-08:00"
+    },
+    {
+      "id": "sign-008",
+      "pattern": "Never assign function results to variables in tests unless the variable is actually used — if you only need side effects, call the function directly without assignment to avoid unused-variable lint errors",
+      "category": "testing",
+      "learnedFrom": "TASK-004",
+      "autoPromoted": true,
+      "createdAt": "2026-02-11T17:22:32-08:00"
     }
   ]
 }

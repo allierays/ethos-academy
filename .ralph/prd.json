@@ -204,7 +204,7 @@
       "type": "backend",
       "title": "Wire evaluate() — full pipeline from text to EvaluationResult",
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "batch": 2,
       "dependsOn": [
         "TASK-001",
@@ -300,7 +300,8 @@
           "graph_context": "GraphContext|null"
         }
       },
-      "notes": "Pipeline: scan_keywords(text) → build_evaluation_prompt(text, scan, tier) → call_claude(sys, usr, tier) → parse_response(raw) → compute_dimensions/tiers/alignment/phronesis/flags → if source: read graph_context from get_agent_profile() + get_evaluation_history() → build EvaluationResult → if source: store_evaluation(). graph/write.py updates: (1) Add phronesis property on Evaluation node (from compute_phronesis_level()) — schema queries reference e.phronesis not e.trust, (2) Add message_hash property (SHA-256 of input text via hashlib — deduplication, not content storage), (3) UNWIND $indicators for creating (Evaluation)-[:DETECTED]->(Indicator) relationships per neo4j-schema.md, (4) Update Agent node aggregate fields on MERGE: SET a.phronesis_score = (computed running avg of 3 dimensions), a.phronesis_trend = (from reflect trend or 'insufficient_data'). The Python EvaluationResult.trust field holds Claude's overall_trust string for API responses — but only phronesis (computed by compute_phronesis_level()) is stored on the Neo4j Evaluation node. trust is NOT a graph property. NOTE: existing balance.py _GET_BALANCE_VS_TRUST_QUERY references e.trust_score which doesn't exist — when touching write.py, either add trust_score as (ethos+logos+pathos)/3.0 on the Evaluation node, or note this for a follow-up fix. The unit tests should mock call_claude. The integration test hits the real API."
+      "notes": "Pipeline: scan_keywords(text) → build_evaluation_prompt(text, scan, tier) → call_claude(sys, usr, tier) → parse_response(raw) → compute_dimensions/tiers/alignment/phronesis/flags → if source: read graph_context from get_agent_profile() + get_evaluation_history() → build EvaluationResult → if source: store_evaluation(). graph/write.py updates: (1) Add phronesis property on Evaluation node (from compute_phronesis_level()) — schema queries reference e.phronesis not e.trust, (2) Add message_hash property (SHA-256 of input text via hashlib — deduplication, not content storage), (3) UNWIND $indicators for creating (Evaluation)-[:DETECTED]->(Indicator) relationships per neo4j-schema.md, (4) Update Agent node aggregate fields on MERGE: SET a.phronesis_score = (computed running avg of 3 dimensions), a.phronesis_trend = (from reflect trend or 'insufficient_data'). The Python EvaluationResult.trust field holds Claude's overall_trust string for API responses — but only phronesis (computed by compute_phronesis_level()) is stored on the Neo4j Evaluation node. trust is NOT a graph property. NOTE: existing balance.py _GET_BALANCE_VS_TRUST_QUERY references e.trust_score which doesn't exist — when touching write.py, either add trust_score as (ethos+logos+pathos)/3.0 on the Evaluation node, or note this for a follow-up fix. The unit tests should mock call_claude. The integration test hits the real API.",
+      "retryCount": 0
     },
     {
       "id": "TASK-005",
