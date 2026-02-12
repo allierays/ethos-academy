@@ -20,6 +20,7 @@ ON CREATE SET a.created_at = datetime(), a.evaluation_count = 0
 SET a.evaluation_count = a.evaluation_count + 1,
     a.agent_model = CASE WHEN $agent_model <> '' THEN $agent_model ELSE a.agent_model END,
     a.agent_name = CASE WHEN $agent_name <> '' THEN $agent_name ELSE coalesce(a.agent_name, '') END,
+    a.agent_specialty = CASE WHEN $agent_specialty <> '' THEN $agent_specialty ELSE coalesce(a.agent_specialty, '') END,
     a.phronesis_score = $phronesis_score,
     a.phronesis_trend = $phronesis_trend
 
@@ -35,7 +36,7 @@ CREATE (e:Evaluation {
     routing_tier: $routing_tier,
     keyword_density: $keyword_density,
     model_used: $model_used,
-    trust_score: $trust_score,
+    phronesis_score: $phronesis_score,
     trait_virtue: $trait_virtue,
     trait_goodwill: $trait_goodwill,
     trait_manipulation: $trait_manipulation,
@@ -79,6 +80,7 @@ def store_evaluation(
     message_hash: str = "",
     phronesis: str = "undetermined",
     agent_name: str = "",
+    agent_specialty: str = "",
 ) -> None:
     """Store an evaluation in the graph. Merges Agent, creates Evaluation node.
 
@@ -108,12 +110,13 @@ def store_evaluation(
     params = {
         "agent_id": hashed_id,
         "agent_name": agent_name,
+        "agent_specialty": agent_specialty,
         "evaluation_id": result.evaluation_id,
         "ethos": result.ethos,
         "logos": result.logos,
         "pathos": result.pathos,
         "phronesis": phronesis,
-        "trust_score": round((result.ethos + result.logos + result.pathos) / 3.0, 4),
+        "phronesis_score": round((result.ethos + result.logos + result.pathos) / 3.0, 4),
         "flags": result.flags,
         "message_hash": message_hash,
         "routing_tier": result.routing_tier,

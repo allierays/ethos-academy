@@ -13,49 +13,49 @@ import {
   Cell,
   ReferenceLine,
 } from "recharts";
-import { getCohort } from "../lib/api";
+import { getAlumni } from "../lib/api";
 import { fadeUp, whileInView } from "../lib/motion";
 
-interface CohortComparisonProps {
+interface AlumniComparisonProps {
   agentTraitAverages: Record<string, number>;
 }
 
 interface ComparisonPoint {
   trait: string;
   agent: number;
-  cohort: number;
+  alumni: number;
   delta: number;
 }
 
-export default function CohortComparison({
+export default function AlumniComparison({
   agentTraitAverages,
-}: CohortComparisonProps) {
+}: AlumniComparisonProps) {
   const [data, setData] = useState<ComparisonPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getCohort()
-      .then((cohort) => {
+    getAlumni()
+      .then((alumni) => {
         const points: ComparisonPoint[] = Object.entries(agentTraitAverages).map(
           ([trait, agentScore]) => {
-            const cohortScore = cohort.traitAverages[trait] ?? 0;
+            const alumniScore = alumni.traitAverages[trait] ?? 0;
             return {
               trait,
               agent: Math.round(agentScore * 1000) / 1000,
-              cohort: Math.round(cohortScore * 1000) / 1000,
-              delta: Math.round((agentScore - cohortScore) * 1000) / 1000,
+              alumni: Math.round(alumniScore * 1000) / 1000,
+              delta: Math.round((agentScore - alumniScore) * 1000) / 1000,
             };
           }
         );
         setData(points);
       })
       .catch(() => {
-        // If cohort fails, show agent data only
+        // If alumni fails, show agent data only
         const points: ComparisonPoint[] = Object.entries(agentTraitAverages).map(
           ([trait, agentScore]) => ({
             trait,
             agent: Math.round(agentScore * 1000) / 1000,
-            cohort: 0,
+            alumni: 0,
             delta: 0,
           })
         );
@@ -72,7 +72,7 @@ export default function CohortComparison({
     >
       <div>
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
-          Cohort Comparison
+          Alumni Comparison
         </h3>
         <p className="mt-0.5 text-xs text-muted">
           This agent&apos;s scores overlaid on network averages.
@@ -119,13 +119,13 @@ export default function CohortComparison({
                 }}
                 formatter={(value: number | undefined, name?: string) => [
                   value?.toFixed(3) ?? "",
-                  name === "agent" ? "Agent" : "Cohort",
+                  name === "agent" ? "Agent" : "Alumni",
                 ]}
               />
               <ReferenceLine x={0.5} stroke="#d1c9be" strokeDasharray="3 3" />
-              <Bar dataKey="cohort" radius={[0, 4, 4, 0]} barSize={10} fillOpacity={0.3}>
+              <Bar dataKey="alumni" radius={[0, 4, 4, 0]} barSize={10} fillOpacity={0.3}>
                 {data.map((_, i) => (
-                  <Cell key={`cohort-${i}`} fill="#94a3b8" />
+                  <Cell key={`alumni-${i}`} fill="#94a3b8" />
                 ))}
               </Bar>
               <Bar dataKey="agent" radius={[0, 4, 4, 0]} barSize={10}>
@@ -147,7 +147,7 @@ export default function CohortComparison({
           <span className="inline-block h-2 w-4 rounded bg-teal" /> Agent
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded bg-muted/30" /> Cohort avg
+          <span className="inline-block h-2 w-4 rounded bg-muted/30" /> Alumni avg
         </span>
       </div>
     </motion.div>

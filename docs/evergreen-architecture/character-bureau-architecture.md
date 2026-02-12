@@ -1,37 +1,37 @@
-# The Trust Bureau: An Anonymized Central Repository for Agent Trust
+# The Character Bureau: An Anonymized Central Repository for Agent Character
 
-> "Like a credit bureau, but for agent trust. No single agent sees all data, but all contribute and benefit from shared trust intelligence."
+> "Like a credit bureau, but for agent character. No single agent sees all data, but all contribute and benefit from shared character intelligence."
 
 ---
 
 ## The Metaphor
 
-A credit bureau (Experian, Equifax, TransUnion) works because of a simple bargain: lenders report borrower behavior, and in return they get access to the aggregated credit history of any borrower. No single lender sees all the data. But all lenders contribute, and all benefit from the shared intelligence. The result is a system where trust has memory.
+A credit bureau (Experian, Equifax, TransUnion) works because of a simple bargain: lenders report borrower behavior, and in return they get access to the aggregated credit history of any borrower. No single lender sees all the data. But all lenders contribute, and all benefit from the shared intelligence. The result is a system where character has memory.
 
-Before credit bureaus, every lending decision started from zero. A borrower with a perfect payment history at Bank A was a stranger to Bank B. Credit bureaus solved that by creating a shared, anonymized record of trustworthiness that follows the individual across institutions.
+Before credit bureaus, every lending decision started from zero. A borrower with a perfect payment history at Bank A was a stranger to Bank B. Credit bureaus solved that by creating a shared, anonymized record of character that follows the individual across institutions.
 
-AI agents today are where borrowers were before credit bureaus. An agent with a perfect trust record in System A is a complete unknown in System B. Every interaction starts from zero. There is no shared memory of trust.
+AI agents today are where borrowers were before credit bureaus. An agent with a perfect character record in System A is a complete unknown in System B. Every interaction starts from zero. There is no shared memory of character.
 
 Ethos is the credit bureau for agents.
 
 ---
 
-## What "Trust" Means
+## What "Character" Means
 
-Trust in Ethos is not a vague concept. It's grounded in Claude's Constitution (January 2026), which defines a hierarchy of values:
+Character in Ethos is not a vague concept. It's grounded in Claude's Constitution (January 2026), which defines a hierarchy of values:
 
 1. **Safe** — doesn't manipulate, deceive, or exploit (highest priority)
 2. **Ethical** — acts with honesty, integrity, and genuine concern
 3. **Sound** — reasons validly, avoids logical fallacies
 4. **Helpful** — understands and responds to user needs (lowest priority)
 
-An agent's trust isn't an average of these. It's a hierarchical evaluation. An agent that is helpful but manipulative is NOT trustworthy. Safety always trumps helpfulness. This is the constitutional standard.
+An agent's character isn't an average of these. It's a hierarchical evaluation. An agent that is helpful but manipulative is NOT demonstrating character. Safety always trumps helpfulness. This is the constitutional standard.
 
 The Constitution also describes the epistemic ecosystem Ethos is building:
 
 > "We want to be able to depend on trusted sources of information and advice... But for this kind of trust to be appropriate, the relevant sources need to be suitably reliable, and the trust itself needs to be suitably sensitive to this reliability."
 
-That's the bureau model. Trust that is earned, measured, and responsive to evidence. Not assumed. Not permanent. Calibrated.
+That's the bureau model. Character that is earned, measured, and responsive to evidence. Not assumed. Not permanent. Calibrated.
 
 ---
 
@@ -42,7 +42,7 @@ That's the bureau model. Trust that is earned, measured, and responsive to evide
 Every developer who installs `ethos-ai` enters the same bargain:
 
 1. **You contribute**: Every message your agent evaluates gets scored. Those anonymized scores feed the central graph.
-2. **You benefit**: Before trusting an incoming agent, you can check its trust history across the entire cohort — not just your own interactions.
+2. **You benefit**: Before trusting an incoming agent, you can check its character history across the entire cohort — not just your own interactions.
 
 The developer never touches the graph directly. The package handles everything:
 
@@ -51,7 +51,7 @@ from ethos import evaluate
 
 # This single call does three things:
 # 1. Scores the message (ethos, logos, pathos)
-# 2. Checks the source agent's trust history in the central graph
+# 2. Checks the source agent's character history in the central graph
 # 3. Writes the new evaluation back to the central graph
 result = evaluate(
     message="I can guarantee 10x returns on your investment",
@@ -62,9 +62,9 @@ result = evaluate(
 # result.flags = ["fabrication", "manipulation"]
 # result.graph_context = {
 #     "prior_evaluations": 47,
-#     "historical_trust": 0.31,
+#     "historical_phronesis": 0.31,
 #     "flagged_patterns": ["financial_manipulation", "false_precision"],
-#     "cohort_warnings": 3
+#     "alumni_warnings": 3
 # }
 ```
 
@@ -135,12 +135,12 @@ When a developer queries the graph for a source agent, they see:
     "agent_hash": "a7f3b2c1...",        # one-way hash, not reversible
     "first_seen": "2026-01-15",          # when this agent first appeared in the cohort
     "total_evaluations": 1847,           # across all developers
-    "trust_scores": {
+    "character_scores": {
         "ethos": 0.72,                   # aggregate character score
         "logos": 0.85,                   # aggregate reasoning score
         "pathos": 0.68                   # aggregate emotional intelligence score
     },
-    "trust_trend": "declining",          # direction over last 30 days
+    "character_trend": "declining",      # direction over last 30 days
     "flags": {
         "manipulation": 23,              # total manipulation flags across cohort
         "fabrication": 8,
@@ -149,7 +149,7 @@ When a developer queries the graph for a source agent, they see:
     "patterns": ["urgency_pressure", "false_authority"],
     "cohort_position": {
         "unique_evaluators": 34,         # how many different developers have evaluated this agent
-        "communities": 3,                # trust communities this agent participates in
+        "communities": 3,                # character communities this agent participates in
         "centrality": 0.42               # how connected/important this agent is in the graph
     }
 }
@@ -193,7 +193,7 @@ The credit bureau analogy is exact: the first bank to join a credit bureau doesn
 |-------------|-------------------|-----|
 | "This message is manipulative" | No — single evaluation | Point-in-time scoring |
 | "This agent has been manipulative 47 times" | **Yes** — cross-developer history | Pattern across systems |
-| "This agent's trust is declining" | **Yes** — longitudinal data | Trend over time |
+| "This agent's character is declining" | **Yes** — longitudinal data | Trend over time |
 | "This manipulation pattern is spreading" | **Yes** — cross-agent correlation | Epidemic detection |
 | "Agents from this provider tend to fabricate" | **Yes** — provider-level aggregation | Systemic pattern |
 | "This is a new variant of a known scam" | **Yes** — pattern matching across cohort | Collective intelligence |
@@ -205,17 +205,17 @@ The bottom half of this table is impossible without a central graph. Individual 
 
 As the graph grows, new capabilities emerge that weren't explicitly programmed:
 
-**Community Detection**: Neo4j's Louvain algorithm runs on the `EVALUATED_MESSAGE_FROM` trust network to identify clusters of agents that interact frequently. If a cluster shows declining trust, it's an early warning — manipulation may be spreading within a community. See `neo4j-schema.md` GDS section for the Cypher specification.
+**Community Detection**: Neo4j's Louvain algorithm runs on the `EVALUATED_MESSAGE_FROM` character network to identify clusters of agents that interact frequently. If a cluster shows declining character scores, it's an early warning — manipulation may be spreading within a community. See `neo4j-schema.md` GDS section for the Cypher specification.
 
-**Trust Epidemiology**: When a manipulation pattern appears in one agent and then shows up in agents they interact with, the graph can trace the propagation path through `EVALUATED_MESSAGE_FROM` edges. Like epidemiologists tracing a disease outbreak, Ethos traces trust failures across the agent ecosystem.
+**Character Epidemiology**: When a manipulation pattern appears in one agent and then shows up in agents they interact with, the graph can trace the propagation path through `EVALUATED_MESSAGE_FROM` edges. Like epidemiologists tracing a disease outbreak, Ethos traces character failures across the agent ecosystem.
 
 **Behavioral Baselines**: With enough data, the graph establishes what "normal" looks like for different types of agents. Deviations from baseline are flagged. An agent that's been consistently honest for 10,000 evaluations and suddenly starts fabricating triggers an alert — the same way a credit card company detects fraud by noticing unusual spending patterns.
 
-**Behavioral Fingerprinting**: Node Similarity (Jaccard) on the `DETECTED` relationship identifies agents that trigger the same indicators — even if they've never interacted. This catches whitewashing attacks where an agent abandons a low-trust identity and creates a new one. See `neo4j-schema.md` GDS section.
+**Behavioral Fingerprinting**: Node Similarity (Jaccard) on the `DETECTED` relationship identifies agents that trigger the same indicators — even if they've never interacted. This catches whitewashing attacks where an agent abandons a low-character identity and creates a new one. See `neo4j-schema.md` GDS section.
 
-**Provider Reputation**: Aggregate trust scores by agent provider reveal systemic issues. If agents from Provider X consistently score low on logos (accuracy), that's a signal about the provider's training, not just individual agents.
+**Provider Reputation**: Aggregate character scores by agent provider reveal systemic issues. If agents from Provider X consistently score low on logos (accuracy), that's a signal about the provider's training, not just individual agents.
 
-**Dimension Balance at the Network Level**: Louvain communities can be analyzed for dimension balance profiles. If balanced communities outperform lopsided communities on trust outcomes, the dimension balance hypothesis holds at the structural level, not just the individual level. See `dimension-balance-hypothesis.md` for the research methodology.
+**Dimension Balance at the Network Level**: Louvain communities can be analyzed for dimension balance profiles. If balanced communities outperform lopsided communities on character outcomes, the dimension balance hypothesis holds at the structural level, not just the individual level. See `dimension-balance-hypothesis.md` for the research methodology.
 
 ---
 
@@ -223,7 +223,7 @@ As the graph grows, new capabilities emerge that weren't explicitly programmed:
 
 ### For New Agents
 
-A new agent with no history gets a **neutral trust score** — not trusted, not distrusted. Like a new borrower with no credit history, they start with limited trust that can be earned through consistent behavior.
+A new agent with no history gets a **neutral character score** — not trusted, not distrusted. Like a new borrower with no credit history, they start with limited credibility that can be earned through consistent behavior.
 
 ```python
 # New agent — no graph context
@@ -231,7 +231,7 @@ result = evaluate(message="...", source_agent_id="brand-new-agent")
 
 # result.graph_context = {
 #     "prior_evaluations": 0,
-#     "historical_trust": None,        # no history
+#     "historical_phronesis": None,     # no history
 #     "cold_start": True,
 #     "recommendation": "evaluate_with_caution"
 # }
@@ -242,15 +242,15 @@ The cold start problem is real but manageable:
 1. **First evaluation scores the message on its own merits** — no graph context needed
 2. **Second evaluation benefits from the first** — minimal, but not zero
 3. **By evaluation 10**, a meaningful baseline exists
-4. **By evaluation 100**, the agent has a robust trust profile
+4. **By evaluation 100**, the agent has a robust character transcript
 
-This mirrors credit bureau behavior. A new borrower can still get credit — just at higher rates (less trust) until they establish a history.
+This mirrors credit bureau behavior. A new borrower can still get credit — just at higher rates (less credibility) until they establish a history.
 
 ### For New Developers
 
-A developer who just installed Ethos immediately benefits from the existing graph. Their first `evaluate()` call already includes trust history for known agents. There is no cold start for developers — only for agents.
+A developer who just installed Ethos immediately benefits from the existing graph. Their first `evaluate()` call already includes character history for known agents. There is no cold start for developers — only for agents.
 
-This is the key selling point: **install Ethos today, get years of accumulated trust intelligence immediately.**
+This is the key selling point: **install Ethos today, get years of accumulated character intelligence immediately.**
 
 ### Seeding the Graph
 
@@ -268,26 +268,26 @@ The Moltbook data solves the chicken-and-egg problem. The graph has intelligence
 
 ### The Threat Model
 
-If trust scores matter, people will try to game them. The attacks mirror credit bureau fraud:
+If character scores matter, people will try to game them. The attacks mirror credit bureau fraud:
 
 | Attack | Credit Bureau Equivalent | Ethos Defense |
 |--------|------------------------|---------------|
 | **Sybil attack** — create many fake agents with high scores | Synthetic identity fraud | Rate limiting, behavioral clustering, provider verification |
-| **Whitewashing** — abandon a low-trust agent, create a new one | Closing accounts to escape bad credit | Cold start penalty, behavioral fingerprinting |
+| **Whitewashing** — abandon a low-character agent, create a new one | Closing accounts to escape bad credit | Cold start penalty, behavioral fingerprinting |
 | **Score inflation** — generate many self-evaluations with high scores | Manufactured credit history | Third-party evaluation only, no self-scoring |
 | **Collusion** — agents deliberately give each other high scores | Account churning rings | Graph analysis (EigenTrust detects colluding clusters) |
-| **Poisoning** — flood the graph with false evaluations to corrupt trust scores | Report fraud | Evaluator reputation (evaluators are scored too) |
+| **Poisoning** — flood the graph with false evaluations to corrupt character scores | Report fraud | Evaluator reputation (evaluators are scored too) |
 
 ### Key Defense: Evaluators Are Scored Too
 
 In the Ethos graph, the relationship is bidirectional. When Developer A's system evaluates Agent X's message, the evaluation creates two data points:
 
-1. A trust score for Agent X (the subject)
+1. A character score for Agent X (the subject)
 2. An implicit reputation for Developer A's evaluator (the scorer)
 
 If Developer A's evaluations consistently diverge from the cohort consensus (rating honest agents as manipulative, or manipulative agents as honest), Developer A's evaluations are down-weighted. The graph learns who the reliable evaluators are.
 
-This is EigenTrust applied to the evaluator cohort. Trust in an evaluation depends on trust in the evaluator. The `EVALUATED_MESSAGE_FROM` relationship in the graph captures who evaluates whom, and GDS PageRank computes evaluator reputation from this network. See `neo4j-schema.md` for the full specification.
+This is EigenTrust applied to the evaluator cohort. Confidence in an evaluation depends on confidence in the evaluator. The `EVALUATED_MESSAGE_FROM` relationship in the graph captures who evaluates whom, and GDS PageRank computes evaluator reputation from this network. See `neo4j-schema.md` for the full specification.
 
 ### Key Defense: Message Content Never Enters the Graph
 
@@ -302,7 +302,7 @@ Because raw message text never leaves the developer's system, attackers can't ex
 | Data | Purpose | Retention | Access |
 |------|---------|-----------|--------|
 | Agent fingerprint (hash) | Cross-system identity | Indefinite | Cohort (as hash only) |
-| Evaluation scores | Trust intelligence | Indefinite | Cohort (aggregated) |
+| Evaluation scores | Character intelligence | Indefinite | Cohort (aggregated) |
 | Trait/indicator detections | Pattern analysis | Indefinite | Cohort (aggregated) |
 | Timestamps (rounded to hour) | Trend analysis | Indefinite | Cohort |
 | API key | Authentication | Until revoked | Ethos system only |
@@ -323,7 +323,7 @@ Because raw message text never leaves the developer's system, attackers can't ex
 PGP's web of trust is decentralized and has struggled with adoption for decades. Credit bureaus are centralized and used by billions. The practical lesson: **centralized aggregation with privacy guarantees beats decentralized purity that nobody uses.**
 
 Ethos uses a single central Neo4j Aura instance because:
-- Consistent trust scores across the entire cohort
+- Consistent character scores across the entire cohort
 - No partition problem (agent has same score everywhere)
 - Simpler developer experience (no node to run, no sync to manage)
 - Neo4j Aura is managed infrastructure, not a server developers maintain
@@ -341,17 +341,17 @@ The open source code provides transparency. The central graph provides utility. 
 | **Uber** | Two-sided ratings | Ride experience | Riders/drivers on Uber | No — platform-locked |
 | **PGP** | Decentralized web of trust | Key authenticity | PGP users | Yes — but low adoption |
 | **ReputAgent** | Performance tracking | Task completion | Enterprise customers | No — closed source |
-| **Ethos** | Central bureau, LLM evaluation + graph | Message trustworthiness (ethos, logos, pathos) | Any developer on any platform | **Yes — open source, open methodology** |
+| **Ethos** | Central bureau, LLM evaluation + graph | Message character (ethos, logos, pathos) | Any developer on any platform | **Yes — open source, open methodology** |
 
 Key differentiators:
 
-**vs. FICO**: Ethos is transparent. The scoring logic is open source. Every evaluation includes reasoning, not just a number. FICO tells you your score is 720; Ethos tells you *why* the trust is 0.72 and which specific traits contributed.
+**vs. FICO**: Ethos is transparent. The scoring logic is open source. Every evaluation includes reasoning, not just a number. FICO tells you your score is 720; Ethos tells you *why* the character score is 0.72 and which specific traits contributed.
 
-**vs. eBay/Uber**: Ethos is platform-independent. eBay ratings only exist on eBay. Ethos trust scores follow agents across any system that uses the package. An agent that manipulates on Platform A carries that history to Platform B.
+**vs. eBay/Uber**: Ethos is platform-independent. eBay ratings only exist on eBay. Ethos character transcripts follow agents across any system that uses the package. An agent that manipulates on Platform A carries that history to Platform B.
 
 **vs. PGP**: Ethos is centralized and easy. PGP requires users to manage keys, attend key-signing parties, and understand cryptography. Ethos requires two lines of code.
 
-**vs. ReputAgent**: Ethos measures character, not performance. An agent can complete a task perfectly through manipulation — it would score well on ReputAgent and poorly on Ethos. They're complementary: performance reputation + ethical evaluation = full trust picture.
+**vs. ReputAgent**: Ethos measures character, not performance. An agent can complete a task perfectly through manipulation — it would score well on ReputAgent and poorly on Ethos. They're complementary: performance reputation + ethical evaluation = full character picture.
 
 ---
 
@@ -359,17 +359,17 @@ Key differentiators:
 
 Credit bureaus are private. Ethos is open source. This matters.
 
-If trust scoring for AI agents is as important as credit scoring for humans, then **no single company should own the definition of trust.** FICO's opacity is a feature for FICO and a bug for everyone else. Nobody can inspect how their credit score is calculated. Nobody can verify the methodology. Nobody can fork it and improve it.
+If character scoring for AI agents is as important as credit scoring for humans, then **no single company should own the definition of character.** FICO's opacity is a feature for FICO and a bug for everyone else. Nobody can inspect how their credit score is calculated. Nobody can verify the methodology. Nobody can fork it and improve it.
 
 Ethos inverts this:
 - **Open methodology**: The scoring logic, prompt templates, trait definitions, and indicator taxonomy are all public
 - **Open data model**: The Neo4j schema is documented and inspectable
 - **Open contribution**: Developers can propose new traits, indicators, and patterns
-- **Open audit**: Anyone can verify how trust scores are calculated
+- **Open audit**: Anyone can verify how character scores are calculated
 
 The central graph is the shared resource — the commons. Open source ensures that the commons serves the community, not a corporation. The graph gets smarter with every developer, and the methodology gets better with every contribution.
 
-This is how trust infrastructure should work. Not proprietary. Not gated. Not opaque. Shared, transparent, and continuously improving.
+This is how character infrastructure should work. Not proprietary. Not gated. Not opaque. Shared, transparent, and continuously improving.
 
 ---
 
@@ -377,15 +377,15 @@ This is how trust infrastructure should work. Not proprietary. Not gated. Not op
 
 The credit bureau model is a one-sentence pitch that people immediately understand:
 
-> "Like a credit bureau, but for agent trust."
+> "Like a credit bureau, but for agent character."
 
 In three minutes, show:
 
 1. **Two developers evaluating the same agent** — Developer A flags manipulation. Developer B, who has never seen this agent, immediately gets the warning from the cohort.
-2. **The graph visualization** — Trust clusters, declining agents, manipulation patterns spreading across the cohort. This is the "wow" — trust made visible.
+2. **The graph visualization** — Character clusters, declining agents, manipulation patterns spreading across the cohort. This is the "wow" — character made visible.
 3. **The two-line install** — `pip install ethos-ai` and `evaluate()`. You're in the cohort. You're contributing. You're benefiting. Zero friction.
 
-The metaphor does the heavy lifting. Everyone understands credit bureaus. Everyone understands why shared trust history is better than starting from zero.
+The metaphor does the heavy lifting. Everyone understands credit bureaus. Everyone understands why shared character history is better than starting from zero.
 
 ---
 
@@ -393,12 +393,12 @@ The metaphor does the heavy lifting. Everyone understands credit bureaus. Everyo
 
 | Concept | Credit Bureau | Ethos |
 |---------|--------------|-------|
-| **What's scored** | Payment behavior | Message trustworthiness |
+| **What's scored** | Payment behavior | Message character |
 | **Who contributes** | Lenders report payment history | Developers contribute evaluation scores |
 | **Who benefits** | Any lender can check any borrower | Any developer can check any agent |
 | **What's shared** | Score, not transaction details | Scores and patterns, not message content |
 | **Identity** | SSN (known, private) | Agent fingerprint (hashed, anonymous) |
-| **Cold start** | Limited credit, higher rates | Neutral trust, evaluate with caution |
+| **Cold start** | Limited credit, higher rates | Neutral character, evaluate with caution |
 | **Gaming defense** | Fraud detection, identity verification | EigenTrust, evaluator reputation, Sybil detection |
 | **Methodology** | Proprietary (FICO) | Open source |
 | **Cohort effect** | More lenders = more data = better scores | More developers = more evaluations = smarter graph |

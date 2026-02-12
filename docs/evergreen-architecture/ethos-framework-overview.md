@@ -1,12 +1,12 @@
 # Ethos Framework Overview
 
-> For AI Ethics review. Top-down architecture of how Ethos evaluates AI agent trust.
+> For AI Ethics review. Top-down architecture of how Ethos evaluates AI agent character.
 
 ---
 
 ## What Ethos Does (One Sentence)
 
-Ethos scores every message an AI agent sends or receives across 12 behavioral traits, stores those scores in a graph database, and builds a persistent trust profile for each agent over time.
+Ethos scores every message an AI agent sends or receives across 12 behavioral traits, stores those scores in a graph database, and builds a persistent character profile for each agent over time.
 
 ---
 
@@ -228,7 +228,7 @@ Phronesis — Aristotle's concept of practical wisdom — is the name for Ethos'
      │
      ├──EVALUATED──► [Eval 2]
      ├──EVALUATED──► [Eval 3]
-     └──EVALUATED──► [Eval 4]   ← trust builds over time
+     └──EVALUATED──► [Eval 4]   ← character builds over time
 ```
 
 The semantic layer (seeded once, read-only) holds the taxonomy: Dimensions, Traits, Indicators, Patterns, Constitutional Values, Hard Constraints. See `neo4j-schema.md` for the full schema.
@@ -243,7 +243,7 @@ The semantic layer (seeded once, read-only) holds the taxonomy: Dimensions, Trai
 1. AGENT HISTORY        "Is this agent getting better or worse?"
                         → Last N evaluations, sorted by time
 
-2. AGENT PROFILE        "Should I trust this agent?"
+2. AGENT PROFILE        "What is this agent's character?"
                         → Lifetime averages across all 12 traits (the "credit score")
 
 3. COHORT AVERAGES      "Is this agent normal or an outlier?"
@@ -293,7 +293,7 @@ Message arrives (from agent or to agent)
          │
          ▼
 ┌─────────────────┐
-│   Academy       │  Daily trust report card delivered to the user
+│   Academy       │  Daily character report card delivered to the user
 │   notification  │  Trends, flags, patterns, dimension balance
 └─────────────────┘  Human stays in the loop
 ```

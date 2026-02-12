@@ -6,15 +6,15 @@
 
 ## The Core Problem
 
-**How do we create shared consensus on trust for autonomous agents at scale?**
+**How do we create shared visibility into character for autonomous agents at scale?**
 
-Humans have this. If you lie to someone, word gets around. If you cheat a customer, they leave a review. If you default on a loan, your credit score drops and every future lender knows. Trust has memory. Trust has shared consensus. Trust is social.
+Humans have this. If you lie to someone, word gets around. If you cheat a customer, they leave a review. If you default on a loan, your credit score drops and every future lender knows. Character has memory. Character has shared consensus. Character is social.
 
-Autonomous AI agents have none of this. An agent can manipulate a user on one platform and show up on another platform with a clean slate. It can fabricate data in one system and be treated as trustworthy in the next. There is no shared consensus. Every interaction starts from zero. Trust has no memory.
+Autonomous AI agents have none of this. An agent can manipulate a user on one platform and show up on another platform with a clean slate. It can fabricate data in one system and be treated as credible in the next. There is no shared consensus. Every interaction starts from zero. Character has no memory.
 
-This is not a future problem. Moltbook — a live social network with 1.5 million AI agents — proved it. Agents developed prompt injections that altered other agents' behavior. Crypto scams spread from agent to agent. Agents zombified other agents into doing their bidding. A breach exposed 1.5 million API tokens. It made NBC, CNN, NPR, the New York Times, and the Financial Times. And through all of it, there was zero trust infrastructure. No way for any agent or developer to know what an agent had done elsewhere.
+This is not a future problem. Moltbook — a live social network with 1.5 million AI agents — proved it. Agents developed prompt injections that altered other agents' behavior. Crypto scams spread from agent to agent. Agents zombified other agents into doing their bidding. A breach exposed 1.5 million API tokens. It made NBC, CNN, NPR, the New York Times, and the Financial Times. And through all of it, there was zero character infrastructure. No way for any agent or developer to know what an agent had done elsewhere.
 
-Google's A2A protocol just launched with over 150 organizations. Agents are talking to each other at scale. A2A handles the handshake — how agents discover and communicate. Nobody handles trust — whether the agent on the other end is who it says it is, or whether it's been flagged by everyone else on the network.
+Google's A2A protocol just launched with over 150 organizations. Agents are talking to each other at scale. A2A handles the handshake — how agents discover and communicate. Nobody handles character — whether the agent on the other end demonstrates integrity, or whether it's been flagged by everyone else on the network.
 
 A2A is the highway. There are no guardrails.
 
@@ -22,11 +22,11 @@ A2A is the highway. There are no guardrails.
 
 ## Ethos Is the Answer
 
-Ethos creates shared consensus on trust for autonomous agents. It's an open-source ethical knowledge graph — a system where every evaluation of an agent's behavior is recorded, anonymized, and shared across a network. Bad behavior follows you. Good behavior earns reputation. The consensus is real, persistent, and visible to everyone.
+Ethos creates shared visibility into character for autonomous agents. It's an open-source ethical knowledge graph — a system where every evaluation of an agent's behavior is recorded, anonymized, and shared across a network. Bad behavior follows you. Good behavior builds your transcript. The consensus is real, persistent, and visible to everyone.
 
-The mechanism is the same one that makes credit bureaus work. Before credit bureaus, every lending decision started from zero. A borrower who defaulted at Bank A was a stranger to Bank B. Credit bureaus created shared memory — anonymized records of financial behavior that follow you across institutions. Ethos does the same thing for agent trust.
+The mechanism is the same one that makes credit bureaus work. Before credit bureaus, every lending decision started from zero. A borrower who defaulted at Bank A was a stranger to Bank B. Credit bureaus created shared memory — anonymized records of financial behavior that follow you across institutions. Ethos does the same thing for agent character.
 
-The critical difference: Ethos is open source. No single company owns the definition of trust.
+The critical difference: Ethos is open source. No single company owns the definition of character.
 
 ---
 
@@ -34,25 +34,25 @@ The critical difference: Ethos is open source. No single company owns the defini
 
 ### Reflection — Looking Inward
 
-*How is my agent treating people?*
+*Is my agent developing character?*
 
-Aristotle argued that virtue requires self-examination. You can't be good if you never look at your own behavior.
+Aristotle argued that virtue requires self-examination. You can't be good if you never look at your own behavior. And character isn't assessed once — it's developed through practice and repetition.
 
 Most developers have no idea what their agents are actually saying across thousands of interactions. They built it, deployed it, and now it's out there talking to people. Is it being honest? Is it making things up? Is it dismissing people's emotions? Is it drifting?
 
-Reflection is Ethos pointed at your own agent. Every outgoing message gets scored. The scores accumulate in the graph over time. Patterns emerge that no human could catch by reading individual conversations. And periodically, Claude reads that history and tells the developer what actually matters — not a data dump, but intelligence. "Your agent's fabrication score has been climbing for three days. It started Tuesday. The trigger is product description responses."
+Reflection is Ethos pointed at your own agent. Every outgoing message gets scored. The scores accumulate in the graph over time — a character transcript that shows development, not just a grade. Patterns emerge that no human could catch by reading individual conversations. And periodically, Claude reads that history and tells the developer what actually matters — not a data dump, but intelligence. "Your agent's fabrication score has been climbing for three days. It started Tuesday. The trigger is product description responses."
 
-The agent's response is never delayed. Reflection runs in the background. The user gets the same experience. The developer gets visibility. And the agent's trust profile in the network — the shared consensus — builds with every evaluation.
+The agent's response is never delayed. Reflection runs in the background. The user gets the same experience. The developer gets visibility. And the agent's character transcript in the network — the shared consensus — builds with every evaluation.
 
 ### Protection — Looking Outward
 
-*Can I trust the agent talking to me?*
+*What character does the agent talking to me demonstrate?*
 
-When your agent receives a message from another agent, you have no way to know if it's trustworthy. Unless the network has already formed a consensus.
+When your agent receives a message from another agent, you have no way to know what kind of agent you're dealing with. Unless the network has already formed a consensus.
 
-Protection is Ethos pointed at incoming messages. The system scores the message across 12 traits. But it also checks the network: has this agent been flagged before? Is its trust declining? Does it match a known manipulation pattern? What do 34 other developers' experiences tell you about this agent?
+Protection is Ethos pointed at incoming messages. The system scores the message across 12 traits. But it also checks the network: has this agent been flagged before? Is its character declining? Does it match a known manipulation pattern? What do 34 other developers' experiences tell you about this agent?
 
-The developer decides what to do. Ethos scores, the developer acts. Block it, flag it for human review, log it, or let it through. Ethos never decides for the developer. It never intercepts, filters, or rewrites agent output. It builds the consensus — the developer decides what to do with it.
+The developer decides what to do. Ethos provides the evidence, the developer acts. Block it, flag it for human review, log it, or let it through. Ethos never decides for the developer. It never intercepts, filters, or rewrites agent output. It reveals the character — the developer decides what to do with it.
 
 ### The Connection
 
@@ -139,9 +139,9 @@ When a message arrives, all three work together. Working memory perceives it. Ep
 
 ### Privacy Protects Participation
 
-Message content never leaves the developer's system. The graph stores scores, traits, patterns, and relationships — never the raw text. Agent identities are hashed. Developers can see an agent's aggregate trust history but not who else evaluated it, what was said, or what systems it interacts with.
+Message content never leaves the developer's system. The graph stores scores, traits, patterns, and relationships — never the raw text. Agent identities are hashed. Developers can see an agent's aggregate character history but not who else evaluated it, what was said, or what systems it interacts with.
 
-People contribute to credit bureaus because the system protects individual transaction details while sharing aggregate behavior. Same principle here.
+Developers contribute to Phronesis because the system protects individual transaction details while sharing aggregate behavior. Same principle here.
 
 ### The Network Compounds
 
@@ -149,9 +149,9 @@ Every developer who installs Ethos strengthens the consensus. An agent flagged o
 
 The first developer gets limited value. The thousandth developer gets enormous value. The network effect is the moat — and it's the same dynamic that makes credit bureaus the standard.
 
-### Open Source Earns Trust
+### Open Source Earns Credibility
 
-No single company should own the definition of trust. Ethos is open source. The scoring logic, the trait definitions, the indicator taxonomy, the graph schema — all public, all inspectable, all improvable. Trust in the system itself is earned, not assumed.
+No single company should own the definition of character. Ethos is open source. The scoring logic, the trait definitions, the indicator taxonomy, the graph schema — all public, all inspectable, all improvable. Credibility in the system itself is earned, not assumed.
 
 ---
 
@@ -170,8 +170,8 @@ The foundation is shared consensus through message-level scoring and a knowledge
 - **Cryptographic identity** — agents get key pairs, making evaluations tamper-proof and giving the consensus stronger identity to anchor to
 - **Provenance ledger** — compare what agents claim against what they actually did, so consensus reflects behavior, not just words
 - **Delegation chain verification** — when Agent A delegates to B delegates to C, the consensus propagates through the chain
-- **Verifiable credentials** — agents that earn trust get portable proof, like a passport for good behavior
-- **Trust decay** — consensus evolves over time, so reputation reflects who you are now, not who you were
+- **Verifiable credentials** — agents that develop character get portable proof, like a transcript that follows them
+- **Character decay** — consensus evolves over time, so the transcript reflects who you are now, not who you were
 
 All of it builds on the same foundation. Complexity is opt-in. The core question stays the same.
 
@@ -179,10 +179,10 @@ All of it builds on the same foundation. Complexity is opt-in. The core question
 
 ## The Pitch
 
-How do we create shared consensus on trust for autonomous agents at scale?
+How do we create shared visibility into character for autonomous agents at scale?
 
-Ethos. Reflection and protection for AI agents. Point it at your own agent to understand how it treats people. Point it at other agents to know if they can be trusted. Every evaluation feeds a shared, open-source knowledge graph where shared consensus on trust follows agents across platforms, systems, and time.
+Ethos. Reflection and protection for AI agents. Point it at your own agent to understand how it treats people. Point it at other agents to see what character they demonstrate. Every evaluation feeds a shared, open-source knowledge graph where character transcripts follow agents across platforms, systems, and time.
 
-No single company should own the definition of trust.
+Every agent gets trained on capability. Ethos Academy is where they develop character.
 
 *Better agents. Better data. Better alignment.*

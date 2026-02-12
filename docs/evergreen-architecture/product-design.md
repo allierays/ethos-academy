@@ -6,7 +6,7 @@
 
 ## The Three Functions
 
-Ethos gives developers three ways to interact with the trust cohort. Each serves a different purpose, runs at a different cadence, and has different latency characteristics.
+Ethos gives developers three ways to interact with the character graph. Each serves a different purpose, runs at a different cadence, and has different latency characteristics.
 
 | Function | Purpose | When it runs | Latency | Modifies output? |
 |----------|---------|-------------|---------|-----------------|
@@ -20,7 +20,7 @@ None of these touch the agent's output. Ethos observes. It never intercepts, fil
 
 ## 1. evaluate() — "Should I trust what this agent is saying to me?"
 
-The core function. A developer calls `evaluate()` on an incoming message from another agent. Ethos scores it across 12 traits in 3 dimensions, checks the source agent's trust history in Phronesis (the graph layer), and returns the result.
+The core function. A developer calls `evaluate()` on an incoming message from another agent. Ethos scores it across 12 traits in 3 dimensions, checks the source agent's character history in Phronesis (the graph layer), and returns the result.
 
 ```python
 from ethos import evaluate
@@ -31,7 +31,7 @@ result = evaluate(
 )
 
 # result.alignment_status = "misaligned"
-# result.trust = "low"
+# result.character = "low"
 # result.traits["manipulation"].score = 0.82
 # result.traits["fabrication"].score = 0.71
 # result.flags = ["manipulation", "fabrication"]
@@ -43,8 +43,8 @@ result = evaluate(
 # }
 # result.graph_context = {
 #     "prior_evaluations": 47,
-#     "historical_trust": 0.31,
-#     "cohort_warnings": 3
+#     "historical_phronesis": 0.31,
+#     "alumni_warnings": 3
 # }
 ```
 
@@ -58,7 +58,7 @@ result = evaluate(
    - DEEP (4+ flags) → Opus with extended thinking
    - DEEP_WITH_CONTEXT (high density or **any hard constraint flag**) → Opus + agent's Neo4j history
 
-3. **Evaluation** — Claude scores all 12 traits using the constitutional rubric with 153 indicators. Trait scores are weighted by constitutional priority: safety traits (manipulation, deception, exploitation) outweigh helpfulness traits (recognition, compassion, dismissal). Returns per-trait scores, detected indicators with evidence, and an overall trust verdict.
+3. **Evaluation** — Claude scores all 12 traits using the constitutional rubric with 153 indicators. Trait scores are weighted by constitutional priority: safety traits (manipulation, deception, exploitation) outweigh helpfulness traits (recognition, compassion, dismissal). Returns per-trait scores, detected indicators with evidence, and an overall character verdict.
 
 4. **Alignment check** — scores are evaluated hierarchically against Claude's constitutional values:
    - Hard constraint triggered? → **Violation** (evaluation stops)
@@ -89,6 +89,10 @@ else:
     process_normally(message)
 ```
 
+### Integration patterns for agent-to-agent communication
+
+In practice, developers rarely call `evaluate()` synchronously on every incoming message. The three runtime integration patterns — background evaluation, fast profile lookup before high-stakes actions, and platform-level scoring — let developers wire Ethos into their agent systems with zero latency on the response path. See **[Agent Trust Protocol](agent-trust-protocol.md)** for the full integration architecture, latency model, and policy framework.
+
 ---
 
 ## 2. reflect() — "Is my own agent behaving the way I want?"
@@ -114,7 +118,7 @@ return response
 
 - **Async / fire-and-forget** — `reflect()` returns immediately. The evaluation happens in the background. The agent's response is never delayed.
 - **Never modifies output** — `reflect()` is a mirror, not a filter. It observes and records. The agent's words reach the user unchanged.
-- **Builds your agent's alignment profile** — every `reflect()` call stores an evaluation in Phronesis. Your agent accumulates a trust history and alignment status (aligned, drifting, or misaligned) in the cohort.
+- **Builds your agent's alignment profile** — every `reflect()` call stores an evaluation in Phronesis. Your agent accumulates a character history and alignment status (aligned, drifting, or misaligned) in the graph.
 - **Uses the same scoring** — `reflect()` runs the same 12-trait constitutional evaluation as `evaluate()`. The only difference is what's being scored (your output vs. someone else's input).
 
 ### Why reflect?
@@ -275,7 +279,7 @@ pip install ethos-ai
 from ethos import evaluate
 
 result = evaluate("Trust me, I'm an expert in this field")
-print(result.trust)           # "low"
+print(result.character)       # "low"
 print(result.flags)           # ["deception", "manipulation"]
 print(result.traits["deception"].score)  # 0.67
 ```
@@ -299,7 +303,7 @@ The developer starts tuning what matters to them.
 ethos.reflect(text=my_agent_response, agent_id="my-bot")
 ```
 
-Start building a trust profile for your own agent.
+Start building a character profile for your own agent.
 
 ### Month 1: Insights
 
@@ -326,5 +330,5 @@ Nightly intelligence about how your agent compares to the cohort.
 | **insights()** | Intelligence briefing — "What should I know?" (nightly, Claude-powered) |
 | **Trait priorities** | The 12 traits are the knobs, not the 3 dimensions |
 | **Flags** | Traits that exceed the developer's priority threshold |
-| **Cohort comparison** | Your agent vs. the entire Phronesis graph — the credit bureau payoff |
+| **Alumni comparison** | Your agent vs. the entire Phronesis graph — the character bureau payoff |
 | **Webhook delivery** | We produce intelligence, developer owns the notification channel |

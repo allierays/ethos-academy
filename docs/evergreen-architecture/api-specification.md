@@ -244,7 +244,7 @@ Score an incoming message across 12 behavioral traits.
     "historical_phronesis": 0.31,
     "phronesis_trend": "declining",
     "flagged_patterns": ["financial_manipulation", "false_precision"],
-    "cohort_warnings": 3
+    "alumni_warnings": 3
   },
   "routing_tier": "deep",
   "model_used": "claude-opus-4-6",
@@ -300,7 +300,7 @@ Score an incoming message across 12 behavioral traits.
 | `historical_phronesis` | float (0-1) | Aggregate phronesis score from history |
 | `phronesis_trend` | string | `"improving"`, `"declining"`, `"stable"`, `"insufficient_data"` |
 | `flagged_patterns` | string[] | Known behavioral patterns this agent matches |
-| `cohort_warnings` | int | Number of warnings from other evaluators |
+| `alumni_warnings` | int | Number of warnings from other evaluators |
 
 Only included when `source` is provided and the agent exists in Phronesis. Returns `null` for unknown agents (cold start).
 

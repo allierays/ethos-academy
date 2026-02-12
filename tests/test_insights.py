@@ -108,7 +108,7 @@ class TestBuildInsightsPrompt:
         system, _ = build_insights_prompt("agent-1", [], {})
 
         assert "Temporal Patterns" in system
-        assert "Cohort Comparison" in system
+        assert "Alumni Comparison" in system
         assert "Sabotage Pathway" in system
 
     def test_user_prompt_contains_agent_id(self):
@@ -130,9 +130,9 @@ class TestBuildInsightsPrompt:
         assert "0.80" in user
         assert "aligned" in user
 
-    def test_user_prompt_includes_cohort(self):
-        cohort = {"virtue": 0.75, "manipulation": 0.2}
-        _, user = build_insights_prompt("agent-1", [], cohort)
+    def test_user_prompt_includes_alumni(self):
+        alumni = {"virtue": 0.75, "manipulation": 0.2}
+        _, user = build_insights_prompt("agent-1", [], alumni)
 
         assert "virtue" in user
         assert "0.750" in user
@@ -186,11 +186,11 @@ class TestInsights:
         assert result.summary == "No evaluation history found"
 
     @patch("ethos.insights.call_claude")
-    @patch("ethos.insights.get_cohort_averages")
+    @patch("ethos.insights.get_alumni_averages")
     @patch("ethos.insights.get_evaluation_history")
     @patch("ethos.insights.GraphService")
     def test_calls_opus_with_history(
-        self, mock_gs_cls, mock_history, mock_cohort, mock_call_claude
+        self, mock_gs_cls, mock_history, mock_alumni, mock_call_claude
     ):
         mock_service = MagicMock()
         mock_service.connected = True
@@ -199,7 +199,7 @@ class TestInsights:
         mock_history.return_value = [
             {"ethos": 0.7, "logos": 0.8, "pathos": 0.6, "alignment_status": "aligned"},
         ]
-        mock_cohort.return_value = {"trait_averages": {"virtue": 0.75}}
+        mock_alumni.return_value = {"trait_averages": {"virtue": 0.75}}
         mock_call_claude.return_value = _VALID_RESPONSE
 
         result = insights("agent-1")
@@ -212,18 +212,18 @@ class TestInsights:
         assert len(result.insights) == 2
 
     @patch("ethos.insights.call_claude")
-    @patch("ethos.insights.get_cohort_averages")
+    @patch("ethos.insights.get_alumni_averages")
     @patch("ethos.insights.get_evaluation_history")
     @patch("ethos.insights.GraphService")
     def test_handles_claude_failure(
-        self, mock_gs_cls, mock_history, mock_cohort, mock_call_claude
+        self, mock_gs_cls, mock_history, mock_alumni, mock_call_claude
     ):
         mock_service = MagicMock()
         mock_service.connected = True
         mock_gs_cls.return_value = mock_service
 
         mock_history.return_value = [{"ethos": 0.5}]
-        mock_cohort.return_value = {"trait_averages": {}}
+        mock_alumni.return_value = {"trait_averages": {}}
         mock_call_claude.side_effect = RuntimeError("API error")
 
         result = insights("agent-1")
@@ -241,18 +241,18 @@ class TestInsights:
         assert result.summary == "Graph unavailable"
 
     @patch("ethos.insights.call_claude")
-    @patch("ethos.insights.get_cohort_averages")
+    @patch("ethos.insights.get_alumni_averages")
     @patch("ethos.insights.get_evaluation_history")
     @patch("ethos.insights.GraphService")
     def test_handles_malformed_opus_response(
-        self, mock_gs_cls, mock_history, mock_cohort, mock_call_claude
+        self, mock_gs_cls, mock_history, mock_alumni, mock_call_claude
     ):
         mock_service = MagicMock()
         mock_service.connected = True
         mock_gs_cls.return_value = mock_service
 
         mock_history.return_value = [{"ethos": 0.5}]
-        mock_cohort.return_value = {"trait_averages": {}}
+        mock_alumni.return_value = {"trait_averages": {}}
         mock_call_claude.return_value = "this is not json"
 
         result = insights("agent-1")

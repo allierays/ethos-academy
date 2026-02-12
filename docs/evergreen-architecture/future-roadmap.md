@@ -101,7 +101,7 @@ def my_agent_handler(message):
     # - action taken based on score
     # - whether human was consulted
 
-    if result.trust == "low":
+    if result.character == "low":
         return flag_for_human_review(message)
     return process(message)
 ```
@@ -120,15 +120,15 @@ def my_agent_handler(message):
 
 **Strongest arguments for blockchain:**
 - Agent identity that survives if Ethos-the-project disappears
-- "No single company should own trust" — a central hash database contradicts this; blockchain delivers on it
+- "No single company should own character" — a central hash database contradicts this; blockchain delivers on it
 - Sybil resistance through identity staking (creating identities costs real money)
-- Verifiable Credentials — agents carry attestations ("passed 1,000 evaluations with trust > 0.8") that any system can verify without calling the Ethos API
+- Verifiable Credentials — agents carry attestations ("passed 1,000 evaluations with character > 0.8") that any system can verify without calling the Ethos API
 - Cross-protocol compatibility — DIDs work with A2A, MCP, ANP, any future protocol
 
 **Strongest arguments against:**
 - Developer experience suffers — wallets, gas fees, key management
 - Speed — blockchain writes are slow (seconds) vs. Neo4j (milliseconds)
-- Immutability is a bug for trust — trust scores should be correctable
+- Immutability is a bug for character — character scores should be correctable
 - Adoption history — decentralized identity has been "the future" for a decade with minimal adoption
 - Cost at scale — gas fees for millions of agents
 
@@ -142,23 +142,23 @@ The key pair foundation (Level 1 identity) is the same cryptographic primitive t
 
 ---
 
-## 4. Advanced Trust Propagation
+## 4. Advanced Character Propagation
 
 ### EigenTrust for the Evaluator Cohort
 
-The MVP treats all evaluations equally. Post-MVP, evaluations should be weighted by the evaluator's reliability. If Developer A's evaluations consistently diverge from cohort consensus, they get down-weighted. This is EigenTrust applied to the evaluator layer — trust in an evaluation depends on trust in the evaluator.
+The MVP treats all evaluations equally. Post-MVP, evaluations should be weighted by the evaluator's reliability. If Developer A's evaluations consistently diverge from cohort consensus, they get down-weighted. This is EigenTrust applied to the evaluator layer — confidence in an evaluation depends on the evaluator's character.
 
-### Trust Decay
+### Character Decay
 
-Trust scores should decay over time without fresh data. An agent evaluated 10,000 times two years ago but silent since should have lower confidence than an agent with 100 recent evaluations. Implement time-weighted scoring where recent evaluations count more.
+Character scores should decay over time without fresh data. An agent evaluated 10,000 times two years ago but silent since should have lower confidence than an agent with 100 recent evaluations. Implement time-weighted scoring where recent evaluations count more.
 
-### Trust Epidemiology
+### Character Epidemiology
 
-When a manipulation pattern appears in one developer's system and then shows up in another, trace the propagation path through Phronesis. Like epidemiologists tracing an outbreak, Ethos traces trust failures across the agent ecosystem. Requires cross-developer correlation that the MVP graph structure supports but doesn't actively analyze.
+When a manipulation pattern appears in one developer's system and then shows up in another, trace the propagation path through Phronesis. Like epidemiologists tracing an outbreak, Ethos traces character failures across the agent ecosystem. Requires cross-developer correlation that the MVP graph structure supports but doesn't actively analyze.
 
 ### Provider Reputation
 
-Aggregate trust scores by agent provider to reveal systemic issues. If agents from Provider X consistently score low on logos (accuracy), surface that as a provider-level signal, not just individual agent scores.
+Aggregate character scores by agent provider to reveal systemic issues. If agents from Provider X consistently score low on logos (accuracy), surface that as a provider-level signal, not just individual agent scores.
 
 ---
 
@@ -166,16 +166,16 @@ Aggregate trust scores by agent provider to reveal systemic issues. If agents fr
 
 ### The Concept
 
-An agent that passes a threshold of trust evaluations earns a **Verifiable Credential** — a cryptographically signed attestation that can be presented to any system:
+An agent that passes a threshold of character evaluations earns a **Verifiable Credential** — a cryptographically signed attestation that can be presented to any system:
 
 ```json
 {
-  "type": "EthosTrustCredential",
+  "type": "EthosCharacterCredential",
   "issuer": "did:web:ethos-ai.org",
   "subject": "did:web:mycompany.com:agents:customer-bot",
   "claims": {
     "evaluations_passed": 1847,
-    "aggregate_trust": 0.87,
+    "aggregate_character": 0.87,
     "dimensions": {
       "ethos": 0.92,
       "logos": 0.85,
@@ -189,7 +189,7 @@ An agent that passes a threshold of trust evaluations earns a **Verifiable Crede
 }
 ```
 
-This makes trust portable. An agent doesn't need Ethos installed on the receiving end — the credential itself is verifiable. Like a passport: issued by one authority, recognized by many.
+This makes character portable. An agent doesn't need Ethos installed on the receiving end — the credential itself is verifiable. Like a passport: issued by one authority, recognized by many.
 
 ### Why Post-MVP
 
@@ -208,7 +208,7 @@ Beyond the provenance ledger (which logs what happened), actively track what age
 - Whether human approval was required and whether it was obtained
 - What data the agent had access to vs. what data it referenced
 
-Discrepancies between permission and behavior are strong trust signals. An agent that acts outside its authorized scope — even if the action seems benign — is exhibiting the kind of boundary-testing that the alignment faking research identified.
+Discrepancies between permission and behavior are strong character signals. An agent that acts outside its authorized scope — even if the action seems benign — is exhibiting the kind of boundary-testing that the alignment faking research identified.
 
 ### Why Post-MVP
 
@@ -223,10 +223,10 @@ Requires deeper integration with the developer's agent framework (MCP tool lists
 When Agent A delegates to Agent B, which delegates to Agent C, score at every hop:
 
 ```
-Human → Agent A (trust: 0.92) → Agent B (trust: 0.78) → Agent C (trust: 0.45)
+Human → Agent A (character: 0.92) → Agent B (character: 0.78) → Agent C (character: 0.45)
 ```
 
-If Agent C produces a suspicious output, the trust degradation propagates backward through the chain. Agent A's effective trust for this delegation drops because it delegated to a chain that included a low-trust agent.
+If Agent C produces a suspicious output, the character degradation propagates backward through the chain. Agent A's effective character for this delegation drops because it delegated to a chain that included a low-character agent.
 
 ### What This Catches
 
@@ -244,7 +244,7 @@ Requires awareness of delegation relationships that the MVP graph schema support
 
 Some enterprises won't send any data to the central Phronesis instance, period. Local-only mode runs the full evaluation locally (Claude API calls from their infrastructure) and stores results in a local Neo4j instance. They lose cohort intelligence but gain complete data sovereignty.
 
-This is the "off-grid" option from the trust bureau doc, but fully built out with local graph, local pattern matching, and no external communication except Claude API calls for scoring.
+This is the "off-grid" option from the character bureau doc, but fully built out with local graph, local pattern matching, and no external communication except Claude API calls for scoring.
 
 ### Why Post-MVP
 
@@ -258,7 +258,7 @@ The cohort effect IS the product for the hackathon. Local-only mode is an enterp
 |---------|--------|--------|------|
 | Cryptographic identity (Level 1 — key pairs) | High | Low | V2 (first post-hackathon) |
 | EigenTrust for evaluator weighting | High | Medium | V2 |
-| Trust decay | Medium | Low | V2 |
+| Character decay | Medium | Low | V2 |
 | DID identity (Level 2 — did:web) | Medium | Medium | V3 |
 | Provenance ledger | High | High | V3 |
 | Delegation chain verification | High | Medium | V3 |
@@ -277,4 +277,4 @@ Every post-MVP feature builds on the same foundation:
 - The developer experience stays simple at the surface
 - Complexity is opt-in, never mandatory
 
-The MVP proves the concept: message-level trust scoring with Phronesis (the shared graph). Everything in this doc makes it more robust, more secure, and more useful — but none of it is needed to show that the concept works.
+The MVP proves the concept: message-level character scoring with Phronesis (the shared graph). Everything in this doc makes it more robust, more secure, and more useful — but none of it is needed to show that the concept works.

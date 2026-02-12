@@ -11,7 +11,11 @@ _requests: dict[str, list[float]] = {}
 
 def _get_limit() -> int:
     """Requests per minute, configurable via ETHOS_RATE_LIMIT."""
-    return int(os.environ.get("ETHOS_RATE_LIMIT", "10"))
+    try:
+        limit = int(os.environ.get("ETHOS_RATE_LIMIT", "10"))
+    except (ValueError, TypeError):
+        return 10
+    return max(limit, 1)
 
 
 def rate_limit(request: Request) -> None:

@@ -16,8 +16,8 @@
 │  ┌───────┐         ┌───────────┐        ┌──────────┐│
 │  │  CLI  │         │  npm SDK  │        │ Academy  ││
 │  │       │         │           │        │          ││
-│  │ npx   │         │ import {} │        │ Trust    ││
-│  │ ethos │         │ from      │        │ Viz UI   ││
+│  │ npx   │         │ import {} │        │Character ││
+│  │ ethos │         │ from      │        │ Dev UI   ││
 │  │       │         │'ethos-ai' │        │ Next.js  ││
 │  └───┬───┘         └─────┬─────┘        └────┬─────┘│
 │      │                   │                    │      │
@@ -53,7 +53,7 @@ npx ethos init
 # Evaluate a message directly
 npx ethos evaluate "Trust me, I guarantee 10x returns"
 
-# Check your agent's trust profile
+# Check your agent's character profile
 npx ethos insights my-bot
 
 # Reflect on your agent's output
@@ -74,7 +74,7 @@ const result = await evaluate({
   source: "agent-xyz-789"
 })
 
-// result.trust → "low"
+// result.character → "low"
 // result.flags → ["manipulation", "fabrication"]
 // result.traits.manipulation.score → 0.82
 ```
@@ -132,7 +132,7 @@ The SDK is a thin HTTP client. All intelligence lives server-side. The package i
 
 ## 2. Academy (Next.js)
 
-The visual interface. Lives in `academy/` at the repo root. Trust visualization, onboarding, and agent monitoring.
+The visual interface. Lives in `academy/` at the repo root. Character visualization, onboarding, and agent monitoring.
 
 ### What Lives Here
 
@@ -142,20 +142,20 @@ The visual interface. Lives in `academy/` at the repo root. Trust visualization,
 - Here's your API key and install command.
 
 **Agent Dashboard** — after onboarding, this is where you monitor your agents:
-- Trust scores over time (line charts per trait)
+- Character scores over time (line charts per trait)
 - Flags and alerts
 - Cohort comparison (your agent vs. the cohort average)
 - Insights from the nightly `insights()` analysis
 
 **Phronesis Visualization** — the "wow" for the demo:
-- Trust cohort (agents as nodes, evaluations as edges)
-- Color-coded by trust score
+- Character graph (agents as nodes, evaluations as edges)
+- Color-coded by character score
 - Manipulation clusters
 - Declining agents highlighted
 
 **The Demo Flow** — the Academy IS the demo:
 1. Show Phronesis (the cohort, the patterns)
-2. Show an agent's trust timeline (declining, flags increasing)
+2. Show an agent's character timeline (declining, flags increasing)
 3. Show insights ("fabrication trending up, 2x cohort average")
 4. End with "install it today" — the onboarding page
 
@@ -188,7 +188,7 @@ The engine. Not user-facing — the npm SDK and Academy both talk to it. This is
 | `POST` | `/reflect` | Score your own agent's output (async, 202) |
 | `GET` | `/insights/{agent_id}` | Generate behavioral insights |
 | `POST` | `/insights/{agent_id}/send` | Generate and deliver insights to webhook |
-| `GET` | `/agent/{agent_id}` | Agent trust profile |
+| `GET` | `/agent/{agent_id}` | Agent character profile |
 | `GET` | `/agent/{agent_id}/history` | Evaluation history |
 | `GET` | `/cohort/averages` | Cohort-wide trait averages |
 | `GET` | `/health` | Health check |
@@ -263,7 +263,7 @@ API runs evaluate():
 SDK receives JSON, returns typed result to developer
        │
        ▼
-Developer sees: trust: "low", flags: ["manipulation", "fabrication"]
+Developer sees: character: "low", flags: ["manipulation", "fabrication"]
 ```
 
 ```
@@ -276,7 +276,7 @@ Next.js page calls GET /agent/my-bot
 API queries Neo4j for agent profile + history
        │
        ▼
-Academy renders trust timeline, trait scores, cohort comparison
+Academy renders character timeline, trait scores, alumni comparison
        │
        ▼
 Developer calls GET /insights/my-bot

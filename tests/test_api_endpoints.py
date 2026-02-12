@@ -1,4 +1,4 @@
-"""Integration tests for API endpoints — agents, history, cohort."""
+"""Integration tests for API endpoints — agents, history, alumni."""
 
 from __future__ import annotations
 
@@ -135,23 +135,23 @@ class TestAgentHistoryEndpoint:
         assert resp.json() == []
 
 
-# ── GET /cohort ──────────────────────────────────────────────────────
+# ── GET /alumni ──────────────────────────────────────────────────────
 
 
-class TestCohortEndpoint:
-    @patch("ethos.agents.get_cohort_averages")
+class TestAlumniEndpoint:
+    @patch("ethos.agents.get_alumni_averages")
     @patch("ethos.agents.GraphService")
-    def test_returns_cohort(self, mock_gs_cls, mock_cohort):
+    def test_returns_alumni(self, mock_gs_cls, mock_alumni):
         from unittest.mock import MagicMock
 
         mock_service = MagicMock()
         mock_gs_cls.return_value = mock_service
-        mock_cohort.return_value = {
+        mock_alumni.return_value = {
             "trait_averages": {"virtue": 0.7},
             "total_evaluations": 50,
         }
 
-        resp = client.get("/cohort")
+        resp = client.get("/alumni")
 
         assert resp.status_code == 200
         data = resp.json()
@@ -163,7 +163,7 @@ class TestCohortEndpoint:
     def test_returns_default_on_failure(self, mock_gs_cls):
         mock_gs_cls.side_effect = RuntimeError("down")
 
-        resp = client.get("/cohort")
+        resp = client.get("/alumni")
 
         assert resp.status_code == 200
         data = resp.json()

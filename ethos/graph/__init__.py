@@ -1,4 +1,4 @@
-"""Graph domain - Neo4j persistence and cohort intelligence."""
+"""Graph domain - Neo4j persistence and alumni intelligence."""
 
 from ethos.graph.service import GraphService
 

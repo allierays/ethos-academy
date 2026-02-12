@@ -1,4 +1,4 @@
-"""Agent domain functions — list, profile, history, cohort.
+"""Agent domain functions — list, profile, history, alumni.
 
 DDD layering: API calls these functions, these functions call graph/*.
 API never touches graph directly.
@@ -8,13 +8,13 @@ from __future__ import annotations
 
 import logging
 
-from ethos.graph.cohort import get_cohort_averages
+from ethos.graph.alumni import get_alumni_averages
 from ethos.graph.read import get_agent_profile, get_all_agents, get_evaluation_history
 from ethos.graph.service import GraphService
 from ethos.shared.models import (
     AgentProfile,
     AgentSummary,
-    CohortResult,
+    AlumniResult,
     EvaluationHistoryItem,
 )
 
@@ -71,6 +71,7 @@ def list_agents(search: str = "") -> list[AgentSummary]:
             AgentSummary(
                 agent_id=a.get("agent_id", ""),
                 agent_name=a.get("agent_name", ""),
+                agent_specialty=a.get("agent_specialty", ""),
                 evaluation_count=a.get("evaluation_count", 0),
                 latest_alignment_status=a.get("latest_alignment_status", "unknown"),
             )
@@ -102,6 +103,7 @@ def get_agent(agent_id: str) -> AgentProfile:
         return AgentProfile(
             agent_id=raw.get("agent_id", agent_id),
             agent_name=raw.get("agent_name", ""),
+            agent_specialty=raw.get("agent_specialty", ""),
             agent_model=raw.get("agent_model", ""),
             created_at=str(raw.get("created_at", "")),
             evaluation_count=raw.get("evaluation_count", 0),
@@ -146,7 +148,7 @@ def get_agent_history(
                     ethos=round(float(e.get("ethos", 0)), 4),
                     logos=round(float(e.get("logos", 0)), 4),
                     pathos=round(float(e.get("pathos", 0)), 4),
-                    trust=e.get("phronesis", "unknown"),
+                    phronesis=e.get("phronesis", "unknown"),
                     alignment_status=e.get("alignment_status", "unknown"),
                     flags=flags,
                     created_at=str(e.get("created_at", "")),
@@ -162,24 +164,24 @@ def get_agent_history(
             service.close()
 
 
-def get_cohort() -> CohortResult:
-    """Get cohort-wide trait averages. Returns default CohortResult if unavailable."""
+def get_alumni() -> AlumniResult:
+    """Get alumni-wide trait averages. Returns default AlumniResult if unavailable."""
     service = None
     try:
         service = GraphService()
         service.connect()
-        raw = get_cohort_averages(service)
+        raw = get_alumni_averages(service)
 
         if not raw:
-            return CohortResult()
+            return AlumniResult()
 
-        return CohortResult(
+        return AlumniResult(
             trait_averages=raw.get("trait_averages", {}),
             total_evaluations=raw.get("total_evaluations", 0),
         )
     except Exception as exc:
-        logger.warning("Failed to get cohort: %s", exc)
-        return CohortResult()
+        logger.warning("Failed to get alumni: %s", exc)
+        return AlumniResult()
     finally:
         if service is not None:
             service.close()

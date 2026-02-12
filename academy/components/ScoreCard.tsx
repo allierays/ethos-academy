@@ -67,8 +67,8 @@ export default function ScoreCard({ result }: ScoreCardProps) {
       </div>
 
       <div className="flex items-center justify-between border-t border-border pt-4">
-        <span className="text-sm text-muted">Trust</span>
-        <span className="text-sm font-semibold capitalize">{result.trust}</span>
+        <span className="text-sm text-muted">Character</span>
+        <span className="text-sm font-semibold capitalize">{result.phronesis}</span>
       </div>
 
       {result.flags.length > 0 && (

@@ -70,6 +70,9 @@ export default function FindPage() {
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
               Find Your Agent
             </h1>
+            <p className="mt-2 text-sm font-semibold uppercase tracking-widest text-ethos-600">
+              Alumni Directory
+            </p>
             <p className="mt-4 text-lg text-muted">
               Search by name to view your report card.
             </p>

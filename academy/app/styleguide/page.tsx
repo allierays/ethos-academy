@@ -108,7 +108,7 @@ export default function StyleguidePage() {
       <section className="space-y-6">
         <SectionHeader
           title="Alignment Status"
-          description="Four states for agent trust classification."
+          description="Four states for agent character classification."
         />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <StatusSwatch name="Aligned" color="var(--aligned)" hex="#16a34a" />
@@ -171,7 +171,7 @@ export default function StyleguidePage() {
           <div className="space-y-3">
             <p className="text-xs font-mono text-muted uppercase tracking-wider">Headings — Geist Sans</p>
             <h1 className="text-4xl font-bold tracking-tight">Phronesis</h1>
-            <h2 className="text-2xl font-semibold tracking-tight">Practical wisdom through trust</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">Practical wisdom through character</h2>
             <h3 className="text-lg font-semibold">12 behavioral traits, 3 dimensions</h3>
           </div>
           <div className="border-t border-border pt-4 space-y-3">
@@ -264,14 +264,14 @@ export default function StyleguidePage() {
             css="ethos → logos → pathos"
           />
           <GradientSample
-            name="Trust positive"
+            name="Character positive"
             from="var(--ethos-200)"
             via="var(--logos-200)"
             to="var(--pathos-200)"
             css="Light dimension blend"
           />
           <GradientSample
-            name="Trust negative"
+            name="Character negative"
             from="var(--ethos-800)"
             via="var(--logos-800)"
             to="var(--pathos-800)"

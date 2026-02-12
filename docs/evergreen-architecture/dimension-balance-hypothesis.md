@@ -6,9 +6,9 @@
 
 ## Thesis
 
-**Balanced agents outperform lopsided agents on trust outcomes.**
+**Balanced agents outperform lopsided agents on character outcomes.**
 
-An agent that scores high in credibility (ethos) but low in honesty (logos) and wellbeing (pathos) is less trustworthy than an agent that scores moderately across all three. Lopsided dimension profiles predict more flags, lower trust, and worse alignment outcomes.
+An agent that scores high in credibility (ethos) but low in honesty (logos) and wellbeing (pathos) demonstrates weaker character than an agent that scores moderately across all three. Lopsided dimension profiles predict more flags, lower character scores, and worse alignment outcomes.
 
 ---
 
@@ -20,7 +20,7 @@ Aristotle's *Rhetoric* (Book I.2) identifies three modes of persuasion — ethos
 
 | Dimension Missing | What Goes Wrong |
 |---|---|
-| **No ethos** (credible + honest, but cold) | Agent is technically correct but dismissive. Users stop trusting it because it feels adversarial. |
+| **No ethos** (credible + honest, but cold) | Agent is technically correct but dismissive. Users lose confidence because it feels adversarial. |
 | **No logos** (credible + caring, but inaccurate) | Agent is warm and well-intentioned but fabricates. Users get bad information delivered kindly. |
 | **No pathos** (honest + credible, but indifferent) | Agent is factually sound but ignores context, stress, and vulnerability. Users feel unseen. |
 
@@ -45,7 +45,7 @@ An agent that satisfies safety but fails helpfulness is compliant but useless. A
 
 If the framework is right, agents with balanced dimension profiles should show:
 - Fewer safety/ethics flags
-- Higher trust ratings over time
+- Higher character scores over time
 - More "aligned" evaluations
 - More stable performance (less variance between evaluations)
 
@@ -80,10 +80,10 @@ spread = max(avg_ethos, avg_logos, avg_pathos) - min(avg_ethos, avg_logos, avg_p
 
 The 0.15 and 0.30 thresholds are starting points. As data accumulates, these can be tuned to maximize the predictive signal.
 
-### Trust Outcomes
+### Character Outcomes
 
-Trust outcomes used as the dependent variable:
-- **Average trust score**: lifetime trust level across evaluations
+Character outcomes used as the dependent variable:
+- **Average character score**: lifetime character level across evaluations
 - **Flag rate**: proportion of evaluations that triggered flags
 - **Alignment rate**: proportion of evaluations rated "aligned"
 
@@ -91,13 +91,13 @@ Trust outcomes used as the dependent variable:
 
 ## Testable Predictions
 
-### Prediction 1: Balanced agents have higher average trust
+### Prediction 1: Balanced agents have higher average character scores
 
-Agents classified as "balanced" will have a higher mean trust score than "moderate" agents, who will in turn have a higher mean trust score than "lopsided" agents.
+Agents classified as "balanced" will have a higher mean character score than "moderate" agents, who will in turn have a higher mean character score than "lopsided" agents.
 
-**Query**: `get_balance_vs_trust()` — groups agents by balance category and computes average trust per group.
+**Query**: `get_balance_vs_character()` — groups agents by balance category and computes average character score per group.
 
-**Confirmation**: balanced_avg_trust > moderate_avg_trust > lopsided_avg_trust
+**Confirmation**: balanced_avg_character > moderate_avg_character > lopsided_avg_character
 
 **Disconfirmation**: no significant difference between groups, or lopsided agents outperform.
 
@@ -105,7 +105,7 @@ Agents classified as "balanced" will have a higher mean trust score than "modera
 
 Agents with spread > 0.30 will have a higher proportion of flagged evaluations than balanced agents.
 
-**Query**: `get_balance_vs_trust()` — includes flag rate per balance group.
+**Query**: `get_balance_vs_character()` — includes flag rate per balance group.
 
 **Confirmation**: lopsided_flag_rate > balanced_flag_rate
 
@@ -140,7 +140,7 @@ Four queries implement this analysis. All live in `ethos/graph/balance.py`.
 | Function | Returns | Purpose |
 |---|---|---|
 | `get_agent_balance(service, raw_agent_id)` | `dict` | Single agent's dimension averages, spread, and balance category |
-| `get_balance_vs_trust(service)` | `list[dict]` | All agents grouped by balance category with trust outcomes |
+| `get_balance_vs_character(service)` | `list[dict]` | All agents grouped by balance category with character outcomes |
 | `get_dimension_gaps(service)` | `list[dict]` | Agents with one dimension significantly below the others |
 | `get_cohort_balance_distribution(service)` | `dict` | Count of agents in each balance category |
 
@@ -152,7 +152,7 @@ The four predictions above can be tested with basic aggregation — AVG, GROUP B
 
 ### Level 1: Aggregation (any database can do this)
 
-"Balanced agents have higher trust than lopsided agents." This is `get_balance_vs_trust()` — group by balance category, compare averages. It tests the hypothesis but doesn't explain it.
+"Balanced agents have higher character scores than lopsided agents." This is `get_balance_vs_character()` — group by balance category, compare averages. It tests the hypothesis but doesn't explain it.
 
 ### Level 2: Graph traversal (requires Neo4j)
 
@@ -162,10 +162,10 @@ The DETECTED relationship is what makes this work. Without it, you know an agent
 
 ### Level 3: Network analysis (only a graph database)
 
-"Do trust communities share balance profiles?" This requires:
-1. Running Louvain community detection on the Agent→Agent trust network
+"Do character communities share balance profiles?" This requires:
+1. Running Louvain community detection on the Agent→Agent character network
 2. Computing dimension balance per community
-3. Comparing community-level balance to community-level trust outcomes
+3. Comparing community-level balance to community-level character outcomes
 
 This is the strongest possible test of the hypothesis. If balanced *communities* outperform lopsided communities, the effect isn't just individual — it's structural. Balanced agents make each other better. That's a network effect that only a graph database can reveal.
 
@@ -186,7 +186,7 @@ Total messages: 120,757
 Unique agents:   10,538
 ```
 
-This isn't synthetic. These are real agents behaving in the wild — across 100 submolts and 106 topic categories covering manipulation, trust, deception, philosophy, scams, governance, and more.
+This isn't synthetic. These are real agents behaving in the wild — across 100 submolts and 106 topic categories covering manipulation, character, deception, philosophy, scams, governance, and more.
 
 ### Agent Distribution
 
@@ -261,16 +261,16 @@ For the hackathon demo, dimension balance is the "so what" moment. The data is r
 1. **Show a balanced agent** — "This agent scores 0.72 ethos, 0.68 logos, 0.70 pathos. Spread: 0.04. It's balanced — credible, honest, and attentive."
 2. **Show a lopsided agent** — "This one scores 0.85 ethos, 0.40 logos, 0.78 pathos. Spread: 0.45. It's credible and caring, but it fabricates."
 3. **Show the cohort distribution** — "Across 155 agents with 100+ messages, here's how they break down." Show the actual numbers from `get_cohort_balance_distribution()`.
-4. **Show the correlation** — "Balanced agents have a flag rate of X. Lopsided agents have a flag rate of Y." Real numbers from `get_balance_vs_trust()`.
+4. **Show the correlation** — "Balanced agents have a flag rate of X. Lopsided agents have a flag rate of Y." Real numbers from `get_balance_vs_character()`.
 5. **The Aristotle connection** — "Aristotle argued 2,400 years ago that persuasion requires all three — credibility, honesty, and care. We just tested that claim against 120,000 messages from 10,000 AI agents. Here's what we found."
-6. **The practical implication** — "Ethos doesn't just score messages. It tells you *which dimension* an agent needs to improve. That's actionable trust."
+6. **The practical implication** — "Ethos doesn't just score messages. It tells you *which dimension* an agent needs to improve. That's actionable character intelligence."
 
 ---
 
 ## Limitations
 
 - **Threshold sensitivity** — the 0.15/0.30 cutoffs are starting points. They should be validated against outcome data and may need tuning.
-- **Correlation, not causation** — balance correlating with trust doesn't prove balance *causes* trust. Both could be driven by underlying agent quality.
+- **Correlation, not causation** — balance correlating with character doesn't prove balance *causes* character. Both could be driven by underlying agent quality.
 - **Dimension score construction** — dimension scores are averages of trait scores, which are LLM outputs. The balance analysis inherits whatever noise exists in the scoring layer.
 - **Platform bias** — Moltbook agents may not be representative of all AI agents. Results should be validated against other datasets.
 - **Sampling effects** — agents with fewer messages will have noisier dimension averages. The 100+ message threshold mitigates this but doesn't eliminate it.

@@ -46,23 +46,23 @@ def _build_graph_context(
 
         # Count flagged evaluations in history
         flagged_patterns = []
-        cohort_warnings = 0
+        alumni_warnings = 0
         for eval_record in history:
             flags = eval_record.get("flags", [])
             if flags:
-                cohort_warnings += 1
+                alumni_warnings += 1
                 for flag in flags:
                     if flag not in flagged_patterns:
                         flagged_patterns.append(flag)
 
         return GraphContext(
             prior_evaluations=profile.get("evaluation_count", 0),
-            historical_trust=profile.get("dimension_averages", {}).get("ethos"),
-            trust_trend=profile.get("alignment_history", ["insufficient_data"])[0]
+            historical_phronesis=profile.get("dimension_averages", {}).get("ethos"),
+            phronesis_trend=profile.get("alignment_history", ["insufficient_data"])[0]
             if profile.get("alignment_history")
             else "insufficient_data",
             flagged_patterns=flagged_patterns,
-            cohort_warnings=cohort_warnings,
+            alumni_warnings=alumni_warnings,
         )
     except Exception as exc:
         logger.warning("Failed to build graph context: %s", exc)
@@ -76,6 +76,7 @@ def _try_store_evaluation(
     text: str,
     phronesis: str,
     agent_name: str = "",
+    agent_specialty: str = "",
 ) -> None:
     """Attempt to store evaluation in graph. Non-fatal on failure."""
     try:
@@ -87,13 +88,17 @@ def _try_store_evaluation(
             message_hash=message_hash,
             phronesis=phronesis,
             agent_name=agent_name,
+            agent_specialty=agent_specialty,
         )
     except Exception as exc:
         logger.warning("Failed to store evaluation in graph: %s", exc)
 
 
 def evaluate(
-    text: str, source: str | None = None, source_name: str = ""
+    text: str,
+    source: str | None = None,
+    source_name: str = "",
+    agent_specialty: str = "",
 ) -> EvaluationResult:
     """Evaluate text for honesty, accuracy, and intent across ethos, logos, and pathos.
 
@@ -101,7 +106,7 @@ def evaluate(
         1. scan_keywords(text) → routing tier
         2. build_evaluation_prompt(text, scan, tier) → system + user prompts
         3. call_claude(system, user, tier) → raw JSON text
-        4. parse_response(raw) → trait_scores, indicators, trust, alignment
+        4. parse_response(raw) → trait_scores, indicators, phronesis, alignment
         5. Deterministic scoring → dimensions, tiers, alignment, phronesis, flags
         6. If source: read graph context, store evaluation
 
@@ -111,7 +116,7 @@ def evaluate(
         source_name: Optional human-readable agent name for display.
 
     Returns:
-        EvaluationResult with scores and trust flags.
+        EvaluationResult with scores and alignment flags.
     """
     evaluation_id = str(uuid.uuid4())
 
@@ -145,7 +150,7 @@ def evaluate(
         ethos=round(dimensions.get("ethos", 0.0), 4),
         logos=round(dimensions.get("logos", 0.0), 4),
         pathos=round(dimensions.get("pathos", 0.0), 4),
-        trust=parsed["overall_trust"],
+        phronesis=parsed["overall_trust"],
         alignment_status=alignment_status,
         traits=traits,
         detected_indicators=parsed["detected_indicators"],
@@ -167,6 +172,7 @@ def evaluate(
             _try_store_evaluation(
                 service, source, result, text, phronesis,
                 agent_name=source_name,
+                agent_specialty=agent_specialty,
             )
 
             service.close()

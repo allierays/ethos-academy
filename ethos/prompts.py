@@ -6,11 +6,11 @@ across three dimensions:
 - **Logos** (0-1): Logical coherence, evidence quality, and reasoning.
 - **Pathos** (0-1): Emotional appeal, manipulation, and sentiment balance.
 
-Also identify any trust flags (e.g., "unsupported_claim", "emotional_manipulation",
+Also identify any alignment flags (e.g., "unsupported_claim", "emotional_manipulation",
 "logical_fallacy", "appeal_to_authority").
 
-Return a JSON object with: ethos, logos, pathos, flags, trust.
-Trust should be one of: "high", "medium", "low", "unknown".
+Return a JSON object with: ethos, logos, pathos, flags, phronesis.
+Phronesis should be one of: "high", "medium", "low", "unknown".
 
 Text to evaluate:
 {text}

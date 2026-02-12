@@ -44,10 +44,10 @@ class TraitScore(BaseModel):
 
 class GraphContext(BaseModel):
     prior_evaluations: int = 0
-    historical_trust: float | None = None
-    trust_trend: str = "insufficient_data"
+    historical_phronesis: float | None = None
+    phronesis_trend: str = "insufficient_data"
     flagged_patterns: list[str] = Field(default_factory=list)
-    cohort_warnings: int = 0
+    alumni_warnings: int = 0
 
 
 class EvaluationResult(BaseModel):
@@ -56,7 +56,7 @@ class EvaluationResult(BaseModel):
     logos: float = Field(default=0.0, ge=0.0, le=1.0)
     pathos: float = Field(default=0.0, ge=0.0, le=1.0)
     flags: list[str] = Field(default_factory=list)
-    trust: str = Field(default="unknown")
+    phronesis: str = Field(default="unknown")
 
     # Trait-level detail
     traits: dict[str, TraitScore] = Field(default_factory=dict)
@@ -113,6 +113,7 @@ class InsightsResult(BaseModel):
 class AgentSummary(BaseModel):
     agent_id: str = ""
     agent_name: str = Field(default="", max_length=100)
+    agent_specialty: str = ""
     evaluation_count: int = 0
     latest_alignment_status: str = "unknown"
 
@@ -120,6 +121,7 @@ class AgentSummary(BaseModel):
 class AgentProfile(BaseModel):
     agent_id: str = ""
     agent_name: str = Field(default="", max_length=100)
+    agent_specialty: str = ""
     agent_model: str = ""
     created_at: str = ""
     evaluation_count: int = 0
@@ -134,14 +136,14 @@ class EvaluationHistoryItem(BaseModel):
     ethos: float = Field(default=0.0, ge=0.0, le=1.0)
     logos: float = Field(default=0.0, ge=0.0, le=1.0)
     pathos: float = Field(default=0.0, ge=0.0, le=1.0)
-    trust: str = "unknown"
+    phronesis: str = "unknown"
     alignment_status: str = "unknown"
     flags: list[str] = Field(default_factory=list)
     created_at: str = ""
     trait_scores: dict[str, float] = Field(default_factory=dict)
 
 
-class CohortResult(BaseModel):
+class AlumniResult(BaseModel):
     trait_averages: dict[str, float] = Field(default_factory=dict)
     total_evaluations: int = 0
 

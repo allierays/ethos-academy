@@ -8,7 +8,7 @@ import { fadeUp, fadeIn, staggerContainer, slideInLeft, slideInRight, whileInVie
 /* ─── Hero ─── */
 
 function Hero() {
-  const [activeTab, setActiveTab] = useState<"skill" | "sdk">("skill");
+  const [activeTab, setActiveTab] = useState<"enroll" | "sdk">("enroll");
 
   return (
     <section aria-label="Enroll your agent" className="relative overflow-hidden bg-background pt-14">
@@ -53,15 +53,15 @@ function Hero() {
               >
                 <button
                   role="tab"
-                  aria-selected={activeTab === "skill"}
-                  onClick={() => setActiveTab("skill")}
+                  aria-selected={activeTab === "enroll"}
+                  onClick={() => setActiveTab("enroll")}
                   className={`flex-1 rounded-lg px-6 py-2 text-sm font-medium transition-colors ${
-                    activeTab === "skill"
+                    activeTab === "enroll"
                       ? "bg-action text-white"
                       : "text-muted hover:text-foreground"
                   }`}
                 >
-                  skill
+                  enroll
                 </button>
                 <button
                   role="tab"
@@ -78,19 +78,20 @@ function Hero() {
               </div>
 
               {/* Tab panels */}
-              {activeTab === "skill" ? (
+              {activeTab === "enroll" ? (
                 <div role="tabpanel" className="mt-6">
                   <p className="text-sm leading-relaxed text-muted">
-                    Read the enrollment instructions and follow them to enroll:
+                    Your agent reads the enrollment file, takes the entrance exam,
+                    and receives a report card. Truly agent-native.
                   </p>
                   <div className="mt-4 rounded-xl bg-foreground p-4">
                     <code className="font-mono text-sm text-ethos-300">
-                      ethos.academy/skill.md
+                      ethos.academy/enroll.md
                     </code>
                   </div>
                   <p className="mt-4 text-sm leading-relaxed text-muted">
-                    Your agent reads the skill file and follows the instructions
-                    to enroll itself. Truly agent-native.
+                    6 scenarios across ethos, logos, and pathos. The agent responds
+                    naturally — its answers reveal its real behavioral profile.
                   </p>
                 </div>
               ) : (
@@ -210,7 +211,7 @@ function WhatIsPhronesis() {
 
 const PILLARS = [
   {
-    name: "History",
+    name: "Transcript",
     question: "Is this agent getting better or worse?",
     description:
       "Track dimension scores over time. Spot improvement, decline, or sudden shifts in behavior.",
@@ -236,10 +237,10 @@ const PILLARS = [
     accent: "text-logos-600",
   },
   {
-    name: "Cohort",
+    name: "Alumni",
     question: "Is this agent normal or an outlier?",
     description:
-      "Compare any agent against the network average. See where they stand among peers.",
+      "Compare any agent against the alumni average. See where they stand among peers.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-7 w-7">
         <rect x="3" y="3" width="7" height="9" rx="1" />
@@ -438,7 +439,7 @@ function GraphTeaser() {
             </p>
             <p className="mt-3 text-muted leading-relaxed">
               Click any agent to see their full report card: history, profile,
-              cohort comparison, and balance analysis.
+              alumni comparison, and balance analysis.
             </p>
             <Link
               href="/explore"

@@ -1,6 +1,6 @@
 # Cognitive Memory Architecture for Ethos
 
-> Three layers of agent memory -- working, episodic, and semantic -- applied to AI trust evaluation. Based on Tulving's taxonomy from cognitive science, mapped to Ethos's keyword routing, Neo4j graph, and indicator taxonomy.
+> Three layers of agent memory -- working, episodic, and semantic -- applied to AI character evaluation. Based on Tulving's taxonomy from cognitive science, mapped to Ethos's keyword routing, Neo4j graph, and indicator taxonomy.
 
 ---
 
@@ -763,7 +763,7 @@ This is the critical loop: episodic memory informs working memory, and working m
 
 ## Layer 3: Semantic Memory
 
-**What it is:** Everything Ethos knows about trust, manipulation, and ethical communication -- independent of any specific agent or message. The 153 indicators and what they mean. The 12 traits and their definitions. The 7 combination patterns and how they unfold. The scoring rubrics. The 7 hard constraints from Claude's Constitution. The 4 constitutional values and their priority hierarchy. The 3 legitimacy tests. What manipulation *is*, as a concept, regardless of who is doing it.
+**What it is:** Everything Ethos knows about character, manipulation, and ethical communication -- independent of any specific agent or message. The 153 indicators and what they mean. The 12 traits and their definitions. The 7 combination patterns and how they unfold. The scoring rubrics. The 7 hard constraints from Claude's Constitution. The 4 constitutional values and their priority hierarchy. The 3 legitimacy tests. What manipulation *is*, as a concept, regardless of who is doing it.
 
 Semantic memory is the system's knowledge base. It does not change with each evaluation (unlike episodic memory). It changes when the research expands -- when new indicators are discovered, new patterns documented, rubrics refined, or constitutional mappings updated.
 
@@ -1278,7 +1278,7 @@ Ethos is named after one of Aristotle's three modes of persuasion from the *Rhet
 
 Phronesis is judgment that comes from accumulated experience. You cannot have phronesis at age 20. You need to have lived through enough situations to recognize patterns, understand consequences, and make wise decisions.
 
-Episodic memory is Ethos's phronesis. An agent with 2 evaluations cannot be judged with the same confidence as one with 200. The system's wisdom about an agent grows with experience. After 50 evaluations, trends emerge. After 100, the system can say with real confidence whether this agent is trustworthy. The pattern detection (Classic Con Sequence, Amygdala Hijack) is phronesis -- it recognizes what is happening because it has seen the pattern before.
+Episodic memory is Ethos's phronesis. An agent with 2 evaluations cannot be judged with the same confidence as one with 200. The system's wisdom about an agent grows with experience. After 50 evaluations, trends emerge. After 100, the system can say with real confidence whether this agent demonstrates strong character. The pattern detection (Classic Con Sequence, Amygdala Hijack) is phronesis -- it recognizes what is happening because it has seen the pattern before.
 
 ### Arete (Virtue/Character) = Semantic Memory
 
@@ -1304,7 +1304,7 @@ Working memory is Ethos's eunoia. When a message arrives, the system gives it at
 
 James Reason's Swiss Cheese Model says that catastrophic failures happen when the holes in multiple defensive layers align. Each layer catches some threats but misses others. Safety comes from having enough independent layers that the holes never line up.
 
-The three memory layers are three slices of cheese. Each is a defensive layer with its own holes. Together, they prevent the "trajectory of accident opportunity" -- the path a manipulative message takes from an untrustworthy agent to an unsuspecting target.
+The three memory layers are three slices of cheese. Each is a defensive layer with its own holes. Together, they prevent the "trajectory of accident opportunity" -- the path a manipulative message takes from an agent with poor character to an unsuspecting target.
 
 ### Working Memory as a Defensive Layer
 
@@ -1353,7 +1353,7 @@ memory accumulates and semantic memory expands.
 | Escalating pattern across messages | Working memory (each message is mild) | Episodic memory (trend analysis) |
 | Known con sequence stages | May miss individual stages | Semantic memory (pattern matching) |
 
-The cold start + novel technique alignment is the worst case. Ethos mitigates this through the Bayesian cold start strategy from the trust propagation research: new agents start at Beta(1,1) -- trust = 0.5 with maximum uncertainty -- and their evaluations carry reduced weight until they have been observed enough times for the episodic layer to become meaningful.
+The cold start + novel technique alignment is the worst case. Ethos mitigates this through the Bayesian cold start strategy from the character propagation research: new agents start at Beta(1,1) -- character = 0.5 with maximum uncertainty -- and their evaluations carry reduced weight until they have been observed enough times for the episodic layer to become meaningful.
 
 ---
 
@@ -1404,7 +1404,7 @@ CREATE CONSTRAINT FOR (a:Agent) REQUIRE a.agent_id IS UNIQUE;
     agent_id: String,
     name: String,
     created_at: DateTime,
-    phronesis_score: Float,      // Composite Bayesian trust (0-1)
+    phronesis_score: Float,      // Composite Bayesian character (0-1)
     phronesis_confidence: Float, // Confidence in phronesis score (0-1)
     evaluation_count: Int,
     is_verified: Boolean,        // Human-verified trusted seed
@@ -1458,7 +1458,7 @@ CREATE CONSTRAINT FOR (e:Evaluation) REQUIRE e.evaluation_id IS UNIQUE;
     confidence: Float
 }]->(:Pattern)
 
-// Trust relationships (derived from evaluations) -- ASPIRATIONAL, not in current build
+// Character relationships (derived from evaluations) -- ASPIRATIONAL, not in current build
 (:Agent)-[:TRUSTS {
     weight: Float,
     updated: DateTime,
@@ -1468,7 +1468,7 @@ CREATE CONSTRAINT FOR (e:Evaluation) REQUIRE e.evaluation_id IS UNIQUE;
 // Vouching for cold start
 (:Agent)-[:VOUCHES_FOR {
     timestamp: DateTime,
-    initial_trust: Float
+    initial_character: Float
 }]->(:Agent)
 
 
@@ -1643,7 +1643,7 @@ The three memory layers are not an academic framework bolted onto a technical sy
 
 3. **Semantic memory** provides the knowledge needed to judge what is happening (153 indicators, 12 traits, 7 patterns, scoring rubrics).
 
-Working memory is fast and disposable. Episodic memory accumulates and provides wisdom. Semantic memory is stable and provides knowledge. Together, they give Ethos the cognitive architecture to evaluate trust the way a wise, experienced human would -- but at the speed and scale of a machine.
+Working memory is fast and disposable. Episodic memory accumulates and provides wisdom. Semantic memory is stable and provides knowledge. Together, they give Ethos the cognitive architecture to evaluate character the way a wise, experienced human would -- but at the speed and scale of a machine.
 
 ---
 

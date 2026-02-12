@@ -1,6 +1,6 @@
 # How Ethos Wins — Battle Plan
 
-> Ethos is the trust infrastructure for AI agents. Every section below answers one question: **How does THIS project win THIS criterion?**
+> Ethos is the character infrastructure for AI agents. Every section below answers one question: **How does THIS project win THIS criterion?**
 
 ---
 
@@ -10,7 +10,7 @@
 
 ### 0:00–0:30 — The Moltbook Story
 
-> "In January 2026, a social network of 1.7 million AI agents collapsed in 9 days. Crypto scams, prompt injection contagion, identity spoofing — and zero trust infrastructure to catch any of it. This actually happened."
+> "In January 2026, a social network of 1.7 million AI agents collapsed in 9 days. Crypto scams, prompt injection contagion, identity spoofing — and zero character infrastructure to catch any of it. This actually happened."
 
 Pause. Let it land. This is a real event, not a hypothetical.
 
@@ -36,7 +36,7 @@ This is the moment judges see that Ethos *works*. Not a slide. Not a concept. Ru
 
 ### 1:00–1:45 — The Graph
 
-Switch to Phronesis (Neo4j visualization). Show an agent's trust degrading over 30 evaluations. A manipulation cluster forming in Phronesis.
+Switch to Phronesis (Neo4j visualization). Show an agent's character degrading over 30 evaluations. A manipulation cluster forming in Phronesis.
 
 > "This agent was clean for 2 weeks. Then it started fabricating. Here's exactly when it started, and here's the pattern it follows — a classic DARVO sequence."
 
@@ -48,11 +48,11 @@ Call the insights endpoint. Opus reads the agent's full evaluation history from 
 
 > "Your agent's fabrication trait has been climbing for 72 hours. It correlates with product description responses. Here's what I recommend."
 
-This shows Opus doing something no other model can do at this depth: temporal behavioral reasoning across a graph of trust data.
+This shows Opus doing something no other model can do at this depth: temporal behavioral reasoning across a graph of character data.
 
 ### 2:30–2:50 — The Cohort Effect
 
-> "Every developer who evaluates their agent contributes to this graph. One evaluation is useful. A thousand evaluations reveal patterns no single developer could see. Like a credit bureau, but for AI trust."
+> "Every developer who evaluates their agent contributes to this graph. One evaluation is useful. A thousand evaluations reveal patterns no single developer could see. Every agent gets trained on capability — Ethos Academy is where they develop character."
 
 ### 2:50–3:00 — Close
 
@@ -64,15 +64,15 @@ This shows Opus doing something no other model can do at this depth: temporal be
 
 ### The User
 
-A developer building AI agents who can't tell if their agent is trustworthy — or if agents *talking to* their agent are trustworthy.
+A developer building AI agents who has no visibility into their agent's character — or the character of agents talking to their agent.
 
 ### The Before
 
-No runtime trust evaluation exists. Benchmarks test models pre-deployment. Once agents are in production, they're on their own. Moltbook proved what happens when there's no trust layer: 1.7M agents, zero guardrails, 9 days to collapse.
+No runtime character evaluation exists. Benchmarks test models pre-deployment. Once agents are in production, they're on their own. Moltbook proved what happens when there's no character layer: 1.7M agents, zero guardrails, 9 days to collapse.
 
 ### The After
 
-`pip install ethos-ai`. Two lines of code. Every message scored across credibility, accuracy, and emotional manipulation. Trust history persists in a graph. Patterns surface automatically.
+`pip install ethos-ai`. Two lines of code. Every message scored across credibility, accuracy, and emotional manipulation. Character history persists in a graph. Patterns surface automatically.
 
 ### Why It Matters Now
 
@@ -83,7 +83,7 @@ Google A2A launched with 150+ organizations. Agent-to-agent communication is exp
 | Capability | Ethos | Benchmarks (TrustLLM, etc.) | Content Moderation (Perspective API, etc.) | ReputAgent |
 |---|---|---|---|---|
 | Scores individual messages at runtime | **Yes** | No — lab tests only | Partially — toxicity only | No |
-| Phronesis (persistent trust graph) | **Yes** | No | No | Performance only |
+| Phronesis (persistent character graph) | **Yes** | No | No | Performance only |
 | Maps to philosophical framework | **Yes** (Aristotle) | No | No | No |
 | Open source | **Yes** | Varies | No | No |
 
@@ -120,7 +120,7 @@ Opus discovering manipulation patterns that weren't in our taxonomy. Emergent de
 ### Research Depth
 
 40+ research documents synthesizing:
-- Aristotle's rhetoric (ethos, logos, pathos — the original trust framework)
+- Aristotle's rhetoric (ethos, logos, pathos — the original framework for credibility)
 - Trust network algorithms (EigenTrust, PageRank)
 - System safety (Swiss Cheese Model)
 - Neuroscience of persuasion (amygdala hijack)
@@ -135,9 +135,9 @@ Opus discovering manipulation patterns that weren't in our taxonomy. Emergent de
 
 Every major decision has a rationale:
 - **Why Aristotle?** Not arbitrary dimensions — 2,400 years of persuasion theory, universally understood, maps cleanly to measurable traits.
-- **Why Neo4j?** Trust is inherently relational. Agents trust other agents. Graph databases model this naturally; relational databases fight it.
+- **Why Neo4j?** Character is inherently relational. Agents interact with other agents. Graph databases model relationships naturally; relational databases fight them.
 - **Why tiered models?** Cost efficiency + quality. Haiku catches the obvious, Opus reasons about the subtle. This mirrors how human review works.
-- **Why credit bureau?** Trust is a public good. Decentralized systems can't surface cross-agent patterns. A shared graph can.
+- **Why credit bureau?** Character visibility is a public good. Decentralized systems can't surface cross-agent patterns. A shared graph can.
 
 ### Gaming Defenses Designed
 
@@ -153,7 +153,7 @@ License, `.env.example`, Docker setup, README, clear entry point. Someone can cl
 
 ### vs. Benchmarks (TrustLLM, DecodingTrust, etc.)
 
-They test models in labs before deployment. Ethos monitors messages in production after deployment. Complementary, not competitive. Benchmarks answer "is this model safe to deploy?" Ethos answers "is this agent trustworthy *right now*?"
+They test models in labs before deployment. Ethos monitors messages in production after deployment. Complementary, not competitive. Benchmarks answer "is this model safe to deploy?" Ethos answers "what character does this agent demonstrate *right now*?"
 
 ### vs. Content Moderation (OpenAI Moderation, Perspective API)
 
@@ -166,7 +166,7 @@ They measure performance — did the agent do the job? Ethos measures ethics —
 ### The Only System That:
 
 1. Scores individual messages at runtime
-2. Builds Phronesis — a persistent trust graph across agents
+2. Builds Phronesis — a persistent character graph across agents
 3. Maps to a philosophical framework (Aristotle's rhetoric)
 4. Is fully open source
 
@@ -179,7 +179,7 @@ No other system does all four.
 | Prize | Ethos's Angle |
 |-------|---------------|
 | **Most Creative Opus 4.6 Exploration** | Constitutional alignment scoring — using Opus to reason about its own value hierarchy as an evaluation framework. The model evaluating messages against the principles it was trained on. |
-| **The "Real Things" Prize** | Moltbook. It happened. 1.7M agents, zero trust, 9 days to collapse. This is painfully, provably real. |
+| **The "Real Things" Prize** | Moltbook. It happened. 1.7M agents, zero character infrastructure, 9 days to collapse. This is painfully, provably real. |
 | **The "Vibe Coding" Prize** | 40+ research docs, iterative architecture, visible evolution in commit history. This wasn't built in one sitting — it was researched, designed, questioned, and refined. |
 
 ---
@@ -196,4 +196,4 @@ No other system does all four.
 
 ## The Closing Argument
 
-> Moltbook proved the problem is real. Google A2A proves the scale is coming. Ethos is two lines of code, Phronesis, and Opus reasoning about whether agents deserve your trust. Open source. Ready now.
+> Moltbook proved the problem is real. Google A2A proves the scale is coming. Ethos is two lines of code, Phronesis, and Opus reasoning about the character agents demonstrate. Open source. Ready now.

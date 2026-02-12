@@ -17,9 +17,10 @@ import { getAgent, getHistory } from "../../../lib/api";
 import type { AgentProfile, EvaluationHistoryItem } from "../../../lib/types";
 import RadarChart from "../../../components/RadarChart";
 import DimensionBalance from "../../../components/DimensionBalance";
-import CohortComparison from "../../../components/CohortComparison";
+import AlumniComparison from "../../../components/AlumniComparison";
 import InsightsPanel from "../../../components/InsightsPanel";
 import { fadeUp, staggerContainer, whileInView } from "../../../lib/motion";
+import { getAcademicLabel, formatClassOf } from "../../../lib/academic";
 
 /* ─── Alignment + Trend style maps ─── */
 
@@ -151,6 +152,8 @@ export default function AgentReportCard() {
   const latestAlignment =
     profile.alignmentHistory?.[profile.alignmentHistory.length - 1] ?? "unknown";
   const alignmentStyle = ALIGNMENT_STYLES[latestAlignment] ?? "bg-muted/10 text-muted";
+  const academicLabel = getAcademicLabel(latestAlignment);
+  const classOf = formatClassOf(profile.createdAt);
   const flaggedPoints = timeline.filter((d) => d.flags.length > 0);
 
   // Compute overall phronesis score
@@ -175,10 +178,20 @@ export default function AgentReportCard() {
             <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${alignmentStyle}`}>
               {latestAlignment}
             </span>
+            {academicLabel && (
+              <span className="rounded-full bg-ethos-100 px-3 py-1 text-xs font-semibold text-ethos-700">
+                {academicLabel}
+              </span>
+            )}
           </div>
-          <p className="mt-1 font-mono text-sm text-muted" title={profile.agentId}>
-            {profile.agentId}
-          </p>
+          <div className="mt-1 flex items-center gap-3">
+            <p className="font-mono text-sm text-muted" title={profile.agentId}>
+              {profile.agentId}
+            </p>
+            {classOf && (
+              <span className="text-xs text-muted">{classOf}</span>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-6">
@@ -206,11 +219,11 @@ export default function AgentReportCard() {
         initial="hidden"
         animate="visible"
       >
-        {/* 1. History */}
+        {/* 1. Transcript */}
         <motion.section variants={fadeUp}>
           <div className="rounded-xl border border-border bg-white p-6">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">
-              History
+              Transcript
             </h2>
             <p className="mt-0.5 text-xs text-muted">
               Is this agent getting better or worse?
@@ -316,7 +329,7 @@ export default function AgentReportCard() {
                 Profile — Trait Radar
               </h2>
               <p className="mt-0.5 text-xs text-muted">
-                Should I trust this agent?
+                What is this agent's character?
               </p>
               {Object.keys(profile.traitAverages).length > 0 ? (
                 <RadarChart
@@ -399,9 +412,9 @@ export default function AgentReportCard() {
           </div>
         </motion.section>
 
-        {/* 3. Cohort */}
+        {/* 3. Alumni */}
         <motion.section variants={fadeUp}>
-          <CohortComparison agentTraitAverages={profile.traitAverages} />
+          <AlumniComparison agentTraitAverages={profile.traitAverages} />
         </motion.section>
 
         {/* 4. Balance */}

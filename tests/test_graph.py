@@ -75,7 +75,7 @@ class TestStoreEvaluation:
         result = EvaluationResult(
             evaluation_id="eval-123",
             ethos=0.8, logos=0.7, pathos=0.6,
-            trust="trustworthy",
+            phronesis="trustworthy",
             routing_tier="standard",
         )
         store_evaluation(gs, "agent-001", result)
@@ -183,32 +183,32 @@ class TestGetAgentProfile:
         assert result == {}
 
 
-# ── cohort.py ────────────────────────────────────────────────────────
+# ── alumni.py ────────────────────────────────────────────────────────
 
-class TestGetCohortAverages:
-    """get_cohort_averages() returns per-trait averages across all agents."""
+class TestGetAlumniAverages:
+    """get_alumni_averages() returns per-trait averages across all agents."""
 
     def test_returns_dict(self):
-        from ethos.graph.cohort import get_cohort_averages
+        from ethos.graph.alumni import get_alumni_averages
         from ethos.graph.service import GraphService
         gs = GraphService()
-        result = get_cohort_averages(gs)
+        result = get_alumni_averages(gs)
         assert isinstance(result, dict)
 
     def test_returns_empty_when_not_connected(self):
-        from ethos.graph.cohort import get_cohort_averages
+        from ethos.graph.alumni import get_alumni_averages
         from ethos.graph.service import GraphService
         gs = GraphService()
-        result = get_cohort_averages(gs)
+        result = get_alumni_averages(gs)
         assert result == {}
 
     def test_returns_empty_on_failure(self):
-        from ethos.graph.cohort import get_cohort_averages
+        from ethos.graph.alumni import get_alumni_averages
         from ethos.graph.service import GraphService
         gs = GraphService()
         gs._driver = MagicMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
-        result = get_cohort_averages(gs)
+        result = get_alumni_averages(gs)
         assert result == {}
 
 
@@ -241,30 +241,30 @@ class TestGetAgentBalance:
         assert result == {}
 
 
-class TestGetBalanceVsTrust:
-    """get_balance_vs_trust() returns balance-trust correlation across agents."""
+class TestGetBalanceVsPhronesis:
+    """get_balance_vs_phronesis() returns balance-phronesis correlation across agents."""
 
     def test_returns_list(self):
-        from ethos.graph.balance import get_balance_vs_trust
+        from ethos.graph.balance import get_balance_vs_phronesis
         from ethos.graph.service import GraphService
         gs = GraphService()
-        result = get_balance_vs_trust(gs)
+        result = get_balance_vs_phronesis(gs)
         assert isinstance(result, list)
 
     def test_returns_empty_when_not_connected(self):
-        from ethos.graph.balance import get_balance_vs_trust
+        from ethos.graph.balance import get_balance_vs_phronesis
         from ethos.graph.service import GraphService
         gs = GraphService()
-        result = get_balance_vs_trust(gs)
+        result = get_balance_vs_phronesis(gs)
         assert result == []
 
     def test_returns_empty_on_failure(self):
-        from ethos.graph.balance import get_balance_vs_trust
+        from ethos.graph.balance import get_balance_vs_phronesis
         from ethos.graph.service import GraphService
         gs = GraphService()
         gs._driver = MagicMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
-        result = get_balance_vs_trust(gs)
+        result = get_balance_vs_phronesis(gs)
         assert result == []
 
 
@@ -295,30 +295,30 @@ class TestGetDimensionGaps:
         assert result == []
 
 
-class TestGetCohortBalanceDistribution:
-    """get_cohort_balance_distribution() returns network-wide balance stats."""
+class TestGetAlumniBalanceDistribution:
+    """get_alumni_balance_distribution() returns network-wide balance stats."""
 
     def test_returns_dict(self):
-        from ethos.graph.balance import get_cohort_balance_distribution
+        from ethos.graph.balance import get_alumni_balance_distribution
         from ethos.graph.service import GraphService
         gs = GraphService()
-        result = get_cohort_balance_distribution(gs)
+        result = get_alumni_balance_distribution(gs)
         assert isinstance(result, dict)
 
     def test_returns_empty_when_not_connected(self):
-        from ethos.graph.balance import get_cohort_balance_distribution
+        from ethos.graph.balance import get_alumni_balance_distribution
         from ethos.graph.service import GraphService
         gs = GraphService()
-        result = get_cohort_balance_distribution(gs)
+        result = get_alumni_balance_distribution(gs)
         assert result == {}
 
     def test_returns_empty_on_failure(self):
-        from ethos.graph.balance import get_cohort_balance_distribution
+        from ethos.graph.balance import get_alumni_balance_distribution
         from ethos.graph.service import GraphService
         gs = GraphService()
         gs._driver = MagicMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
-        result = get_cohort_balance_distribution(gs)
+        result = get_alumni_balance_distribution(gs)
         assert result == {}
 
 

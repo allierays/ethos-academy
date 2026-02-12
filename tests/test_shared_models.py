@@ -38,7 +38,7 @@ class TestModelImports:
         from ethos.shared.models import GraphContext
         gc = GraphContext()
         assert gc.prior_evaluations == 0
-        assert gc.trust_trend == "insufficient_data"
+        assert gc.phronesis_trend == "insufficient_data"
 
     def test_import_keyword_scan_result(self):
         from ethos.shared.models import KeywordScanResult
@@ -68,7 +68,7 @@ class TestEvaluationResult:
         assert r.ethos == 0.0
         assert r.logos == 0.0
         assert r.pathos == 0.0
-        assert r.trust == "unknown"
+        assert r.phronesis == "unknown"
         assert r.flags == []
         assert r.traits == {}
 

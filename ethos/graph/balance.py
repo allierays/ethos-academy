@@ -3,11 +3,11 @@
 Phronesis (practical wisdom) requires all virtues working in balance.
 This module tests that claim empirically: ethos, logos, and pathos are
 equally necessary and interdependent. None is weighted higher. Balance
-itself predicts trustworthiness.
+itself predicts character.
 
 Three questions this module answers:
   1. Is this agent balanced across dimensions? (get_agent_balance)
-  2. Do balanced agents outperform lopsided ones? (get_balance_vs_trust)
+  2. Do balanced agents outperform lopsided ones? (get_balance_vs_phronesis)
   3. Do dimensions correlate — can you sustain one without the others? (get_dimension_correlation)
 
 Returns graceful defaults when Neo4j is down.
@@ -52,16 +52,16 @@ RETURN a.agent_id AS agent_id,
 """
 
 
-_GET_BALANCE_VS_TRUST_QUERY = """
+_GET_BALANCE_VS_PHRONESIS_QUERY = """
 MATCH (a:Agent)-[:EVALUATED]->(e:Evaluation)
 WITH a,
      avg(e.ethos) AS avg_ethos,
      avg(e.logos) AS avg_logos,
      avg(e.pathos) AS avg_pathos,
-     avg(e.trust_score) AS avg_trust,
+     avg(e.phronesis_score) AS avg_phronesis,
      count(e) AS eval_count,
      sum(CASE WHEN size(e.flags) > 0 THEN 1 ELSE 0 END) AS flagged_count
-WITH a, avg_ethos, avg_logos, avg_pathos, avg_trust, eval_count, flagged_count,
+WITH a, avg_ethos, avg_logos, avg_pathos, avg_phronesis, eval_count, flagged_count,
      (CASE
          WHEN avg_ethos >= avg_logos AND avg_ethos >= avg_pathos THEN avg_ethos
          WHEN avg_logos >= avg_ethos AND avg_logos >= avg_pathos THEN avg_logos
@@ -77,12 +77,12 @@ WITH CASE
          WHEN spread < 0.30 THEN 'moderate'
          ELSE 'lopsided'
      END AS balance_category,
-     avg_trust, eval_count, flagged_count
+     avg_phronesis, eval_count, flagged_count
 RETURN balance_category,
        count(*) AS agent_count,
-       avg(avg_trust) AS avg_trust,
+       avg(avg_phronesis) AS avg_phronesis,
        sum(flagged_count) * 1.0 / sum(eval_count) AS flag_rate
-ORDER BY avg_trust DESC
+ORDER BY avg_phronesis DESC
 """
 
 
@@ -165,7 +165,7 @@ RETURN n AS agent_count,
 """
 
 
-_GET_COHORT_BALANCE_DISTRIBUTION_QUERY = """
+_GET_ALUMNI_BALANCE_DISTRIBUTION_QUERY = """
 MATCH (a:Agent)-[:EVALUATED]->(e:Evaluation)
 WITH a,
      avg(e.ethos) AS avg_ethos,
@@ -226,28 +226,28 @@ def get_agent_balance(service: GraphService, raw_agent_id: str) -> dict:
         return {}
 
 
-def get_balance_vs_trust(service: GraphService) -> list[dict]:
-    """Get balance-trust correlation across all agents.
+def get_balance_vs_phronesis(service: GraphService) -> list[dict]:
+    """Get balance vs phronesis correlation across all agents.
 
-    Groups agents by balance category and returns average trust outcomes
+    Groups agents by balance category and returns average phronesis outcomes
     per group. Returns empty list if unavailable.
     """
     if not service.connected:
         return []
 
     try:
-        records, _, _ = service.execute_query(_GET_BALANCE_VS_TRUST_QUERY)
+        records, _, _ = service.execute_query(_GET_BALANCE_VS_PHRONESIS_QUERY)
         results = []
         for record in records:
             results.append({
                 "balance_category": record.get("balance_category", ""),
                 "agent_count": record.get("agent_count", 0),
-                "avg_trust": round(float(record.get("avg_trust") or 0), 4),
+                "avg_phronesis": round(float(record.get("avg_phronesis") or 0), 4),
                 "flag_rate": round(float(record.get("flag_rate") or 0), 4),
             })
         return results
     except Exception as exc:
-        logger.warning("Failed to get balance vs trust: %s", exc)
+        logger.warning("Failed to get balance vs phronesis: %s", exc)
         return []
 
 
@@ -315,7 +315,7 @@ def get_dimension_correlation(
         return {}
 
 
-def get_cohort_balance_distribution(service: GraphService) -> dict:
+def get_alumni_balance_distribution(service: GraphService) -> dict:
     """Get network-wide balance distribution.
 
     Returns count of agents in each balance category:
@@ -327,7 +327,7 @@ def get_cohort_balance_distribution(service: GraphService) -> dict:
 
     try:
         records, _, _ = service.execute_query(
-            _GET_COHORT_BALANCE_DISTRIBUTION_QUERY
+            _GET_ALUMNI_BALANCE_DISTRIBUTION_QUERY
         )
         if not records:
             return {}
@@ -344,5 +344,5 @@ def get_cohort_balance_distribution(service: GraphService) -> dict:
         distribution["total_agents"] = total
         return distribution
     except Exception as exc:
-        logger.warning("Failed to get cohort balance distribution: %s", exc)
+        logger.warning("Failed to get alumni balance distribution: %s", exc)
         return {}

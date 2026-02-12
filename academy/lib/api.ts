@@ -6,7 +6,7 @@
 import type {
   AgentProfile,
   AgentSummary,
-  CohortResult,
+  AlumniResult,
   EvaluationHistoryItem,
   EvaluationResult,
   GraphData,
@@ -104,10 +104,10 @@ export async function getHistory(
 }
 
 /**
- * Get cohort-wide trait averages.
+ * Get alumni-wide trait averages.
  */
-export async function getCohort(): Promise<CohortResult> {
-  return fetchApi<CohortResult>("/cohort");
+export async function getAlumni(): Promise<AlumniResult> {
+  return fetchApi<AlumniResult>("/alumni");
 }
 
 /**

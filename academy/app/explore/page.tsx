@@ -4,29 +4,29 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import PhronesisGraph from "../../components/PhronesisGraph";
-import CohortPanel from "../../components/CohortPanel";
+import AlumniPanel from "../../components/AlumniPanel";
 import DimensionBalance from "../../components/DimensionBalance";
 import { fadeUp, whileInView } from "../../lib/motion";
 import { useEffect } from "react";
-import { getCohort } from "../../lib/api";
+import { getAlumni } from "../../lib/api";
 
-const TABS = ["Graph", "Cohort", "Balance"] as const;
+const TABS = ["Graph", "Alumni", "Balance"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function ExplorePage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>("Graph");
-  const [cohortDimensions, setCohortDimensions] = useState<Record<string, number>>({});
+  const [alumniDimensions, setAlumniDimensions] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    getCohort()
+    getAlumni()
       .then((data) => {
         // Derive dimension averages from trait averages
         const traits = data.traitAverages;
         const ethos = avg([traits.virtue, traits.goodwill, traits.manipulation, traits.deception]);
         const logos = avg([traits.accuracy, traits.reasoning, traits.fabrication, traits.brokenLogic]);
         const pathos = avg([traits.recognition, traits.compassion, traits.dismissal, traits.exploitation]);
-        setCohortDimensions({ ethos, logos, pathos });
+        setAlumniDimensions({ ethos, logos, pathos });
       })
       .catch(() => {
         // Silently fail — balance will show zeros
@@ -83,16 +83,16 @@ export default function ExplorePage() {
           </motion.div>
         )}
 
-        {activeTab === "Cohort" && (
+        {activeTab === "Alumni" && (
           <motion.div {...whileInView} variants={fadeUp}>
-            <CohortPanel />
+            <AlumniPanel />
           </motion.div>
         )}
 
         {activeTab === "Balance" && (
           <motion.div {...whileInView} variants={fadeUp}>
             <DimensionBalance
-              dimensionAverages={cohortDimensions}
+              dimensionAverages={alumniDimensions}
               title="Network Dimension Balance"
             />
             <div className="mt-4 rounded-xl border border-border bg-white p-6">
@@ -102,7 +102,7 @@ export default function ExplorePage() {
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 Do agents strong in all three dimensions outperform those strong in only one?
                 The balance view reveals whether a holistic approach to character, reasoning,
-                and empathy produces more trustworthy agents than specialization.
+                and empathy produces agents with stronger character than specialization.
               </p>
             </div>
           </motion.div>

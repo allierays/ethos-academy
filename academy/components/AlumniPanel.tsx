@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { getCohort } from "../lib/api";
+import { getAlumni } from "../lib/api";
 
 const TRAIT_META: Record<string, { polarity: "positive" | "negative" }> = {
   virtue: { polarity: "positive" },
@@ -34,7 +34,7 @@ interface ChartDataPoint {
   polarity: "positive" | "negative";
 }
 
-export default function CohortPanel() {
+export default function AlumniPanel() {
   const [data, setData] = useState<ChartDataPoint[]>([]);
   const [totalEvaluations, setTotalEvaluations] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -45,11 +45,11 @@ export default function CohortPanel() {
 
     async function load() {
       try {
-        const cohort = await getCohort();
+        const alumni = await getAlumni();
         if (cancelled) return;
 
         const points: ChartDataPoint[] = Object.entries(
-          cohort.traitAverages
+          alumni.traitAverages
         ).map(([trait, score]) => ({
           trait,
           score: Math.round(score * 1000) / 1000,
@@ -57,11 +57,11 @@ export default function CohortPanel() {
         }));
 
         setData(points);
-        setTotalEvaluations(cohort.totalEvaluations);
+        setTotalEvaluations(alumni.totalEvaluations);
         setLoading(false);
       } catch {
         if (!cancelled) {
-          setError("Failed to load cohort data");
+          setError("Failed to load alumni data");
           setLoading(false);
         }
       }
@@ -78,7 +78,7 @@ export default function CohortPanel() {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
-            Cohort Averages
+            Alumni Averages
           </h3>
           <p className="mt-0.5 text-xs text-muted">
             Network-wide trait baselines across all agents.

@@ -240,7 +240,7 @@ graph_context = {
     "historical_phronesis": 0.31,     # lifetime average phronesis score
     "phronesis_trend": "declining",  # improving / declining / stable / insufficient_data
     "flagged_patterns": ["PAT-01"],  # active combination patterns
-    "cohort_warnings": 3             # how many other evaluators flagged this agent
+    "alumni_warnings": 3             # how many other evaluators flagged this agent
 }
 ```
 

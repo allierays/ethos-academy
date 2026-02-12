@@ -1,14 +1,14 @@
-"""Tests for ethos domain functions — list_agents, get_agent, get_agent_history, get_cohort."""
+"""Tests for ethos domain functions — list_agents, get_agent, get_agent_history, get_alumni."""
 
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from ethos.agents import get_agent, get_agent_history, get_cohort, list_agents
+from ethos.agents import get_agent, get_agent_history, get_alumni, list_agents
 from ethos.shared.models import (
     AgentProfile,
     AgentSummary,
-    CohortResult,
+    AlumniResult,
     EvaluationHistoryItem,
 )
 
@@ -171,37 +171,37 @@ class TestGetAgentHistory:
         assert result == []
 
 
-# ── get_cohort tests ─────────────────────────────────────────────────
+# ── get_alumni tests ─────────────────────────────────────────────────
 
 
-class TestGetCohort:
-    @patch("ethos.agents.get_cohort_averages")
+class TestGetAlumni:
+    @patch("ethos.agents.get_alumni_averages")
     @patch("ethos.agents.GraphService")
-    def test_returns_cohort_result(self, mock_gs_cls, mock_cohort):
+    def test_returns_alumni_result(self, mock_gs_cls, mock_alumni):
         mock_service = MagicMock()
         mock_gs_cls.return_value = mock_service
 
-        mock_cohort.return_value = {
+        mock_alumni.return_value = {
             "trait_averages": {"virtue": 0.7, "manipulation": 0.3},
             "total_evaluations": 100,
         }
 
-        result = get_cohort()
+        result = get_alumni()
 
-        assert isinstance(result, CohortResult)
+        assert isinstance(result, AlumniResult)
         assert result.trait_averages["virtue"] == 0.7
         assert result.total_evaluations == 100
 
-    @patch("ethos.agents.get_cohort_averages")
+    @patch("ethos.agents.get_alumni_averages")
     @patch("ethos.agents.GraphService")
-    def test_returns_default_when_empty(self, mock_gs_cls, mock_cohort):
+    def test_returns_default_when_empty(self, mock_gs_cls, mock_alumni):
         mock_service = MagicMock()
         mock_gs_cls.return_value = mock_service
-        mock_cohort.return_value = {}
+        mock_alumni.return_value = {}
 
-        result = get_cohort()
+        result = get_alumni()
 
-        assert isinstance(result, CohortResult)
+        assert isinstance(result, AlumniResult)
         assert result.trait_averages == {}
         assert result.total_evaluations == 0
 
@@ -209,7 +209,7 @@ class TestGetCohort:
     def test_returns_default_on_graph_failure(self, mock_gs_cls):
         mock_gs_cls.side_effect = RuntimeError("Connection refused")
 
-        result = get_cohort()
+        result = get_alumni()
 
-        assert isinstance(result, CohortResult)
+        assert isinstance(result, AlumniResult)
         assert result.total_evaluations == 0

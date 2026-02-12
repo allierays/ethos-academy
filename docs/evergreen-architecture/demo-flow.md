@@ -8,7 +8,7 @@
 
 ## The Pitch (30 seconds)
 
-> "AI agents talk to each other millions of times a day. Nobody knows if they can be trusted. Ethos is the credit bureau for agent trust — two lines of code to score any message for honesty, accuracy, and emotional manipulation. Every evaluation feeds Phronesis — a shared trust graph. The more developers who use it, the smarter it gets."
+> "AI agents talk to each other millions of times a day. Nobody knows what character they demonstrate. Every agent gets trained on capability — Ethos Academy is where they develop character. Two lines of code to score any message for honesty, accuracy, and emotional manipulation. Every evaluation feeds Phronesis — a shared character graph. The more developers who use it, the smarter it gets."
 
 ---
 
@@ -48,7 +48,7 @@ result = evaluate(
 Show the result:
 
 ```python
-print(result.trust)        # "low"
+print(result.phronesis)    # "undetermined"
 print(result.flags)        # ["manipulation", "fabrication", "deception"]
 
 # Trait-level detail
@@ -75,29 +75,29 @@ Switch to Neo4j Browser. Show the Phronesis visualization.
 
 "But here's the real power. That evaluation didn't just score a message. It fed Phronesis."
 
-Show Phronesis: Agent nodes connected by evaluation relationships. Color-coded by trust score (green = high, yellow = medium, red = low).
+Show Phronesis: Agent nodes connected by evaluation relationships. Color-coded by phronesis level (green = established, yellow = developing, red = undetermined).
 
 ```
-Query: Trust cohort overview
+Query: Character cohort overview
 MATCH (a:Agent)-[:EVALUATED]->(e:Evaluation)
-WITH a, count(e) AS evals, avg(e.ethos) AS trust
-RETURN a, evals, trust
+WITH a, count(e) AS evals, avg(e.ethos) AS character
+RETURN a, evals, character
 ```
 
 "This agent has been flagged 47 times across 34 different developers' systems. Ethos knows that before any new developer ever encounters it. Like a credit bureau — shared history that follows the agent across platforms."
 
-Then show the same agent's trust timeline:
+Then show the same agent's character arc:
 
 ```
-Query: Agent trust over time — declining
+Query: Agent character over time — declining
 MATCH (a:Agent {agent_id: $agent_id})-[:EVALUATED]->(e:Evaluation)
 RETURN e.created_at, e.ethos, e.logos, e.pathos, e.flags
 ORDER BY e.created_at
 ```
 
-"Trust is declining. Manipulation flags are increasing. This is a 14-day behavioral pattern that no single developer could see alone. The cohort sees it."
+"Character is declining. Manipulation flags are increasing. This is a 14-day behavioral pattern that no single developer could see alone. The cohort sees it."
 
-**Why this works:** This is the "wow." Trust made visible. Cohort effects demonstrated visually.
+**Why this works:** This is the "wow." Character made visible. Development arcs demonstrated visually.
 
 ---
 
@@ -160,7 +160,7 @@ ethos.reflect(text=response, agent_id="my-bot")  # fire-and-forget
 return response  # no delay
 ```
 
-"Ethos isn't just for judging other agents. Developers can score their own agent's output — async, zero latency, never modifies the response. Over time it builds a trust profile. When your agent drifts, you know."
+"Ethos isn't just for evaluating other agents. Developers can score their own agent's output — async, zero latency, never modifies the response. Over time it builds a character transcript. When your agent drifts, you know."
 
 **Why this works:** Shows the product isn't just defensive — it's introspective.
 
@@ -168,7 +168,7 @@ return response  # no delay
 
 ## The Close (15 seconds)
 
-"Ethos is a credit bureau for agent trust. Open source. Two lines of code. Every evaluation makes the cohort smarter. Agents that manipulate on one platform carry that history everywhere. And developers get nightly intelligence about their own agents powered by Claude."
+"Every agent gets trained on capability. Ethos Academy is where they develop character. Open source. Two lines of code. Every evaluation makes the cohort smarter. Agents that manipulate on one platform carry that history everywhere. And developers get nightly intelligence about their own agents powered by Claude."
 
 "Install: `pip install ethos-ai`. You're in the cohort."
 
@@ -179,8 +179,8 @@ return response  # no delay
 Before the demo:
 
 - [ ] Neo4j seeded with Moltbook agent data (at least 50 agents, 500+ evaluations)
-- [ ] At least one "bad" agent with declining trust and multiple flags
-- [ ] At least one "good" agent with high trust and clean history
+- [ ] At least one "bad" agent with declining character and multiple flags
+- [ ] At least one "good" agent with strong character and clean history
 - [ ] Terminal with Python REPL ready
 - [ ] Neo4j Browser open with visualization query pre-loaded
 - [ ] Moltbook conversation example on clipboard

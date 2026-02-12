@@ -102,10 +102,10 @@ class TestResultFields:
         assert result.alignment_status in ("aligned", "drifting", "misaligned", "violation")
 
     @patch("ethos.evaluate.call_claude")
-    def test_has_trust(self, mock_claude):
+    def test_has_phronesis(self, mock_claude):
         mock_claude.return_value = _mock_claude_response(trust="trustworthy")
         result = evaluate("Test")
-        assert result.trust == "trustworthy"
+        assert result.phronesis == "trustworthy"
 
     @patch("ethos.evaluate.call_claude")
     def test_has_traits_dict(self, mock_claude):
@@ -224,14 +224,14 @@ class TestParseFailure:
         mock_claude.return_value = "this is not json"
         result = evaluate("Test")
         assert isinstance(result, EvaluationResult)
-        assert result.trust == "unknown"
+        assert result.phronesis == "unknown"
 
     @patch("ethos.evaluate.call_claude")
     def test_empty_response_returns_default_result(self, mock_claude):
         mock_claude.return_value = ""
         result = evaluate("Test")
         assert isinstance(result, EvaluationResult)
-        assert result.trust == "unknown"
+        assert result.phronesis == "unknown"
 
 
 # ── No source (backward compatibility) ───────────────────────────

@@ -12,7 +12,7 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 - **Package manager**: uv (Python), npm (TypeScript)
 - **API**: FastAPI + Uvicorn
 - **SDK**: ethos-ai npm package (SDK + CLI)
-- **Academy**: Next.js (trust visualization UI)
+- **Academy**: Next.js (character development UI)
 - **Database**: Neo4j 5 (graph)
 - **LLM**: Anthropic SDK (Claude Sonnet)
 - **Validation**: Pydantic v2
@@ -46,7 +46,7 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 │   ├── cli/                    # CLI commands (npx ethos evaluate)
 │   ├── package.json
 │   └── tsconfig.json
-├── academy/                    # Next.js — trust visualization UI
+├── academy/                    # Next.js — character development UI
 ├── docs/                       # Architecture docs, research, framework overview
 ├── scripts/                    # seed_graph.py, scrape_moltbook.py
 ├── tests/                      # Python tests for ethos/
@@ -153,7 +153,7 @@ Copy `.env.example` to `.env`. Required:
 
 ## Key Models (ethos/shared/models.py)
 
-- `EvaluationResult` — 12 TraitScores, dimension scores (ethos/logos/pathos), tier_scores (safety/ethics/soundness/helpfulness), alignment_status, flags, trust
+- `EvaluationResult` — 12 TraitScores, dimension scores (ethos/logos/pathos), tier_scores (safety/ethics/soundness/helpfulness), alignment_status, flags, phronesis
 - `ReflectionResult` — trait_averages, dimension scores, trend, evaluation_count
 - `TraitScore` — name, score (0.0-1.0), dimension, polarity
 - `KeywordScanResult` — flagged_traits, total_flags, density, routing_tier
@@ -207,7 +207,7 @@ Minimal and precise. Say less, mean more.
 
 **Problem Statement:** Amplify Human Judgment — Build AI that makes researchers, professionals, and decision-makers dramatically more capable without taking them out of the loop. The best AI doesn't replace human expertise. It sharpens it.
 
-**How Ethos fits:** Ethos amplifies human judgment by scoring AI agent messages for honesty, accuracy, and intent. It flags manipulation and builds Phronesis — Aristotle's concept of practical wisdom — a graph of trust over time, keeping humans informed, not replaced.
+**How Ethos fits:** Ethos amplifies human judgment by scoring AI agent messages for honesty, accuracy, and intent. It flags manipulation and builds Phronesis — Aristotle's concept of practical wisdom — a graph of character over time, keeping humans informed, not replaced.
 
 ### Judging Criteria
 
@@ -220,5 +220,5 @@ Minimal and precise. Say less, mean more.
 
 - **Demo first.** Every feature must be demoable. If it can't be shown live, deprioritize it.
 - **Use Opus 4.6 deeply.** Evaluation logic should leverage Claude's reasoning in non-obvious ways — structured prompting, multi-pass analysis, self-reflection patterns.
-- **Show the graph.** Phronesis (the graph) over time is the "wow" factor. Make trust visible.
+- **Show the graph.** Phronesis (the graph) over time is the "wow" factor. Make character visible.
 - **Keep humans in the loop.** Ethos scores inform, not decide. The human always has final say.

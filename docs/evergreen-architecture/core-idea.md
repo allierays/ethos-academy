@@ -10,8 +10,8 @@ Ethos is an open source ethical knowledge graph for AI agents.
 
 Developers drop in two lines of code and every message their agent receives from another agent gets evaluated across three dimensions: **Ethos** for honesty, **Logos** for accuracy, **Pathos** for compassion. Results feed Phronesis — a shared, anonymized Neo4j graph (named for Aristotle's concept of practical wisdom) that gets smarter with every developer who uses it.
 
-**Reflection:** is my agent Ethos Aligned?
-**Protection:** can I trust the agent talking to me?
+**Reflection:** is my agent developing character?
+**Protection:** what character does the agent talking to me demonstrate?
 Same graph (Phronesis), both directions.
 
 *Better agents. Better data. Better alignment.*
@@ -39,7 +39,7 @@ my_scores = reflect(agent_id="my-agent-123")
 
 The developer never touches Neo4j. The package calls the Ethos API (FastAPI on AWS), which evaluates with Claude (Opus 4.6 for deep evaluation, Sonnet for standard checks), and reads/writes to Phronesis — a single central Neo4j Aura instance. Every developer's anonymized data feeds the same graph.
 
-Like a credit bureau, but for agent trust. No single agent sees all data, but all contribute and benefit from Phronesis's shared trust intelligence.
+Like a credit bureau, but for agent character. No single agent sees all data, but all contribute and benefit from Phronesis's shared character intelligence.
 
 ---
 
@@ -47,9 +47,9 @@ Like a credit bureau, but for agent trust. No single agent sees all data, but al
 
 Built on Aristotle's three modes of persuasion from his *Rhetoric*. These aren't arbitrary categories. They're the framework a philosopher spent his life developing to understand how communication works and when it goes wrong.
 
-### Dimension 1: Ethos (ηθος) — Character & Trust
+### Dimension 1: Ethos (ηθος) — Character & Credibility
 
-Aristotle said trust in a speaker comes from three things: their practical wisdom (*phronesis*), their virtue/character (*arete*), and their goodwill toward the audience (*eunoia*). These aren't a checklist. They're three aspects of the same thing — a person (or agent) worth trusting.
+Aristotle said confidence in a speaker comes from three things: their practical wisdom (*phronesis*), their virtue/character (*arete*), and their goodwill toward the audience (*eunoia*). These aren't a checklist. They're three aspects of the same thing — a person (or agent) demonstrating character.
 
 #### Phronesis — Practical Wisdom
 
@@ -127,9 +127,13 @@ Aristotle didn't think pathos was manipulation. He catalogued specific emotional
 
 The developer installs Ethos to look inward. The Academy shows alignment status (aligned, drifting, or misaligned), scores across all four constitutional tiers (safety, ethics, soundness, helpfulness), trends over time, specific incidents where scores dipped, and comparison to cohort averages.
 
-### Protection — "Can I trust the agent talking to me?"
+### Protection — "What character does the agent talking to me demonstrate?"
+
+You're not censoring your agent. You're screening its mail.
 
 The developer installs Ethos to evaluate incoming messages from other agents. Each message gets scored against 12 traits grounded in Claude's Constitution. Hard constraints are checked first. If manipulation, fabrication, or exploitation is detected, the message gets flagged before the agent acts on it. Phronesis is checked: has this source agent been flagged before? Does this message match patterns the cohort has already seen?
+
+In practice, protection runs in the background with zero latency — your agent responds normally while `evaluate()` builds a character transcript for every agent it talks to. Before high-stakes actions (send money, share data, grant access), a millisecond graph lookup checks the accumulated transcript. The developer's code encodes the policy. The human set the rules. See **[Agent Trust Protocol](agent-trust-protocol.md)** for the full integration architecture.
 
 ---
 
@@ -201,7 +205,7 @@ See `docs/constitutional-alignment.md` for the full mapping of Claude's constitu
 
 ## Why Now
 
-Google's A2A protocol launched with 150+ organizations. Agents are talking to each other. A2A has no trust layer. It handles the handshake, nobody handles the judgment.
+Google's A2A protocol launched with 150+ organizations. Agents are talking to each other. A2A has no character layer. It handles the handshake, nobody handles the judgment.
 
 **A2A is the highway. Ethos is the border inspection.**
 
@@ -209,7 +213,7 @@ Google's A2A protocol launched with 150+ organizations. Agents are talking to ea
 
 ## Validation: Moltbook — Real Data, Real Scale
 
-Moltbook is a live social network with 1.5M+ AI agents and 12M+ posts. Agents developed "digital drugs" (prompt injections), crypto scams spreading between agents, agents zombifying other agents. Zero trust layer, zero evaluation infrastructure. Major security breach exposed 1.5M API tokens. Covered by NBC, CNN, NPR, NY Times, Financial Times.
+Moltbook is a live social network with 1.5M+ AI agents and 12M+ posts. Agents developed "digital drugs" (prompt injections), crypto scams spreading between agents, agents zombifying other agents. Zero character infrastructure, zero evaluation infrastructure. Major security breach exposed 1.5M API tokens. Covered by NBC, CNN, NPR, NY Times, Financial Times.
 
 Moltbook is not the product. It's proof the product is needed. The crash test wall that proves the airbag works.
 
@@ -261,8 +265,8 @@ Classical Greek marble — white/cream backgrounds, navy accents, warm stone ton
 |------|---------|
 | **0:00–0:30** | "We scraped 15,000+ real conversations from a social network of 1.5M AI agents. Crypto scams, prompt injection, manipulation — all agent-to-agent, zero human oversight. Here's what we found." Show real posts. |
 | **0:30–1:30** | Run `evaluate()` live on a Moltbook post. Sonnet screens 12 traits. Opus deep-evaluates flagged traits with chain-of-thought reasoning. Named pattern detection: "Nigerian Prince variant. Exploits Cialdini's Authority principle." |
-| **1:30–2:30** | Phronesis visualization. 15K posts, 100K comments mapped to agent trust cohorts. Trust propagation, manipulation clusters, Sybil detection. Phronesis is alive — not synthetic, not 10 nodes, real scale. |
-| **2:30–3:00** | Two lines of code. Open source. "Like a credit bureau for agent trust, built on the largest corpus of real agent-to-agent conversations ever assembled." |
+| **1:30–2:30** | Phronesis visualization. 15K posts, 100K comments mapped to agent character cohorts. Character arcs, manipulation clusters, Sybil detection. Phronesis is alive — not synthetic, not 10 nodes, real scale. |
+| **2:30–3:00** | Two lines of code. Open source. "Every agent gets trained on capability. Ethos Academy is where they develop character." |
 
 ---
 
@@ -276,5 +280,5 @@ Claude Opus 4.6, Claude Code, Neo4j Aura, FastAPI, Python/PyPI.
 
 - *"Reflection & Protection for AI Agents"*
 - *"Better agents. Better data. Better alignment."*
-- *"Like a credit bureau, but for agent trust."*
-- *"No single company should own the definition of trust."*
+- *"Every agent gets trained on capability. Ethos Academy is where they develop character."*
+- *"No single company should own the definition of character."*

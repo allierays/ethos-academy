@@ -19,7 +19,7 @@ ethos/                   # Python package (pip install ethos)
 └── shared/          # Cross-cutting models and utilities
 api/                     # FastAPI server (at repo root, NOT inside ethos/)
 sdk/                     # ethos-ai npm package (SDK + CLI)
-academy/                 # Next.js trust visualization UI
+academy/                 # Next.js character visualization UI
 ```
 
 ---
@@ -226,7 +226,7 @@ HARD_CONSTRAINTS = [
 ethos/identity/
 ├── __init__.py          # exports: hash_agent_id, AgentProfile
 ├── hashing.py           # SHA-256 hashing of agent IDs
-└── profile.py           # AgentProfile model (aggregate trust data)
+└── profile.py           # AgentProfile model (aggregate character data)
 ```
 
 ### MVP Scope
@@ -420,7 +420,7 @@ Top-level convenience files in `ethos/`: `evaluate.py`, `reflect.py`, `models.py
 | Config | `presets.py` (industry presets: financial, healthcare, research) |
 | API | `routes/`, `schemas.py`, `deps.py` (as endpoints grow) |
 | SDK | Full TypeScript implementation |
-| Academy | Next.js trust visualization UI |
+| Academy | Next.js character visualization UI |
 
 ### Repo Layout
 

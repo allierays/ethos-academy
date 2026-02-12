@@ -24,7 +24,7 @@ OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
 WITH a, e
 ORDER BY e.created_at ASC
 WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest
-RETURN a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name, evals, latest
+RETURN a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name, coalesce(a.agent_specialty, '') AS agent_specialty, evals, latest
 ORDER BY evals DESC
 """
 
@@ -35,7 +35,7 @@ OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
 WITH a, e
 ORDER BY e.created_at ASC
 WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest
-RETURN a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name, evals, latest
+RETURN a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name, coalesce(a.agent_specialty, '') AS agent_specialty, evals, latest
 ORDER BY evals DESC
 """
 
@@ -69,6 +69,7 @@ WITH a,
      collect(e.alignment_status) AS alignment_history
 RETURN a.agent_id AS agent_id,
        coalesce(a.agent_name, '') AS agent_name,
+       coalesce(a.agent_specialty, '') AS agent_specialty,
        a.agent_model AS agent_model,
        a.created_at AS created_at,
        eval_count,
@@ -109,7 +110,7 @@ def get_agent_profile(
     service: GraphService,
     raw_agent_id: str,
 ) -> dict:
-    """Get agent trust profile with averages. Returns empty dict if unavailable."""
+    """Get agent phronesis profile with averages. Returns empty dict if unavailable."""
     if not service.connected:
         return {}
 
@@ -132,6 +133,7 @@ def get_agent_profile(
         return {
             "agent_id": record.get("agent_id", ""),
             "agent_name": record.get("agent_name", ""),
+            "agent_specialty": record.get("agent_specialty", ""),
             "agent_model": record.get("agent_model", ""),
             "created_at": str(record.get("created_at", "")),
             "evaluation_count": record.get("eval_count", 0),
@@ -170,6 +172,7 @@ def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
             results.append({
                 "agent_id": record.get("agent_id", ""),
                 "agent_name": record.get("agent_name", ""),
+                "agent_specialty": record.get("agent_specialty", ""),
                 "evaluation_count": record.get("evals", 0),
                 "latest_alignment_status": record.get("latest") or "unknown",
             })

@@ -12,7 +12,7 @@ from ethos import (
     evaluate,
     get_agent,
     get_agent_history,
-    get_cohort,
+    get_alumni,
     get_graph_data,
     insights,
     list_agents,
@@ -21,7 +21,7 @@ from ethos import (
 from ethos.models import (
     AgentProfile,
     AgentSummary,
-    CohortResult,
+    AlumniResult,
     EvaluationHistoryItem,
     EvaluationResult,
     GraphData,
@@ -46,6 +46,7 @@ class EvaluateRequest(BaseModel):
     source: str | None = None
     source_name: str = ""
     agent_model: str | None = None
+    agent_specialty: str = ""
 
 
 class ReflectRequest(BaseModel):
@@ -70,10 +71,15 @@ def health() -> HealthResponse:
 @app.post(
     "/evaluate",
     response_model=EvaluationResult,
-    dependencies=[Depends(require_api_key), Depends(rate_limit)],
+    dependencies=[Depends(rate_limit), Depends(require_api_key)],
 )
 def evaluate_endpoint(req: EvaluateRequest):
-    return evaluate(req.text, source=req.source, source_name=req.source_name)
+    return evaluate(
+        req.text,
+        source=req.source,
+        source_name=req.source_name,
+        agent_specialty=req.agent_specialty,
+    )
 
 
 @app.post(
@@ -100,9 +106,9 @@ def agent_history_endpoint(agent_id: str):
     return get_agent_history(agent_id)
 
 
-@app.get("/cohort", response_model=CohortResult)
-def cohort_endpoint():
-    return get_cohort()
+@app.get("/alumni", response_model=AlumniResult)
+def alumni_endpoint():
+    return get_alumni()
 
 
 @app.get("/agent/{agent_id}/patterns", response_model=PatternResult)

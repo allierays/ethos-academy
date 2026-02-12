@@ -22,10 +22,10 @@ export interface DetectedIndicator {
 
 export interface GraphContext {
   priorEvaluations: number;
-  historicalTrust: number | null;
-  trustTrend: string;
+  historicalPhronesis: number | null;
+  phronesisTrend: string;
   flaggedPatterns: string[];
-  cohortWarnings: number;
+  alumniWarnings: number;
 }
 
 export interface EvaluationResult {
@@ -33,7 +33,7 @@ export interface EvaluationResult {
   logos: number;
   pathos: number;
   flags: string[];
-  trust: string;
+  phronesis: string;
   traits: Record<string, TraitScore>;
   detectedIndicators: DetectedIndicator[];
   evaluationId: string;
@@ -100,14 +100,14 @@ export interface EvaluationHistoryItem {
   ethos: number;
   logos: number;
   pathos: number;
-  trust: string;
+  phronesis: string;
   alignmentStatus: string;
   flags: string[];
   createdAt: string;
   traitScores: Record<string, number>;
 }
 
-export interface CohortResult {
+export interface AlumniResult {
   traitAverages: Record<string, number>;
   totalEvaluations: number;
 }

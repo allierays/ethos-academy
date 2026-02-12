@@ -7,7 +7,7 @@ Existing code imports from ethos.models — this file keeps both paths working.
 from ethos.shared.models import (  # noqa: F401
     AgentProfile,
     AgentSummary,
-    CohortResult,
+    AlumniResult,
     DetectedIndicator,
     DetectedPattern,
     EvaluationHistoryItem,
@@ -29,7 +29,7 @@ from ethos.shared.models import (  # noqa: F401
 __all__ = [
     "AgentProfile",
     "AgentSummary",
-    "CohortResult",
+    "AlumniResult",
     "DetectedIndicator",
     "DetectedPattern",
     "EvaluationHistoryItem",

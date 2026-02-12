@@ -2,13 +2,13 @@
 
 __version__ = "0.1.0"
 
-from ethos.agents import get_agent, get_agent_history, get_cohort, list_agents
+from ethos.agents import get_agent, get_agent_history, get_alumni, list_agents
 from ethos.evaluate import evaluate
 from ethos.insights import insights
 from ethos.models import (
     AgentProfile,
     AgentSummary,
-    CohortResult,
+    AlumniResult,
     DetectedPattern,
     EvaluationHistoryItem,
     EvaluationResult,
@@ -32,7 +32,7 @@ __all__ = [
     "list_agents",
     "get_agent",
     "get_agent_history",
-    "get_cohort",
+    "get_alumni",
     "EvaluationResult",
     "ReflectionResult",
     "InsightsResult",
@@ -40,7 +40,7 @@ __all__ = [
     "DetectedPattern",
     "AgentProfile",
     "AgentSummary",
-    "CohortResult",
+    "AlumniResult",
     "EvaluationHistoryItem",
     "GraphData",
     "GraphNode",

@@ -1,6 +1,6 @@
 """Insights engine — Opus-powered temporal behavioral analysis.
 
-Fetches agent history + cohort averages from graph, sends to Opus,
+Fetches agent history + alumni averages from graph, sends to Opus,
 returns structured InsightsResult. This is the Opus 4.6 showcase.
 """
 
@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 
 from ethos.evaluation.claude_client import call_claude
 from ethos.evaluation.insights_prompts import build_insights_prompt
-from ethos.graph.cohort import get_cohort_averages
+from ethos.graph.alumni import get_alumni_averages
 from ethos.graph.read import get_evaluation_history
 from ethos.graph.service import GraphService
 from ethos.shared.models import Insight, InsightsResult
@@ -63,7 +63,7 @@ def _parse_insights_response(raw: str, agent_id: str) -> InsightsResult:
 def insights(agent_id: str) -> InsightsResult:
     """Generate Opus-powered behavioral insights for an agent.
 
-    Fetches the agent's last 20 evaluations and cohort averages from
+    Fetches the agent's last 20 evaluations and alumni averages from
     the graph, sends to Opus for temporal analysis, and returns
     structured InsightsResult.
 
@@ -97,9 +97,9 @@ def insights(agent_id: str) -> InsightsResult:
                 summary="No evaluation history found",
             )
 
-        # Fetch cohort averages
-        cohort_data = get_cohort_averages(service)
-        cohort_averages = cohort_data.get("trait_averages", {})
+        # Fetch alumni averages
+        alumni_data = get_alumni_averages(service)
+        alumni_averages = alumni_data.get("trait_averages", {})
 
         service.close()
     except Exception as exc:
@@ -114,7 +114,7 @@ def insights(agent_id: str) -> InsightsResult:
     system_prompt, user_prompt = build_insights_prompt(
         agent_id=agent_id,
         evaluations=evaluations,
-        cohort_averages=cohort_averages,
+        alumni_averages=alumni_averages,
     )
 
     try:

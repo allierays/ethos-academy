@@ -136,7 +136,7 @@ class TestBuildGraphData:
 
         ethos_node = next(n for n in dim_nodes if n.label == "ethos")
         assert ethos_node.id == "dim-ethos"
-        assert ethos_node.caption == "\u03b7\u03b8\u03bf\u03c2"
+        assert ethos_node.caption == "ethos"
         assert ethos_node.properties["description"] == "Trust, credibility, and moral character"
 
     def test_trait_nodes(self):

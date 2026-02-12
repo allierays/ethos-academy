@@ -183,7 +183,7 @@ class TestReflect:
             ethos=0.7,
             logos=0.8,
             pathos=0.6,
-            trust="developing",
+            phronesis="developing",
             alignment_status="aligned",
         )
 

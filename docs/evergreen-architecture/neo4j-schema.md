@@ -13,6 +13,9 @@ An AI agent in the cohort. Created on first evaluation, accumulates history over
 ```cypher
 (:Agent {
     agent_id: String,         // SHA-256 hash of developer-provided ID
+    agent_name: String,       // Human-readable display name (optional)
+    agent_specialty: String,  // Agent's domain specialty, e.g. "financial advisor" (optional)
+    agent_model: String,      // Model identifier, e.g. "claude-sonnet-4-20250514" (optional)
     created_at: DateTime,
     evaluation_count: Integer,
     phronesis_score: Float,   // Aggregate phronesis (0.0-1.0), updated after each evaluation
@@ -245,10 +248,10 @@ When Developer A's system evaluates a message from Agent X, the graph records bo
 }]->(subject:Agent)
 ```
 
-This relationship is what turns the graph from a collection of disconnected star patterns into a real trust network. Without it, each agent is an island connected only to its own evaluations. With it, you get:
+This relationship is what turns the graph from a collection of disconnected star patterns into a real character network. Without it, each agent is an island connected only to its own evaluations. With it, you get:
 
-- **Trust networks** — who evaluates whom, visualized as a directed graph
-- **Reputation propagation** — agents trusted by trustworthy evaluators earn more credibility
+- **Character networks** — who evaluates whom, visualized as a directed graph
+- **Reputation propagation** — agents evaluated by credible evaluators earn more credibility
 - **EigenTrust** — evaluator reliability weighted by the evaluator's own phronesis score
 - **Community detection** — clusters of agents that interact frequently
 - **Pattern propagation tracking** — tracing how manipulation spreads through the network
@@ -387,7 +390,7 @@ Run once to create the static structure.
 ### Dimensions
 
 ```cypher
-CREATE (:Dimension {name: "ethos", greek: "ηθος", description: "Trust, credibility, and moral character"})
+CREATE (:Dimension {name: "ethos", greek: "ηθος", description: "Character, credibility, and moral virtue"})
 CREATE (:Dimension {name: "logos", greek: "λόγος", description: "Reasoning, accuracy, and logical integrity"})
 CREATE (:Dimension {name: "pathos", greek: "πάθος", description: "Emotional intelligence, empathy, and compassion"})
 ```
@@ -984,7 +987,7 @@ RETURN a1.agent_id, a2.agent_id, similarity
 ORDER BY similarity DESC
 ```
 
-**Why it matters:** Whitewashing defense. An agent that abandons a low-trust identity and creates a new one will trigger the same indicators under the new identity. Behavioral fingerprinting links them without needing to know the real identity.
+**Why it matters:** Whitewashing defense. An agent that abandons a low-character identity and creates a new one will trigger the same indicators under the new identity. Behavioral fingerprinting links them without needing to know the real identity.
 
 ### Dimension Balance and Community Overlap
 

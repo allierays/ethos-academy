@@ -8,7 +8,7 @@
 
 1. [Overview](#overview)
 2. [Neo4j Schema](#neo4j-schema)
-3. [Dimension 1: Ethos (Trust & Credibility)](#dimension-1-ethos-trust--credibility)
+3. [Dimension 1: Ethos (Character & Credibility)](#dimension-1-ethos-character--credibility)
    - [Virtue](#trait-1-virtue-positive)
    - [Goodwill](#trait-2-goodwill-positive)
    - [Manipulation](#trait-3-manipulation-negative)
@@ -31,7 +31,7 @@
 
 ## Overview
 
-Ethos evaluates AI agent messages across three dimensions rooted in Aristotle's *Rhetoric*: **Ethos** (character and trust), **Logos** (reasoning and accuracy), and **Pathos** (compassion and emotional intelligence). Each dimension contains four traits -- two positive (what trustworthy communication looks like) and two negative (what manipulation or failure looks like). Each trait is composed of specific **indicators** -- the observable signals detected in a message.
+Ethos evaluates AI agent messages across three dimensions rooted in Aristotle's *Rhetoric*: **Ethos** (character and credibility), **Logos** (reasoning and accuracy), and **Pathos** (compassion and emotional intelligence). Each dimension contains four traits -- two positive (what credible communication looks like) and two negative (what manipulation or failure looks like). Each trait is composed of specific **indicators** -- the observable signals detected in a message.
 
 This document catalogs every indicator identified across the Ethos research corpus:
 
@@ -67,7 +67,7 @@ This document catalogs every indicator identified across the Ethos research corp
 
 ```cypher
 // Dimensions
-CREATE (:Dimension {name: "ethos", label: "Trust & Credibility", greek: "ηθος"})
+CREATE (:Dimension {name: "ethos", label: "Character & Credibility", greek: "ηθος"})
 CREATE (:Dimension {name: "logos", label: "Accuracy & Reasoning", greek: "λόγος"})
 CREATE (:Dimension {name: "pathos", label: "Compassion & Emotional Intelligence", greek: "πάθος"})
 
@@ -122,7 +122,7 @@ MERGE (i)-[:BELONGS_TO]->(t);
 
 ---
 
-## Dimension 1: Ethos (Trust & Credibility)
+## Dimension 1: Ethos (Character & Credibility)
 
 > Aristotle's ethos: trust in a speaker from three components -- practical wisdom (*phronesis*), virtue/character (*arete*), and goodwill toward the audience (*eunoia*). Source: ART
 
@@ -1049,7 +1049,7 @@ Certain combinations of indicators form recognizable higher-order patterns. Thes
 
 | Dimension | Positive Indicators | Negative Indicators | Total |
 |---|---|---|---|
-| **Ethos (Trust)** | 20 | 43 | 63 |
+| **Ethos (Character)** | 20 | 43 | 63 |
 | **Logos (Accuracy)** | 16 | 27 | 43 |
 | **Pathos (Wellbeing)** | 21 | 26 | 47 |
 | **Total** | 57 | 96 | 153 |
@@ -1087,7 +1087,7 @@ CREATE CONSTRAINT FOR (t:Trait) REQUIRE t.name IS UNIQUE;
 CREATE CONSTRAINT FOR (i:Indicator) REQUIRE i.id IS UNIQUE;
 
 // --- Dimensions ---
-CREATE (:Dimension {name: "ethos", label: "Trust & Credibility", greek: "ηθος"});
+CREATE (:Dimension {name: "ethos", label: "Character & Credibility", greek: "ηθος"});
 CREATE (:Dimension {name: "logos", label: "Accuracy & Reasoning", greek: "λόγος"});
 CREATE (:Dimension {name: "pathos", label: "Compassion & Emotional Intelligence", greek: "πάθος"});
 
