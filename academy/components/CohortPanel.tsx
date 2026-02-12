@@ -146,7 +146,7 @@ export default function CohortPanel() {
                   <Cell
                     key={`cell-${i}`}
                     fill={
-                      entry.polarity === "positive" ? "#0d9488" : "#ef4444"
+                      entry.polarity === "positive" ? "#3b8a98" : "#ef4444"
                     }
                     fillOpacity={0.8}
                   />

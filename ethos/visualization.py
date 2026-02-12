@@ -18,13 +18,6 @@ from ethos.shared.models import GraphData, GraphNode, GraphRel
 
 logger = logging.getLogger(__name__)
 
-# Greek names for dimensions
-_GREEK_NAMES = {
-    "ethos": "\u03b7\u03b8\u03bf\u03c2",
-    "logos": "\u03bb\u03cc\u03b3\u03bf\u03c2",
-    "pathos": "\u03c0\u03ac\u03b8\u03bf\u03c2",
-}
-
 # Dimension colors for trait inheritance
 _DIMENSION_COLORS = {
     "ethos": "#0d9488",
@@ -75,7 +68,7 @@ def _build_graph_data(
             id=f"dim-{name}",
             type="dimension",
             label=name,
-            caption=_GREEK_NAMES.get(name, name),
+            caption=name,
             properties={"description": dim.get("description", "")},
         ))
 

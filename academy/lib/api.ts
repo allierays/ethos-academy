@@ -80,8 +80,9 @@ export async function reflect(
 /**
  * List all agents with evaluation summaries.
  */
-export async function getAgents(): Promise<AgentSummary[]> {
-  return fetchApi<AgentSummary[]>("/agents");
+export async function getAgents(search?: string): Promise<AgentSummary[]> {
+  const params = search ? `?q=${encodeURIComponent(search)}` : "";
+  return fetchApi<AgentSummary[]>(`/agents${params}`);
 }
 
 /**

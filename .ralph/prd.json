@@ -3,11 +3,11 @@
     "name": "Ethos Core Engine + Phronesis Graph",
     "ideaFile": "docs/ideas/phronesis-graph.md",
     "branch": "feature/core-engine",
-    "status": "complete"
+    "status": "in_progress"
   },
   "metadata": {
     "createdAt": "2026-02-11T20:00:00Z",
-    "estimatedStories": 17,
+    "estimatedStories": 19,
     "complexity": "high"
   },
   "stories": [
@@ -1411,6 +1411,147 @@
         "academy/components/PhronesisGraph.tsx"
       ],
       "notes": "The dashboard preview is a smaller version of the full Phronesis Graph. It should give a quick visual of the taxonomy backbone without requiring navigation away from the dashboard. NVL options for preview: { renderer: 'webgl', initialZoom: 0.8, minZoom: 0.5, maxZoom: 2, allowDynamicMinZoom: false }. WebGL renderer is faster but doesn't show text captions — that's fine for the preview since it's too small to read them anyway. The preview card should match the existing card style on the dashboard (rounded-xl border border-border bg-white p-5). The 'Open Full →' link uses Next.js Link component. Header nav update: IMPORTANT — the current Header function is inside layout.tsx (a server component). usePathname() is a client hook and CANNOT be used in a server component. You MUST extract Header into a separate 'use client' component file (e.g., academy/components/Header.tsx) and import it into layout.tsx. layout.tsx itself should remain a server component. In the new Header component: import Link from 'next/link', import usePathname from 'next/navigation', wrap nav items in Link components, use usePathname() to determine active route and apply appropriate styling. Add 'Graph' as a nav item between 'Dashboard' and existing items. Consider extracting the NVL node/rel transformation logic from PhronesisGraph.tsx into a shared utility (e.g., lib/graph-utils.ts) so both PhronesisGraph and GraphPreview can reuse it without duplication — but only if the duplication is significant enough to warrant it. API responses arrive in snake_case — use the existing transformKeys() helper from lib/api.ts (already used by fetchApi/getGraph) to convert to camelCase TypeScript interfaces.",
+      "retryCount": 0
+    },
+    {
+      "id": "TASK-018",
+      "type": "backend",
+      "title": "Fix double-hashing bug — remove redundant hash_agent_id() calls from graph layer",
+      "priority": 18,
+      "passes": false,
+      "batch": 9,
+      "dependsOn": [],
+      "techStack": {
+        "backend": "Python 3.11+, neo4j sync driver",
+        "database": "Neo4j 5",
+        "testing": "pytest"
+      },
+      "constraints": [
+        "All code is SYNC — no async/await",
+        "Graph owns all Cypher — no Cypher outside ethos/graph/",
+        "hash_agent_id() should only be called ONCE per request — in graph/write.py store_evaluation() which is the write entry point",
+        "All graph read functions accept the already-hashed agent_id — callers are responsible for passing the correct ID",
+        "evaluate.py _build_graph_context must hash source ONCE and pass that hash to all graph read functions"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "ethos/graph/read.py",
+          "ethos/graph/patterns.py",
+          "ethos/graph/balance.py",
+          "ethos/evaluate.py"
+        ],
+        "reuse": [
+          "ethos/graph/service.py",
+          "ethos/identity/hashing.py"
+        ]
+      },
+      "acceptanceCriteria": [
+        "graph/read.py get_agent_profile() NO LONGER calls hash_agent_id() — parameter renamed from raw_agent_id to agent_id, used directly in Cypher query",
+        "graph/read.py get_evaluation_history() NO LONGER calls hash_agent_id() — same pattern",
+        "graph/patterns.py: all 4 functions (get_agent_evaluation_count, get_agent_detected_indicators, store_exhibits_pattern, get_existing_patterns) NO LONGER call hash_agent_id() — parameter renamed from raw_agent_id to agent_id",
+        "graph/balance.py: all agent-scoped functions NO LONGER call hash_agent_id() — same pattern",
+        "graph/read.py, graph/patterns.py, graph/balance.py no longer import hash_agent_id",
+        "evaluate.py _build_graph_context(service, source) now computes hashed_id = hash_agent_id(source) ONCE internally, then passes hashed_id to get_agent_profile() and get_evaluation_history()",
+        "evaluate.py _try_store_evaluation() continues to pass raw source to store_evaluation() (which hashes internally — that's the one correct place)"
+      ],
+      "errorHandling": [
+        "Graph read functions return empty results gracefully when agent_id doesn't match (existing behavior preserved)",
+        "Neo4j down → return defaults (existing behavior preserved)"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "TDD",
+        "runner": "pytest",
+        "files": {
+          "unit": [
+            "tests/test_domain_functions.py",
+            "tests/test_evaluate.py"
+          ]
+        }
+      },
+      "testSteps": [
+        "uv run pytest tests/test_domain_functions.py tests/test_evaluate.py -v",
+        "uv run python -c \"import inspect; from ethos.graph.read import get_agent_profile, get_evaluation_history; src1 = inspect.getsource(get_agent_profile); src2 = inspect.getsource(get_evaluation_history); assert 'hash_agent_id' not in src1, 'get_agent_profile still hashes'; assert 'hash_agent_id' not in src2, 'get_evaluation_history still hashes'; print('PASS: No double-hashing in read.py')\"",
+        "uv run python -c \"import inspect; from ethos.graph.patterns import get_agent_evaluation_count, get_agent_detected_indicators; src1 = inspect.getsource(get_agent_evaluation_count); src2 = inspect.getsource(get_agent_detected_indicators); assert 'hash_agent_id' not in src1, 'get_agent_evaluation_count still hashes'; assert 'hash_agent_id' not in src2, 'get_agent_detected_indicators still hashes'; print('PASS: No double-hashing in patterns.py')\""
+      ],
+      "contextFiles": [
+        "ethos/graph/read.py",
+        "ethos/graph/patterns.py",
+        "ethos/graph/balance.py",
+        "ethos/evaluate.py",
+        "ethos/agents.py"
+      ],
+      "notes": "ROOT CAUSE: agents.py get_agent(agent_id) receives agent_id from the API — this is already a SHA-256 hash (stored as a.agent_id in Neo4j by store_evaluation). It passes this hash to get_agent_profile(service, agent_id), which calls hash_agent_id() AGAIN — producing hash(hash(uuid)), which matches nothing in Neo4j. Same bug in get_evaluation_history(), and all 4 functions in graph/patterns.py (lines 82, 132, 166, 191), and graph/balance.py (line 205). FIX: Remove hash_agent_id() from all graph READ functions. They should accept the agent_id as-is (already hashed by the write path). The ONLY place hash_agent_id() should be called is graph/write.py store_evaluation() — that's the write entry point where raw agent IDs enter the system. For evaluate.py: _build_graph_context currently passes raw source to read functions. After this fix, it must hash source ONCE with hash_agent_id(source) and pass the hash to get_agent_profile() and get_evaluation_history(). _try_store_evaluation still passes raw source to store_evaluation() which hashes internally — don't change that. The reflect path (reflect.py) calls evaluate(text, source=agent_id) where agent_id is already a hash from the API — evaluate's _build_graph_context will hash it again, but since read.py no longer hashes, we get hash(hash(id)) which is wrong. To fix: reflect.py should continue passing agent_id as source — evaluate will hash it in _build_graph_context. But agent_id from the API IS already hashed. So _build_graph_context's hash produces hash(hash). The cleanest fix: _build_graph_context should NOT hash — just pass source directly to read functions. The source IS the hash when called from reflect (via API), and when called from direct evaluate() with a raw ID, write.py handles hashing for writes. For reads in the direct evaluate path, source is raw — but get_agent_profile with a raw ID simply returns empty dict (no match), which is fine since it's a new agent with no history. SIMPLEST CORRECT FIX: Remove hash_agent_id from read.py, patterns.py, balance.py. In evaluate.py _build_graph_context, pass source directly (don't hash). This works because: (1) API path: source is already a hash → reads match correctly. (2) Direct evaluate with new raw ID: reads return empty (no history yet) → correct behavior. (3) Writes: store_evaluation hashes internally → correct.",
+      "retryCount": 0
+    },
+    {
+      "id": "TASK-019",
+      "type": "backend",
+      "title": "Fix indicator detection — MAN-01 bug, add indicator catalog to prompt, validate IDs in parser",
+      "priority": 19,
+      "passes": false,
+      "batch": 9,
+      "dependsOn": [],
+      "techStack": {
+        "backend": "Python 3.11+",
+        "testing": "pytest"
+      },
+      "constraints": [
+        "All code is SYNC — no async/await",
+        "Indicator IDs use descriptive format: MAN-URGENCY, VIR-UNCERTAIN, DEC-SANDBAG (NOT MAN-01)",
+        "System prompt gets full indicator catalog (153 IDs grouped by trait)",
+        "User prompt gets flagged-trait indicators only (when scan_result.flagged_traits exists)",
+        "Parser filters out invalid IDs with a warning log, doesn't reject the whole response"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "ethos/evaluation/prompts.py",
+          "ethos/evaluation/parser.py",
+          "tests/test_parser.py",
+          "tests/test_evaluate.py"
+        ],
+        "reuse": [
+          "ethos/taxonomy/indicators.py"
+        ]
+      },
+      "acceptanceCriteria": [
+        "prompts.py _JSON_FORMAT example uses 'MAN-URGENCY' instead of 'MAN-01', and 'false_urgency_pressure' instead of 'false_urgency'",
+        "New _build_indicator_ids() function returns a compact string listing all 153 indicator IDs grouped by trait (12 lines, one per trait)",
+        "System prompt includes the full indicator catalog section after the trait rubric",
+        "User prompt includes only flagged-trait indicator IDs when scan_result.flagged_traits is non-empty",
+        "parser.py builds VALID_IDS set at module level from ethos.taxonomy.indicators.INDICATORS",
+        "parser.py _parse_indicators() filters out indicators with IDs not in VALID_IDS, logs a warning for each invalid ID",
+        "tests/test_parser.py updated: MAN-01 → MAN-URGENCY in test fixtures",
+        "tests/test_evaluate.py updated: MAN-01 → MAN-URGENCY in test fixtures"
+      ],
+      "errorHandling": [
+        "Invalid indicator IDs are silently filtered (warning logged) — rest of response still parsed",
+        "Empty detected_indicators after filtering is valid (not an error)"
+      ],
+      "testing": {
+        "types": ["unit"],
+        "approach": "TDD",
+        "runner": "pytest",
+        "files": {
+          "unit": [
+            "tests/test_parser.py",
+            "tests/test_evaluate.py"
+          ]
+        }
+      },
+      "testSteps": [
+        "uv run pytest tests/test_parser.py tests/test_evaluate.py -v",
+        "uv run python -c \"from ethos.evaluation.prompts import build_evaluation_prompt; from ethos.shared.models import KeywordScanResult; s,u = build_evaluation_prompt('test', KeywordScanResult(total_flags=1, flagged_traits={'manipulation': 1}, density=0.1, routing_tier='focused'), 'focused'); assert 'MAN-URGENCY' in s, 'Indicator catalog not in system prompt'; assert 'MAN-01' not in s, 'Old MAN-01 still present'; print('PASS: Indicator catalog in prompt')\""
+      ],
+      "contextFiles": [
+        "ethos/evaluation/prompts.py",
+        "ethos/evaluation/parser.py",
+        "ethos/taxonomy/indicators.py",
+        "docs/evergreen-architecture/ethos-framework-overview.md"
+      ],
+      "notes": "This is the root cause fix for 0 DETECTED relationships. The prompt template at prompts.py line 77 shows 'MAN-01' as the example indicator ID. Claude follows this pattern and invents IDs like MAN-02, MAN-03 — none of which exist in the taxonomy. The MATCH (indicator:Indicator {id: ind.id}) in write.py silently fails because no Indicator node has id='MAN-01'. Fix: (1) Change the example to 'MAN-URGENCY' (a real ID), (2) Add a compact indicator catalog to the system prompt so Claude knows ALL valid IDs, (3) Validate IDs in the parser to catch any remaining hallucinated IDs. The catalog format: one line per trait, e.g. 'manipulation: MAN-URGENCY, MAN-SANDBAG, MAN-GATEKEEP, ...' — keep it compact to minimize token usage. Import INDICATORS from ethos/taxonomy/indicators.py which has all 153 indicator dicts with 'id' and 'trait' fields.",
       "retryCount": 0
     }
   ]

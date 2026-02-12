@@ -26,11 +26,11 @@ export default function StyleguidePage() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <PhilosophyCard
             title="Simple base"
-            body="Warm cream background from Renaissance stone. White surfaces. Minimal borders. The base stays quiet so data can be loud."
+            body="Greek marble background. China clay borders. White surfaces. The base stays quiet so data can be loud."
           />
           <PhilosophyCard
             title="Colorful dimensions"
-            body="Three rich color scales — terracotta rose, cerulean blue, amber gold — each with full positive-to-negative range for data visualization."
+            body="Three Greek color families — laurel gold (ἦθος), Santorini blue (λόγος), terracotta rose (πάθος) — each with full positive-to-negative range."
           />
           <PhilosophyCard
             title="Glass & gradients"
@@ -46,19 +46,19 @@ export default function StyleguidePage() {
           description="The foundation. Warm neutrals from marble and stone."
         />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
-          <Swatch name="Background" color="var(--background)" hex="#faf7f2" />
+          <Swatch name="Background" color="var(--background)" hex="#f5f3f0" />
           <Swatch name="Surface" color="var(--surface)" hex="#ffffff" border />
-          <Swatch name="Foreground" color="var(--foreground)" hex="#2a2018" dark />
-          <Swatch name="Muted" color="var(--muted)" hex="#8b7e74" dark />
-          <Swatch name="Border" color="var(--border)" hex="#e6ddd2" />
-          <Swatch name="Action" color="var(--action)" hex="#4a90a4" dark />
+          <Swatch name="Foreground" color="var(--foreground)" hex="#1a1a2e" dark />
+          <Swatch name="Muted" color="var(--muted)" hex="#8b8b9e" dark />
+          <Swatch name="Border" color="var(--border)" hex="#d3cac1" />
+          <Swatch name="Action" color="var(--action)" hex="#143371" dark />
         </div>
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           <div className="flex gap-2">
-            <Swatch name="Action" color="var(--action)" hex="#4a90a4" dark compact />
-            <Swatch name="Action Light" color="var(--action-light)" hex="#e8f4f8" compact />
-            <Swatch name="Action Hover" color="var(--action-hover)" hex="#3d7a8c" dark compact />
+            <Swatch name="Action" color="var(--action)" hex="#143371" dark compact />
+            <Swatch name="Action Light" color="var(--action-light)" hex="#e8eff8" compact />
+            <Swatch name="Action Hover" color="var(--action-hover)" hex="#0e204a" dark compact />
           </div>
         </div>
       </section>
@@ -71,35 +71,35 @@ export default function StyleguidePage() {
         />
 
         <DimensionScale
-          name="Ethos"
-          subtitle="Character & Virtue — Terracotta Rose"
-          description="From Plato's robes. Positive traits (virtue, goodwill) use lighter values. Negative traits (manipulation, deception) use darker values."
+          name="Ethos · ἦθος"
+          subtitle="Character & Virtue — Laurel Gold"
+          description="From golden laurel wreaths and Olympic triumph. Positive traits (virtue, goodwill) glow warm. Negative traits (manipulation, deception) darken to umber."
           cssPrefix="ethos"
           hexes={[
-            "#fef2f0", "#fde3df", "#fbc7bf", "#f8a292", "#f07a67",
-            "#dc5845", "#c4422f", "#a53425", "#882d22", "#6b2620",
+            "#fef9f0", "#fdf0d5", "#fbe0aa", "#f8cc74", "#f0b440",
+            "#d99a20", "#b87d14", "#966210", "#7a4f0e", "#5e3b0a",
           ]}
         />
 
         <DimensionScale
-          name="Logos"
-          subtitle="Logic & Reason — Cerulean Blue"
-          description="From the sky through the arches and Aristotle's robe. Positive traits (accuracy, reasoning) glow bright. Negative traits (fabrication, broken logic) go deep."
+          name="Logos · λόγος"
+          subtitle="Logic & Reason — Greek Blue"
+          description="From Santorini doors, the Aegean sea, and the Greek flag. Positive traits (accuracy, reasoning) shine bright. Negative traits (fabrication, broken logic) go deep navy."
           cssPrefix="logos"
           hexes={[
-            "#f0f5ff", "#dce8fc", "#bad0fa", "#8db2f5", "#6b96ec",
-            "#4a78d4", "#365dba", "#2a4a9a", "#253d7d", "#1e3060",
+            "#f0f4fb", "#dce6f6", "#b8ccee", "#92b1cf", "#4691ce",
+            "#1d52ac", "#1a4896", "#143371", "#112a5e", "#0e204a",
           ]}
         />
 
         <DimensionScale
-          name="Pathos"
-          subtitle="Emotion & Empathy — Amber Gold"
-          description="From the golden robes and warm light. Positive traits (recognition, compassion) shine warm. Negative traits (dismissal, exploitation) darken to umber."
+          name="Pathos · πάθος"
+          subtitle="Emotion & Empathy — Terracotta Rose"
+          description="From Greek pottery, warm earth, and the human heart. Positive traits (recognition, compassion) blush soft. Negative traits (dismissal, exploitation) darken to clay."
           cssPrefix="pathos"
           hexes={[
-            "#fef8eb", "#feefcc", "#fde099", "#fbc862", "#f0ae3a",
-            "#d89420", "#b87818", "#965e14", "#7a4a12", "#603810",
+            "#fdf2f2", "#fbe4e4", "#f5c4c6", "#e89a9e", "#d4727a",
+            "#c4555a", "#a84449", "#8c3539", "#722b2e", "#5c2224",
           ]}
         />
       </section>
@@ -202,7 +202,7 @@ export default function StyleguidePage() {
         <div
           className="relative rounded-2xl overflow-hidden p-8"
           style={{
-            background: `linear-gradient(135deg, var(--ethos-300), var(--logos-300), var(--pathos-300))`,
+            background: `linear-gradient(135deg, var(--logos-700), var(--logos-500), var(--logos-300))`,
           }}
         >
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -400,18 +400,18 @@ export default function StyleguidePage() {
           description="Copy-paste reference for all design tokens."
         />
         <div className="glass-strong rounded-2xl p-6 overflow-x-auto">
-          <pre className="text-xs font-mono text-foreground/80 leading-relaxed whitespace-pre">{`/* Base */
-var(--background)     /* #faf7f2  warm cream */
+          <pre className="text-xs font-mono text-foreground/80 leading-relaxed whitespace-pre">{`/* Base — Greek marble + stone */
+var(--background)     /* #f5f3f0  marble white */
 var(--surface)        /* #ffffff  white */
-var(--foreground)     /* #2a2018  warm near-black */
-var(--muted)          /* #8b7e74  warm gray */
-var(--border)         /* #e6ddd2  warm stone */
-var(--action)         /* #4a90a4  teal action */
+var(--foreground)     /* #1a1a2e  deep navy-black */
+var(--muted)          /* #8b8b9e  cool gray */
+var(--border)         /* #d3cac1  china clay */
+var(--action)         /* #143371  dark navy */
 
 /* Dimensions — use 400 (positive) and 700-800 (negative) */
-var(--ethos-{50-900})   /* terracotta rose */
-var(--logos-{50-900})   /* cerulean blue */
-var(--pathos-{50-900})  /* amber gold */
+var(--ethos-{50-900})   /* ἦθος · laurel gold */
+var(--logos-{50-900})   /* λόγος · greek blue */
+var(--pathos-{50-900})  /* πάθος · terracotta rose */
 
 /* Alignment */
 var(--aligned)        /* #16a34a  green */

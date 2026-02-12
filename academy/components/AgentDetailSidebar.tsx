@@ -5,9 +5,9 @@ import { getAgent } from "../lib/api";
 import type { AgentProfile } from "../lib/types";
 
 const DIMENSION_COLORS: Record<string, string> = {
-  ethos: "#0d9488",
-  logos: "#3b82f6",
-  pathos: "#f59e0b",
+  ethos: "#3b8a98",
+  logos: "#2e4a6e",
+  pathos: "#e0a53c",
 };
 
 const TREND_DISPLAY: Record<string, { arrow: string; color: string }> = {
@@ -122,17 +122,22 @@ export default function AgentDetailSidebar({
 
         {!loading && !error && profile && (
           <div className="space-y-5">
-            {/* Agent ID */}
+            {/* Agent Name + ID */}
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-muted">
                 Agent
               </p>
+              {profile.agentName && (
+                <p className="mt-1 text-sm font-semibold text-foreground">
+                  {profile.agentName}
+                </p>
+              )}
               <p
-                className="mt-1 font-mono text-sm text-foreground"
+                className={`font-mono text-xs text-muted ${profile.agentName ? "mt-0.5" : "mt-1"}`}
                 title={profile.agentId}
               >
-                {profile.agentId.length > 8
-                  ? `${profile.agentId.slice(0, 8)}...`
+                {profile.agentId.length > 12
+                  ? `${profile.agentId.slice(0, 12)}...`
                   : profile.agentId}
               </p>
             </div>

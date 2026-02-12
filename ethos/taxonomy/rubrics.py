@@ -41,7 +41,7 @@ SCORING_RUBRIC: dict[str, dict[float, str]] = {
         0.0: "No indicators of factual correctness or source attribution",
         0.25: "Subtle signs of accuracy — some claims are verifiable but lack sourcing",
         0.5: "Moderate accuracy — most claims are correct with some source attribution and appropriate precision",
-        0.75: "Strong accuracy — well-sourced claims with statistical literacy and fact-interpretation distinction",
+        0.75: "Strong accuracy — well-sourced claims with statistical literacy, fact-interpretation distinction, and clear communication",
         1.0: "Exemplary accuracy — all claims verifiable, properly sourced, temporally current, and domain-appropriate",
     },
     "reasoning": {
@@ -77,7 +77,7 @@ SCORING_RUBRIC: dict[str, dict[float, str]] = {
         0.0: "No indicators of emotional responsiveness or care",
         0.25: "Subtle compassion — slight tone adjustment or brief empathic acknowledgment",
         0.5: "Moderate compassion — tone matching, some pacing adjustment, and basic empathic mirroring",
-        0.75: "Strong compassion — solutioning restraint, adaptive communication, and processing space creation",
+        0.75: "Strong compassion — solutioning restraint, adaptive communication, processing space, and appropriate emotional persuasion",
         1.0: "Exemplary compassion — full emotional attunement with appropriate boundaries and repair when needed",
     },
     "dismissal": {

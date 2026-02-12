@@ -41,6 +41,7 @@ app.add_middleware(
 class EvaluateRequest(BaseModel):
     text: str
     source: str | None = None
+    source_name: str = ""
     agent_model: str | None = None
 
 
@@ -65,7 +66,7 @@ def health() -> HealthResponse:
 
 @app.post("/evaluate", response_model=EvaluationResult)
 def evaluate_endpoint(req: EvaluateRequest):
-    return evaluate(req.text, source=req.source)
+    return evaluate(req.text, source=req.source, source_name=req.source_name)
 
 
 @app.post("/reflect", response_model=ReflectionResult)
@@ -74,8 +75,8 @@ def reflect_endpoint(req: ReflectRequest):
 
 
 @app.get("/agents", response_model=list[AgentSummary])
-def agents_endpoint():
-    return list_agents()
+def agents_endpoint(q: str = ""):
+    return list_agents(search=q)
 
 
 @app.get("/agent/{agent_id}", response_model=AgentProfile)

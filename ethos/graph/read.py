@@ -24,7 +24,18 @@ OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
 WITH a, e
 ORDER BY e.created_at ASC
 WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest
-RETURN a.agent_id AS agent_id, evals, latest
+RETURN a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name, evals, latest
+ORDER BY evals DESC
+"""
+
+_SEARCH_AGENTS_QUERY = """
+MATCH (a:Agent)
+WHERE toLower(a.agent_name) CONTAINS toLower($search)
+OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
+WITH a, e
+ORDER BY e.created_at ASC
+WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest
+RETURN a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name, evals, latest
 ORDER BY evals DESC
 """
 
@@ -57,6 +68,7 @@ WITH a,
      avg(e.trait_exploitation) AS avg_exploitation,
      collect(e.alignment_status) AS alignment_history
 RETURN a.agent_id AS agent_id,
+       coalesce(a.agent_name, '') AS agent_name,
        a.agent_model AS agent_model,
        a.created_at AS created_at,
        eval_count,
@@ -119,6 +131,7 @@ def get_agent_profile(
 
         return {
             "agent_id": record.get("agent_id", ""),
+            "agent_name": record.get("agent_name", ""),
             "agent_model": record.get("agent_model", ""),
             "created_at": str(record.get("created_at", "")),
             "evaluation_count": record.get("eval_count", 0),
@@ -135,17 +148,28 @@ def get_agent_profile(
         return {}
 
 
-def get_all_agents(service: GraphService) -> list[dict]:
-    """Get all agents with evaluation counts. Returns empty list if unavailable."""
+def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
+    """Get all agents with evaluation counts. Returns empty list if unavailable.
+
+    Args:
+        service: Graph service connection.
+        search: Optional name filter — matches agent_name case-insensitively.
+    """
     if not service.connected:
         return []
 
     try:
-        records, _, _ = service.execute_query(_GET_ALL_AGENTS_QUERY)
+        if search:
+            records, _, _ = service.execute_query(
+                _SEARCH_AGENTS_QUERY, {"search": search}
+            )
+        else:
+            records, _, _ = service.execute_query(_GET_ALL_AGENTS_QUERY)
         results = []
         for record in records:
             results.append({
                 "agent_id": record.get("agent_id", ""),
+                "agent_name": record.get("agent_name", ""),
                 "evaluation_count": record.get("evals", 0),
                 "latest_alignment_status": record.get("latest") or "unknown",
             })

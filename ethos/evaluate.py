@@ -75,6 +75,7 @@ def _try_store_evaluation(
     result: EvaluationResult,
     text: str,
     phronesis: str,
+    agent_name: str = "",
 ) -> None:
     """Attempt to store evaluation in graph. Non-fatal on failure."""
     try:
@@ -85,12 +86,15 @@ def _try_store_evaluation(
             result=result,
             message_hash=message_hash,
             phronesis=phronesis,
+            agent_name=agent_name,
         )
     except Exception as exc:
         logger.warning("Failed to store evaluation in graph: %s", exc)
 
 
-def evaluate(text: str, source: str | None = None) -> EvaluationResult:
+def evaluate(
+    text: str, source: str | None = None, source_name: str = ""
+) -> EvaluationResult:
     """Evaluate text for honesty, accuracy, and intent across ethos, logos, and pathos.
 
     Pipeline:
@@ -104,6 +108,7 @@ def evaluate(text: str, source: str | None = None) -> EvaluationResult:
     Args:
         text: The text to evaluate.
         source: Optional source agent identifier for graph tracking.
+        source_name: Optional human-readable agent name for display.
 
     Returns:
         EvaluationResult with scores and trust flags.
@@ -159,7 +164,10 @@ def evaluate(text: str, source: str | None = None) -> EvaluationResult:
             service.connect()
 
             graph_context = _build_graph_context(service, source)
-            _try_store_evaluation(service, source, result, text, phronesis)
+            _try_store_evaluation(
+                service, source, result, text, phronesis,
+                agent_name=source_name,
+            )
 
             service.close()
         except Exception as exc:

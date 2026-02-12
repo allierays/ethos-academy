@@ -5,7 +5,7 @@ import { getGraph } from "../lib/api";
 import type { GraphData, GraphNode as EthosGraphNode, GraphRel } from "../lib/types";
 
 /* -------------------------------------------------------------------------- */
-/*  NVL is imported dynamically to avoid SSR issues (canvas/WebGL)            */
+/*  NVL type interfaces                                                       */
 /* -------------------------------------------------------------------------- */
 
 interface NvlNode {
@@ -30,20 +30,20 @@ interface NvlRelationship {
 /* -------------------------------------------------------------------------- */
 
 const DIMENSION_COLORS: Record<string, string> = {
-  ethos: "#0d9488",
-  logos: "#3b82f6",
-  pathos: "#f59e0b",
+  ethos: "#3b8a98",
+  logos: "#2e4a6e",
+  pathos: "#e0a53c",
 };
 
 const ALIGNMENT_COLORS: Record<string, string> = {
   aligned: "#10b981",
-  drifting: "#f59e0b",
+  drifting: "#d97706",
   misaligned: "#ef4444",
   violation: "#dc2626",
 };
 
 const PATTERN_SEVERITY_COLORS: Record<string, string> = {
-  info: "#f59e0b",
+  info: "#e0a53c",
   warning: "#ef4444",
   critical: "#dc2626",
 };
@@ -53,7 +53,7 @@ function getNodeColor(node: EthosGraphNode): string {
 
   switch (type) {
     case "dimension":
-      return DIMENSION_COLORS[node.label] ?? "#0d9488";
+      return DIMENSION_COLORS[node.label] ?? "#3b8a98";
     case "trait": {
       const polarity = properties.polarity as string | undefined;
       if (polarity === "negative") return "#ef4444";
@@ -65,8 +65,8 @@ function getNodeColor(node: EthosGraphNode): string {
     case "pattern": {
       const severity = properties.severity as string | undefined;
       return severity
-        ? (PATTERN_SEVERITY_COLORS[severity] ?? "#f59e0b")
-        : "#f59e0b";
+        ? (PATTERN_SEVERITY_COLORS[severity] ?? "#e0a53c")
+        : "#e0a53c";
     }
     case "indicator":
       return "#94a3b8";
@@ -77,7 +77,7 @@ function getNodeColor(node: EthosGraphNode): string {
         : "#10b981";
     }
     case "evaluation":
-      return "rgba(13, 148, 136, 0.5)";
+      return "rgba(59, 138, 152, 0.5)";
     default:
       return "#94a3b8";
   }
@@ -109,11 +109,11 @@ function getNodeSize(node: EthosGraphNode): number {
 function getNodeCaption(node: EthosGraphNode): string {
   switch (node.type) {
     case "dimension":
-      return node.caption || node.label;
+      return node.label;
     case "trait":
       return node.label;
     case "constitutional_value":
-      return node.caption || node.label;
+      return node.label;
     case "pattern":
       return node.label;
     case "agent":
@@ -134,8 +134,8 @@ function getNodeCaption(node: EthosGraphNode): string {
 const REL_STYLES: Record<string, { color: string; width: number }> = {
   BELONGS_TO: { color: "#94a3b8", width: 1 },
   UPHOLDS: { color: "#8b5cf6", width: 1.5 },
-  COMPOSED_OF: { color: "#f59e0b", width: 1 },
-  EVALUATED: { color: "#0d9488", width: 1 },
+  COMPOSED_OF: { color: "#e0a53c", width: 1 },
+  EVALUATED: { color: "#3b8a98", width: 1 },
   DETECTED: { color: "#ef4444", width: 1 },
 };
 
@@ -152,21 +152,139 @@ function toNvlNodes(nodes: EthosGraphNode[]): NvlNode[] {
   }));
 }
 
-function toNvlRelationships(rels: GraphRel[]): NvlRelationship[] {
-  return rels.map((r) => {
-    const style = REL_STYLES[r.type] ?? { color: "#cbd5e1", width: 1 };
-    return {
-      id: r.id,
-      from: r.fromId,
-      to: r.toId,
-      color: style.color,
-      width: style.width,
-    };
-  });
+function toNvlRelationships(rels: GraphRel[], nodeIds: Set<string>): NvlRelationship[] {
+  return rels
+    .filter((r) => nodeIds.has(r.fromId) && nodeIds.has(r.toId))
+    .map((r) => {
+      const style = REL_STYLES[r.type] ?? { color: "#cbd5e1", width: 1 };
+      return {
+        id: r.id,
+        from: r.fromId,
+        to: r.toId,
+        color: style.color,
+        width: style.width,
+      };
+    });
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Component                                                                 */
+/*  Inner NVL component — only mounts after data + NVL are ready             */
+/* -------------------------------------------------------------------------- */
+
+interface NvlRendererProps {
+  nodes: NvlNode[];
+  rels: NvlRelationship[];
+  onNodeClick?: (event: unknown, node: { id: string }) => void;
+}
+
+function NvlRenderer({ nodes, rels, onNodeClick }: NvlRendererProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const nvlInstanceRef = useRef<unknown>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const interactionsRef = useRef<any[]>([]);
+  const onNodeClickRef = useRef(onNodeClick);
+  onNodeClickRef.current = onNodeClick;
+
+  useEffect(() => {
+    let destroyed = false;
+
+    async function init() {
+      if (!containerRef.current) return;
+
+      try {
+        const [{ default: NVL }, handlers] = await Promise.all([
+          import("@neo4j-nvl/base"),
+          import("@neo4j-nvl/interaction-handlers"),
+        ]);
+
+        if (destroyed || !containerRef.current) return;
+
+        // Clean any stale content
+        containerRef.current.innerHTML = "";
+
+        const nodeIds = nodes.map((n) => n.id);
+
+        const nvl = new NVL(containerRef.current, nodes, rels, {
+          layout: "d3Force",
+          renderer: "canvas",
+          initialZoom: 0.3,
+          minZoom: 0.05,
+          maxZoom: 5,
+          allowDynamicMinZoom: true,
+          disableWebGL: true,
+          callbacks: {
+            onLayoutDone: () => {
+              if (!destroyed) {
+                nvl.fit(nodeIds);
+              }
+            },
+          },
+        });
+
+        nvlInstanceRef.current = nvl;
+
+        // Attach interaction handlers for zoom, pan, drag, click
+        const zoom = new handlers.ZoomInteraction(nvl);
+        const pan = new handlers.PanInteraction(nvl);
+        const drag = new handlers.DragNodeInteraction(nvl);
+        const click = new handlers.ClickInteraction(nvl);
+
+        click.updateCallback("onNodeClick", (node: { id: string }) => {
+          onNodeClickRef.current?.(null, node);
+        });
+
+        interactionsRef.current = [zoom, pan, drag, click];
+
+        // Fit after layout has had time to compute initial positions
+        setTimeout(() => {
+          if (!destroyed && nvlInstanceRef.current) {
+            nvl.fit(nodeIds);
+          }
+        }, 2000);
+
+        console.log("[Phronesis] NVL initialized with", nodes.length, "nodes,", rels.length, "rels");
+      } catch (err) {
+        console.error("[Phronesis] NVL initialization failed:", err);
+      }
+    }
+
+    init();
+
+    return () => {
+      destroyed = true;
+      for (const handler of interactionsRef.current) {
+        try {
+          handler.destroy();
+        } catch {
+          // ignore cleanup errors
+        }
+      }
+      interactionsRef.current = [];
+      if (nvlInstanceRef.current) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (nvlInstanceRef.current as any).destroy();
+        } catch {
+          // ignore cleanup errors
+        }
+        nvlInstanceRef.current = null;
+      }
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+      }
+    };
+  }, [nodes, rels]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100%", position: "relative" }}
+    />
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Main component                                                            */
 /* -------------------------------------------------------------------------- */
 
 interface PhronesisGraphProps {
@@ -177,23 +295,6 @@ export default function PhronesisGraph({ onNodeClick }: PhronesisGraphProps) {
   const [graphData, setGraphData] = useState<GraphData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const nvlRef = useRef<React.ComponentType<any> | null>(null);
-  const [nvlReady, setNvlReady] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Dynamically import NVL (SSR-safe)
-  useEffect(() => {
-    import("@neo4j-nvl/react")
-      .then((mod) => {
-        nvlRef.current = mod.InteractiveNvlWrapper;
-        setNvlReady(true);
-      })
-      .catch((err) => {
-        console.error("Failed to load NVL:", err);
-        setError("Failed to load graph visualization library");
-      });
-  }, []);
 
   // Fetch graph data
   useEffect(() => {
@@ -250,10 +351,8 @@ export default function PhronesisGraph({ onNodeClick }: PhronesisGraphProps) {
       .finally(() => setLoading(false));
   }
 
-  const NvlComponent = nvlRef.current;
-
   // Loading state
-  if (loading || !nvlReady || !NvlComponent) {
+  if (loading) {
     return (
       <div
         className="flex h-[600px] items-center justify-center rounded-xl border border-border bg-white"
@@ -306,29 +405,18 @@ export default function PhronesisGraph({ onNodeClick }: PhronesisGraphProps) {
   }
 
   const nvlNodes = toNvlNodes(graphData.nodes);
-  const nvlRels = toNvlRelationships(graphData.relationships);
+  const nodeIds = new Set(graphData.nodes.map((n) => n.id));
+  const nvlRels = toNvlRelationships(graphData.relationships, nodeIds);
 
   return (
     <div
-      ref={containerRef}
       className="relative h-[600px] rounded-xl border border-border bg-white"
       data-testid="phronesis-graph"
     >
-      <NvlComponent
+      <NvlRenderer
         nodes={nvlNodes}
         rels={nvlRels}
-        layout="forceDirected"
-        nvlOptions={{
-          renderer: "canvas",
-          initialZoom: 1,
-          minZoom: 0.1,
-          maxZoom: 5,
-          allowDynamicMinZoom: true,
-        }}
-        mouseEventCallbacks={{
-          onNodeClick: handleNodeClick,
-        }}
-        style={{ width: "100%", height: "100%" }}
+        onNodeClick={handleNodeClick}
       />
 
       {/* Node count legend */}

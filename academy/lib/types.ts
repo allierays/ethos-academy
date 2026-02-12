@@ -78,12 +78,14 @@ export interface InsightsResult {
 
 export interface AgentSummary {
   agentId: string;
+  agentName: string;
   evaluationCount: number;
   latestAlignmentStatus: string;
 }
 
 export interface AgentProfile {
   agentId: string;
+  agentName: string;
   agentModel: string;
   createdAt: string;
   evaluationCount: number;

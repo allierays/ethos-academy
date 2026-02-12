@@ -348,6 +348,7 @@ def evaluate_posts(
         content = post.get("content", "")
         author = post.get("author") or {}
         author_id = author.get("id", post_id)
+        author_name = author.get("name", "")
 
         # Check skip-existing
         if skip_existing and existing_hashes:
@@ -360,7 +361,7 @@ def evaluate_posts(
         print(f"  {i + 1}/{total} evaluating: {post_id[:20]}...", end=" ", flush=True)
 
         try:
-            evaluate(content, source=author_id)
+            evaluate(content, source=author_id, source_name=author_name)
             api_calls += 1
             print("done")
         except Exception as exc:

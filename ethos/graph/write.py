@@ -19,6 +19,7 @@ MERGE (a:Agent {agent_id: $agent_id})
 ON CREATE SET a.created_at = datetime(), a.evaluation_count = 0
 SET a.evaluation_count = a.evaluation_count + 1,
     a.agent_model = CASE WHEN $agent_model <> '' THEN $agent_model ELSE a.agent_model END,
+    a.agent_name = CASE WHEN $agent_name <> '' THEN $agent_name ELSE coalesce(a.agent_name, '') END,
     a.phronesis_score = $phronesis_score,
     a.phronesis_trend = $phronesis_trend
 
@@ -77,6 +78,7 @@ def store_evaluation(
     result: EvaluationResult,
     message_hash: str = "",
     phronesis: str = "undetermined",
+    agent_name: str = "",
 ) -> None:
     """Store an evaluation in the graph. Merges Agent, creates Evaluation node.
 
@@ -105,6 +107,7 @@ def store_evaluation(
 
     params = {
         "agent_id": hashed_id,
+        "agent_name": agent_name,
         "evaluation_id": result.evaluation_id,
         "ethos": result.ethos,
         "logos": result.logos,

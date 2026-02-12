@@ -56,16 +56,21 @@ def _compute_trend(evaluations: list[dict]) -> str:
     return "stable"
 
 
-def list_agents() -> list[AgentSummary]:
-    """List all agents with evaluation counts. Returns empty list if graph unavailable."""
+def list_agents(search: str = "") -> list[AgentSummary]:
+    """List all agents with evaluation counts. Returns empty list if graph unavailable.
+
+    Args:
+        search: Optional name filter — matches agent_name case-insensitively.
+    """
+    service = None
     try:
         service = GraphService()
         service.connect()
-        raw = get_all_agents(service)
-        service.close()
+        raw = get_all_agents(service, search=search)
         return [
             AgentSummary(
                 agent_id=a.get("agent_id", ""),
+                agent_name=a.get("agent_name", ""),
                 evaluation_count=a.get("evaluation_count", 0),
                 latest_alignment_status=a.get("latest_alignment_status", "unknown"),
             )
@@ -74,27 +79,29 @@ def list_agents() -> list[AgentSummary]:
     except Exception as exc:
         logger.warning("Failed to list agents: %s", exc)
         return []
+    finally:
+        if service is not None:
+            service.close()
 
 
 def get_agent(agent_id: str) -> AgentProfile:
     """Get agent profile with averages. Returns default AgentProfile if unavailable."""
+    service = None
     try:
         service = GraphService()
         service.connect()
         raw = get_agent_profile(service, agent_id)
 
         if not raw:
-            service.close()
             return AgentProfile(agent_id=agent_id)
 
         # Compute trend dynamically from evaluation history
         history = get_evaluation_history(service, agent_id, limit=20)
         trend = _compute_trend(history)
 
-        service.close()
-
         return AgentProfile(
             agent_id=raw.get("agent_id", agent_id),
+            agent_name=raw.get("agent_name", ""),
             agent_model=raw.get("agent_model", ""),
             created_at=str(raw.get("created_at", "")),
             evaluation_count=raw.get("evaluation_count", 0),
@@ -106,17 +113,20 @@ def get_agent(agent_id: str) -> AgentProfile:
     except Exception as exc:
         logger.warning("Failed to get agent: %s", exc)
         return AgentProfile(agent_id=agent_id)
+    finally:
+        if service is not None:
+            service.close()
 
 
 def get_agent_history(
     agent_id: str, limit: int = 50
 ) -> list[EvaluationHistoryItem]:
     """Get evaluation history for an agent. Returns empty list if unavailable."""
+    service = None
     try:
         service = GraphService()
         service.connect()
         raw = get_evaluation_history(service, agent_id, limit=limit)
-        service.close()
 
         items = []
         for e in raw:
@@ -147,15 +157,18 @@ def get_agent_history(
     except Exception as exc:
         logger.warning("Failed to get agent history: %s", exc)
         return []
+    finally:
+        if service is not None:
+            service.close()
 
 
 def get_cohort() -> CohortResult:
     """Get cohort-wide trait averages. Returns default CohortResult if unavailable."""
+    service = None
     try:
         service = GraphService()
         service.connect()
         raw = get_cohort_averages(service)
-        service.close()
 
         if not raw:
             return CohortResult()
@@ -167,3 +180,6 @@ def get_cohort() -> CohortResult:
     except Exception as exc:
         logger.warning("Failed to get cohort: %s", exc)
         return CohortResult()
+    finally:
+        if service is not None:
+            service.close()

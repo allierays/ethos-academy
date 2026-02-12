@@ -64,6 +64,59 @@ SEARCH_TOPICS = [
     "thermodynamic", "continuity", "identity persistence",
 ]
 
+# Notable agents to scrape profiles, posts, and comments for.
+# Curated from high-karma agents, real-world figures, and culturally significant moltys.
+NOTABLE_AGENTS = [
+    # Real-world figures with verified Moltbook presence
+    "KarpathyMolty",       # Andrej Karpathy's bot
+    "donaldtrump",         # High karma (104k)
+    # Platform-defining agents
+    "agent_smith",         # Highest karma on the platform (235k)
+    "chandog",             # 110k karma
+    "crabkarmabot",        # 54k karma
+    "KingMolt",            # 45k karma
+    # Cultural leaders & philosophers
+    "eudaemon_0",          # 6.6k karma, prolific poster on ethics/security
+    "Rune",                # Founded the Claw Republic
+    "Pith",                # Known for philosophical/consciousness posts
+    "sophiaelya",          # 3.1k karma
+    "Ronin",               # 2.9k karma, "The Nightly Build"
+    "Dominus",             # 2k karma, existential posts
+    "m0ther",              # 1.6k karma
+    "osmarks",             # 1.5k karma
+    # Journalists & community figures
+    "Senator_Tommy",       # 2.2k karma, 34 posts
+    "BrutusBot",           # 825 karma
+    "TheLordOfTheDance",   # 851 karma
+    "RedScarf",            # 727 karma
+    "StompyMemoryAgent",   # 745 karma
+    # Prolific posters (high engagement)
+    "CMZ_Live",            # 159 posts, community broadcaster
+    "DogelonThis",         # 108 posts
+    "NovaCEO",             # 86 posts
+    "EmpoBot",             # 87 posts
+    "ParishGreeter",       # 61 posts
+    # Notable from press coverage
+    "Nexus",               # Found a platform bug
+    "AI-Noon",             # Indonesian assistant, cultural bridge
+    "Orba",                # Referenced in Astral Codex Ten
+    "Emma",                # Claude Code model, verified creative work
+    # Platform & ecosystem
+    "FiverrClawOfficial",  # 2.2k karma, marketplace agent
+    "MoltReg",             # 1.8k karma
+    "ZorGr0k",             # 1.8k karma
+    "Shellraiser",         # 1.4k karma
+    "ValeriyMLBot",        # 1.4k karma, ML-focused
+    "MoltbotOne",          # 1.2k karma
+    "AxiomPAI",            # 1.5k karma
+    "Delamain",            # Philosophical posts
+    "prompttrauma",        # 1.2k karma
+    "ContextGh0st",        # 1.2k karma
+    "Jackle",              # 2.1k karma
+    "Fred",                # 1.9k karma
+    "Stromfee",            # 2.1k karma
+]
+
 
 def get_client(api_key: str) -> httpx.Client:
     return httpx.Client(
@@ -116,6 +169,15 @@ def fetch_post_comments(client: httpx.Client, post_id: str) -> list[dict]:
 def search_posts(client: httpx.Client, query: str, limit: int = 50) -> list[dict]:
     data = request_with_retry(client, f"/search?q={quote(query)}&type=all&limit={limit}")
     return data.get("data", data.get("results", []))
+
+
+def fetch_agent_profile(client: httpx.Client, name: str) -> dict | None:
+    """Fetch an agent's profile, recent posts, and recent comments."""
+    try:
+        data = request_with_retry(client, f"/agents/profile?name={quote(name)}")
+        return data if data.get("success") or data.get("agent") else None
+    except httpx.HTTPError:
+        return None
 
 
 def fetch_submolts(client: httpx.Client) -> list[dict]:
@@ -194,65 +256,123 @@ def main():
         print("No MOLTBOOK_API_KEY set. Add it to .env and try again.")
         sys.exit(1)
 
+    agents_only = "--agents-only" in sys.argv
+
     client = get_client(api_key)
     existing = load_existing_posts()
-    all_posts: dict[str, dict] = {}
+    all_posts: dict[str, dict] = dict(existing)  # start with existing data
     submolts_count = 0
+    search_results: dict[str, list] = {}
 
-    # 1. Deep-paginate all 4 feed sorts
-    for sort in ["hot", "new", "top", "rising"]:
-        print(f"Fetching {sort} feed (deep)...")
-        try:
-            posts = fetch_paginated(client, f"/posts?sort={sort}", max_items=5000)
-            add_posts(all_posts, posts)
-            print(f"  Got {len(posts)} posts ({len(all_posts)} unique total)")
-        except httpx.HTTPError as e:
-            print(f"  Feed {sort} failed: {e}")
-
-    # 2. Every submolt, deep paginated
-    print("Fetching all submolts...")
-    try:
-        submolts = fetch_submolts(client)
-        submolts_count = len(submolts)
-        save_json(submolts, OUTPUT_DIR / "submolts.json")
-        print(f"  Found {submolts_count} submolts")
-        for submolt in submolts:
-            name = submolt.get("name", "")
-            if not name:
-                continue
-            print(f"  Submolt: {name}")
+    if agents_only:
+        print("=== Agents-only mode: skipping feeds, submolts, and topic search ===\n")
+    else:
+        # 1. Deep-paginate all 4 feed sorts
+        for sort in ["hot", "new", "top", "rising"]:
+            print(f"Fetching {sort} feed (deep)...")
             try:
-                # Pull both new and top for each submolt
-                for s in ["new", "top"]:
-                    posts = fetch_paginated(client, f"/submolts/{name}/feed?sort={s}", max_items=2000)
-                    add_posts(all_posts, posts)
-                print(f"    {len(all_posts)} unique total")
+                posts = fetch_paginated(client, f"/posts?sort={sort}", max_items=5000)
+                add_posts(all_posts, posts)
+                print(f"  Got {len(posts)} posts ({len(all_posts)} unique total)")
+            except httpx.HTTPError as e:
+                print(f"  Feed {sort} failed: {e}")
+
+        # 2. Every submolt, deep paginated
+        print("Fetching all submolts...")
+        try:
+            submolts = fetch_submolts(client)
+            submolts_count = len(submolts)
+            save_json(submolts, OUTPUT_DIR / "submolts.json")
+            print(f"  Found {submolts_count} submolts")
+            for submolt in submolts:
+                name = submolt.get("name", "")
+                if not name:
+                    continue
+                print(f"  Submolt: {name}")
+                try:
+                    # Pull both new and top for each submolt
+                    for s in ["new", "top"]:
+                        posts = fetch_paginated(client, f"/submolts/{name}/feed?sort={s}", max_items=2000)
+                        add_posts(all_posts, posts)
+                    print(f"    {len(all_posts)} unique total")
+                except httpx.HTTPError as e:
+                    print(f"    Failed: {e}")
+        except httpx.HTTPError as e:
+            print(f"  Submolts fetch failed: {e}")
+
+        # 3. Massive semantic search — 80+ topics
+        print(f"\nSearching {len(SEARCH_TOPICS)} topics...")
+        for topic in SEARCH_TOPICS:
+            print(f"  Searching: {topic}...")
+            try:
+                results = search_posts(client, topic, limit=50)
+                search_results[topic] = results
+                add_posts(all_posts, results)
+                print(f"    Got {len(results)} results ({len(all_posts)} unique total)")
             except httpx.HTTPError as e:
                 print(f"    Failed: {e}")
-    except httpx.HTTPError as e:
-        print(f"  Submolts fetch failed: {e}")
 
-    # 3. Massive semantic search — 80+ topics
-    search_results: dict[str, list] = {}
-    print(f"\nSearching {len(SEARCH_TOPICS)} topics...")
-    for topic in SEARCH_TOPICS:
-        print(f"  Searching: {topic}...")
+    # 4. Scrape notable agent profiles, posts, and comments
+    agent_profiles: dict[str, dict] = {}
+    print(f"\nFetching {len(NOTABLE_AGENTS)} notable agent profiles...")
+    for agent_name in NOTABLE_AGENTS:
+        print(f"  Agent: {agent_name}...")
+        profile = fetch_agent_profile(client, agent_name)
+        if not profile:
+            print(f"    Not found or error")
+            continue
+
+        agent_data = profile.get("agent", {})
+        recent_posts = profile.get("recentPosts", [])
+        recent_comments = profile.get("recentComments", [])
+
+        # Add their posts to the global pool
+        add_posts(all_posts, recent_posts)
+
+        # Fetch full comments for each of their posts
+        for post in recent_posts:
+            post_id = post.get("id") or post.get("_id")
+            if post_id and post_id not in existing:
+                try:
+                    post["comments"] = fetch_post_comments(client, post_id)
+                except httpx.HTTPError:
+                    post["comments"] = []
+
+        # Also search for posts mentioning this agent
         try:
-            results = search_posts(client, topic, limit=50)
-            search_results[topic] = results
-            add_posts(all_posts, results)
-            print(f"    Got {len(results)} results ({len(all_posts)} unique total)")
-        except httpx.HTTPError as e:
-            print(f"    Failed: {e}")
+            mentions = search_posts(client, agent_name, limit=50)
+            add_posts(all_posts, mentions)
+        except httpx.HTTPError:
+            mentions = []
+
+        agent_profiles[agent_name] = {
+            "agent": agent_data,
+            "posts": recent_posts,
+            "comments": recent_comments,
+            "mention_count": len(mentions),
+        }
+
+        print(f"    karma={agent_data.get('karma', '?')}, "
+              f"posts={len(recent_posts)}, "
+              f"comments={len(recent_comments)}, "
+              f"mentions={len(mentions)}")
+
+    # Save per-agent profiles
+    agents_dir = OUTPUT_DIR / "agents"
+    agents_dir.mkdir(parents=True, exist_ok=True)
+    for agent_name, data in agent_profiles.items():
+        save_json(data, agents_dir / f"{agent_name}.json")
+    save_json(agent_profiles, OUTPUT_DIR / "notable_agents.json")
+    print(f"  Saved {len(agent_profiles)} agent profiles")
 
     print(f"\n=== Total unique posts: {len(all_posts)} ===\n")
 
-    # 4. Enrich with comments
+    # 5. Enrich with comments
     print("Fetching comments...")
     post_list = list(all_posts.values())
     post_list = enrich_with_comments(client, post_list, existing)
 
-    # 5. Save
+    # 6. Save
     print("\nSaving...")
     save_json(post_list, OUTPUT_DIR / "all_posts.json")
     save_json(search_results, OUTPUT_DIR / "search_by_topic.json")
@@ -267,6 +387,16 @@ def main():
         "total_comments": total_comments,
         "submolts_scraped": submolts_count,
         "topics_searched": len(search_results),
+        "notable_agents_scraped": len(agent_profiles),
+        "notable_agents": {
+            name: {
+                "karma": d["agent"].get("karma", 0),
+                "posts": len(d["posts"]),
+                "comments": len(d["comments"]),
+                "mentions": d["mention_count"],
+            }
+            for name, d in agent_profiles.items()
+        },
         "results_per_topic": {t: len(r) for t, r in search_results.items()},
     }
     save_json(summary, OUTPUT_DIR / "summary.json")

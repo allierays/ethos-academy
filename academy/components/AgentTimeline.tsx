@@ -175,7 +175,7 @@ export default function AgentTimeline() {
                 <Line
                   type="monotone"
                   dataKey="ethos"
-                  stroke="#0d9488"
+                  stroke="#3b8a98"
                   strokeWidth={2}
                   dot={false}
                   name="Ethos"
@@ -183,7 +183,7 @@ export default function AgentTimeline() {
                 <Line
                   type="monotone"
                   dataKey="logos"
-                  stroke="#3b82f6"
+                  stroke="#2e4a6e"
                   strokeWidth={2}
                   dot={false}
                   name="Logos"
@@ -191,7 +191,7 @@ export default function AgentTimeline() {
                 <Line
                   type="monotone"
                   dataKey="pathos"
-                  stroke="#f59e0b"
+                  stroke="#e0a53c"
                   strokeWidth={2}
                   dot={false}
                   name="Pathos"

@@ -1,53 +1,53 @@
 @import "tailwindcss";
 
 :root {
-  /* ─── Base palette (warm marble/stone from the architecture) ─── */
-  --background: #faf7f2;
+  /* ─── Base palette (warm Greek stone) ─── */
+  --background: #f8f6f3;
   --surface: #ffffff;
-  --foreground: #2a2018;
-  --muted: #8b7e74;
-  --border: #e6ddd2;
+  --foreground: #1a2538;
+  --muted: #8b8e97;
+  --border: #d1c9be;
 
-  /* ─── Action (modernized teal — sunglasses meets sky) ─── */
-  --action: #4a90a4;
-  --action-light: #e8f4f8;
-  --action-hover: #3d7a8c;
+  /* ─── Action (Navy — #1 main, authority) ─── */
+  --action: #2e4a6e;
+  --action-light: #eef2f7;
+  --action-hover: #213855;
 
-  /* ─── Ethos (character/virtue) — Terracotta Rose from Plato's robes ─── */
-  --ethos-50: #fef2f0;
-  --ethos-100: #fde3df;
-  --ethos-200: #fbc7bf;
-  --ethos-300: #f8a292;
-  --ethos-400: #f07a67;
-  --ethos-500: #dc5845;
-  --ethos-600: #c4422f;
-  --ethos-700: #a53425;
-  --ethos-800: #882d22;
-  --ethos-900: #6b2620;
+  /* ─── Ethos (ἦθος · character/virtue) — Aegean teal ─── */
+  --ethos-50: #eef7f8;
+  --ethos-100: #d8ecef;
+  --ethos-200: #afd8de;
+  --ethos-300: #7ebfc9;
+  --ethos-400: #52a5b2;
+  --ethos-500: #3b8a98;
+  --ethos-600: #30707c;
+  --ethos-700: #275a64;
+  --ethos-800: #204951;
+  --ethos-900: #1a3b42;
 
-  /* ─── Logos (logic/reason) — Cerulean from sky + Aristotle's robe ─── */
-  --logos-50: #f0f5ff;
-  --logos-100: #dce8fc;
-  --logos-200: #bad0fa;
-  --logos-300: #8db2f5;
-  --logos-400: #6b96ec;
-  --logos-500: #4a78d4;
-  --logos-600: #365dba;
-  --logos-700: #2a4a9a;
-  --logos-800: #253d7d;
-  --logos-900: #1e3060;
+  /* ─── Logos (λόγος · logic/reason) — Navy blue ─── */
+  --logos-50: #eef2f8;
+  --logos-100: #d9e2ef;
+  --logos-200: #b1c4de;
+  --logos-300: #839ec9;
+  --logos-400: #5c7cb3;
+  --logos-500: #3f5f9a;
+  --logos-600: #2e4a6e;
+  --logos-700: #243a58;
+  --logos-800: #1c2e47;
+  --logos-900: #152438;
 
-  /* ─── Pathos (emotion/empathy) — Amber Gold from golden robes ─── */
-  --pathos-50: #fef8eb;
-  --pathos-100: #feefcc;
-  --pathos-200: #fde099;
-  --pathos-300: #fbc862;
-  --pathos-400: #f0ae3a;
-  --pathos-500: #d89420;
-  --pathos-600: #b87818;
-  --pathos-700: #965e14;
-  --pathos-800: #7a4a12;
-  --pathos-900: #603810;
+  /* ─── Pathos (πάθος · emotion/empathy) — Golden amber ─── */
+  --pathos-50: #fdf7ec;
+  --pathos-100: #f9edd4;
+  --pathos-200: #f2d8a6;
+  --pathos-300: #eac073;
+  --pathos-400: #e0a53c;
+  --pathos-500: #c68e2a;
+  --pathos-600: #a17322;
+  --pathos-700: #7e5a1c;
+  --pathos-800: #654818;
+  --pathos-900: #513a14;
 
   /* ─── Alignment status ─── */
   --aligned: #16a34a;
@@ -56,8 +56,8 @@
   --violation: #991b1b;
 
   /* ─── Legacy aliases (for existing components) ─── */
-  --teal: var(--action);
-  --teal-light: var(--action-light);
+  --teal: var(--ethos-500);
+  --teal-light: var(--ethos-100);
   --blue: var(--logos-500);
   --blue-light: var(--logos-100);
   --warm: var(--pathos-500);

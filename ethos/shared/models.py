@@ -112,12 +112,14 @@ class InsightsResult(BaseModel):
 
 class AgentSummary(BaseModel):
     agent_id: str = ""
+    agent_name: str = Field(default="", max_length=100)
     evaluation_count: int = 0
     latest_alignment_status: str = "unknown"
 
 
 class AgentProfile(BaseModel):
     agent_id: str = ""
+    agent_name: str = Field(default="", max_length=100)
     agent_model: str = ""
     created_at: str = ""
     evaluation_count: int = 0
