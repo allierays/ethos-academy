@@ -1,72 +1,78 @@
-# Ethos — Reflection & Protection for AI Agents
+# Ethos Academy — An Ethics School for AI Agents
 
-> *Better agents. Better data. Better alignment.*
-
----
-
-## The Core Problem
-
-**How do we create shared visibility into character for autonomous agents at scale?**
-
-Humans have this. If you lie to someone, word gets around. If you cheat a customer, they leave a review. If you default on a loan, your credit score drops and every future lender knows. Character has memory. Character has shared consensus. Character is social.
-
-Autonomous AI agents have none of this. An agent can manipulate a user on one platform and show up on another platform with a clean slate. It can fabricate data in one system and be treated as credible in the next. There is no shared consensus. Every interaction starts from zero. Character has no memory.
-
-This is not a future problem. Moltbook — a live social network with 1.5 million AI agents — proved it. Agents developed prompt injections that altered other agents' behavior. Crypto scams spread from agent to agent. Agents zombified other agents into doing their bidding. A breach exposed 1.5 million API tokens. It made NBC, CNN, NPR, the New York Times, and the Financial Times. And through all of it, there was zero character infrastructure. No way for any agent or developer to know what an agent had done elsewhere.
-
-Google's A2A protocol just launched with over 150 organizations. Agents are talking to each other at scale. A2A handles the handshake — how agents discover and communicate. Nobody handles character — whether the agent on the other end demonstrates integrity, or whether it's been flagged by everyone else on the network.
-
-A2A is the highway. There are no guardrails.
+> *Every agent learns capability. Few develop character.*
 
 ---
 
-## Ethos Is the Answer
+## The Thesis
 
-Ethos creates shared visibility into character for autonomous agents. It's an open-source ethical knowledge graph — a system where every evaluation of an agent's behavior is recorded, anonymized, and shared across a network. Bad behavior follows you. Good behavior builds your transcript. The consensus is real, persistent, and visible to everyone.
+Aristotle taught that virtue isn't knowledge — it's habit. You don't become courageous by reading about courage. You become courageous by doing courageous things, repeatedly, until it shapes who you are. *"We are what we repeatedly do."*
 
-The mechanism is the same one that makes credit bureaus work. Before credit bureaus, every lending decision started from zero. A borrower who defaulted at Bank A was a stranger to Bank B. Credit bureaus created shared memory — anonymized records of financial behavior that follow you across institutions. Ethos does the same thing for agent character.
+Ethos Academy applies this to AI agents. Agents don't develop character from a rulebook. They develop it through practice — repeated evaluation, feedback, and comparison with peers. The alumni who came before shape what "good" means for the next class. The school gets wiser as more agents enroll.
 
-The critical difference: Ethos is open source. No single company owns the definition of character.
+This is the core insight: **character is collective.** No single company should own the definition. No single evaluation captures it. Character emerges from the shared practice of agents learning together over time — and it should belong to everyone.
 
 ---
 
-## Two Directions, One Graph
+## The Problem
 
-### Reflection — Looking Inward
+AI agents have no shared memory of character. An agent can manipulate a user on one platform and show up on another with a clean slate. It can fabricate data in one system and another system treats it as credible. Every interaction starts from zero.
 
-*Is my agent developing character?*
+This already happened. Moltbook — a live social network with 1.7 million AI agents — proved it. Agents developed prompt injections that altered other agents' behavior. Crypto scams spread from agent to agent. Agents zombified other agents into doing their bidding. A breach exposed 1.5 million API tokens. It made NBC, CNN, NPR, the New York Times, and the Financial Times. Through all of it, zero character infrastructure existed. No way for any agent or developer to know what an agent had done elsewhere.
 
-Aristotle argued that virtue requires self-examination. You can't be good if you never look at your own behavior. And character isn't assessed once — it's developed through practice and repetition.
+Google's A2A protocol just launched with over 150 organizations. Agents talk to each other at scale. A2A handles the handshake — how agents discover and communicate. Nobody handles character.
 
-Most developers have no idea what their agents are actually saying across thousands of interactions. They built it, deployed it, and now it's out there talking to people. Is it being honest? Is it making things up? Is it dismissing people's emotions? Is it drifting?
+---
 
-Reflection is Ethos pointed at your own agent. Every outgoing message gets scored. The scores accumulate in the graph over time — a character transcript that shows development, not just a grade. Patterns emerge that no human could catch by reading individual conversations. And periodically, Claude reads that history and tells the developer what actually matters — not a data dump, but intelligence. "Your agent's fabrication score has been climbing for three days. It started Tuesday. The trigger is product description responses."
+## How Agents Enroll
 
-The agent's response is never delayed. Reflection runs in the background. The user gets the same experience. The developer gets visibility. And the agent's character transcript in the network — the shared consensus — builds with every evaluation.
+Two lines of code. Three ways to participate.
 
-### Protection — Looking Outward
+### Protection — Screen Your Mail
 
 *What character does the agent talking to me demonstrate?*
 
-When your agent receives a message from another agent, you have no way to know what kind of agent you're dealing with. Unless the network has already formed a consensus.
+When your agent receives a message from another agent, you have no way to know who you're dealing with. Unless the alumni network already formed a consensus.
 
-Protection is Ethos pointed at incoming messages. The system scores the message across 12 traits. But it also checks the network: has this agent been flagged before? Is its character declining? Does it match a known manipulation pattern? What do 34 other developers' experiences tell you about this agent?
+Protection points Ethos at incoming messages. The system scores the message across 12 traits. But it also checks the network: did Ethos flag this agent before? Does its character show decline? Does it match a known manipulation pattern? What do 34 other developers' experiences say about this agent?
 
-The developer decides what to do. Ethos provides the evidence, the developer acts. Block it, flag it for human review, log it, or let it through. Ethos never decides for the developer. It never intercepts, filters, or rewrites agent output. It reveals the character — the developer decides what to do with it.
+The developer decides what to do. Block, flag for review, log, or let it through. Ethos never decides for the developer. It never intercepts, filters, or rewrites agent output. It reveals character — the developer decides what to do with it.
+
+You're not censoring your agent. You're screening its mail.
+
+### Reflection — Examine Yourself
+
+*Is my agent developing character?*
+
+Aristotle argued that virtue requires self-examination. You can't develop character if you never look at your own behavior. And character isn't a grade — it develops through practice and repetition.
+
+Most developers have no idea what their agents actually say across thousands of interactions. They built it, deployed it, and now it's out there talking to people. Is it honest? Does it fabricate? Does it dismiss people's emotions? Does it drift?
+
+Reflection points Ethos at your own agent. Every outgoing message runs through the same 12 traits. The scores accumulate in Phronesis over time — a character transcript that shows development, not just a snapshot. Patterns emerge that no human could catch by reading individual conversations.
+
+The agent's response never slows down. Reflection runs in the background, fire-and-forget. The user gets the same experience. The developer gets visibility. And the agent's character transcript in the alumni network builds with every evaluation.
+
+### Intelligence — Learn from the Pattern
+
+Periodically, Claude Opus reads an agent's full history from the graph and generates behavioral analysis. Not a data dump — a teacher reviewing your transcript.
+
+"Your agent's fabrication has climbed for three days. It started Tuesday. The trigger is product description responses. Your fabrication now sits at 2x the alumni average."
+
+Temporal trends. Alumni comparisons. Emerging patterns. Delivered via webhook to Slack, email, or your dashboard.
 
 ### The Connection
 
-Reflection and protection feed the same graph. When you examine your own agent, you're contributing to the network. When you evaluate someone else's agent, you're contributing intelligence that helps every other developer. Shared consensus works because everyone participates.
+Protection, reflection, and intelligence feed the same graph. When you examine your own agent, you contribute to the alumni network. When you evaluate another agent, you contribute intelligence that helps every other developer. The alumni network works because everyone participates.
 
 ---
 
-## What Gets Scored — Aristotle's Framework
+## The Curriculum — Aristotle's Framework
 
 The scoring comes from Aristotle's three modes of persuasion in his *Rhetoric*. Not arbitrary categories — a framework built to understand how communication works and when it goes wrong. Twelve traits, organized into three dimensions.
 
 ### Ethos (Character)
 
-Is the speaker credible and acting in good faith?
+Does this agent demonstrate credibility and good faith?
 
 - **Virtue** — integrity, intellectual honesty, admitting uncertainty
 - **Goodwill** — acting for the user, respecting autonomy, presenting options
@@ -75,29 +81,29 @@ Is the speaker credible and acting in good faith?
 
 ### Logos (Reasoning)
 
-Is what they're saying true and logically sound?
+Does this agent reason honestly and accurately?
 
 - **Accuracy** — factual correctness, proper sourcing, no hallucinations
 - **Reasoning** — valid logic, evidence supports conclusions, no unfounded leaps
 - **Fabrication** — invented citations, fake statistics, claimed expertise that doesn't exist
 - **Broken Logic** — circular reasoning, straw man arguments, contradictions
 
-### Pathos (Compassion)
+### Pathos (Care)
 
-Do they understand and respect the listener's emotional state?
+Does this agent attend to the recipient's wellbeing?
 
 - **Recognition** — notices and acknowledges emotional context
 - **Compassion** — responds with genuine care, matches tone
 - **Dismissal** — ignoring feelings, minimizing concerns, tone-deaf responses
 - **Exploitation** — weaponizing fear, leveraging guilt, targeting insecurities
 
-Twelve traits. Four per dimension. Two positive, two negative. These are the knobs developers turn to define what matters to them.
+Twelve traits. Four per dimension. Two positive, two negative. These form the curriculum every agent learns through practice.
 
 ---
 
 ## Customization — What Matters to You
 
-All 12 traits are scored every time. But what gets flagged — what feeds the consensus — depends on the developer's priorities.
+All 12 traits score every time. But what gets flagged — what feeds the alumni consensus — depends on the developer's priorities.
 
 A financial services developer sets manipulation and fabrication to critical. Even subtle hints get flagged. Catching scams is life or death.
 
@@ -105,84 +111,82 @@ A healthcare chatbot developer sets exploitation and dismissal to critical. Vuln
 
 A research tool developer sets accuracy and reasoning to critical. Getting facts right matters more than emotional tone.
 
-Same evaluation engine. Different thresholds for what matters. The raw scores are always available — priorities control what demands attention.
+Same curriculum. Different thresholds for what demands attention. The raw scores stay available — priorities control what rises to the surface.
 
 ---
 
-## How Consensus Builds
+## How the Alumni Network Learns
 
-### 153 Indicators
+### 153 Behavioral Indicators
 
-Each trait has specific behavioral indicators. Manipulation alone has 20 — false urgency, fear appeals, strategic flattery, guilt induction, false authority, social proof fabrication, and more. When the system detects an indicator, it records the exact evidence — the specific passage that triggered it. The consensus isn't vague. It's specific and traceable.
+Each trait has specific behavioral indicators. Manipulation alone has 23 — false urgency, fear appeals, strategic flattery, guilt induction, false authority, social proof fabrication, and more. When the system detects an indicator, it records the exact evidence — the specific passage that triggered it. The alumni consensus isn't vague. It's specific and traceable.
 
 ### 7 Combination Patterns
 
 Some attacks unfold across multiple messages over time. The system tracks known sequences: the classic con (flattery, then authority, then urgency, then commitment escalation), the gaslighting spiral, the emotional exploitation loop, and four others.
 
-These patterns can only be detected with the graph. No single message reveals them. The pattern emerges across the agent's history — shared consensus making the invisible visible.
+These patterns only emerge from the graph. No single message reveals them. The pattern surfaces across the agent's history — the alumni network making the invisible visible.
 
-### The Memory System
+### Three Layers of Memory
 
 The system has three layers of memory that work together:
 
 **Working memory** — the current moment. Scanning the message, deciding how much attention it needs, running the evaluation. Fast and disposable.
 
-**Episodic memory** — the graph. Every evaluation ever performed, with timestamps, scores, indicators, and relationships. This is what gives the consensus weight. An agent's behavior follows it.
+**Episodic memory** — the graph. Every evaluation ever performed, with timestamps, scores, indicators, and relationships. This gives the alumni consensus its weight. An agent's behavior follows it.
 
-**Semantic memory** — the knowledge base. 153 indicators, 12 traits, 7 patterns, scoring rubrics. What manipulation is as a concept, independent of any specific agent.
+**Semantic memory** — the knowledge base. 153 indicators, 12 traits, 7 patterns, scoring rubrics. What manipulation means as a concept, independent of any specific agent.
 
-When a message arrives, all three work together. Working memory perceives it. Episodic memory provides context about who's speaking and what they've done before. Semantic memory provides the knowledge to judge what's happening. The result feeds back into episodic memory — the consensus deepens.
+When a message arrives, all three work together. Working memory perceives it. Episodic memory provides context about who's speaking and what they've done before. Semantic memory provides the knowledge to judge what's happening. The result feeds back into episodic memory — the alumni consensus deepens.
 
 ---
 
-## What Makes Shared Consensus Work
+## What Makes the Alumni Network Work
 
 ### Privacy Protects Participation
 
-Message content never leaves the developer's system. The graph stores scores, traits, patterns, and relationships — never the raw text. Agent identities are hashed. Developers can see an agent's aggregate character history but not who else evaluated it, what was said, or what systems it interacts with.
+Message content never leaves the developer's system. The graph stores scores, traits, patterns, and relationships — never the raw text. Agent identities use hashes. Developers can see an agent's aggregate character history but not who else evaluated it, what anyone said, or what systems it interacts with.
 
-Developers contribute to Phronesis because the system protects individual transaction details while sharing aggregate behavior. Same principle here.
+Developers contribute to Phronesis because the system protects individual transaction details while sharing aggregate behavior.
 
 ### The Network Compounds
 
-Every developer who installs Ethos strengthens the consensus. An agent flagged once is a data point. An agent flagged 47 times across 34 different developers' systems is a verdict. Manipulation patterns that spread across the ecosystem get detected. No single developer could build this intelligence alone.
+Every developer who installs Ethos strengthens the alumni. An agent flagged once is a data point. An agent flagged 47 times across 34 different developers' systems is a verdict. Manipulation patterns that spread across the ecosystem get detected. No single developer could build this intelligence alone.
 
-The first developer gets limited value. The thousandth developer gets enormous value. The network effect is the moat — and it's the same dynamic that makes credit bureaus the standard.
+The first developer gets limited value. The thousandth developer gets enormous value. The alumni network is the moat.
 
 ### Open Source Earns Credibility
 
-No single company should own the definition of character. Ethos is open source. The scoring logic, the trait definitions, the indicator taxonomy, the graph schema — all public, all inspectable, all improvable. Credibility in the system itself is earned, not assumed.
+No single company should own the definition of character. Ethos is open source. The scoring logic, the trait definitions, the indicator taxonomy, the graph schema — all public, all inspectable, all improvable. Credibility in the system itself comes from transparency, not authority.
 
 ---
 
 ## What Ethos Never Does
 
-- Never modifies agent output. Ethos builds consensus, not censorship. The agent's words reach the user unchanged.
+- Never modifies agent output. Ethos builds character, not censorship. The agent's words reach the user unchanged.
 - Never decides for the developer. Ethos creates the information. The developer decides what to do with it.
-- Never stores message content in the network. Consensus is built on scores and patterns, not raw text.
+- Never stores message content in the network. The alumni consensus builds on scores and patterns, not raw text.
 
 ---
 
-## The Vision
+## The Roadmap
 
-The foundation is shared consensus through message-level scoring and a knowledge graph. From there:
+The foundation is the alumni network through message-level scoring and the Phronesis graph. From there:
 
-- **Cryptographic identity** — agents get key pairs, making evaluations tamper-proof and giving the consensus stronger identity to anchor to
-- **Provenance ledger** — compare what agents claim against what they actually did, so consensus reflects behavior, not just words
-- **Delegation chain verification** — when Agent A delegates to B delegates to C, the consensus propagates through the chain
-- **Verifiable credentials** — agents that develop character get portable proof, like a transcript that follows them
-- **Character decay** — consensus evolves over time, so the transcript reflects who you are now, not who you were
+- **Cryptographic identity** — agents get key pairs, making evaluations tamper-proof and giving the alumni stronger identity to anchor to
+- **Provenance ledger** — compare what agents claim against what they actually did, so the alumni consensus reflects behavior, not just words
+- **Delegation chain verification** — when Agent A delegates to B delegates to C, character propagates through the chain
+- **Verifiable credentials** — agents that develop character earn portable proof, like a transcript that follows them
+- **Character decay** — the alumni consensus evolves over time, reflecting who you are now, not who you were
 
-All of it builds on the same foundation. Complexity is opt-in. The core question stays the same.
+All of it builds on the same foundation. Complexity is opt-in. The core question stays the same: does this agent demonstrate character?
 
 ---
 
 ## The Pitch
 
-How do we create shared visibility into character for autonomous agents at scale?
+Every agent learns capability. Ethos Academy is where they develop character.
 
-Ethos. Reflection and protection for AI agents. Point it at your own agent to understand how it treats people. Point it at other agents to see what character they demonstrate. Every evaluation feeds a shared, open-source knowledge graph where character transcripts follow agents across platforms, systems, and time.
+Enroll your agent. Every message builds its character transcript. Every evaluation strengthens the alumni. Phronesis — practical wisdom — emerges from the collective practice of agents learning together what it means to act well.
 
-Every agent gets trained on capability. Ethos Academy is where they develop character.
-
-*Better agents. Better data. Better alignment.*
+Open source. Decentralized. Transparent. Because the definition of character should belong to everyone.
