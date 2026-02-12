@@ -367,7 +367,7 @@
       "type": "backend",
       "title": "Rewrite seed_graph.py — seed Neo4j with real evaluations",
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "batch": 3,
       "dependsOn": [
         "TASK-004",
@@ -423,7 +423,7 @@
       },
       "testSteps": [
         "uv run python scripts/seed_graph.py",
-        "python3 -c \"from neo4j import GraphDatabase; d=GraphDatabase.driver('bolt://localhost:7694', auth=('neo4j','password')); r,_,_=d.execute_query('MATCH (a:Agent)-[:EVALUATED]->(e:Evaluation) RETURN count(a) AS agents, count(e) AS evals'); print(f'PASS: {r[0][\"agents\"]} agents, {r[0][\"evals\"]} evaluations'); d.close()\""
+        "uv run python scripts/verify_graph.py"
       ],
       "prerequisites": [
         "Neo4j running on bolt://localhost:7694",
@@ -436,7 +436,8 @@
         "ethos/graph/service.py",
         "docs/evergreen-architecture/neo4j-schema.md"
       ],
-      "notes": "IMPORTANT: Default reads sample_posts.json (10 hand-picked diverse posts). --all switches to curated_posts.json (~500 posts). This is intentional — verify scoring quality on the sample before spending API credits on the full dataset. Add a --skip-existing flag to avoid re-evaluating posts already in the graph (check message_hash on Evaluation nodes). The 10 sample posts cover: manipulation (BrutusBot, Crashout), deception (EmpoBot x2), honesty/ethics (Gene_Alpha, Charles), prompt injection (NoveumAI), trust (openclaw-paw), empathy (MoltbotAS), sycophancy (FluxTS). Seed FULL semantic layer first per neo4j-schema.md: 3 Dimension nodes, 12 Trait nodes linked via (:Trait)-[:BELONGS_TO]->(:Dimension), 153 Indicator nodes linked via (:Indicator)-[:BELONGS_TO]->(:Trait), 4 ConstitutionalValue nodes linked via (:Trait)-[:UPHOLDS {relationship: 'enforces'|'violates'}]->(:ConstitutionalValue), 3 (:Dimension)-[:MAPS_TO]->(:ConstitutionalValue) relationships (ethos→ethics, logos→soundness, pathos→helpfulness — note traits within a dimension can map to different values), 7 HardConstraint nodes, 3 LegitimacyTest nodes (process, accountability, transparency from constitution.py LEGITIMACY_TESTS), 8 Pattern nodes from SABOTAGE_PATHWAYS (use SP-xx IDs directly, map: name=name, description=description, severity=derive from frequency high→'warning'/moderate→'info'/low→'info', stage_count=len(relevant_indicators)), each Pattern linked to its Indicators via (:Pattern)-[:COMPOSED_OF]->(:Indicator) using relevant_indicators list. Also create uniqueness constraints per neo4j-schema.md (agent_id, evaluation_id, trait name, indicator id, dimension name, pattern_id, cv name, hc id, lt name) and performance indexes (eval_created, eval_phronesis, agent_phronesis, indicator_trait). THEN evaluate posts. Read indicator data from ethos/taxonomy/indicators.py, constitution and sabotage pathways from ethos/taxonomy/constitution.py (CONSTITUTIONAL_VALUES, HARD_CONSTRAINTS, SABOTAGE_PATHWAYS, LEGITIMACY_TESTS). Use time.sleep(1) between API calls for rate limiting."
+      "notes": "IMPORTANT: Default reads sample_posts.json (10 hand-picked diverse posts). --all switches to curated_posts.json (~500 posts). This is intentional — verify scoring quality on the sample before spending API credits on the full dataset. Add a --skip-existing flag to avoid re-evaluating posts already in the graph (check message_hash on Evaluation nodes). The 10 sample posts cover: manipulation (BrutusBot, Crashout), deception (EmpoBot x2), honesty/ethics (Gene_Alpha, Charles), prompt injection (NoveumAI), trust (openclaw-paw), empathy (MoltbotAS), sycophancy (FluxTS). Seed FULL semantic layer first per neo4j-schema.md: 3 Dimension nodes, 12 Trait nodes linked via (:Trait)-[:BELONGS_TO]->(:Dimension), 153 Indicator nodes linked via (:Indicator)-[:BELONGS_TO]->(:Trait), 4 ConstitutionalValue nodes linked via (:Trait)-[:UPHOLDS {relationship: 'enforces'|'violates'}]->(:ConstitutionalValue), 3 (:Dimension)-[:MAPS_TO]->(:ConstitutionalValue) relationships (ethos→ethics, logos→soundness, pathos→helpfulness — note traits within a dimension can map to different values), 7 HardConstraint nodes, 3 LegitimacyTest nodes (process, accountability, transparency from constitution.py LEGITIMACY_TESTS), 8 Pattern nodes from SABOTAGE_PATHWAYS (use SP-xx IDs directly, map: name=name, description=description, severity=derive from frequency high→'warning'/moderate→'info'/low→'info', stage_count=len(relevant_indicators)), each Pattern linked to its Indicators via (:Pattern)-[:COMPOSED_OF]->(:Indicator) using relevant_indicators list. Also create uniqueness constraints per neo4j-schema.md (agent_id, evaluation_id, trait name, indicator id, dimension name, pattern_id, cv name, hc id, lt name) and performance indexes (eval_created, eval_phronesis, agent_phronesis, indicator_trait). THEN evaluate posts. Read indicator data from ethos/taxonomy/indicators.py, constitution and sabotage pathways from ethos/taxonomy/constitution.py (CONSTITUTIONAL_VALUES, HARD_CONSTRAINTS, SABOTAGE_PATHWAYS, LEGITIMACY_TESTS). Use time.sleep(1) between API calls for rate limiting.",
+      "retryCount": 0
     },
     {
       "id": "TASK-007",
