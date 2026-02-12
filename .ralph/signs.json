@@ -96,6 +96,14 @@
       "learnedFrom": "TASK-018",
       "autoPromoted": true,
       "createdAt": "2026-02-12T12:56:48-08:00"
+    },
+    {
+      "id": "sign-014",
+      "pattern": "PRD test steps using `uv run python -c` with inline Python must avoid `try:` blocks and other compound statements on a single semicolon-separated line — Python's `-c` flag treats semicolons as simple statement separators and raises `SyntaxError` on compound statements. Split complex validation into a small test file or use `&&` to chain separate `python -c` calls instead.",
+      "category": "testing",
+      "learnedFrom": "TASK-020",
+      "autoPromoted": true,
+      "createdAt": "2026-02-12T13:03:19-08:00"
     }
   ]
 }

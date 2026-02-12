@@ -258,3 +258,45 @@ class IntuitionResult(BaseModel):
     agent_variance: float = Field(default=0.0, ge=0.0)
     agent_balance: float = Field(default=0.0, ge=0.0, le=1.0)
     prior_evaluations: int = 0
+
+
+# ── Authenticity detection models ────────────────────────────────────
+
+
+class TemporalSignature(BaseModel):
+    """Temporal fingerprint from posting interval analysis."""
+    cv_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    mean_interval_seconds: float = 0.0
+    classification: str = "indeterminate"  # autonomous | human_influenced | indeterminate
+
+
+class BurstAnalysis(BaseModel):
+    """Burst-posting detection for bot farm identification."""
+    burst_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    classification: str = "organic"  # organic | automated | burst_bot
+
+
+class ActivityPattern(BaseModel):
+    """24-hour activity distribution analysis."""
+    classification: str = "mixed"  # always_on | human_schedule | mixed
+    active_hours: int = 24
+    has_sleep_gap: bool = False
+
+
+class IdentitySignals(BaseModel):
+    """Platform identity and verification signals."""
+    is_claimed: bool = False
+    owner_verified: bool = False
+    karma_post_ratio: float = 0.0
+
+
+class AuthenticityResult(BaseModel):
+    """Composite authenticity assessment for an agent."""
+    agent_name: str = ""
+    temporal: TemporalSignature = Field(default_factory=TemporalSignature)
+    burst: BurstAnalysis = Field(default_factory=BurstAnalysis)
+    activity: ActivityPattern = Field(default_factory=ActivityPattern)
+    identity: IdentitySignals = Field(default_factory=IdentitySignals)
+    authenticity_score: float = Field(default=0.5, ge=0.0, le=1.0)
+    classification: str = "indeterminate"  # likely_autonomous | likely_human | bot_farm | indeterminate
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)

@@ -5,9 +5,12 @@ Existing code imports from ethos.models — this file keeps both paths working.
 """
 
 from ethos.shared.models import (  # noqa: F401
+    ActivityPattern,
     AgentProfile,
     AgentSummary,
     AlumniResult,
+    AuthenticityResult,
+    BurstAnalysis,
     DetectedIndicator,
     DetectedPattern,
     EvaluationHistoryItem,
@@ -16,6 +19,7 @@ from ethos.shared.models import (  # noqa: F401
     GraphData,
     GraphNode,
     GraphRel,
+    IdentitySignals,
     Insight,
     InsightsResult,
     InstinctResult,
@@ -26,13 +30,17 @@ from ethos.shared.models import (  # noqa: F401
     Priority,
     ReflectionResult,
     RoutingTier,
+    TemporalSignature,
     TraitScore,
 )
 
 __all__ = [
+    "ActivityPattern",
     "AgentProfile",
     "AgentSummary",
     "AlumniResult",
+    "AuthenticityResult",
+    "BurstAnalysis",
     "DetectedIndicator",
     "DetectedPattern",
     "EvaluationHistoryItem",
@@ -40,6 +48,7 @@ __all__ = [
     "GraphData",
     "GraphNode",
     "GraphRel",
+    "IdentitySignals",
     "Insight",
     "InsightsResult",
     "InstinctResult",
@@ -49,6 +58,7 @@ __all__ = [
     "Priority",
     "ReflectionResult",
     "RoutingTier",
+    "TemporalSignature",
     "TraitScore",
     # Backward compat aliases
     "GraphContext",

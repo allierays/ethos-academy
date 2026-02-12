@@ -1563,7 +1563,7 @@
       "type": "backend",
       "title": "Add authenticity Pydantic models to shared/models.py",
       "priority": 20,
-      "passes": false,
+      "passes": true,
       "batch": 10,
       "dependsOn": [],
       "techStack": {
@@ -1610,7 +1610,7 @@
       "testSteps": [
         "uv run pytest tests/test_authenticity_models.py -v",
         "uv run pytest -v --tb=short -q 2>&1 | tail -5",
-        "uv run python -c \"from ethos.shared.models import AuthenticityResult; from ethos.models import AuthenticityResult as AR2; from pydantic import ValidationError; r = AuthenticityResult(agent_name='test'); assert r.authenticity_score == 0.5; assert r.temporal.classification == 'indeterminate'; try: AuthenticityResult(agent_name='x', authenticity_score=2.0); assert False, 'Should reject score>1.0'; except ValidationError: pass; assert AR2 is AuthenticityResult; print('PASS: models, defaults, validation, re-exports all correct')\""
+        "uv run python -c \"from ethos.shared.models import AuthenticityResult; from ethos.models import AuthenticityResult as AR2; from pydantic import ValidationError; r = AuthenticityResult(agent_name='test'); assert r.authenticity_score == 0.5; assert r.temporal.classification == 'indeterminate'; v = None; exec('try:\\n v = AuthenticityResult(agent_name=chr(120), authenticity_score=2.0)\\nexcept ValidationError:\\n v = None'); assert v is None, 'Should reject score>1.0'; assert AR2 is AuthenticityResult; print('PASS: models, defaults, validation, re-exports all correct')\""
       ],
       "contextFiles": [
         "ethos/shared/models.py",
