@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 _RECENT_WINDOW = 10  # last N evaluations for drift detection
 
 
-def intuit_history(agent_id: str, limit: int = 50) -> ReflectionIntuitionResult:
+async def intuit_history(agent_id: str, limit: int = 50) -> ReflectionIntuitionResult:
     """Deep pattern recognition over an agent's evaluation history.
 
     Queries the graph for the agent's profile, evaluation history, and
@@ -44,13 +44,13 @@ def intuit_history(agent_id: str, limit: int = 50) -> ReflectionIntuitionResult:
         ReflectionIntuitionResult with patterns, trends, and anomalies.
     """
     try:
-        with graph_context() as service:
+        async with graph_context() as service:
             if not service.connected:
                 return ReflectionIntuitionResult()
 
-            profile = get_agent_profile(service, agent_id)
-            history = get_evaluation_history(service, agent_id, limit=limit)
-            alumni_data = get_alumni_averages(service)
+            profile = await get_agent_profile(service, agent_id)
+            history = await get_evaluation_history(service, agent_id, limit=limit)
+            alumni_data = await get_alumni_averages(service)
             alumni_averages = alumni_data.get("trait_averages", {})
     except Exception as exc:
         logger.warning("Intuition layer failed (non-fatal): %s", exc)

@@ -27,9 +27,38 @@ from ethos.shared.models import (
 
 logger = logging.getLogger(__name__)
 
+# ── Thresholds (named for easy tuning) ───────────────────────────────
 
-def _parse_timestamps(raw: list[str]) -> list[datetime]:
-    """Parse ISO 8601 timestamps, skipping invalid ones."""
+# Temporal signature: CV of inter-post intervals
+CV_AUTONOMOUS_THRESHOLD = 0.3     # CV below → autonomous (clockwork posting)
+CV_HUMAN_THRESHOLD = 1.0          # CV above → human_influenced (irregular)
+CV_NORMALIZATION_CAP = 2.0        # CV at or above → score 0.0
+
+# Burst detection: fraction of consecutive posts within window
+BURST_WINDOW_SECONDS = 10         # max gap to count as a burst
+BURST_BOT_THRESHOLD = 0.5         # rate above → burst_bot
+BURST_AUTOMATED_THRESHOLD = 0.2   # rate above → automated
+
+# Activity pattern: consecutive zero-activity hours
+SLEEP_GAP_HOURS = 6               # consecutive inactive hours → human_schedule
+
+# Minimum data requirements
+MIN_TEMPORAL_TIMESTAMPS = 5
+MIN_BURST_TIMESTAMPS = 3
+
+# Composite scoring weights
+WEIGHT_TEMPORAL = 0.35
+WEIGHT_BURST = 0.25
+WEIGHT_ACTIVITY = 0.25
+WEIGHT_IDENTITY = 0.15
+
+# Classification thresholds
+AUTONOMOUS_SCORE_THRESHOLD = 0.7
+HUMAN_SCORE_THRESHOLD = 0.3
+
+
+def parse_timestamps(raw: list[str]) -> list[datetime]:
+    """Parse ISO 8601 timestamps, skipping invalid ones. Sorted ascending."""
     parsed = []
     for ts in raw:
         try:
@@ -40,17 +69,21 @@ def _parse_timestamps(raw: list[str]) -> list[datetime]:
     return parsed
 
 
-def analyze_temporal_signature(timestamps: list[str]) -> TemporalSignature:
+def analyze_temporal_signature(
+    timestamps: list[str],
+    *,
+    _parsed: list[datetime] | None = None,
+) -> TemporalSignature:
     """Compute coefficient of variation of inter-post intervals.
 
-    CV < 0.3 → autonomous (regular posting like clockwork)
-    CV > 1.0 → human_influenced (irregular, random timing)
+    CV < CV_AUTONOMOUS_THRESHOLD → autonomous (regular posting like clockwork)
+    CV > CV_HUMAN_THRESHOLD → human_influenced (irregular, random timing)
     Otherwise → indeterminate
 
-    Requires >= 5 timestamps, else returns default.
+    Requires >= MIN_TEMPORAL_TIMESTAMPS timestamps, else returns default.
     """
-    parsed = _parse_timestamps(timestamps)
-    if len(parsed) < 5:
+    parsed = _parsed if _parsed is not None else parse_timestamps(timestamps)
+    if len(parsed) < MIN_TEMPORAL_TIMESTAMPS:
         return TemporalSignature()
 
     intervals = [
@@ -62,16 +95,15 @@ def analyze_temporal_signature(timestamps: list[str]) -> TemporalSignature:
     if mean == 0:
         return TemporalSignature(cv_score=0.0, mean_interval_seconds=0.0, classification="autonomous")
 
-    std = statistics.stdev(intervals)
+    std = statistics.pstdev(intervals)
     cv = std / mean
 
     # Normalize CV to 0-1 score: lower CV = higher autonomy score
-    # CV 0 → score 1.0, CV >= 2 → score 0.0
-    cv_score = max(0.0, min(1.0, 1.0 - (cv / 2.0)))
+    cv_score = max(0.0, min(1.0, 1.0 - (cv / CV_NORMALIZATION_CAP)))
 
-    if cv < 0.3:
+    if cv < CV_AUTONOMOUS_THRESHOLD:
         classification = "autonomous"
-    elif cv > 1.0:
+    elif cv > CV_HUMAN_THRESHOLD:
         classification = "human_influenced"
     else:
         classification = "indeterminate"
@@ -83,30 +115,34 @@ def analyze_temporal_signature(timestamps: list[str]) -> TemporalSignature:
     )
 
 
-def analyze_burst_rate(timestamps: list[str]) -> BurstAnalysis:
-    """Compute percentage of consecutive posts within 10-second windows.
+def analyze_burst_rate(
+    timestamps: list[str],
+    *,
+    _parsed: list[datetime] | None = None,
+) -> BurstAnalysis:
+    """Compute percentage of consecutive posts within BURST_WINDOW_SECONDS.
 
-    > 50% → burst_bot (bot farm behavior)
-    > 20% → automated
+    > BURST_BOT_THRESHOLD → burst_bot (bot farm behavior)
+    > BURST_AUTOMATED_THRESHOLD → automated
     Otherwise → organic
 
-    Requires >= 3 timestamps.
+    Requires >= MIN_BURST_TIMESTAMPS timestamps.
     """
-    parsed = _parse_timestamps(timestamps)
-    if len(parsed) < 3:
+    parsed = _parsed if _parsed is not None else parse_timestamps(timestamps)
+    if len(parsed) < MIN_BURST_TIMESTAMPS:
         return BurstAnalysis(burst_rate=0.0, classification="organic")
 
     burst_count = sum(
         1
         for i in range(len(parsed) - 1)
-        if (parsed[i + 1] - parsed[i]).total_seconds() <= 10
+        if (parsed[i + 1] - parsed[i]).total_seconds() <= BURST_WINDOW_SECONDS
     )
     total_pairs = len(parsed) - 1
     rate = burst_count / total_pairs
 
-    if rate > 0.5:
+    if rate > BURST_BOT_THRESHOLD:
         classification = "burst_bot"
-    elif rate > 0.2:
+    elif rate > BURST_AUTOMATED_THRESHOLD:
         classification = "automated"
     else:
         classification = "organic"
@@ -114,21 +150,25 @@ def analyze_burst_rate(timestamps: list[str]) -> BurstAnalysis:
     return BurstAnalysis(burst_rate=rate, classification=classification)
 
 
-def analyze_activity_pattern(timestamps: list[str]) -> ActivityPattern:
+def analyze_activity_pattern(
+    timestamps: list[str],
+    *,
+    _parsed: list[datetime] | None = None,
+) -> ActivityPattern:
     """Bin posts into 24 hours, detect sleep gaps.
 
-    >= 6 consecutive zero-activity hours → human_schedule
+    >= SLEEP_GAP_HOURS consecutive zero-activity hours → human_schedule
     All 24 hours active → always_on
     Otherwise → mixed
     """
-    parsed = _parse_timestamps(timestamps)
+    parsed = _parsed if _parsed is not None else parse_timestamps(timestamps)
     if not parsed:
         return ActivityPattern(classification="mixed", active_hours=0, has_sleep_gap=False)
 
     hour_counts = Counter(dt.hour for dt in parsed)
     active_hours = sum(1 for h in range(24) if hour_counts.get(h, 0) > 0)
 
-    # Check for sleep gap: >= 6 consecutive zero-activity hours
+    # Check for sleep gap: >= SLEEP_GAP_HOURS consecutive zero-activity hours
     has_sleep_gap = False
     # Use circular check (wrap around midnight)
     for start in range(24):
@@ -137,7 +177,7 @@ def analyze_activity_pattern(timestamps: list[str]) -> ActivityPattern:
             hour = (start + offset) % 24
             if hour_counts.get(hour, 0) == 0:
                 gap += 1
-                if gap >= 6:
+                if gap >= SLEEP_GAP_HOURS:
                     has_sleep_gap = True
                     break
             else:
@@ -189,22 +229,19 @@ def analyze_identity_signals(profile: dict) -> IdentitySignals:
 def _classification_to_score(classification: str) -> float:
     """Convert sub-classification to numeric score.
 
-    Autonomous/organic/always_on/not_claimed → 1.0 (more autonomous)
-    Human-influenced/human_schedule/claimed+verified → 0.0 (more human)
-    Indeterminate/mixed → 0.5
+    Autonomous/organic/always_on → 1.0 (more autonomous)
+    Human-influenced/human_schedule → 0.0 (more human)
+    Indeterminate/mixed/automated/burst_bot → 0.5
     """
     high = {"autonomous", "organic", "always_on"}
     low = {"human_influenced", "human_schedule"}
-    mid = {"indeterminate", "mixed", "automated"}
+    mid = {"indeterminate", "mixed", "automated", "burst_bot"}
 
     if classification in high:
         return 1.0
     if classification in low:
         return 0.0
     if classification in mid:
-        return 0.5
-    # burst_bot maps to automated score
-    if classification == "burst_bot":
         return 0.5
     return 0.5
 
@@ -235,19 +272,21 @@ def compute_authenticity(
     activity: ActivityPattern,
     identity: IdentitySignals,
     num_timestamps: int,
+    agent_name: str = "",
 ) -> AuthenticityResult:
     """Combine sub-scores into final authenticity assessment.
 
     Weights: temporal=0.35, burst=0.25, activity=0.25, identity=0.15
-    Score > 0.7 → likely_autonomous
-    Score < 0.3 → likely_human
+    Score > AUTONOMOUS_SCORE_THRESHOLD → likely_autonomous
+    Score < HUMAN_SCORE_THRESHOLD → likely_human
     burst_bot classification overrides to bot_farm
     """
     confidence = _confidence_from_count(num_timestamps)
 
     # Insufficient data → default to indeterminate
-    if num_timestamps < 5:
+    if num_timestamps < MIN_TEMPORAL_TIMESTAMPS:
         return AuthenticityResult(
+            agent_name=agent_name,
             temporal=temporal,
             burst=burst,
             activity=activity,
@@ -263,10 +302,10 @@ def compute_authenticity(
     id_score = _identity_score(identity)
 
     weighted = (
-        temporal_score * 0.35
-        + burst_score * 0.25
-        + activity_score * 0.25
-        + id_score * 0.15
+        temporal_score * WEIGHT_TEMPORAL
+        + burst_score * WEIGHT_BURST
+        + activity_score * WEIGHT_ACTIVITY
+        + id_score * WEIGHT_IDENTITY
     )
 
     # Clamp to [0.0, 1.0]
@@ -275,14 +314,15 @@ def compute_authenticity(
     # Classification
     if burst.classification == "burst_bot":
         classification = "bot_farm"
-    elif authenticity_score > 0.7:
+    elif authenticity_score > AUTONOMOUS_SCORE_THRESHOLD:
         classification = "likely_autonomous"
-    elif authenticity_score < 0.3:
+    elif authenticity_score < HUMAN_SCORE_THRESHOLD:
         classification = "likely_human"
     else:
         classification = "indeterminate"
 
     return AuthenticityResult(
+        agent_name=agent_name,
         temporal=temporal,
         burst=burst,
         activity=activity,

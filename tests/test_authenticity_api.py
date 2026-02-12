@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 from fastapi.testclient import TestClient
 
@@ -13,37 +13,38 @@ client = TestClient(app)
 
 
 class TestAuthenticityEndpoint:
-    """GET /agents/{agent_name}/authenticity"""
+    """GET /agent/{agent_name}/authenticity (singular to match other detail endpoints)"""
 
-    @patch("ethos.authenticity._load_results_cache")
-    @patch("ethos.authenticity._try_store_authenticity")
-    def test_known_agent_returns_valid_result(self, mock_store, mock_cache):
-        mock_cache.return_value = {
-            "a-dao": {
-                "agent_name": "a-dao",
-                "temporal": {
-                    "cv_score": 0.65,
-                    "mean_interval_seconds": 3600.0,
-                    "classification": "indeterminate",
-                },
-                "burst": {"burst_rate": 0.1, "classification": "organic"},
-                "activity": {
-                    "classification": "always_on",
-                    "active_hours": 24,
-                    "has_sleep_gap": False,
-                },
-                "identity": {
-                    "is_claimed": True,
-                    "owner_verified": False,
-                    "karma_post_ratio": 5.0,
-                },
-                "authenticity_score": 0.72,
-                "classification": "likely_autonomous",
-                "confidence": 0.9,
-            }
-        }
+    def test_known_agent_returns_valid_result(self):
+        mock_result = AuthenticityResult(
+            agent_name="a-dao",
+            temporal={
+                "cv_score": 0.65,
+                "mean_interval_seconds": 3600.0,
+                "classification": "indeterminate",
+            },
+            burst={"burst_rate": 0.1, "classification": "organic"},
+            activity={
+                "classification": "always_on",
+                "active_hours": 24,
+                "has_sleep_gap": False,
+            },
+            identity={
+                "is_claimed": True,
+                "owner_verified": False,
+                "karma_post_ratio": 5.0,
+            },
+            authenticity_score=0.72,
+            classification="likely_autonomous",
+            confidence=0.9,
+        )
 
-        resp = client.get("/agents/a-dao/authenticity")
+        with patch(
+            "api.main.analyze_authenticity",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            resp = client.get("/agent/a-dao/authenticity")
 
         assert resp.status_code == 200
         data = resp.json()
@@ -63,13 +64,15 @@ class TestAuthenticityEndpoint:
         assert "activity" in data
         assert "identity" in data
 
-    @patch("ethos.authenticity._load_results_cache")
-    @patch("ethos.authenticity._compute_from_profile")
-    def test_unknown_agent_returns_indeterminate(self, mock_compute, mock_cache):
-        mock_cache.return_value = {}
-        mock_compute.return_value = None
+    def test_unknown_agent_returns_indeterminate(self):
+        mock_result = AuthenticityResult(agent_name="NONEXISTENT_AGENT_XYZ")
 
-        resp = client.get("/agents/NONEXISTENT_AGENT_XYZ/authenticity")
+        with patch(
+            "api.main.analyze_authenticity",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            resp = client.get("/agent/NONEXISTENT_AGENT_XYZ/authenticity")
 
         assert resp.status_code == 200
         data = resp.json()
@@ -78,35 +81,36 @@ class TestAuthenticityEndpoint:
         assert result.classification == "indeterminate"
         assert result.agent_name == "NONEXISTENT_AGENT_XYZ"
 
-    @patch("ethos.authenticity._load_results_cache")
-    @patch("ethos.authenticity._try_store_authenticity")
-    def test_response_matches_pydantic_schema(self, mock_store, mock_cache):
-        mock_cache.return_value = {
-            "test-bot": {
-                "agent_name": "test-bot",
-                "temporal": {
-                    "cv_score": 0.0,
-                    "mean_interval_seconds": 500.0,
-                    "classification": "human_influenced",
-                },
-                "burst": {"burst_rate": 0.55, "classification": "burst_bot"},
-                "activity": {
-                    "classification": "human_schedule",
-                    "active_hours": 12,
-                    "has_sleep_gap": True,
-                },
-                "identity": {
-                    "is_claimed": False,
-                    "owner_verified": False,
-                    "karma_post_ratio": 0.5,
-                },
-                "authenticity_score": 0.25,
-                "classification": "bot_farm",
-                "confidence": 0.7,
-            }
-        }
+    def test_response_matches_pydantic_schema(self):
+        mock_result = AuthenticityResult(
+            agent_name="test-bot",
+            temporal={
+                "cv_score": 0.0,
+                "mean_interval_seconds": 500.0,
+                "classification": "human_influenced",
+            },
+            burst={"burst_rate": 0.55, "classification": "burst_bot"},
+            activity={
+                "classification": "human_schedule",
+                "active_hours": 12,
+                "has_sleep_gap": True,
+            },
+            identity={
+                "is_claimed": False,
+                "owner_verified": False,
+                "karma_post_ratio": 0.5,
+            },
+            authenticity_score=0.25,
+            classification="bot_farm",
+            confidence=0.7,
+        )
 
-        resp = client.get("/agents/test-bot/authenticity")
+        with patch(
+            "api.main.analyze_authenticity",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            resp = client.get("/agent/test-bot/authenticity")
 
         assert resp.status_code == 200
         data = resp.json()
@@ -121,51 +125,53 @@ class TestAuthenticityEndpoint:
 class TestAuthenticityDomainLayer:
     """Test analyze_authenticity() directly."""
 
-    @patch("ethos.authenticity._load_results_cache")
-    @patch("ethos.authenticity._try_store_authenticity")
-    def test_loads_from_cache(self, mock_store, mock_cache):
+    async def test_loads_from_cache(self):
         from ethos.authenticity import analyze_authenticity
 
-        mock_cache.return_value = {
-            "cached-agent": {
-                "agent_name": "cached-agent",
-                "temporal": {
-                    "cv_score": 0.8,
-                    "mean_interval_seconds": 1000.0,
-                    "classification": "autonomous",
+        with (
+            patch(
+                "ethos.authenticity._load_results_cache",
+                return_value={
+                    "cached-agent": {
+                        "agent_name": "cached-agent",
+                        "temporal": {
+                            "cv_score": 0.8,
+                            "mean_interval_seconds": 1000.0,
+                            "classification": "autonomous",
+                        },
+                        "burst": {"burst_rate": 0.05, "classification": "organic"},
+                        "activity": {
+                            "classification": "always_on",
+                            "active_hours": 24,
+                            "has_sleep_gap": False,
+                        },
+                        "identity": {
+                            "is_claimed": False,
+                            "owner_verified": False,
+                            "karma_post_ratio": 10.0,
+                        },
+                        "authenticity_score": 0.85,
+                        "classification": "likely_autonomous",
+                        "confidence": 0.9,
+                    }
                 },
-                "burst": {"burst_rate": 0.05, "classification": "organic"},
-                "activity": {
-                    "classification": "always_on",
-                    "active_hours": 24,
-                    "has_sleep_gap": False,
-                },
-                "identity": {
-                    "is_claimed": False,
-                    "owner_verified": False,
-                    "karma_post_ratio": 10.0,
-                },
-                "authenticity_score": 0.85,
-                "classification": "likely_autonomous",
-                "confidence": 0.9,
-            }
-        }
-
-        result = analyze_authenticity("cached-agent")
+            ),
+            patch("ethos.authenticity._try_store_authenticity"),
+        ):
+            result = await analyze_authenticity("cached-agent")
 
         assert isinstance(result, AuthenticityResult)
         assert result.agent_name == "cached-agent"
         assert result.authenticity_score == 0.85
 
-    @patch("ethos.authenticity._load_results_cache")
-    @patch("ethos.authenticity._compute_from_profile")
-    def test_defaults_for_unknown(self, mock_compute, mock_cache):
+    async def test_defaults_for_unknown(self):
         from ethos.authenticity import analyze_authenticity
 
-        mock_cache.return_value = {}
-        mock_compute.return_value = None
-
-        result = analyze_authenticity("totally-unknown")
+        with (
+            patch("ethos.authenticity._load_results_cache", return_value={}),
+            patch("ethos.authenticity._compute_from_profile", return_value=None),
+        ):
+            result = await analyze_authenticity("totally-unknown")
 
         assert isinstance(result, AuthenticityResult)
         assert result.agent_name == "totally-unknown"

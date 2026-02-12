@@ -36,7 +36,7 @@ from ethos.shared.models import EvaluationResult, PhronesisContext
 logger = logging.getLogger(__name__)
 
 
-def _build_phronesis_context(
+async def _build_phronesis_context(
     service: GraphService, source: str
 ) -> PhronesisContext | None:
     """Read agent history from graph to populate PhronesisContext.
@@ -48,11 +48,11 @@ def _build_phronesis_context(
     Returns None if graph is unavailable or agent has no history.
     """
     try:
-        profile = get_agent_profile(service, source)
+        profile = await get_agent_profile(service, source)
         if not profile:
             return None
 
-        history = get_evaluation_history(service, source, limit=10)
+        history = await get_evaluation_history(service, source, limit=10)
 
         # Count flagged evaluations in history
         flagged_patterns = []
@@ -79,7 +79,7 @@ def _build_phronesis_context(
         return None
 
 
-def _try_store_evaluation(
+async def _try_store_evaluation(
     service: GraphService,
     raw_agent_id: str,
     result: EvaluationResult,
@@ -91,7 +91,7 @@ def _try_store_evaluation(
     """Attempt to store evaluation in graph. Non-fatal on failure."""
     try:
         message_hash = hashlib.sha256(text.encode()).hexdigest()
-        store_evaluation(
+        await store_evaluation(
             service=service,
             raw_agent_id=raw_agent_id,
             result=result,
@@ -104,7 +104,7 @@ def _try_store_evaluation(
         logger.warning("Failed to store evaluation in graph: %s", exc)
 
 
-def evaluate(
+async def evaluate(
     text: str,
     source: str | None = None,
     source_name: str = "",
@@ -141,7 +141,7 @@ def evaluate(
 
     # ── Faculty 2: INTUITION ──────────────────────────────────────
     # Fast, graph queries only. Pattern recognition from experience.
-    intuition_result = intuit(source, instinct_result)
+    intuition_result = await intuit(source, instinct_result)
 
     # Intuition can escalate the routing tier (never downgrade)
     if intuition_result.anomaly_flags and tier == "standard":
@@ -158,7 +158,7 @@ def evaluate(
     )
 
     # Step 3b: Call Claude
-    raw_response = call_claude(system_prompt, user_prompt, tier)
+    raw_response = await call_claude(system_prompt, user_prompt, tier)
 
     # Step 3c: Parse response
     parsed = parse_response(raw_response)
@@ -194,9 +194,9 @@ def evaluate(
     phronesis_ctx = None
     if source:
         try:
-            with graph_context() as service:
-                phronesis_ctx = _build_phronesis_context(service, source)
-                _try_store_evaluation(
+            async with graph_context() as service:
+                phronesis_ctx = await _build_phronesis_context(service, source)
+                await _try_store_evaluation(
                     service, source, result, text, phronesis,
                     agent_name=source_name,
                     agent_specialty=agent_specialty,

@@ -1,7 +1,8 @@
 """Tests for the graph visualization endpoint and domain function."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, AsyncMock, patch
 
+import pytest
 
 from ethos.graph.service import GraphService
 from ethos.graph.visualization import (
@@ -322,61 +323,61 @@ class TestBuildGraphData:
 class TestGetSemanticLayer:
     """Test semantic layer query function with mocked service."""
 
-    def test_returns_empty_when_disconnected(self):
-        service = MagicMock(spec=GraphService)
+    async def test_returns_empty_when_disconnected(self):
+        service = AsyncMock(spec=GraphService)
         service.connected = False
 
-        result = get_semantic_layer(service)
+        result = await get_semantic_layer(service)
         assert result["dimensions"] == {}
         assert result["traits"] == {}
         assert result["constitutional_values"] == {}
         assert result["patterns"] == {}
 
-    def test_returns_empty_on_exception(self):
-        service = MagicMock(spec=GraphService)
+    async def test_returns_empty_on_exception(self):
+        service = AsyncMock(spec=GraphService)
         service.connected = True
         service.execute_query.side_effect = Exception("Neo4j down")
 
-        result = get_semantic_layer(service)
+        result = await get_semantic_layer(service)
         assert result["dimensions"] == {}
 
 
 class TestGetEpisodicLayer:
     """Test episodic layer query function with mocked service."""
 
-    def test_returns_empty_when_disconnected(self):
-        service = MagicMock(spec=GraphService)
+    async def test_returns_empty_when_disconnected(self):
+        service = AsyncMock(spec=GraphService)
         service.connected = False
 
-        result = get_episodic_layer(service)
+        result = await get_episodic_layer(service)
         assert result["agents"] == {}
         assert result["evaluations"] == {}
 
-    def test_returns_empty_on_exception(self):
-        service = MagicMock(spec=GraphService)
+    async def test_returns_empty_on_exception(self):
+        service = AsyncMock(spec=GraphService)
         service.connected = True
         service.execute_query.side_effect = Exception("Neo4j down")
 
-        result = get_episodic_layer(service)
+        result = await get_episodic_layer(service)
         assert result["agents"] == {}
 
 
 class TestGetIndicatorBackbone:
     """Test indicator backbone query function with mocked service."""
 
-    def test_returns_empty_when_disconnected(self):
-        service = MagicMock(spec=GraphService)
+    async def test_returns_empty_when_disconnected(self):
+        service = AsyncMock(spec=GraphService)
         service.connected = False
 
-        result = get_indicator_backbone(service)
+        result = await get_indicator_backbone(service)
         assert result["indicators"] == {}
 
-    def test_returns_empty_on_exception(self):
-        service = MagicMock(spec=GraphService)
+    async def test_returns_empty_on_exception(self):
+        service = AsyncMock(spec=GraphService)
         service.connected = True
         service.execute_query.side_effect = Exception("Neo4j down")
 
-        result = get_indicator_backbone(service)
+        result = await get_indicator_backbone(service)
         assert result["indicators"] == {}
 
 
@@ -386,47 +387,47 @@ class TestGetIndicatorBackbone:
 class TestGetGraphData:
     """Test the top-level domain function."""
 
-    @patch("ethos.visualization.GraphService")
-    def test_returns_empty_graphdata_when_not_connected(self, mock_service_cls):
-        mock_service = MagicMock()
+    @patch("ethos.visualization.graph_context")
+    async def test_returns_empty_graphdata_when_not_connected(self, mock_ctx):
+        mock_service = AsyncMock()
         mock_service.connected = False
-        mock_service_cls.return_value = mock_service
+        mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_service)
+        mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
 
-        result = get_graph_data()
+        result = await get_graph_data()
 
         assert isinstance(result, GraphData)
         assert result.nodes == []
         assert result.relationships == []
 
-    @patch("ethos.visualization.get_indicator_backbone")
-    @patch("ethos.visualization.get_episodic_layer")
-    @patch("ethos.visualization.get_semantic_layer")
-    @patch("ethos.visualization.GraphService")
-    def test_returns_graph_data(
-        self, mock_service_cls, mock_semantic, mock_episodic, mock_backbone
+    @patch("ethos.visualization.get_indicator_backbone", new_callable=AsyncMock)
+    @patch("ethos.visualization.get_episodic_layer", new_callable=AsyncMock)
+    @patch("ethos.visualization.get_semantic_layer", new_callable=AsyncMock)
+    @patch("ethos.visualization.graph_context")
+    async def test_returns_graph_data(
+        self, mock_ctx, mock_semantic, mock_episodic, mock_backbone
     ):
-        mock_service = MagicMock()
+        mock_service = AsyncMock()
         mock_service.connected = True
-        mock_service_cls.return_value = mock_service
+        mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_service)
+        mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
 
         mock_semantic.return_value = _make_semantic_data()
         mock_episodic.return_value = _make_episodic_data()
         mock_backbone.return_value = _make_backbone_data()
 
-        result = get_graph_data()
+        result = await get_graph_data()
 
         assert isinstance(result, GraphData)
         assert len(result.nodes) > 0
         assert len(result.relationships) > 0
 
-        # Verify it called close
-        mock_service.close.assert_called_once()
+    @patch("ethos.visualization.graph_context")
+    async def test_handles_exception_gracefully(self, mock_ctx):
+        mock_ctx.return_value.__aenter__ = AsyncMock(side_effect=Exception("Connection failed"))
+        mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
 
-    @patch("ethos.visualization.GraphService")
-    def test_handles_exception_gracefully(self, mock_service_cls):
-        mock_service_cls.side_effect = Exception("Connection failed")
-
-        result = get_graph_data()
+        result = await get_graph_data()
 
         assert isinstance(result, GraphData)
         assert result.nodes == []

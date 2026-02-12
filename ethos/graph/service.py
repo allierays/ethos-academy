@@ -1,4 +1,4 @@
-"""GraphService — sync Neo4j driver lifecycle management.
+"""GraphService — Async Neo4j driver lifecycle management.
 
 All Neo4j interaction goes through this service. Connect once, use everywhere,
 close on shutdown. If Neo4j is down, methods return graceful defaults.
@@ -8,20 +8,20 @@ from __future__ import annotations
 
 import logging
 import os
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 
-from neo4j import GraphDatabase
+from neo4j import AsyncGraphDatabase
 
 logger = logging.getLogger(__name__)
 
 
 class GraphService:
-    """Manages the sync Neo4j driver lifecycle."""
+    """Manages the async Neo4j driver lifecycle."""
 
     def __init__(self) -> None:
         self._driver = None
 
-    def connect(
+    async def connect(
         self,
         uri: str | None = None,
         user: str | None = None,
@@ -32,20 +32,20 @@ class GraphService:
         user = user or os.environ.get("NEO4J_USER", "neo4j")
         password = password or os.environ.get("NEO4J_PASSWORD", "password")
         try:
-            self._driver = GraphDatabase.driver(uri, auth=(user, password))
-            self._driver.verify_connectivity()
+            self._driver = AsyncGraphDatabase.driver(uri, auth=(user, password))
+            await self._driver.verify_connectivity()
             logger.info("Connected to Neo4j at %s", uri)
         except Exception as exc:
             logger.warning("Failed to connect to Neo4j at %s: %s", uri, exc)
             self._driver = None
 
-    def close(self) -> None:
+    async def close(self) -> None:
         """Close the driver. Safe to call even if never connected."""
         if self._driver is not None:
-            self._driver.close()
+            await self._driver.close()
             self._driver = None
 
-    def execute_query(
+    async def execute_query(
         self,
         query: str,
         parameters: dict | None = None,
@@ -55,7 +55,7 @@ class GraphService:
         if self._driver is None:
             return ([], None, None)
         try:
-            return self._driver.execute_query(
+            return await self._driver.execute_query(
                 query, parameters_=parameters, **kwargs
             )
         except Exception as exc:
@@ -67,19 +67,19 @@ class GraphService:
         return self._driver is not None
 
 
-@contextmanager
-def graph_context():
+@asynccontextmanager
+async def graph_context():
     """Context manager for GraphService — connects and auto-closes.
 
     Usage:
-        with graph_context() as service:
+        async with graph_context() as service:
             if not service.connected:
                 return default
             # use service...
     """
     service = GraphService()
-    service.connect()
+    await service.connect()
     try:
         yield service
     finally:
-        service.close()
+        await service.close()

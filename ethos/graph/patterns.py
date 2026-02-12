@@ -71,7 +71,7 @@ RETURN p.pattern_id AS pattern_id,
 # ─── Query functions ──────────────────────────────────────────────────────────
 
 
-def get_agent_evaluation_count(
+async def get_agent_evaluation_count(
     service: GraphService, agent_id: str
 ) -> int:
     """Return number of evaluations for an agent. 0 if unavailable."""
@@ -79,7 +79,7 @@ def get_agent_evaluation_count(
         return 0
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _GET_AGENT_EVALUATION_COUNT, {"agent_id": agent_id}
         )
         if records:
@@ -90,7 +90,7 @@ def get_agent_evaluation_count(
         return 0
 
 
-def get_pattern_indicator_map(service: GraphService) -> list[dict]:
+async def get_pattern_indicator_map(service: GraphService) -> list[dict]:
     """Get all Pattern nodes with their COMPOSED_OF indicator IDs.
 
     Returns list of dicts:
@@ -101,7 +101,7 @@ def get_pattern_indicator_map(service: GraphService) -> list[dict]:
         return []
 
     try:
-        records, _, _ = service.execute_query(_GET_PATTERN_INDICATORS)
+        records, _, _ = await service.execute_query(_GET_PATTERN_INDICATORS)
         return [
             {
                 "pattern_id": r.get("pattern_id", ""),
@@ -116,7 +116,7 @@ def get_pattern_indicator_map(service: GraphService) -> list[dict]:
         return []
 
 
-def get_agent_detected_indicators(
+async def get_agent_detected_indicators(
     service: GraphService, agent_id: str
 ) -> dict[str, dict]:
     """Get all indicators detected for an agent across evaluations.
@@ -128,7 +128,7 @@ def get_agent_detected_indicators(
         return {}
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _GET_AGENT_DETECTED_INDICATORS, {"agent_id": agent_id}
         )
         result = {}
@@ -146,7 +146,7 @@ def get_agent_detected_indicators(
         return {}
 
 
-def store_exhibits_pattern(
+async def store_exhibits_pattern(
     service: GraphService,
     agent_id: str,
     pattern_id: str,
@@ -161,7 +161,7 @@ def store_exhibits_pattern(
         return
 
     try:
-        service.execute_query(
+        await service.execute_query(
             _MERGE_EXHIBITS_PATTERN,
             {
                 "agent_id": agent_id,
@@ -177,7 +177,7 @@ def store_exhibits_pattern(
         logger.warning("Failed to store EXHIBITS_PATTERN: %s", exc)
 
 
-def get_existing_patterns(
+async def get_existing_patterns(
     service: GraphService, agent_id: str
 ) -> list[dict]:
     """Get existing EXHIBITS_PATTERN relationships for an agent."""
@@ -185,7 +185,7 @@ def get_existing_patterns(
         return []
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _GET_EXISTING_PATTERNS, {"agent_id": agent_id}
         )
         return [

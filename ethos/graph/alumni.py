@@ -31,13 +31,13 @@ RETURN
 """
 
 
-def get_alumni_averages(service: GraphService) -> dict:
+async def get_alumni_averages(service: GraphService) -> dict:
     """Get per-trait averages across all agents. Returns empty dict if unavailable."""
     if not service.connected:
         return {}
 
     try:
-        records, _, _ = service.execute_query(_ALUMNI_AVERAGES_QUERY)
+        records, _, _ = await service.execute_query(_ALUMNI_AVERAGES_QUERY)
         if not records:
             return {}
 

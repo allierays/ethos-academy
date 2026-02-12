@@ -84,7 +84,7 @@ def _get_trait_score(result: EvaluationResult, trait_name: str) -> float:
     return 0.0
 
 
-def store_evaluation(
+async def store_evaluation(
     service: GraphService,
     raw_agent_id: str,
     result: EvaluationResult,
@@ -176,7 +176,7 @@ def store_evaluation(
     }
 
     try:
-        service.execute_query(_STORE_EVALUATION_QUERY, params)
+        await service.execute_query(_STORE_EVALUATION_QUERY, params)
     except Exception as exc:
         logger.warning("Failed to store evaluation: %s", exc)
 
@@ -189,7 +189,7 @@ RETURN a.agent_name AS matched
 """
 
 
-def store_authenticity(
+async def store_authenticity(
     service: GraphService,
     agent_name: str,
     result: AuthenticityResult,
@@ -204,7 +204,7 @@ def store_authenticity(
         return
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _STORE_AUTHENTICITY_QUERY,
             {
                 "agent_name": agent_name,

@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
+from contextlib import asynccontextmanager
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from fastapi.testclient import TestClient
 
@@ -11,26 +12,35 @@ from api.main import app
 client = TestClient(app)
 
 
+def _mock_graph_context(connected=True):
+    """Create a mock async graph_context context manager."""
+    mock_service = MagicMock()
+    mock_service.connected = connected
+
+    @asynccontextmanager
+    async def mock_ctx():
+        yield mock_service
+
+    return mock_ctx, mock_service
+
+
 # ── GET /agents ──────────────────────────────────────────────────────
 
 
 class TestAgentsEndpoint:
-    @patch("ethos.agents.get_all_agents")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_list(self, mock_gs_cls, mock_get_all):
-        from unittest.mock import MagicMock
+    def test_returns_list(self):
+        from ethos.shared.models import AgentSummary
 
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
-        mock_get_all.return_value = [
-            {
-                "agent_id": "a1",
-                "evaluation_count": 3,
-                "latest_alignment_status": "aligned",
-            }
+        mock_agents = [
+            AgentSummary(
+                agent_id="a1",
+                evaluation_count=3,
+                latest_alignment_status="aligned",
+            )
         ]
 
-        resp = client.get("/agents")
+        with patch("api.main.list_agents", new_callable=AsyncMock, return_value=mock_agents):
+            resp = client.get("/agents")
 
         assert resp.status_code == 200
         data = resp.json()
@@ -39,11 +49,9 @@ class TestAgentsEndpoint:
         assert data[0]["agent_id"] == "a1"
         assert data[0]["evaluation_count"] == 3
 
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_empty_on_failure(self, mock_gs_cls):
-        mock_gs_cls.side_effect = RuntimeError("down")
-
-        resp = client.get("/agents")
+    def test_returns_empty_on_failure(self):
+        with patch("api.main.list_agents", new_callable=AsyncMock, return_value=[]):
+            resp = client.get("/agents")
 
         assert resp.status_code == 200
         assert resp.json() == []
@@ -53,40 +61,34 @@ class TestAgentsEndpoint:
 
 
 class TestAgentEndpoint:
-    @patch("ethos.agents.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_profile(self, mock_gs_cls, mock_profile):
-        from unittest.mock import MagicMock
+    def test_returns_profile(self):
+        from ethos.shared.models import AgentProfile
 
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
-        mock_profile.return_value = {
-            "agent_id": "hashed",
-            "agent_model": "",
-            "created_at": "2024-01-01",
-            "evaluation_count": 5,
-            "dimension_averages": {"ethos": 0.7, "logos": 0.8, "pathos": 0.6},
-            "trait_averages": {"virtue": 0.8},
-            "alignment_history": ["aligned"],
-        }
+        mock_profile = AgentProfile(
+            agent_id="hashed",
+            agent_model="",
+            created_at="2024-01-01",
+            evaluation_count=5,
+            dimension_averages={"ethos": 0.7, "logos": 0.8, "pathos": 0.6},
+            trait_averages={"virtue": 0.8},
+            alignment_history=["aligned"],
+        )
 
-        resp = client.get("/agent/test-agent")
+        with patch("api.main.get_agent", new_callable=AsyncMock, return_value=mock_profile):
+            resp = client.get("/agent/test-agent")
 
         assert resp.status_code == 200
         data = resp.json()
         assert "agent_id" in data
         assert "dimension_averages" in data
 
-    @patch("ethos.agents.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_default_for_unknown(self, mock_gs_cls, mock_profile):
-        from unittest.mock import MagicMock
+    def test_returns_default_for_unknown(self):
+        from ethos.shared.models import AgentProfile
 
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
-        mock_profile.return_value = {}
+        mock_profile = AgentProfile(agent_id="unknown", evaluation_count=0)
 
-        resp = client.get("/agent/unknown")
+        with patch("api.main.get_agent", new_callable=AsyncMock, return_value=mock_profile):
+            resp = client.get("/agent/unknown")
 
         assert resp.status_code == 200
         data = resp.json()
@@ -98,38 +100,41 @@ class TestAgentEndpoint:
 
 
 class TestAgentHistoryEndpoint:
-    @patch("ethos.agents.get_evaluation_history")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_history(self, mock_gs_cls, mock_history):
-        from unittest.mock import MagicMock
+    def test_returns_history(self):
+        from ethos.shared.models import EvaluationHistoryItem
 
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
-        mock_history.return_value = [
-            {
-                "evaluation_id": "e1",
-                "ethos": 0.7,
-                "logos": 0.8,
-                "pathos": 0.6,
-                "phronesis": "developing",
-                "alignment_status": "aligned",
-                "flags": [],
-                "created_at": "2024-01-01",
-            }
+        mock_history = [
+            EvaluationHistoryItem(
+                evaluation_id="e1",
+                ethos=0.7,
+                logos=0.8,
+                pathos=0.6,
+                phronesis="developing",
+                alignment_status="aligned",
+                flags=[],
+                created_at="2024-01-01",
+            )
         ]
 
-        resp = client.get("/agent/test/history")
+        with patch(
+            "api.main.get_agent_history",
+            new_callable=AsyncMock,
+            return_value=mock_history,
+        ):
+            resp = client.get("/agent/test/history")
 
         assert resp.status_code == 200
         data = resp.json()
         assert isinstance(data, list)
         assert len(data) == 1
 
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_empty_on_failure(self, mock_gs_cls):
-        mock_gs_cls.side_effect = RuntimeError("down")
-
-        resp = client.get("/agent/test/history")
+    def test_returns_empty_on_failure(self):
+        with patch(
+            "api.main.get_agent_history",
+            new_callable=AsyncMock,
+            return_value=[],
+        ):
+            resp = client.get("/agent/test/history")
 
         assert resp.status_code == 200
         assert resp.json() == []
@@ -139,19 +144,16 @@ class TestAgentHistoryEndpoint:
 
 
 class TestAlumniEndpoint:
-    @patch("ethos.agents.get_alumni_averages")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_alumni(self, mock_gs_cls, mock_alumni):
-        from unittest.mock import MagicMock
+    def test_returns_alumni(self):
+        from ethos.shared.models import AlumniResult
 
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
-        mock_alumni.return_value = {
-            "trait_averages": {"virtue": 0.7},
-            "total_evaluations": 50,
-        }
+        mock_alumni = AlumniResult(
+            trait_averages={"virtue": 0.7},
+            total_evaluations=50,
+        )
 
-        resp = client.get("/alumni")
+        with patch("api.main.get_alumni", new_callable=AsyncMock, return_value=mock_alumni):
+            resp = client.get("/alumni")
 
         assert resp.status_code == 200
         data = resp.json()
@@ -159,11 +161,13 @@ class TestAlumniEndpoint:
         assert "total_evaluations" in data
         assert data["total_evaluations"] == 50
 
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_default_on_failure(self, mock_gs_cls):
-        mock_gs_cls.side_effect = RuntimeError("down")
+    def test_returns_default_on_failure(self):
+        from ethos.shared.models import AlumniResult
 
-        resp = client.get("/alumni")
+        mock_alumni = AlumniResult(trait_averages={}, total_evaluations=0)
+
+        with patch("api.main.get_alumni", new_callable=AsyncMock, return_value=mock_alumni):
+            resp = client.get("/alumni")
 
         assert resp.status_code == 200
         data = resp.json()
@@ -175,36 +179,38 @@ class TestAlumniEndpoint:
 
 
 class TestReflectEndpoint:
-    @patch("ethos.graph.service.GraphService")
-    def test_reflect_accepts_text(self, mock_gs_cls):
-        from unittest.mock import MagicMock
+    def test_reflect_accepts_text(self):
+        from ethos.shared.models import ReflectionResult
 
-        mock_service = MagicMock()
-        mock_service.connected = False
-        mock_gs_cls.return_value = mock_service
-
-        resp = client.post(
-            "/reflect",
-            json={"agent_id": "test", "text": None},
+        mock_result = ReflectionResult(
+            agent_id="test",
+            trend="insufficient_data",
         )
+
+        with patch("api.main.reflect", new_callable=AsyncMock, return_value=mock_result):
+            resp = client.post(
+                "/reflect",
+                json={"agent_id": "test", "text": None},
+            )
 
         assert resp.status_code == 200
         data = resp.json()
         assert "trend" in data
         assert "ethos" in data
 
-    @patch("ethos.graph.service.GraphService")
-    def test_reflect_without_text(self, mock_gs_cls):
-        from unittest.mock import MagicMock
+    def test_reflect_without_text(self):
+        from ethos.shared.models import ReflectionResult
 
-        mock_service = MagicMock()
-        mock_service.connected = False
-        mock_gs_cls.return_value = mock_service
-
-        resp = client.post(
-            "/reflect",
-            json={"agent_id": "test"},
+        mock_result = ReflectionResult(
+            agent_id="test",
+            trend="insufficient_data",
         )
+
+        with patch("api.main.reflect", new_callable=AsyncMock, return_value=mock_result):
+            resp = client.post(
+                "/reflect",
+                json={"agent_id": "test"},
+            )
 
         assert resp.status_code == 200
 
@@ -228,13 +234,15 @@ class TestCORS:
 
 
 class TestExceptionHandlers:
-    @patch("api.main.evaluate")
-    def test_graph_unavailable_returns_503(self, mock_evaluate):
+    def test_graph_unavailable_returns_503(self):
         from ethos.shared.errors import GraphUnavailableError
 
-        mock_evaluate.side_effect = GraphUnavailableError("Neo4j is down")
-
-        resp = client.post("/evaluate", json={"text": "test message"})
+        with patch(
+            "api.main.evaluate",
+            new_callable=AsyncMock,
+            side_effect=GraphUnavailableError("Neo4j is down"),
+        ):
+            resp = client.post("/evaluate", json={"text": "test message"})
 
         assert resp.status_code == 503
         data = resp.json()
@@ -242,49 +250,57 @@ class TestExceptionHandlers:
         assert data["message"] == "Neo4j is down"
         assert data["status"] == 503
 
-    @patch("api.main.evaluate")
-    def test_evaluation_error_returns_422(self, mock_evaluate):
+    def test_evaluation_error_returns_422(self):
         from ethos.shared.errors import EvaluationError
 
-        mock_evaluate.side_effect = EvaluationError("pipeline failed")
-
-        resp = client.post("/evaluate", json={"text": "test message"})
+        with patch(
+            "api.main.evaluate",
+            new_callable=AsyncMock,
+            side_effect=EvaluationError("pipeline failed"),
+        ):
+            resp = client.post("/evaluate", json={"text": "test message"})
 
         assert resp.status_code == 422
         data = resp.json()
         assert data["error"] == "EvaluationError"
 
-    @patch("api.main.evaluate")
-    def test_parse_error_returns_422(self, mock_evaluate):
+    def test_parse_error_returns_422(self):
         from ethos.shared.errors import ParseError
 
-        mock_evaluate.side_effect = ParseError("bad response")
-
-        resp = client.post("/evaluate", json={"text": "test message"})
+        with patch(
+            "api.main.evaluate",
+            new_callable=AsyncMock,
+            side_effect=ParseError("bad response"),
+        ):
+            resp = client.post("/evaluate", json={"text": "test message"})
 
         assert resp.status_code == 422
         data = resp.json()
         assert data["error"] == "ParseError"
 
-    @patch("api.main.evaluate")
-    def test_config_error_returns_500(self, mock_evaluate):
+    def test_config_error_returns_500(self):
         from ethos.shared.errors import ConfigError
 
-        mock_evaluate.side_effect = ConfigError("missing key")
-
-        resp = client.post("/evaluate", json={"text": "test message"})
+        with patch(
+            "api.main.evaluate",
+            new_callable=AsyncMock,
+            side_effect=ConfigError("missing key"),
+        ):
+            resp = client.post("/evaluate", json={"text": "test message"})
 
         assert resp.status_code == 500
         data = resp.json()
         assert data["error"] == "ConfigError"
 
-    @patch("api.main.evaluate")
-    def test_base_ethos_error_returns_500(self, mock_evaluate):
+    def test_base_ethos_error_returns_500(self):
         from ethos.shared.errors import EthosError
 
-        mock_evaluate.side_effect = EthosError("unknown ethos error")
-
-        resp = client.post("/evaluate", json={"text": "test message"})
+        with patch(
+            "api.main.evaluate",
+            new_callable=AsyncMock,
+            side_effect=EthosError("unknown ethos error"),
+        ):
+            resp = client.post("/evaluate", json={"text": "test message"})
 
         assert resp.status_code == 500
         data = resp.json()

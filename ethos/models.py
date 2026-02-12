@@ -5,12 +5,15 @@ Existing code imports from ethos.models — this file keeps both paths working.
 """
 
 from ethos.shared.models import (  # noqa: F401
+    ActivityClassification,
     ActivityPattern,
     AgentProfile,
     AgentSummary,
     AlumniResult,
+    AuthenticityClassification,
     AuthenticityResult,
     BurstAnalysis,
+    BurstClassification,
     DetectedIndicator,
     DetectedPattern,
     EvaluationHistoryItem,
@@ -30,6 +33,7 @@ from ethos.shared.models import (  # noqa: F401
     Priority,
     ReflectionResult,
     RoutingTier,
+    TemporalClassification,
     TemporalSignature,
     TraitScore,
 )

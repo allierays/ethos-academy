@@ -66,7 +66,7 @@ def _parse_insights_response(raw: str, agent_id: str) -> InsightsResult:
         )
 
 
-def insights(agent_id: str) -> InsightsResult:
+async def insights(agent_id: str) -> InsightsResult:
     """Generate Opus-powered behavioral insights for an agent.
 
     Integrates all three cognitive faculties:
@@ -85,7 +85,7 @@ def insights(agent_id: str) -> InsightsResult:
 
     # Connect to graph
     try:
-        with graph_context() as service:
+        async with graph_context() as service:
             if not service.connected:
                 return InsightsResult(
                     agent_id=agent_id,
@@ -94,7 +94,7 @@ def insights(agent_id: str) -> InsightsResult:
                 )
 
             # Fetch agent history
-            evaluations = get_evaluation_history(service, agent_id, limit=20)
+            evaluations = await get_evaluation_history(service, agent_id, limit=20)
             if not evaluations:
                 return InsightsResult(
                     agent_id=agent_id,
@@ -103,8 +103,8 @@ def insights(agent_id: str) -> InsightsResult:
                 )
 
             # Fetch agent profile and alumni averages
-            profile = get_agent_profile(service, agent_id)
-            alumni_data = get_alumni_averages(service)
+            profile = await get_agent_profile(service, agent_id)
+            alumni_data = await get_alumni_averages(service)
             alumni_averages = alumni_data.get("trait_averages", {})
     except Exception as exc:
         logger.warning("Graph unavailable for insights: %s", exc)
@@ -125,7 +125,7 @@ def insights(agent_id: str) -> InsightsResult:
     # ── INTUITION: Deep pattern recognition ──────────────────────
     intuition_result = None
     try:
-        intuition_result = intuit_history(agent_id)
+        intuition_result = await intuit_history(agent_id)
     except Exception as exc:
         logger.warning("Intuition analysis failed (non-fatal): %s", exc)
 
@@ -139,7 +139,7 @@ def insights(agent_id: str) -> InsightsResult:
     )
 
     try:
-        raw_response = call_claude(system_prompt, user_prompt, tier="deep")
+        raw_response = await call_claude(system_prompt, user_prompt, tier="deep")
     except Exception as exc:
         logger.warning("Opus insights call failed: %s", exc)
         return InsightsResult(

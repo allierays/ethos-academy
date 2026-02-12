@@ -89,7 +89,7 @@ def _suggest_focus(
     return focus[:5]  # Cap at 5 to keep deliberation focused
 
 
-def intuit(
+async def intuit(
     source: str | None,
     instinct: InstinctResult,
     service: GraphService | None = None,
@@ -116,7 +116,7 @@ def intuit(
     own_service = False
     if service is None:
         service = GraphService()
-        service.connect()
+        await service.connect()
         own_service = True
 
     try:
@@ -124,7 +124,7 @@ def intuit(
             return IntuitionResult()
 
         # ── Agent signature ───────────────────────────────────────
-        rec = get_agent_signature(service, source)
+        rec = await get_agent_signature(service, source)
 
         if not rec:
             # New agent — no history, no intuition
@@ -144,7 +144,7 @@ def intuit(
         variance = _compute_variance(std_ethos, std_logos, std_pathos)
 
         # ── Temporal trend ───────────────────────────────────────
-        recent_evals = get_recent_trend(service, source)
+        recent_evals = await get_recent_trend(service, source)
         temporal_pattern = _detect_temporal_pattern(recent_evals)
 
         # ── Anomaly detection ────────────────────────────────────
@@ -188,4 +188,4 @@ def intuit(
         return IntuitionResult()
     finally:
         if own_service:
-            service.close()
+            await service.close()

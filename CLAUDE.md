@@ -17,7 +17,7 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 - **LLM**: Anthropic SDK (Claude Sonnet)
 - **Validation**: Pydantic v2
 - **Testing**: pytest + httpx
-- **Driver**: neo4j sync driver (NOT async)
+- **Driver**: neo4j async driver (AsyncGraphDatabase)
 
 ## Architecture: Domain-Driven Design
 
@@ -71,7 +71,7 @@ scripts/ ──→ ethos/
 5. **API is a thin layer.** No business logic in route handlers — delegate to domain functions.
 6. **Message content never enters the graph.** Only scores, hashes, metadata.
 7. **Identity never stores raw agent IDs.** Only hashes.
-8. **All code is SYNC.** No async/await anywhere. Sync Neo4j driver, sync Anthropic client, sync route handlers.
+8. **All I/O code is ASYNC.** Use async Neo4j driver (AsyncGraphDatabase), async Anthropic client (AsyncAnthropic), and async FastAPI route handlers. Pure computation functions (scoring, parsing, taxonomy) remain sync.
 9. **All API endpoints use Pydantic models** for both request and response — no raw dicts.
 
 ## Dependency Graph

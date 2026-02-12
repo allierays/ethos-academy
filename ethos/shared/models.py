@@ -7,6 +7,7 @@ No business logic, no I/O, no dependencies beyond pydantic.
 from __future__ import annotations
 
 from enum import Enum
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -263,22 +264,28 @@ class IntuitionResult(BaseModel):
 # ── Authenticity detection models ────────────────────────────────────
 
 
+TemporalClassification = Literal["autonomous", "human_influenced", "indeterminate"]
+BurstClassification = Literal["organic", "automated", "burst_bot"]
+ActivityClassification = Literal["always_on", "human_schedule", "mixed"]
+AuthenticityClassification = Literal["likely_autonomous", "likely_human", "bot_farm", "indeterminate"]
+
+
 class TemporalSignature(BaseModel):
     """Temporal fingerprint from posting interval analysis."""
     cv_score: float = Field(default=0.0, ge=0.0, le=1.0)
     mean_interval_seconds: float = 0.0
-    classification: str = "indeterminate"  # autonomous | human_influenced | indeterminate
+    classification: TemporalClassification = "indeterminate"
 
 
 class BurstAnalysis(BaseModel):
     """Burst-posting detection for bot farm identification."""
     burst_rate: float = Field(default=0.0, ge=0.0, le=1.0)
-    classification: str = "organic"  # organic | automated | burst_bot
+    classification: BurstClassification = "organic"
 
 
 class ActivityPattern(BaseModel):
     """24-hour activity distribution analysis."""
-    classification: str = "mixed"  # always_on | human_schedule | mixed
+    classification: ActivityClassification = "mixed"
     active_hours: int = 24
     has_sleep_gap: bool = False
 
@@ -287,7 +294,7 @@ class IdentitySignals(BaseModel):
     """Platform identity and verification signals."""
     is_claimed: bool = False
     owner_verified: bool = False
-    karma_post_ratio: float = 0.0
+    karma_post_ratio: float = Field(default=0.0, ge=0.0)
 
 
 class AuthenticityResult(BaseModel):
@@ -298,5 +305,5 @@ class AuthenticityResult(BaseModel):
     activity: ActivityPattern = Field(default_factory=ActivityPattern)
     identity: IdentitySignals = Field(default_factory=IdentitySignals)
     authenticity_score: float = Field(default=0.5, ge=0.0, le=1.0)
-    classification: str = "indeterminate"  # likely_autonomous | likely_human | bot_farm | indeterminate
+    classification: AuthenticityClassification = "indeterminate"
     confidence: float = Field(default=0.0, ge=0.0, le=1.0)

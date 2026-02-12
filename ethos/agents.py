@@ -22,15 +22,15 @@ from ethos.shared.models import (
 logger = logging.getLogger(__name__)
 
 
-def list_agents(search: str = "") -> list[AgentSummary]:
+async def list_agents(search: str = "") -> list[AgentSummary]:
     """List all agents with evaluation counts. Returns empty list if graph unavailable.
 
     Args:
         search: Optional name filter — matches agent_name case-insensitively.
     """
     try:
-        with graph_context() as service:
-            raw = get_all_agents(service, search=search)
+        async with graph_context() as service:
+            raw = await get_all_agents(service, search=search)
             return [
                 AgentSummary(
                     agent_id=a.get("agent_id", ""),
@@ -46,17 +46,17 @@ def list_agents(search: str = "") -> list[AgentSummary]:
         return []
 
 
-def get_agent(agent_id: str) -> AgentProfile:
+async def get_agent(agent_id: str) -> AgentProfile:
     """Get agent profile with averages. Returns default AgentProfile if unavailable."""
     try:
-        with graph_context() as service:
-            raw = get_agent_profile(service, agent_id)
+        async with graph_context() as service:
+            raw = await get_agent_profile(service, agent_id)
 
             if not raw:
                 return AgentProfile(agent_id=agent_id)
 
             # Compute trend dynamically from evaluation history
-            history = get_evaluation_history(service, agent_id, limit=20)
+            history = await get_evaluation_history(service, agent_id, limit=20)
             trend = compute_trend(history)
 
             return AgentProfile(
@@ -76,13 +76,13 @@ def get_agent(agent_id: str) -> AgentProfile:
         return AgentProfile(agent_id=agent_id)
 
 
-def get_agent_history(
+async def get_agent_history(
     agent_id: str, limit: int = 50
 ) -> list[EvaluationHistoryItem]:
     """Get evaluation history for an agent. Returns empty list if unavailable."""
     try:
-        with graph_context() as service:
-            raw = get_evaluation_history(service, agent_id, limit=limit)
+        async with graph_context() as service:
+            raw = await get_evaluation_history(service, agent_id, limit=limit)
 
             items = []
             for e in raw:
@@ -115,11 +115,11 @@ def get_agent_history(
         return []
 
 
-def get_alumni() -> AlumniResult:
+async def get_alumni() -> AlumniResult:
     """Get alumni-wide trait averages. Returns default AlumniResult if unavailable."""
     try:
-        with graph_context() as service:
-            raw = get_alumni_averages(service)
+        async with graph_context() as service:
+            raw = await get_alumni_averages(service)
 
             if not raw:
                 return AlumniResult()

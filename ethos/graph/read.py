@@ -116,7 +116,7 @@ RETURN recent
 """
 
 
-def get_agent_signature(service: GraphService, agent_id: str) -> dict:
+async def get_agent_signature(service: GraphService, agent_id: str) -> dict:
     """Get agent behavioral signature — aggregate stats + recent patterns.
 
     Returns dict with eval_count, avg dimensions, std devs, recent statuses/flags,
@@ -126,7 +126,7 @@ def get_agent_signature(service: GraphService, agent_id: str) -> dict:
         return {}
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _AGENT_SIGNATURE_QUERY, {"agent_id": agent_id}
         )
         if not records:
@@ -137,7 +137,7 @@ def get_agent_signature(service: GraphService, agent_id: str) -> dict:
         return {}
 
 
-def get_recent_trend(service: GraphService, agent_id: str) -> list[dict]:
+async def get_recent_trend(service: GraphService, agent_id: str) -> list[dict]:
     """Get last 5 evaluations for temporal trend analysis.
 
     Returns list of dicts with ethos, logos, pathos, alignment_status.
@@ -147,7 +147,7 @@ def get_recent_trend(service: GraphService, agent_id: str) -> list[dict]:
         return []
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _RECENT_TREND_QUERY, {"agent_id": agent_id}
         )
         if not records:
@@ -158,7 +158,7 @@ def get_recent_trend(service: GraphService, agent_id: str) -> list[dict]:
         return []
 
 
-def get_evaluation_history(
+async def get_evaluation_history(
     service: GraphService,
     agent_id: str,
     limit: int = 10,
@@ -168,7 +168,7 @@ def get_evaluation_history(
         return []
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _GET_HISTORY_QUERY, {"agent_id": agent_id, "limit": limit}
         )
         results = []
@@ -181,7 +181,7 @@ def get_evaluation_history(
         return []
 
 
-def get_agent_profile(
+async def get_agent_profile(
     service: GraphService,
     agent_id: str,
 ) -> dict:
@@ -190,7 +190,7 @@ def get_agent_profile(
         return {}
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _GET_PROFILE_QUERY, {"agent_id": agent_id}
         )
         if not records:
@@ -223,7 +223,7 @@ def get_agent_profile(
         return {}
 
 
-def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
+async def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
     """Get all agents with evaluation counts. Returns empty list if unavailable.
 
     Args:
@@ -235,11 +235,11 @@ def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
 
     try:
         if search:
-            records, _, _ = service.execute_query(
+            records, _, _ = await service.execute_query(
                 _SEARCH_AGENTS_QUERY, {"search": search}
             )
         else:
-            records, _, _ = service.execute_query(_GET_ALL_AGENTS_QUERY)
+            records, _, _ = await service.execute_query(_GET_ALL_AGENTS_QUERY)
         results = []
         for record in records:
             results.append({

@@ -135,8 +135,8 @@ def health() -> HealthResponse:
     response_model=EvaluationResult,
     dependencies=[Depends(rate_limit), Depends(require_api_key)],
 )
-def evaluate_endpoint(req: EvaluateRequest) -> EvaluationResult:
-    return evaluate(
+async def evaluate_endpoint(req: EvaluateRequest) -> EvaluationResult:
+    return await evaluate(
         req.text,
         source=req.source,
         source_name=req.source_name or "",
@@ -149,45 +149,45 @@ def evaluate_endpoint(req: EvaluateRequest) -> EvaluationResult:
     response_model=ReflectionResult,
     dependencies=[Depends(require_api_key)],
 )
-def reflect_endpoint(req: ReflectRequest) -> ReflectionResult:
-    return reflect(req.agent_id, text=req.text)
+async def reflect_endpoint(req: ReflectRequest) -> ReflectionResult:
+    return await reflect(req.agent_id, text=req.text)
 
 
 @app.get("/agents", response_model=list[AgentSummary])
-def agents_endpoint(q: str = ""):
-    return list_agents(search=q)
+async def agents_endpoint(q: str = ""):
+    return await list_agents(search=q)
 
 
 @app.get("/agent/{agent_id}", response_model=AgentProfile)
-def agent_endpoint(agent_id: str):
-    return get_agent(agent_id)
+async def agent_endpoint(agent_id: str):
+    return await get_agent(agent_id)
 
 
 @app.get("/agent/{agent_id}/history", response_model=list[EvaluationHistoryItem])
-def agent_history_endpoint(agent_id: str):
-    return get_agent_history(agent_id)
+async def agent_history_endpoint(agent_id: str):
+    return await get_agent_history(agent_id)
 
 
 @app.get("/alumni", response_model=AlumniResult)
-def alumni_endpoint():
-    return get_alumni()
+async def alumni_endpoint():
+    return await get_alumni()
 
 
 @app.get("/agent/{agent_id}/patterns", response_model=PatternResult)
-def patterns_endpoint(agent_id: str):
-    return detect_patterns(agent_id)
+async def patterns_endpoint(agent_id: str):
+    return await detect_patterns(agent_id)
 
 
 @app.get("/insights/{agent_id}", response_model=InsightsResult)
-def insights_endpoint(agent_id: str):
-    return insights(agent_id)
+async def insights_endpoint(agent_id: str):
+    return await insights(agent_id)
 
 
-@app.get("/agents/{agent_name}/authenticity", response_model=AuthenticityResult)
-def authenticity_endpoint(agent_name: str):
-    return analyze_authenticity(agent_name)
+@app.get("/agent/{agent_name}/authenticity", response_model=AuthenticityResult)
+async def authenticity_endpoint(agent_name: str):
+    return await analyze_authenticity(agent_name)
 
 
 @app.get("/graph", response_model=GraphData)
-def graph_endpoint():
-    return get_graph_data()
+async def graph_endpoint():
+    return await get_graph_data()

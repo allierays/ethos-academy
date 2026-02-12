@@ -7,9 +7,9 @@ Usage:
     uv run python scripts/analyze_agents.py
 """
 
-import glob
 import json
 import sys
+from pathlib import Path
 
 from ethos.evaluation.authenticity import (
     analyze_activity_pattern,
@@ -17,7 +17,13 @@ from ethos.evaluation.authenticity import (
     analyze_identity_signals,
     analyze_temporal_signature,
     compute_authenticity,
+    parse_timestamps,
 )
+
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_DATA_DIR = _SCRIPT_DIR.parent / "data" / "moltbook"
+_AGENTS_DIR = _DATA_DIR / "agents"
+_OUTPUT_FILE = _DATA_DIR / "authenticity_results.json"
 
 
 def analyze_agent(data: dict) -> dict:
@@ -37,13 +43,13 @@ def analyze_agent(data: dict) -> dict:
         if ts:
             timestamps.append(ts)
 
-    # Sort chronologically (analyze functions also sort, but pre-sort for clarity)
-    timestamps.sort()
+    # Parse once, share across all sub-analyses
+    parsed = parse_timestamps(timestamps)
 
     # Run sub-analyses
-    temporal = analyze_temporal_signature(timestamps)
-    burst = analyze_burst_rate(timestamps)
-    activity = analyze_activity_pattern(timestamps)
+    temporal = analyze_temporal_signature(timestamps, _parsed=parsed)
+    burst = analyze_burst_rate(timestamps, _parsed=parsed)
+    activity = analyze_activity_pattern(timestamps, _parsed=parsed)
 
     # Build profile dict for identity signals
     profile = {
@@ -64,9 +70,9 @@ def analyze_agent(data: dict) -> dict:
 
 
 def main():
-    agent_files = sorted(glob.glob("data/moltbook/agents/*.json"))
+    agent_files = sorted(_AGENTS_DIR.glob("*.json"))
     if not agent_files:
-        print("ERROR: No agent profiles found in data/moltbook/agents/", file=sys.stderr)
+        print(f"ERROR: No agent profiles found in {_AGENTS_DIR}", file=sys.stderr)
         sys.exit(1)
 
     print(f"Analyzing {len(agent_files)} agent profiles...")
@@ -85,8 +91,7 @@ def main():
 
         agent_name = data.get("agent", {}).get("name", "")
         if not agent_name:
-            # Use filename as fallback
-            agent_name = filepath.split("/")[-1].replace(".json", "")
+            agent_name = filepath.stem
 
         result = analyze_agent(data)
         result["agent_name"] = agent_name
@@ -95,22 +100,24 @@ def main():
         if (i + 1) % 50 == 0:
             print(f"  Processed {i + 1}/{len(agent_files)} agents...")
 
-    # Write results
-    output_path = "data/moltbook/authenticity_results.json"
+    # Write results atomically via temp file
+    tmp_path = _OUTPUT_FILE.with_suffix(".tmp")
     try:
-        with open(output_path, "w") as f:
+        with open(tmp_path, "w") as f:
             json.dump(results, f, indent=2)
+        tmp_path.replace(_OUTPUT_FILE)
     except OSError as e:
-        print(f"ERROR: Failed to write results to {output_path}: {e}", file=sys.stderr)
+        print(f"ERROR: Failed to write results to {_OUTPUT_FILE}: {e}", file=sys.stderr)
+        tmp_path.unlink(missing_ok=True)
         sys.exit(1)
 
     # Print summary
-    classifications = {}
+    classifications: dict[str, int] = {}
     for v in results.values():
         cls = v["classification"]
         classifications[cls] = classifications.get(cls, 0) + 1
 
-    print(f"\nDone! Results saved to {output_path}")
+    print(f"\nDone! Results saved to {_OUTPUT_FILE}")
     print(f"  Total analyzed: {len(results)}")
     if skipped:
         print(f"  Skipped (malformed): {skipped}")

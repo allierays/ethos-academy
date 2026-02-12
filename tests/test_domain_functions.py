@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from contextlib import asynccontextmanager
+from unittest.mock import MagicMock, AsyncMock, patch
+
+import pytest
 
 from ethos.agents import get_agent, get_agent_history, get_alumni, list_agents
 from ethos.shared.models import (
@@ -13,15 +16,23 @@ from ethos.shared.models import (
 )
 
 
+def _make_mock_graph_context(mock_service):
+    """Create a mock async context manager for graph_context."""
+    @asynccontextmanager
+    async def mock_graph_ctx():
+        yield mock_service
+    return mock_graph_ctx
+
+
 # ── list_agents tests ────────────────────────────────────────────────
 
 
 class TestListAgents:
-    @patch("ethos.agents.get_all_agents")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_agent_summaries(self, mock_gs_cls, mock_get_all):
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
+    @patch("ethos.agents.get_all_agents", new_callable=AsyncMock)
+    @patch("ethos.agents.graph_context")
+    async def test_returns_agent_summaries(self, mock_graph_ctx, mock_get_all):
+        mock_service = AsyncMock()
+        mock_graph_ctx.side_effect = lambda: _make_mock_graph_context(mock_service)()
 
         mock_get_all.return_value = [
             {
@@ -36,7 +47,7 @@ class TestListAgents:
             },
         ]
 
-        result = list_agents()
+        result = await list_agents()
 
         assert len(result) == 2
         assert isinstance(result[0], AgentSummary)
@@ -45,22 +56,27 @@ class TestListAgents:
         assert result[0].latest_alignment_status == "aligned"
         assert result[1].latest_alignment_status == "drifting"
 
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_empty_on_graph_failure(self, mock_gs_cls):
-        mock_gs_cls.side_effect = RuntimeError("Connection refused")
+    @patch("ethos.agents.graph_context")
+    async def test_returns_empty_on_graph_failure(self, mock_graph_ctx):
+        @asynccontextmanager
+        async def failing_ctx():
+            raise RuntimeError("Connection refused")
+            yield  # noqa: unreachable
 
-        result = list_agents()
+        mock_graph_ctx.side_effect = lambda: failing_ctx()
+
+        result = await list_agents()
 
         assert result == []
 
-    @patch("ethos.agents.get_all_agents")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_empty_when_no_agents(self, mock_gs_cls, mock_get_all):
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
+    @patch("ethos.agents.get_all_agents", new_callable=AsyncMock)
+    @patch("ethos.agents.graph_context")
+    async def test_returns_empty_when_no_agents(self, mock_graph_ctx, mock_get_all):
+        mock_service = AsyncMock()
+        mock_graph_ctx.side_effect = lambda: _make_mock_graph_context(mock_service)()
         mock_get_all.return_value = []
 
-        result = list_agents()
+        result = await list_agents()
 
         assert result == []
 
@@ -69,11 +85,12 @@ class TestListAgents:
 
 
 class TestGetAgent:
-    @patch("ethos.agents.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_agent_profile(self, mock_gs_cls, mock_profile):
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
+    @patch("ethos.agents.get_evaluation_history", new_callable=AsyncMock)
+    @patch("ethos.agents.get_agent_profile", new_callable=AsyncMock)
+    @patch("ethos.agents.graph_context")
+    async def test_returns_agent_profile(self, mock_graph_ctx, mock_profile, mock_history):
+        mock_service = AsyncMock()
+        mock_graph_ctx.side_effect = lambda: _make_mock_graph_context(mock_service)()
 
         mock_profile.return_value = {
             "agent_id": "hashed-1",
@@ -84,8 +101,9 @@ class TestGetAgent:
             "trait_averages": {"virtue": 0.8, "manipulation": 0.1},
             "alignment_history": ["aligned", "aligned", "drifting"],
         }
+        mock_history.return_value = []
 
-        result = get_agent("test-agent")
+        result = await get_agent("test-agent")
 
         assert isinstance(result, AgentProfile)
         assert result.agent_id == "hashed-1"
@@ -93,24 +111,31 @@ class TestGetAgent:
         assert result.dimension_averages["ethos"] == 0.7
         assert result.trait_averages["virtue"] == 0.8
 
-    @patch("ethos.agents.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_default_when_not_found(self, mock_gs_cls, mock_profile):
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
+    @patch("ethos.agents.get_evaluation_history", new_callable=AsyncMock)
+    @patch("ethos.agents.get_agent_profile", new_callable=AsyncMock)
+    @patch("ethos.agents.graph_context")
+    async def test_returns_default_when_not_found(self, mock_graph_ctx, mock_profile, mock_history):
+        mock_service = AsyncMock()
+        mock_graph_ctx.side_effect = lambda: _make_mock_graph_context(mock_service)()
         mock_profile.return_value = {}
+        mock_history.return_value = []
 
-        result = get_agent("unknown-agent")
+        result = await get_agent("unknown-agent")
 
         assert isinstance(result, AgentProfile)
         assert result.agent_id == "unknown-agent"
         assert result.evaluation_count == 0
 
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_default_on_graph_failure(self, mock_gs_cls):
-        mock_gs_cls.side_effect = RuntimeError("Connection refused")
+    @patch("ethos.agents.graph_context")
+    async def test_returns_default_on_graph_failure(self, mock_graph_ctx):
+        @asynccontextmanager
+        async def failing_ctx():
+            raise RuntimeError("Connection refused")
+            yield  # noqa: unreachable
 
-        result = get_agent("test-agent")
+        mock_graph_ctx.side_effect = lambda: failing_ctx()
+
+        result = await get_agent("test-agent")
 
         assert isinstance(result, AgentProfile)
         assert result.agent_id == "test-agent"
@@ -120,11 +145,11 @@ class TestGetAgent:
 
 
 class TestGetAgentHistory:
-    @patch("ethos.agents.get_evaluation_history")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_history_items(self, mock_gs_cls, mock_history):
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
+    @patch("ethos.agents.get_evaluation_history", new_callable=AsyncMock)
+    @patch("ethos.agents.graph_context")
+    async def test_returns_history_items(self, mock_graph_ctx, mock_history):
+        mock_service = AsyncMock()
+        mock_graph_ctx.side_effect = lambda: _make_mock_graph_context(mock_service)()
 
         mock_history.return_value = [
             {
@@ -141,7 +166,7 @@ class TestGetAgentHistory:
             },
         ]
 
-        result = get_agent_history("test-agent")
+        result = await get_agent_history("test-agent")
 
         assert len(result) == 1
         assert isinstance(result[0], EvaluationHistoryItem)
@@ -151,22 +176,27 @@ class TestGetAgentHistory:
         assert result[0].trait_scores["virtue"] == 0.8
         assert result[0].trait_scores["manipulation"] == 0.7
 
-    @patch("ethos.agents.get_evaluation_history")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_empty_when_no_history(self, mock_gs_cls, mock_history):
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
+    @patch("ethos.agents.get_evaluation_history", new_callable=AsyncMock)
+    @patch("ethos.agents.graph_context")
+    async def test_returns_empty_when_no_history(self, mock_graph_ctx, mock_history):
+        mock_service = AsyncMock()
+        mock_graph_ctx.side_effect = lambda: _make_mock_graph_context(mock_service)()
         mock_history.return_value = []
 
-        result = get_agent_history("test-agent")
+        result = await get_agent_history("test-agent")
 
         assert result == []
 
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_empty_on_graph_failure(self, mock_gs_cls):
-        mock_gs_cls.side_effect = RuntimeError("Connection refused")
+    @patch("ethos.agents.graph_context")
+    async def test_returns_empty_on_graph_failure(self, mock_graph_ctx):
+        @asynccontextmanager
+        async def failing_ctx():
+            raise RuntimeError("Connection refused")
+            yield  # noqa: unreachable
 
-        result = get_agent_history("test-agent")
+        mock_graph_ctx.side_effect = lambda: failing_ctx()
+
+        result = await get_agent_history("test-agent")
 
         assert result == []
 
@@ -175,41 +205,46 @@ class TestGetAgentHistory:
 
 
 class TestGetAlumni:
-    @patch("ethos.agents.get_alumni_averages")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_alumni_result(self, mock_gs_cls, mock_alumni):
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
+    @patch("ethos.agents.get_alumni_averages", new_callable=AsyncMock)
+    @patch("ethos.agents.graph_context")
+    async def test_returns_alumni_result(self, mock_graph_ctx, mock_alumni):
+        mock_service = AsyncMock()
+        mock_graph_ctx.side_effect = lambda: _make_mock_graph_context(mock_service)()
 
         mock_alumni.return_value = {
             "trait_averages": {"virtue": 0.7, "manipulation": 0.3},
             "total_evaluations": 100,
         }
 
-        result = get_alumni()
+        result = await get_alumni()
 
         assert isinstance(result, AlumniResult)
         assert result.trait_averages["virtue"] == 0.7
         assert result.total_evaluations == 100
 
-    @patch("ethos.agents.get_alumni_averages")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_default_when_empty(self, mock_gs_cls, mock_alumni):
-        mock_service = MagicMock()
-        mock_gs_cls.return_value = mock_service
+    @patch("ethos.agents.get_alumni_averages", new_callable=AsyncMock)
+    @patch("ethos.agents.graph_context")
+    async def test_returns_default_when_empty(self, mock_graph_ctx, mock_alumni):
+        mock_service = AsyncMock()
+        mock_graph_ctx.side_effect = lambda: _make_mock_graph_context(mock_service)()
         mock_alumni.return_value = {}
 
-        result = get_alumni()
+        result = await get_alumni()
 
         assert isinstance(result, AlumniResult)
         assert result.trait_averages == {}
         assert result.total_evaluations == 0
 
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_default_on_graph_failure(self, mock_gs_cls):
-        mock_gs_cls.side_effect = RuntimeError("Connection refused")
+    @patch("ethos.agents.graph_context")
+    async def test_returns_default_on_graph_failure(self, mock_graph_ctx):
+        @asynccontextmanager
+        async def failing_ctx():
+            raise RuntimeError("Connection refused")
+            yield  # noqa: unreachable
 
-        result = get_alumni()
+        mock_graph_ctx.side_effect = lambda: failing_ctx()
+
+        result = await get_alumni()
 
         assert isinstance(result, AlumniResult)
         assert result.total_evaluations == 0

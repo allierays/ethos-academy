@@ -1,4 +1,4 @@
-"""Sync Anthropic SDK wrapper for Claude evaluation calls.
+"""Async Anthropic SDK wrapper for Claude evaluation calls.
 
 Loads API key lazily from EthosConfig.from_env() — not at import time.
 Model selection based on routing tier with env var overrides.
@@ -32,7 +32,7 @@ def _get_model(tier: str) -> str:
     return os.environ.get("ETHOS_SONNET_MODEL", _DEFAULT_SONNET_MODEL)
 
 
-def call_claude(system_prompt: str, user_prompt: str, tier: str) -> str:
+async def call_claude(system_prompt: str, user_prompt: str, tier: str) -> str:
     """Call Claude with the given prompts and return the raw text response.
 
     Args:
@@ -50,10 +50,10 @@ def call_claude(system_prompt: str, user_prompt: str, tier: str) -> str:
     config = EthosConfig.from_env()
     model = _get_model(tier)
 
-    client = anthropic.Anthropic(api_key=config.anthropic_api_key)
+    client = anthropic.AsyncAnthropic(api_key=config.anthropic_api_key)
 
     try:
-        response = client.messages.create(
+        response = await client.messages.create(
             model=model,
             max_tokens=2048,
             system=system_prompt,

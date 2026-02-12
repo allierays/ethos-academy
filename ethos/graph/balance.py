@@ -191,7 +191,7 @@ ORDER BY balance_category
 """
 
 
-def get_agent_balance(service: GraphService, agent_id: str) -> dict:
+async def get_agent_balance(service: GraphService, agent_id: str) -> dict:
     """Get dimension balance analysis for a single agent.
 
     Returns dict with avg_ethos, avg_logos, avg_pathos, spread, and
@@ -202,7 +202,7 @@ def get_agent_balance(service: GraphService, agent_id: str) -> dict:
         return {}
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _GET_AGENT_BALANCE_QUERY, {"agent_id": agent_id}
         )
         if not records:
@@ -223,7 +223,7 @@ def get_agent_balance(service: GraphService, agent_id: str) -> dict:
         return {}
 
 
-def get_balance_vs_phronesis(service: GraphService) -> list[dict]:
+async def get_balance_vs_phronesis(service: GraphService) -> list[dict]:
     """Get balance vs phronesis correlation across all agents.
 
     Groups agents by balance category and returns average phronesis outcomes
@@ -233,7 +233,7 @@ def get_balance_vs_phronesis(service: GraphService) -> list[dict]:
         return []
 
     try:
-        records, _, _ = service.execute_query(_GET_BALANCE_VS_PHRONESIS_QUERY)
+        records, _, _ = await service.execute_query(_GET_BALANCE_VS_PHRONESIS_QUERY)
         results = []
         for record in records:
             results.append({
@@ -248,7 +248,7 @@ def get_balance_vs_phronesis(service: GraphService) -> list[dict]:
         return []
 
 
-def get_dimension_gaps(service: GraphService) -> list[dict]:
+async def get_dimension_gaps(service: GraphService) -> list[dict]:
     """Find agents with a significant dimension gap.
 
     Returns agents where one dimension is > 0.2 below the average of
@@ -259,7 +259,7 @@ def get_dimension_gaps(service: GraphService) -> list[dict]:
         return []
 
     try:
-        records, _, _ = service.execute_query(_GET_DIMENSION_GAPS_QUERY)
+        records, _, _ = await service.execute_query(_GET_DIMENSION_GAPS_QUERY)
         results = []
         for record in records:
             results.append({
@@ -277,7 +277,7 @@ def get_dimension_gaps(service: GraphService) -> list[dict]:
         return []
 
 
-def get_dimension_correlation(
+async def get_dimension_correlation(
     service: GraphService, min_evaluations: int = 3
 ) -> dict:
     """Get Pearson correlation between all dimension pairs across agents.
@@ -293,7 +293,7 @@ def get_dimension_correlation(
         return {}
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _GET_DIMENSION_CORRELATION_QUERY,
             {"min_evaluations": min_evaluations},
         )
@@ -312,7 +312,7 @@ def get_dimension_correlation(
         return {}
 
 
-def get_alumni_balance_distribution(service: GraphService) -> dict:
+async def get_alumni_balance_distribution(service: GraphService) -> dict:
     """Get network-wide balance distribution.
 
     Returns count of agents in each balance category:
@@ -323,7 +323,7 @@ def get_alumni_balance_distribution(service: GraphService) -> dict:
         return {}
 
     try:
-        records, _, _ = service.execute_query(
+        records, _, _ = await service.execute_query(
             _GET_ALUMNI_BALANCE_DISTRIBUTION_QUERY
         )
         if not records:

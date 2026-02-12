@@ -16,7 +16,7 @@ from ethos.shared.models import ReflectionResult
 logger = logging.getLogger(__name__)
 
 
-def reflect_history(agent_id: str, limit: int = 50) -> ReflectionResult:
+async def reflect_history(agent_id: str, limit: int = 50) -> ReflectionResult:
     """Get an agent's historical profile without evaluating new text.
 
     Args:
@@ -27,15 +27,15 @@ def reflect_history(agent_id: str, limit: int = 50) -> ReflectionResult:
         ReflectionResult with dimension scores, trait averages, and trend.
     """
     try:
-        with graph_context() as service:
+        async with graph_context() as service:
             if not service.connected:
                 return ReflectionResult(
                     agent_id=agent_id,
                     trend="insufficient_data",
                 )
 
-            profile = get_agent_profile(service, agent_id)
-            history = get_evaluation_history(service, agent_id, limit=limit)
+            profile = await get_agent_profile(service, agent_id)
+            history = await get_evaluation_history(service, agent_id, limit=limit)
     except Exception as exc:
         logger.warning("Graph unavailable for reflect_history: %s", exc)
         return ReflectionResult(

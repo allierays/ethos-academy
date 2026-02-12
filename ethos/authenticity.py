@@ -7,6 +7,7 @@ Falls back to computing from agent profile, or returns defaults for unknown agen
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from pathlib import Path
@@ -17,12 +18,14 @@ from ethos.evaluation.authenticity import (
     analyze_identity_signals,
     analyze_temporal_signature,
     compute_authenticity,
+    parse_timestamps,
 )
 from ethos.shared.models import AuthenticityResult
 
 logger = logging.getLogger(__name__)
 
 _RESULTS_CACHE: dict | None = None
+_STORED_AGENTS: set[str] = set()
 _RESULTS_FILE = (
     Path(__file__).resolve().parent.parent / "data" / "moltbook" / "authenticity_results.json"
 )
@@ -55,7 +58,15 @@ def _load_results_cache() -> dict:
 
 def _compute_from_profile(agent_name: str) -> AuthenticityResult | None:
     """Compute authenticity from agent profile file if it exists."""
-    profile_path = _AGENTS_DIR / f"{agent_name}.json"
+    # Guard against path traversal
+    if "/" in agent_name or "\\" in agent_name or ".." in agent_name:
+        logger.warning("Rejected agent_name with path characters: %s", agent_name)
+        return None
+
+    profile_path = (_AGENTS_DIR / f"{agent_name}.json").resolve()
+    if not str(profile_path).startswith(str(_AGENTS_DIR.resolve())):
+        logger.warning("Path traversal blocked for agent_name: %s", agent_name)
+        return None
     if not profile_path.exists():
         return None
 
@@ -80,30 +91,54 @@ def _compute_from_profile(agent_name: str) -> AuthenticityResult | None:
     if not timestamps:
         return None
 
-    temporal = analyze_temporal_signature(timestamps)
-    burst = analyze_burst_rate(timestamps)
-    activity = analyze_activity_pattern(timestamps)
+    parsed = parse_timestamps(timestamps)
+    temporal = analyze_temporal_signature(timestamps, _parsed=parsed)
+    burst = analyze_burst_rate(timestamps, _parsed=parsed)
+    activity = analyze_activity_pattern(timestamps, _parsed=parsed)
     identity = analyze_identity_signals(data.get("agent", {}))
 
-    result = compute_authenticity(temporal, burst, activity, identity, len(timestamps))
-    result.agent_name = agent_name
-    return result
+    return compute_authenticity(
+        temporal, burst, activity, identity, len(timestamps), agent_name=agent_name,
+    )
 
 
-def _try_store_authenticity(agent_name: str, result: AuthenticityResult) -> None:
-    """Store authenticity score on Agent node in graph. Non-fatal if graph is down."""
+async def _store_in_graph(agent_name: str, result: AuthenticityResult) -> None:
+    """Perform the actual graph write. Runs as a background task."""
     try:
         from ethos.graph.service import graph_context
         from ethos.graph.write import store_authenticity
 
-        with graph_context() as service:
+        async with graph_context() as service:
             if service.connected:
-                store_authenticity(service, agent_name, result)
+                await store_authenticity(service, agent_name, result)
     except Exception as exc:
+        # Remove from set so next request can retry
+        _STORED_AGENTS.discard(agent_name)
         logger.warning("Failed to store authenticity in graph: %s", exc)
 
 
-def analyze_authenticity(agent_name: str) -> AuthenticityResult:
+def _try_store_authenticity(agent_name: str, result: AuthenticityResult) -> None:
+    """Fire-and-forget graph write as a background asyncio task.
+
+    Never blocks the API response. Only fires once per agent per process
+    lifetime (_STORED_AGENTS dedup).
+    """
+    if agent_name in _STORED_AGENTS:
+        return
+
+    # Mark early to prevent duplicate tasks for the same agent
+    _STORED_AGENTS.add(agent_name)
+
+    try:
+        loop = asyncio.get_running_loop()
+        loop.create_task(_store_in_graph(agent_name, result))
+    except RuntimeError:
+        # No running event loop — skip background store
+        _STORED_AGENTS.discard(agent_name)
+        logger.warning("No event loop available for background authenticity store")
+
+
+async def analyze_authenticity(agent_name: str) -> AuthenticityResult:
     """Analyze an agent's authenticity. Returns AuthenticityResult.
 
     Lookup order:

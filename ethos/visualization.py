@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 
-from ethos.graph.service import GraphService
+from ethos.graph.service import graph_context
 from ethos.graph.visualization import (
     get_episodic_layer,
     get_indicator_backbone,
@@ -26,25 +26,21 @@ _DIMENSION_COLORS = {
 }
 
 
-def get_graph_data() -> GraphData:
+async def get_graph_data() -> GraphData:
     """Pull the full Phronesis subgraph and transform into GraphData.
 
     Returns empty GraphData if Neo4j is unavailable.
     """
     try:
-        service = GraphService()
-        service.connect()
+        async with graph_context() as service:
+            if not service.connected:
+                return GraphData()
 
-        if not service.connected:
-            return GraphData()
+            semantic = await get_semantic_layer(service)
+            episodic = await get_episodic_layer(service)
+            backbone = await get_indicator_backbone(service)
 
-        semantic = get_semantic_layer(service)
-        episodic = get_episodic_layer(service)
-        backbone = get_indicator_backbone(service)
-
-        service.close()
-
-        return _build_graph_data(semantic, episodic, backbone)
+            return _build_graph_data(semantic, episodic, backbone)
 
     except Exception as exc:
         logger.warning("Failed to get graph data: %s", exc)

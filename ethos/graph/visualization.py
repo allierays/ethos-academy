@@ -69,7 +69,7 @@ RETURN i.id AS indicator_id, i.name AS indicator_name,
 """
 
 
-def get_semantic_layer(service: GraphService) -> dict:
+async def get_semantic_layer(service: GraphService) -> dict:
     """Pull dimensions, traits, constitutional values, and patterns.
 
     Returns dict with keys: dimensions, traits, trait_dimension_rels,
@@ -90,7 +90,7 @@ def get_semantic_layer(service: GraphService) -> dict:
 
     try:
         # Dimensions + Traits
-        records, _, _ = service.execute_query(_DIMENSIONS_AND_TRAITS_QUERY)
+        records, _, _ = await service.execute_query(_DIMENSIONS_AND_TRAITS_QUERY)
         for rec in records:
             dim_name = rec.get("dim_name", "")
             if dim_name and dim_name not in result["dimensions"]:
@@ -115,7 +115,7 @@ def get_semantic_layer(service: GraphService) -> dict:
                 })
 
         # Constitutional Values + UPHOLDS
-        records, _, _ = service.execute_query(_CONSTITUTIONAL_VALUES_QUERY)
+        records, _, _ = await service.execute_query(_CONSTITUTIONAL_VALUES_QUERY)
         for rec in records:
             cv_name = rec.get("cv_name", "")
             if cv_name and cv_name not in result["constitutional_values"]:
@@ -133,7 +133,7 @@ def get_semantic_layer(service: GraphService) -> dict:
                 })
 
         # Patterns + COMPOSED_OF → Indicators
-        records, _, _ = service.execute_query(_PATTERNS_AND_INDICATORS_QUERY)
+        records, _, _ = await service.execute_query(_PATTERNS_AND_INDICATORS_QUERY)
         for rec in records:
             pattern_id = rec.get("pattern_id", "")
             if pattern_id and pattern_id not in result["patterns"]:
@@ -158,7 +158,7 @@ def get_semantic_layer(service: GraphService) -> dict:
     return result
 
 
-def get_episodic_layer(service: GraphService) -> dict:
+async def get_episodic_layer(service: GraphService) -> dict:
     """Pull agents, their recent evaluations, and detected indicators.
 
     Returns dict with keys: agents, evaluations, evaluated_rels, detected_rels.
@@ -174,7 +174,7 @@ def get_episodic_layer(service: GraphService) -> dict:
         return result
 
     try:
-        records, _, _ = service.execute_query(_AGENTS_AND_EVALUATIONS_QUERY)
+        records, _, _ = await service.execute_query(_AGENTS_AND_EVALUATIONS_QUERY)
         for rec in records:
             agent_id = rec.get("agent_id", "")
             if agent_id and agent_id not in result["agents"]:
@@ -243,7 +243,7 @@ def get_episodic_layer(service: GraphService) -> dict:
     return result
 
 
-def get_indicator_backbone(service: GraphService) -> dict:
+async def get_indicator_backbone(service: GraphService) -> dict:
     """Pull only indicators that have at least one DETECTED relationship.
 
     Returns dict with keys: indicators, indicator_trait_rels.
@@ -257,7 +257,7 @@ def get_indicator_backbone(service: GraphService) -> dict:
         return result
 
     try:
-        records, _, _ = service.execute_query(_DETECTED_INDICATORS_BACKBONE_QUERY)
+        records, _, _ = await service.execute_query(_DETECTED_INDICATORS_BACKBONE_QUERY)
         for rec in records:
             indicator_id = rec.get("indicator_id", "")
             if indicator_id and indicator_id not in result["indicators"]:

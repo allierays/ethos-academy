@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from contextlib import asynccontextmanager
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from ethos.reflection.intuition import (
     _compute_balance_trend,
@@ -26,41 +27,61 @@ def _make_eval(
     return d
 
 
-class TestIntuitHistory:
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_default_when_graph_unavailable(self, mock_gs_cls):
-        mock_service = MagicMock()
-        mock_service.connected = False
-        mock_gs_cls.return_value = mock_service
+def _mock_graph_context(connected=True):
+    """Create a mock async graph_context context manager."""
+    mock_service = MagicMock()
+    mock_service.connected = connected
 
-        result = intuit_history("test-agent")
+    @asynccontextmanager
+    async def mock_ctx():
+        yield mock_service
+
+    return mock_ctx, mock_service
+
+
+class TestIntuitHistory:
+    async def test_returns_default_when_graph_unavailable(self):
+        mock_ctx, _ = _mock_graph_context(connected=False)
+
+        with patch("ethos.reflection.intuition.graph_context", mock_ctx):
+            result = await intuit_history("test-agent")
 
         assert isinstance(result, ReflectionIntuitionResult)
         assert result.temporal_pattern == "insufficient_data"
 
-    @patch("ethos.reflection.intuition.get_alumni_averages")
-    @patch("ethos.reflection.intuition.get_evaluation_history")
-    @patch("ethos.reflection.intuition.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_default_when_no_profile(
-        self, mock_gs_cls, mock_profile, mock_history, mock_alumni
-    ):
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
-        mock_profile.return_value = {}
-        mock_history.return_value = []
-        mock_alumni.return_value = {"trait_averages": {}}
+    async def test_returns_default_when_no_profile(self):
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        result = intuit_history("unknown")
+        with (
+            patch("ethos.reflection.intuition.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.intuition.get_agent_profile",
+                new_callable=AsyncMock,
+                return_value={},
+            ),
+            patch(
+                "ethos.reflection.intuition.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=[],
+            ),
+            patch(
+                "ethos.reflection.intuition.get_alumni_averages",
+                new_callable=AsyncMock,
+                return_value={"trait_averages": {}},
+            ),
+        ):
+            result = await intuit_history("unknown")
 
         assert result.temporal_pattern == "insufficient_data"
 
-    @patch("ethos.graph.service.GraphService")
-    def test_handles_graph_exception(self, mock_gs_cls):
-        mock_gs_cls.side_effect = RuntimeError("Connection refused")
+    async def test_handles_graph_exception(self):
+        @asynccontextmanager
+        async def failing_ctx():
+            raise RuntimeError("Connection refused")
+            yield  # noqa: unreachable
 
-        result = intuit_history("agent-1")
+        with patch("ethos.reflection.intuition.graph_context", failing_ctx):
+            result = await intuit_history("agent-1")
 
         assert isinstance(result, ReflectionIntuitionResult)
         assert result.temporal_pattern == "insufficient_data"

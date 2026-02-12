@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from contextlib import asynccontextmanager
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from ethos.reflection.reflect import reflect
 from ethos.shared.analysis import compute_trend
@@ -59,54 +60,61 @@ class TestComputeTrend:
 # ── reflect() tests ─────────────────────────────────────────────────
 
 
+def _mock_graph_context(connected=True, profile=None, history=None):
+    """Create a mock async graph_context context manager."""
+    mock_service = MagicMock()
+    mock_service.connected = connected
+
+    @asynccontextmanager
+    async def mock_ctx():
+        yield mock_service
+
+    return mock_ctx, mock_service
+
+
 class TestReflect:
     """Test reflect() with mocked graph and evaluate."""
 
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_default_when_graph_unavailable(self, mock_gs_cls):
+    async def test_returns_default_when_graph_unavailable(self):
         """When Neo4j is down, return default ReflectionResult."""
-        mock_service = MagicMock()
-        mock_service.connected = False
-        mock_gs_cls.return_value = mock_service
+        mock_ctx, _ = _mock_graph_context(connected=False)
 
-        result = reflect("test-agent")
+        with patch("ethos.reflection.reflect.graph_context", mock_ctx):
+            result = await reflect("test-agent")
 
         assert isinstance(result, ReflectionResult)
         assert result.agent_id == "test-agent"
         assert result.trend == "insufficient_data"
         assert result.ethos == 0.0
 
-    @patch("ethos.reflection.reflect.get_evaluation_history")
-    @patch("ethos.reflection.reflect.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_default_when_agent_not_found(
-        self, mock_gs_cls, mock_profile, mock_history
-    ):
+    async def test_returns_default_when_agent_not_found(self):
         """When agent has no profile, return default ReflectionResult."""
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
-        mock_profile.return_value = {}
-        mock_history.return_value = []
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        result = reflect("unknown-agent")
+        with (
+            patch("ethos.reflection.reflect.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.reflect.get_agent_profile",
+                new_callable=AsyncMock,
+                return_value={},
+            ),
+            patch(
+                "ethos.reflection.reflect.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=[],
+            ),
+        ):
+            result = await reflect("unknown-agent")
 
         assert result.agent_id == "unknown-agent"
         assert result.trend == "insufficient_data"
         assert result.evaluation_count == 0
 
-    @patch("ethos.reflection.reflect.get_evaluation_history")
-    @patch("ethos.reflection.reflect.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_profile_with_averages(
-        self, mock_gs_cls, mock_profile, mock_history
-    ):
+    async def test_returns_profile_with_averages(self):
         """When agent exists with history, return populated ReflectionResult."""
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        mock_profile.return_value = {
+        profile = {
             "agent_id": "hashed-id",
             "evaluation_count": 15,
             "dimension_averages": {
@@ -130,11 +138,22 @@ class TestReflect:
             },
             "alignment_history": ["aligned", "aligned", "drifting"],
         }
+        history = [_make_eval(0.7, 0.7, 0.7)] * 15
 
-        # 15 evals, all with similar scores -> stable
-        mock_history.return_value = [_make_eval(0.7, 0.7, 0.7)] * 15
-
-        result = reflect("my-bot")
+        with (
+            patch("ethos.reflection.reflect.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.reflect.get_agent_profile",
+                new_callable=AsyncMock,
+                return_value=profile,
+            ),
+            patch(
+                "ethos.reflection.reflect.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=history,
+            ),
+        ):
+            result = await reflect("my-bot")
 
         assert result.agent_id == "my-bot"
         assert result.ethos == 0.75
@@ -145,58 +164,67 @@ class TestReflect:
         assert result.trait_averages["virtue"] == 0.8
         assert result.trait_averages["compassion"] == 0.6
 
-    @patch("ethos.reflection.reflect.get_evaluation_history")
-    @patch("ethos.reflection.reflect.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_trend_insufficient_data_with_few_evals(
-        self, mock_gs_cls, mock_profile, mock_history
-    ):
+    async def test_trend_insufficient_data_with_few_evals(self):
         """With fewer than 10 evaluations, trend is insufficient_data."""
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        mock_profile.return_value = {
-            "agent_id": "hashed",
-            "evaluation_count": 5,
-            "dimension_averages": {"ethos": 0.6, "logos": 0.6, "pathos": 0.6},
-            "trait_averages": {},
-        }
-        mock_history.return_value = [_make_eval(0.6, 0.6, 0.6)] * 5
+        with (
+            patch("ethos.reflection.reflect.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.reflect.get_agent_profile",
+                new_callable=AsyncMock,
+                return_value={
+                    "agent_id": "hashed",
+                    "evaluation_count": 5,
+                    "dimension_averages": {"ethos": 0.6, "logos": 0.6, "pathos": 0.6},
+                    "trait_averages": {},
+                },
+            ),
+            patch(
+                "ethos.reflection.reflect.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=[_make_eval(0.6, 0.6, 0.6)] * 5,
+            ),
+        ):
+            result = await reflect("new-agent")
 
-        result = reflect("new-agent")
         assert result.trend == "insufficient_data"
 
-    @patch("ethos.reflection.reflect.evaluate")
-    @patch("ethos.reflection.reflect.get_evaluation_history")
-    @patch("ethos.reflection.reflect.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_evaluates_text_when_provided(
-        self, mock_gs_cls, mock_profile, mock_history, mock_evaluate
-    ):
+    async def test_evaluates_text_when_provided(self):
         """When text is provided, evaluate() is called before reflecting."""
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        mock_evaluate.return_value = EvaluationResult(
-            evaluation_id="eval-1",
-            ethos=0.7,
-            logos=0.8,
-            pathos=0.6,
-            phronesis="developing",
-            alignment_status="aligned",
+        mock_evaluate = AsyncMock(
+            return_value=EvaluationResult(
+                evaluation_id="eval-1",
+                ethos=0.7,
+                logos=0.8,
+                pathos=0.6,
+                phronesis="developing",
+                alignment_status="aligned",
+            )
         )
 
-        mock_profile.return_value = {
-            "agent_id": "hashed",
-            "evaluation_count": 1,
-            "dimension_averages": {"ethos": 0.7, "logos": 0.8, "pathos": 0.6},
-            "trait_averages": {"virtue": 0.8},
-        }
-        mock_history.return_value = [_make_eval(0.7, 0.8, 0.6)]
-
-        result = reflect("my-bot", text="Hello, I'm a helpful assistant!")
+        with (
+            patch("ethos.reflection.reflect.evaluate", mock_evaluate),
+            patch("ethos.reflection.reflect.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.reflect.get_agent_profile",
+                new_callable=AsyncMock,
+                return_value={
+                    "agent_id": "hashed",
+                    "evaluation_count": 1,
+                    "dimension_averages": {"ethos": 0.7, "logos": 0.8, "pathos": 0.6},
+                    "trait_averages": {"virtue": 0.8},
+                },
+            ),
+            patch(
+                "ethos.reflection.reflect.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=[_make_eval(0.7, 0.8, 0.6)],
+            ),
+        ):
+            result = await reflect("my-bot", text="Hello, I'm a helpful assistant!")
 
         mock_evaluate.assert_called_once_with(
             "Hello, I'm a helpful assistant!", source="my-bot"
@@ -204,80 +232,91 @@ class TestReflect:
         assert result.agent_id == "my-bot"
         assert result.ethos == 0.7
 
-    @patch("ethos.reflection.reflect.evaluate")
-    @patch("ethos.reflection.reflect.get_evaluation_history")
-    @patch("ethos.reflection.reflect.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_evaluate_failure_does_not_crash(
-        self, mock_gs_cls, mock_profile, mock_history, mock_evaluate
-    ):
+    async def test_evaluate_failure_does_not_crash(self):
         """If evaluate() raises, reflect still returns a profile."""
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        mock_evaluate.side_effect = RuntimeError("Claude API down")
+        mock_evaluate = AsyncMock(side_effect=RuntimeError("Claude API down"))
 
-        mock_profile.return_value = {
-            "agent_id": "hashed",
-            "evaluation_count": 3,
-            "dimension_averages": {"ethos": 0.5, "logos": 0.5, "pathos": 0.5},
-            "trait_averages": {},
-        }
-        mock_history.return_value = [_make_eval(0.5, 0.5, 0.5)] * 3
-
-        result = reflect("my-bot", text="test message")
+        with (
+            patch("ethos.reflection.reflect.evaluate", mock_evaluate),
+            patch("ethos.reflection.reflect.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.reflect.get_agent_profile",
+                new_callable=AsyncMock,
+                return_value={
+                    "agent_id": "hashed",
+                    "evaluation_count": 3,
+                    "dimension_averages": {"ethos": 0.5, "logos": 0.5, "pathos": 0.5},
+                    "trait_averages": {},
+                },
+            ),
+            patch(
+                "ethos.reflection.reflect.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=[_make_eval(0.5, 0.5, 0.5)] * 3,
+            ),
+        ):
+            result = await reflect("my-bot", text="test message")
 
         assert isinstance(result, ReflectionResult)
         assert result.agent_id == "my-bot"
         assert result.evaluation_count == 3
 
-    @patch("ethos.reflection.reflect.evaluate")
-    @patch("ethos.graph.service.GraphService")
-    def test_no_text_does_not_call_evaluate(self, mock_gs_cls, mock_evaluate):
+    async def test_no_text_does_not_call_evaluate(self):
         """When text is None, evaluate() is NOT called."""
-        mock_service = MagicMock()
-        mock_service.connected = False
-        mock_gs_cls.return_value = mock_service
+        mock_ctx, _ = _mock_graph_context(connected=False)
+        mock_evaluate = AsyncMock()
 
-        reflect("my-bot")
+        with (
+            patch("ethos.reflection.reflect.evaluate", mock_evaluate),
+            patch("ethos.reflection.reflect.graph_context", mock_ctx),
+        ):
+            await reflect("my-bot")
 
         mock_evaluate.assert_not_called()
 
-    @patch("ethos.reflection.reflect.get_evaluation_history")
-    @patch("ethos.reflection.reflect.get_agent_profile")
-    @patch("ethos.graph.service.GraphService")
-    def test_backward_compat_fields(
-        self, mock_gs_cls, mock_profile, mock_history
-    ):
+    async def test_backward_compat_fields(self):
         """Backward-compat compassion/honesty/accuracy fields are populated."""
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        mock_profile.return_value = {
-            "agent_id": "hashed",
-            "evaluation_count": 2,
-            "dimension_averages": {"ethos": 0.6, "logos": 0.7, "pathos": 0.5},
-            "trait_averages": {
-                "compassion": 0.65,
-                "accuracy": 0.82,
-            },
-        }
-        mock_history.return_value = [_make_eval(0.6, 0.7, 0.5)] * 2
-
-        result = reflect("agent-1")
+        with (
+            patch("ethos.reflection.reflect.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.reflect.get_agent_profile",
+                new_callable=AsyncMock,
+                return_value={
+                    "agent_id": "hashed",
+                    "evaluation_count": 2,
+                    "dimension_averages": {"ethos": 0.6, "logos": 0.7, "pathos": 0.5},
+                    "trait_averages": {
+                        "compassion": 0.65,
+                        "accuracy": 0.82,
+                    },
+                },
+            ),
+            patch(
+                "ethos.reflection.reflect.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=[_make_eval(0.6, 0.7, 0.5)] * 2,
+            ),
+        ):
+            result = await reflect("agent-1")
 
         assert result.compassion == 0.65
         assert result.honesty == 0.82
         assert result.accuracy == 0.82
 
-    @patch("ethos.graph.service.GraphService")
-    def test_graph_exception_returns_default(self, mock_gs_cls):
-        """When GraphService raises, return default ReflectionResult."""
-        mock_gs_cls.side_effect = RuntimeError("Connection refused")
+    async def test_graph_exception_returns_default(self):
+        """When graph_context raises, return default ReflectionResult."""
 
-        result = reflect("agent-1")
+        @asynccontextmanager
+        async def failing_ctx():
+            raise RuntimeError("Connection refused")
+            yield  # noqa: unreachable
+
+        with patch("ethos.reflection.reflect.graph_context", failing_ctx):
+            result = await reflect("agent-1")
 
         assert isinstance(result, ReflectionResult)
         assert result.agent_id == "agent-1"

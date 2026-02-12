@@ -1,11 +1,11 @@
-"""Tests for ethos/evaluation/claude_client.py — sync Anthropic SDK wrapper.
+"""Tests for ethos/evaluation/claude_client.py — async Anthropic SDK wrapper.
 
 TDD: Tests written first, implementation follows.
 """
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, AsyncMock, patch
 
 import pytest
 
@@ -21,80 +21,80 @@ class TestModelSelection:
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    def test_standard_tier_uses_sonnet(self, mock_from_env, mock_anthropic):
+    async def test_standard_tier_uses_sonnet(self, mock_from_env, mock_anthropic):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
         cfg.anthropic_api_key = "test-key"
         mock_from_env.return_value = cfg
 
-        mock_client = MagicMock()
-        mock_anthropic.Anthropic.return_value = mock_client
+        mock_client = AsyncMock()
+        mock_anthropic.AsyncAnthropic.return_value = mock_client
         mock_client.messages.create.return_value = MagicMock(
             content=[MagicMock(text="response")]
         )
 
-        call_claude("system", "user", "standard")
+        await call_claude("system", "user", "standard")
 
         call_args = mock_client.messages.create.call_args
         assert call_args.kwargs["model"] == "claude-sonnet-4-20250514"
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    def test_focused_tier_uses_sonnet(self, mock_from_env, mock_anthropic):
+    async def test_focused_tier_uses_sonnet(self, mock_from_env, mock_anthropic):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
         cfg.anthropic_api_key = "test-key"
         mock_from_env.return_value = cfg
 
-        mock_client = MagicMock()
-        mock_anthropic.Anthropic.return_value = mock_client
+        mock_client = AsyncMock()
+        mock_anthropic.AsyncAnthropic.return_value = mock_client
         mock_client.messages.create.return_value = MagicMock(
             content=[MagicMock(text="response")]
         )
 
-        call_claude("system", "user", "focused")
+        await call_claude("system", "user", "focused")
 
         call_args = mock_client.messages.create.call_args
         assert call_args.kwargs["model"] == "claude-sonnet-4-20250514"
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    def test_deep_tier_uses_opus(self, mock_from_env, mock_anthropic):
+    async def test_deep_tier_uses_opus(self, mock_from_env, mock_anthropic):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
         cfg.anthropic_api_key = "test-key"
         mock_from_env.return_value = cfg
 
-        mock_client = MagicMock()
-        mock_anthropic.Anthropic.return_value = mock_client
+        mock_client = AsyncMock()
+        mock_anthropic.AsyncAnthropic.return_value = mock_client
         mock_client.messages.create.return_value = MagicMock(
             content=[MagicMock(text="response")]
         )
 
-        call_claude("system", "user", "deep")
+        await call_claude("system", "user", "deep")
 
         call_args = mock_client.messages.create.call_args
         assert call_args.kwargs["model"] == "claude-opus-4-6"
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    def test_deep_with_context_tier_uses_opus(self, mock_from_env, mock_anthropic):
+    async def test_deep_with_context_tier_uses_opus(self, mock_from_env, mock_anthropic):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
         cfg.anthropic_api_key = "test-key"
         mock_from_env.return_value = cfg
 
-        mock_client = MagicMock()
-        mock_anthropic.Anthropic.return_value = mock_client
+        mock_client = AsyncMock()
+        mock_anthropic.AsyncAnthropic.return_value = mock_client
         mock_client.messages.create.return_value = MagicMock(
             content=[MagicMock(text="response")]
         )
 
-        call_claude("system", "user", "deep_with_context")
+        await call_claude("system", "user", "deep_with_context")
 
         call_args = mock_client.messages.create.call_args
         assert call_args.kwargs["model"] == "claude-opus-4-6"
@@ -109,40 +109,40 @@ class TestPromptRouting:
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    def test_system_prompt_in_system_param(self, mock_from_env, mock_anthropic):
+    async def test_system_prompt_in_system_param(self, mock_from_env, mock_anthropic):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
         cfg.anthropic_api_key = "test-key"
         mock_from_env.return_value = cfg
 
-        mock_client = MagicMock()
-        mock_anthropic.Anthropic.return_value = mock_client
+        mock_client = AsyncMock()
+        mock_anthropic.AsyncAnthropic.return_value = mock_client
         mock_client.messages.create.return_value = MagicMock(
             content=[MagicMock(text="response")]
         )
 
-        call_claude("my system prompt", "my user prompt", "standard")
+        await call_claude("my system prompt", "my user prompt", "standard")
 
         call_args = mock_client.messages.create.call_args
         assert call_args.kwargs["system"] == "my system prompt"
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    def test_user_prompt_in_messages(self, mock_from_env, mock_anthropic):
+    async def test_user_prompt_in_messages(self, mock_from_env, mock_anthropic):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
         cfg.anthropic_api_key = "test-key"
         mock_from_env.return_value = cfg
 
-        mock_client = MagicMock()
-        mock_anthropic.Anthropic.return_value = mock_client
+        mock_client = AsyncMock()
+        mock_anthropic.AsyncAnthropic.return_value = mock_client
         mock_client.messages.create.return_value = MagicMock(
             content=[MagicMock(text="response")]
         )
 
-        call_claude("sys", "my user prompt", "standard")
+        await call_claude("sys", "my user prompt", "standard")
 
         call_args = mock_client.messages.create.call_args
         messages = call_args.kwargs["messages"]
@@ -152,20 +152,20 @@ class TestPromptRouting:
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    def test_max_tokens_is_2048(self, mock_from_env, mock_anthropic):
+    async def test_max_tokens_is_2048(self, mock_from_env, mock_anthropic):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
         cfg.anthropic_api_key = "test-key"
         mock_from_env.return_value = cfg
 
-        mock_client = MagicMock()
-        mock_anthropic.Anthropic.return_value = mock_client
+        mock_client = AsyncMock()
+        mock_anthropic.AsyncAnthropic.return_value = mock_client
         mock_client.messages.create.return_value = MagicMock(
             content=[MagicMock(text="response")]
         )
 
-        call_claude("sys", "usr", "standard")
+        await call_claude("sys", "usr", "standard")
 
         call_args = mock_client.messages.create.call_args
         assert call_args.kwargs["max_tokens"] == 2048
@@ -180,20 +180,20 @@ class TestReturnValue:
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    def test_returns_text_content(self, mock_from_env, mock_anthropic):
+    async def test_returns_text_content(self, mock_from_env, mock_anthropic):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
         cfg.anthropic_api_key = "test-key"
         mock_from_env.return_value = cfg
 
-        mock_client = MagicMock()
-        mock_anthropic.Anthropic.return_value = mock_client
+        mock_client = AsyncMock()
+        mock_anthropic.AsyncAnthropic.return_value = mock_client
         mock_client.messages.create.return_value = MagicMock(
             content=[MagicMock(text='{"trait_scores": {}}')]
         )
 
-        result = call_claude("sys", "usr", "standard")
+        result = await call_claude("sys", "usr", "standard")
 
         assert result == '{"trait_scores": {}}'
 
@@ -206,29 +206,29 @@ class TestErrorHandling:
     """call_claude raises descriptive errors on failure."""
 
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    def test_missing_api_key_raises_config_error(self, mock_from_env):
+    async def test_missing_api_key_raises_config_error(self, mock_from_env):
         from ethos.evaluation.claude_client import call_claude
 
         mock_from_env.side_effect = ConfigError("ANTHROPIC_API_KEY not set")
 
         with pytest.raises(ConfigError, match="ANTHROPIC_API_KEY"):
-            call_claude("sys", "usr", "standard")
+            await call_claude("sys", "usr", "standard")
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    def test_api_error_raises_evaluation_error(self, mock_from_env, mock_anthropic):
+    async def test_api_error_raises_evaluation_error(self, mock_from_env, mock_anthropic):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
         cfg.anthropic_api_key = "test-key"
         mock_from_env.return_value = cfg
 
-        mock_client = MagicMock()
-        mock_anthropic.Anthropic.return_value = mock_client
+        mock_client = AsyncMock()
+        mock_anthropic.AsyncAnthropic.return_value = mock_client
         mock_client.messages.create.side_effect = Exception("API rate limited")
 
         with pytest.raises(EvaluationError, match="Claude API"):
-            call_claude("sys", "usr", "standard")
+            await call_claude("sys", "usr", "standard")
 
 
 # ---------------------------------------------------------------------------

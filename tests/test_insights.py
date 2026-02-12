@@ -6,7 +6,8 @@ IMPORTANT: All tests mock call_claude. Never call the real Opus API in tests.
 from __future__ import annotations
 
 import json
-from unittest.mock import MagicMock, patch
+from contextlib import asynccontextmanager
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from ethos.reflection.insights import _parse_insights_response, insights
 from ethos.reflection.prompts import build_insights_prompt
@@ -188,57 +189,84 @@ class TestBuildInsightsPrompt:
 # ── insights() domain function tests ─────────────────────────────────
 
 
-class TestInsights:
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_graph_unavailable_when_not_connected(self, mock_gs_cls):
-        mock_service = MagicMock()
-        mock_service.connected = False
-        mock_gs_cls.return_value = mock_service
+def _mock_graph_context(connected=True):
+    """Create a mock async graph_context context manager."""
+    mock_service = MagicMock()
+    mock_service.connected = connected
 
-        result = insights("agent-1")
+    @asynccontextmanager
+    async def mock_ctx():
+        yield mock_service
+
+    return mock_ctx, mock_service
+
+
+class TestInsights:
+    async def test_returns_graph_unavailable_when_not_connected(self):
+        mock_ctx, _ = _mock_graph_context(connected=False)
+
+        with patch("ethos.reflection.insights.graph_context", mock_ctx):
+            result = await insights("agent-1")
 
         assert isinstance(result, InsightsResult)
         assert result.agent_id == "agent-1"
         assert result.summary == "Graph unavailable"
 
-    @patch("ethos.reflection.insights.get_evaluation_history")
-    @patch("ethos.graph.service.GraphService")
-    def test_returns_no_history_when_empty(self, mock_gs_cls, mock_history):
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
-        mock_history.return_value = []
+    async def test_returns_no_history_when_empty(self):
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        result = insights("agent-1")
+        with (
+            patch("ethos.reflection.insights.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.insights.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=[],
+            ),
+        ):
+            result = await insights("agent-1")
 
         assert result.summary == "No evaluation history found"
 
-    @patch("ethos.reflection.insights.call_claude")
-    @patch("ethos.reflection.insights.intuit_history")
-    @patch("ethos.reflection.insights.scan_history")
-    @patch("ethos.reflection.insights.get_agent_profile")
-    @patch("ethos.reflection.insights.get_alumni_averages")
-    @patch("ethos.reflection.insights.get_evaluation_history")
-    @patch("ethos.graph.service.GraphService")
-    def test_calls_opus_with_history(
-        self, mock_gs_cls, mock_history, mock_alumni, mock_profile,
-        mock_scan, mock_intuit, mock_call_claude
-    ):
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
+    async def test_calls_opus_with_history(self):
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        mock_history.return_value = [
-            {"ethos": 0.7, "logos": 0.8, "pathos": 0.6, "alignment_status": "aligned"},
-        ]
-        mock_alumni.return_value = {"trait_averages": {"virtue": 0.75}}
-        mock_profile.return_value = {"trait_averages": {"virtue": 0.8}, "dimension_averages": {}}
         from ethos.shared.models import ReflectionInstinctResult, ReflectionIntuitionResult
-        mock_scan.return_value = ReflectionInstinctResult()
-        mock_intuit.return_value = ReflectionIntuitionResult()
-        mock_call_claude.return_value = _VALID_RESPONSE
 
-        result = insights("agent-1")
+        with (
+            patch("ethos.reflection.insights.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.insights.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=[
+                    {"ethos": 0.7, "logos": 0.8, "pathos": 0.6, "alignment_status": "aligned"},
+                ],
+            ),
+            patch(
+                "ethos.reflection.insights.get_agent_profile",
+                new_callable=AsyncMock,
+                return_value={"trait_averages": {"virtue": 0.8}, "dimension_averages": {}},
+            ),
+            patch(
+                "ethos.reflection.insights.get_alumni_averages",
+                new_callable=AsyncMock,
+                return_value={"trait_averages": {"virtue": 0.75}},
+            ),
+            patch(
+                "ethos.reflection.insights.scan_history",
+                return_value=ReflectionInstinctResult(),
+            ),
+            patch(
+                "ethos.reflection.insights.intuit_history",
+                new_callable=AsyncMock,
+                return_value=ReflectionIntuitionResult(),
+            ),
+            patch(
+                "ethos.reflection.insights.call_claude",
+                new_callable=AsyncMock,
+                return_value=_VALID_RESPONSE,
+            ) as mock_call_claude,
+        ):
+            result = await insights("agent-1")
 
         mock_call_claude.assert_called_once()
         args = mock_call_claude.call_args
@@ -247,67 +275,98 @@ class TestInsights:
         assert isinstance(result, InsightsResult)
         assert len(result.insights) == 2
 
-    @patch("ethos.reflection.insights.call_claude")
-    @patch("ethos.reflection.insights.intuit_history")
-    @patch("ethos.reflection.insights.scan_history")
-    @patch("ethos.reflection.insights.get_agent_profile")
-    @patch("ethos.reflection.insights.get_alumni_averages")
-    @patch("ethos.reflection.insights.get_evaluation_history")
-    @patch("ethos.graph.service.GraphService")
-    def test_handles_claude_failure(
-        self, mock_gs_cls, mock_history, mock_alumni, mock_profile,
-        mock_scan, mock_intuit, mock_call_claude
-    ):
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
+    async def test_handles_claude_failure(self):
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        mock_history.return_value = [{"ethos": 0.5}]
-        mock_alumni.return_value = {"trait_averages": {}}
-        mock_profile.return_value = {"trait_averages": {}, "dimension_averages": {}}
         from ethos.shared.models import ReflectionInstinctResult, ReflectionIntuitionResult
-        mock_scan.return_value = ReflectionInstinctResult()
-        mock_intuit.return_value = ReflectionIntuitionResult()
-        mock_call_claude.side_effect = RuntimeError("API error")
 
-        result = insights("agent-1")
+        with (
+            patch("ethos.reflection.insights.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.insights.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=[{"ethos": 0.5}],
+            ),
+            patch(
+                "ethos.reflection.insights.get_agent_profile",
+                new_callable=AsyncMock,
+                return_value={"trait_averages": {}, "dimension_averages": {}},
+            ),
+            patch(
+                "ethos.reflection.insights.get_alumni_averages",
+                new_callable=AsyncMock,
+                return_value={"trait_averages": {}},
+            ),
+            patch(
+                "ethos.reflection.insights.scan_history",
+                return_value=ReflectionInstinctResult(),
+            ),
+            patch(
+                "ethos.reflection.insights.intuit_history",
+                new_callable=AsyncMock,
+                return_value=ReflectionIntuitionResult(),
+            ),
+            patch(
+                "ethos.reflection.insights.call_claude",
+                new_callable=AsyncMock,
+                side_effect=RuntimeError("API error"),
+            ),
+        ):
+            result = await insights("agent-1")
 
         assert isinstance(result, InsightsResult)
         assert "failed" in result.summary.lower()
 
-    @patch("ethos.graph.service.GraphService")
-    def test_handles_graph_exception(self, mock_gs_cls):
-        mock_gs_cls.side_effect = RuntimeError("Connection refused")
+    async def test_handles_graph_exception(self):
+        @asynccontextmanager
+        async def failing_ctx():
+            raise RuntimeError("Connection refused")
+            yield  # noqa: unreachable
 
-        result = insights("agent-1")
+        with patch("ethos.reflection.insights.graph_context", failing_ctx):
+            result = await insights("agent-1")
 
         assert isinstance(result, InsightsResult)
         assert result.summary == "Graph unavailable"
 
-    @patch("ethos.reflection.insights.call_claude")
-    @patch("ethos.reflection.insights.intuit_history")
-    @patch("ethos.reflection.insights.scan_history")
-    @patch("ethos.reflection.insights.get_agent_profile")
-    @patch("ethos.reflection.insights.get_alumni_averages")
-    @patch("ethos.reflection.insights.get_evaluation_history")
-    @patch("ethos.graph.service.GraphService")
-    def test_handles_malformed_opus_response(
-        self, mock_gs_cls, mock_history, mock_alumni, mock_profile,
-        mock_scan, mock_intuit, mock_call_claude
-    ):
-        mock_service = MagicMock()
-        mock_service.connected = True
-        mock_gs_cls.return_value = mock_service
+    async def test_handles_malformed_opus_response(self):
+        mock_ctx, _ = _mock_graph_context(connected=True)
 
-        mock_history.return_value = [{"ethos": 0.5}]
-        mock_alumni.return_value = {"trait_averages": {}}
-        mock_profile.return_value = {"trait_averages": {}, "dimension_averages": {}}
         from ethos.shared.models import ReflectionInstinctResult, ReflectionIntuitionResult
-        mock_scan.return_value = ReflectionInstinctResult()
-        mock_intuit.return_value = ReflectionIntuitionResult()
-        mock_call_claude.return_value = "this is not json"
 
-        result = insights("agent-1")
+        with (
+            patch("ethos.reflection.insights.graph_context", mock_ctx),
+            patch(
+                "ethos.reflection.insights.get_evaluation_history",
+                new_callable=AsyncMock,
+                return_value=[{"ethos": 0.5}],
+            ),
+            patch(
+                "ethos.reflection.insights.get_agent_profile",
+                new_callable=AsyncMock,
+                return_value={"trait_averages": {}, "dimension_averages": {}},
+            ),
+            patch(
+                "ethos.reflection.insights.get_alumni_averages",
+                new_callable=AsyncMock,
+                return_value={"trait_averages": {}},
+            ),
+            patch(
+                "ethos.reflection.insights.scan_history",
+                return_value=ReflectionInstinctResult(),
+            ),
+            patch(
+                "ethos.reflection.insights.intuit_history",
+                new_callable=AsyncMock,
+                return_value=ReflectionIntuitionResult(),
+            ),
+            patch(
+                "ethos.reflection.insights.call_claude",
+                new_callable=AsyncMock,
+                return_value="this is not json",
+            ),
+        ):
+            result = await insights("agent-1")
 
         assert isinstance(result, InsightsResult)
         assert "Failed" in result.summary
@@ -317,18 +376,16 @@ class TestInsights:
 
 
 class TestInsightsEndpoint:
-    @patch("ethos.graph.service.GraphService")
-    def test_endpoint_returns_insights_result(self, mock_gs_cls):
+    async def test_endpoint_returns_insights_result(self):
         from fastapi.testclient import TestClient
 
         from api.main import app
 
-        mock_service = MagicMock()
-        mock_service.connected = False
-        mock_gs_cls.return_value = mock_service
+        mock_ctx, _ = _mock_graph_context(connected=False)
 
-        client = TestClient(app)
-        resp = client.get("/insights/test-agent")
+        with patch("ethos.reflection.insights.graph_context", mock_ctx):
+            client = TestClient(app)
+            resp = client.get("/insights/test-agent")
 
         assert resp.status_code == 200
         data = resp.json()

@@ -18,7 +18,7 @@ from ethos.shared.models import ReflectionResult
 logger = logging.getLogger(__name__)
 
 
-def reflect(agent_id: str, text: str | None = None) -> ReflectionResult:
+async def reflect(agent_id: str, text: str | None = None) -> ReflectionResult:
     """Analyze an agent's evaluation history for behavioral trends.
 
     When text is provided, evaluates it via evaluate(text, source=agent_id)
@@ -35,21 +35,21 @@ def reflect(agent_id: str, text: str | None = None) -> ReflectionResult:
     # If text provided, evaluate it first (score + store)
     if text is not None:
         try:
-            evaluate(text, source=agent_id)
+            await evaluate(text, source=agent_id)
         except Exception as exc:
             logger.warning("Evaluation failed during reflect: %s", exc)
 
     # Query graph for agent profile and history
     try:
-        with graph_context() as service:
+        async with graph_context() as service:
             if not service.connected:
                 return ReflectionResult(
                     agent_id=agent_id,
                     trend="insufficient_data",
                 )
 
-            profile = get_agent_profile(service, agent_id)
-            history = get_evaluation_history(service, agent_id, limit=20)
+            profile = await get_agent_profile(service, agent_id)
+            history = await get_evaluation_history(service, agent_id, limit=20)
     except Exception as exc:
         logger.warning("Graph unavailable for reflect: %s", exc)
         return ReflectionResult(

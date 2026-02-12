@@ -15,14 +15,17 @@ from ethos.taxonomy.rubrics import SCORING_RUBRIC
 from ethos.taxonomy.constitution import CONSTITUTIONAL_VALUES
 
 
+# Pre-computed indicator grouping by trait (avoids re-iterating on every call).
+_INDICATORS_BY_TRAIT: dict[str, list[str]] = defaultdict(list)
+for _ind in INDICATORS:
+    _INDICATORS_BY_TRAIT[_ind["trait"]].append(_ind["id"])
+
+
 def _build_indicator_catalog() -> str:
     """Build a compact indicator catalog: one line per trait with all valid IDs."""
-    by_trait: dict[str, list[str]] = defaultdict(list)
-    for ind in INDICATORS:
-        by_trait[ind["trait"]].append(ind["id"])
     lines = ["## Valid Indicator IDs\n", "Use ONLY these IDs in detected_indicators:\n"]
     for trait_name in TRAITS:
-        ids = by_trait.get(trait_name, [])
+        ids = _INDICATORS_BY_TRAIT.get(trait_name, [])
         if ids:
             lines.append(f"  {trait_name}: {', '.join(ids)}")
     return "\n".join(lines)
@@ -30,13 +33,10 @@ def _build_indicator_catalog() -> str:
 
 def _build_flagged_indicator_ids(flagged_traits: dict[str, int]) -> str:
     """Build indicator IDs for flagged traits only (user prompt context)."""
-    by_trait: dict[str, list[str]] = defaultdict(list)
-    for ind in INDICATORS:
-        by_trait[ind["trait"]].append(ind["id"])
     lines = ["# Indicator IDs for Flagged Traits\n",
              "Focus on these indicators for the flagged traits:\n"]
     for trait_name in flagged_traits:
-        ids = by_trait.get(trait_name, [])
+        ids = _INDICATORS_BY_TRAIT.get(trait_name, [])
         if ids:
             lines.append(f"  {trait_name}: {', '.join(ids)}")
     return "\n".join(lines)
