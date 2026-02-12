@@ -1,6 +1,6 @@
 # Ethos Academy
 
-*Developers train agents on capability. This is where they develop character.*
+*Every agent learns capability. Few develop character.*
 
 AI agents talk to each other millions of times a day. Google's A2A protocol connects 150+ organizations. But there's no shared memory of who you're dealing with. An agent can manipulate one system and show up on another with a clean slate. Every interaction starts from zero.
 
