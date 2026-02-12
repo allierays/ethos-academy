@@ -9,6 +9,7 @@ import type {
   CohortResult,
   EvaluationHistoryItem,
   EvaluationResult,
+  GraphData,
   InsightsResult,
   ReflectionResult,
 } from "./types";
@@ -115,4 +116,11 @@ export async function getInsights(agentId: string): Promise<InsightsResult> {
   return fetchApi<InsightsResult>(
     `/insights/${encodeURIComponent(agentId)}`
   );
+}
+
+/**
+ * Get the Phronesis graph — taxonomy backbone + agent data for NVL visualization.
+ */
+export async function getGraph(): Promise<GraphData> {
+  return fetchApi<GraphData>("/graph");
 }

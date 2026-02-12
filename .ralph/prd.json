@@ -1177,7 +1177,7 @@
       "type": "frontend",
       "title": "Install NVL and build full-page Phronesis Graph",
       "priority": 15,
-      "passes": false,
+      "passes": true,
       "batch": 7,
       "dependsOn": [
         "TASK-014",

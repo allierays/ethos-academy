@@ -80,6 +80,14 @@
       "learnedFrom": "TASK-013",
       "autoPromoted": true,
       "createdAt": "2026-02-11T19:07:24-08:00"
+    },
+    {
+      "id": "sign-012",
+      "pattern": "When PRD smoke tests require both API and frontend servers, start each server in the background with port-kill cleanup, then health-check loop (`until curl -s http://localhost:<port> > /dev/null; do sleep 1; done`) before running smoke tests — never assume servers from a previous attempt are still running.",
+      "category": "testing",
+      "learnedFrom": "TASK-015",
+      "autoPromoted": true,
+      "createdAt": "2026-02-11T20:26:02-08:00"
     }
   ]
 }

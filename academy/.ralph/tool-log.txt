@@ -56,3 +56,59 @@ sleep 6 && curl -s -o /dev/null -w "%{http_co
 [19:44:49] READ: /var/folders/zn/yzyf7mpn0pv5qjwj948tgfv40000gn/T/chrome-devtools-mcp-5fXdyZ/screenshot.png
 [19:45:04] READ: /var/folders/zn/yzyf7mpn0pv5qjwj948tgfv40000gn/T/chrome-devtools-mcp-w0Hf7j/screenshot.png
 [19:45:17] READ: /var/folders/zn/yzyf7mpn0pv5qjwj948tgfv40000gn/T/chrome-devtools-mcp-cmAMBT/screenshot.png
+[19:59:51] BASH: cd /Users/allierays/Sites/ethos/academy && npm install @neo4j-nvl/react 2>&1
+[19:59:56] BASH: ls /Users/allierays/Sites/ethos/academy/node_modules/@neo4j-nvl/react/dist/ 2>/d
+[20:00:00] BASH: ls /Users/allierays/Sites/ethos/academy/node_modules/@neo4j-nvl/react/lib/
+[20:00:04] READ: node_modules/@neo4j-nvl/react/lib/index.d.ts
+[20:00:07] READ: node_modules/@neo4j-nvl/react/lib/interactive-nvl-wrapper/types.d.ts
+[20:00:10] READ: node_modules/@neo4j-nvl/react/lib/basic-wrapper/BasicNvlWrapper.d.ts
+[20:00:15] BASH: grep -n "export.*interface Node\b\|export.*type Node\b\|^interface Node\b\|^type
+[20:00:23] BASH: find /Users/allierays/Sites/ethos/academy/node_modules/@neo4j-nvl/ -name "*.d.ts
+[20:00:27] BASH: grep -r "interface Node " /Users/allierays/Sites/ethos/academy/node_modules/@neo
+[20:00:30] READ: node_modules/@neo4j-nvl/base/dist/types/types/graph-element.d.ts
+[20:00:36] BASH: grep "Node\|Relationship" /Users/allierays/Sites/ethos/academy/node_modules/@neo
+[20:00:41] BASH: grep "Node\|Relationship" /Users/allierays/Sites/ethos/academy/node_modules/@neo
+[20:00:46] BASH: grep "export.*NvlOptions\|NvlOptions" /Users/allierays/Sites/ethos/academy/node_
+[20:00:57] EDIT: lib/types.ts
+[20:01:02] EDIT: lib/api.ts
+[20:01:08] EDIT: lib/api.ts
+[20:01:51] WRITE: components/PhronesisGraph.tsx
+[20:01:55] BASH: ls /Users/allierays/Sites/ethos/academy/app/graph/ 2>/dev/null || echo "director
+[20:01:59] BASH: mkdir -p /Users/allierays/Sites/ethos/academy/app/graph
+[20:02:05] WRITE: app/graph/page.tsx
+[20:02:25] READ: components/PhronesisGraph.tsx
+[20:02:31] EDIT: components/PhronesisGraph.tsx
+[20:02:35] READ: components/PhronesisGraph.tsx
+[20:02:39] EDIT: components/PhronesisGraph.tsx
+[20:02:45] BASH: npx tsc --noEmit 2>&1
+[20:02:56] BASH: npm run build 2>&1
+[20:03:10] BASH: lsof -ti:3000 | xargs kill -9 2>/dev/null; lsof -ti:8917 | xargs kill -9 2>/dev/
+[20:03:15] BASH: cd /Users/allierays/Sites/ethos && uv run uvicorn api.main:app --port 8917 &
+npm
+[20:03:30] BASH: sleep 8 && curl -s http://localhost:3000/graph | head -30
+[20:03:52] BASH: curl -s http://localhost:3000/graph | grep -o 'data-testid="[^"]*"' | sort -u
+[20:04:00] BASH: curl -s http://localhost:8917/graph | python3 -c "import sys, json; d = json.loa
+[20:04:07] BASH: lsof -ti:3000 | xargs kill -9 2>/dev/null; lsof -ti:8917 | xargs kill -9 2>/dev/
+[20:04:14] BASH: npm install && npx tsc --noEmit 2>&1
+[20:04:24] BASH: npm run build 2>&1
+[20:04:37] BASH: echo "$(date): Completed TASK-015 - Install NVL and build full-page Phronesis Gr
+[20:05:51] BASH: cd /Users/allierays/Sites/ethos/academy && npm install 2>&1 | tail -3 && npx tsc
+[20:06:01] BASH: npm run build 2>&1
+[20:11:10] BASH: cd /Users/allierays/Sites/ethos/academy && npx tsc --noEmit 2>&1 && echo "tsc: P
+[20:11:16] BASH: echo "$(date): TASK-015 retry - started API server on port 8917 for Ralph verifi
+[20:17:31] BASH: cd /Users/allierays/Sites/ethos/academy && npm install 2>&1 | tail -5 && npx tsc
+[20:17:41] BASH: npm run build 2>&1 | tail -20
+[20:17:45] BASH: curl -s http://localhost:8917/health
+[20:17:52] BASH: echo "$(date): TASK-015 retry fix - API server started on port 8917 for Ralph ve
+[20:21:17] BASH: cd /Users/allierays/Sites/ethos/academy && npx tsc --noEmit 2>&1; echo "EXIT: $?
+[20:21:28] BASH: npm run build 2>&1 | tail -15; echo "EXIT: ${PIPESTATUS[0]}"
+[20:21:34] BASH: lsof -ti:3000 2>/dev/null || echo "Nothing on port 3000"
+[20:21:44] BASH: nohup npx next start -p 3000 > /tmp/ethos-academy.log 2>&1 & disown %1 2>/dev/nu
+[20:21:52] BASH: sleep 3 && curl -sf http://localhost:3000/ > /dev/null && echo "Frontend OK" || 
+[20:21:57] BASH: curl -sf http://localhost:3000/graph > /dev/null && echo "/graph OK" || echo "/g
+[20:22:05] BASH: echo "API server (8917):"; lsof -ti:8917 | head -1 | xargs -I{} ps -o pid,ppid,c
+[20:22:10] BASH: ps -o ppid= -p 58209; ps -o ppid= -p 61313
+[20:25:24] BASH: cd /Users/allierays/Sites/ethos/academy && npx tsc --noEmit 2>&1; echo "TSC EXIT
+[20:25:30] BASH: # Verify screen sessions are completely independent of current shell
+API_PID=$(l
+[20:25:39] BASH: echo "$(date): TASK-015 retry fix (attempt 6) - Started API (8917) and Next.js (

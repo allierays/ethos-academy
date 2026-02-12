@@ -109,3 +109,24 @@ export interface CohortResult {
   traitAverages: Record<string, number>;
   totalEvaluations: number;
 }
+
+export interface GraphNode {
+  id: string;
+  type: string;
+  label: string;
+  caption: string;
+  properties: Record<string, unknown>;
+}
+
+export interface GraphRel {
+  id: string;
+  fromId: string;
+  toId: string;
+  type: string;
+  properties: Record<string, unknown>;
+}
+
+export interface GraphData {
+  nodes: GraphNode[];
+  relationships: GraphRel[];
+}
