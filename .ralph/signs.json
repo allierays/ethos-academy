@@ -64,6 +64,14 @@
       "learnedFrom": "TASK-006",
       "autoPromoted": true,
       "createdAt": "2026-02-11T18:23:42-08:00"
+    },
+    {
+      "id": "sign-010",
+      "pattern": "When PRD test steps verify a Next.js app builds (`npm run build`), also ensure the dev server is started before running frontend smoke tests — add `cd academy && npm run dev &` and a wait/health-check step, or use `next start` after build, so GET / doesn't 404.",
+      "category": "frontend",
+      "learnedFrom": "TASK-010",
+      "autoPromoted": true,
+      "createdAt": "2026-02-11T18:46:35-08:00"
     }
   ]
 }

@@ -751,7 +751,7 @@
       "type": "frontend",
       "title": "Initialize Academy with styleguide and layout",
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "batch": 3,
       "dependsOn": [
         "TASK-004"
@@ -821,7 +821,8 @@
           "usage": "Generate Ethos design tokens and component styles before building UI"
         }
       ],
-      "notes": "Run /styleguide first to establish design tokens. Light background (#fafafa or white), slate/gray text, teal accents for trust-positive, red/orange for trust-negative. Inter font for body. Clean, minimal — think Vercel dashboard or Linear. CORS: API needs to allow requests from localhost:3000. Transform API responses from snake_case to camelCase. Create typed interfaces with camelCase properties."
+      "notes": "Run /styleguide first to establish design tokens. Light background (#fafafa or white), slate/gray text, teal accents for trust-positive, red/orange for trust-negative. Inter font for body. Clean, minimal — think Vercel dashboard or Linear. CORS: API needs to allow requests from localhost:3000. Transform API responses from snake_case to camelCase. Create typed interfaces with camelCase properties.",
+      "retryCount": 0
     },
     {
       "id": "TASK-011",
