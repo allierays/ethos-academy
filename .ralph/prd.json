@@ -532,7 +532,7 @@
       "type": "backend",
       "title": "Add domain functions and API endpoints — agents, history, cohort",
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "batch": 3,
       "dependsOn": [
         "TASK-004"
@@ -665,7 +665,8 @@
         "ethos/shared/models.py",
         "ethos/__init__.py"
       ],
-      "notes": "DDD layering: Create ethos/agents.py as a new domain module for agent listing, profile, history, and cohort queries. API handler calls ethos.list_agents() → agents.py calls graph/read.py:get_all_agents() → graph/read.py owns the Cypher. API NEVER touches graph directly. New Cypher in graph/read.py: MATCH (a:Agent) OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation) WITH a, e ORDER BY e.created_at ASC WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest RETURN a.agent_id, evals, latest. IMPORTANT: collect() does not guarantee order in Neo4j — must ORDER BY before collect() to get the actual latest alignment_status. get_agent(agent_id) wraps existing get_agent_profile() and returns AgentProfile Pydantic model. Follow existing pattern from api/main.py where evaluate_endpoint just calls evaluate() and reflect_endpoint just calls reflect(). Also update api/main.py ReflectRequest to add text: str | None = None field (moved from TASK-007 to avoid parallel file conflict). Also add CORS middleware (FastAPI CORSMiddleware) to api/main.py allowing localhost:3000 for Academy. IMPORTANT: ethos/models.py is a re-export file that existing code imports from. When adding new models to ethos/shared/models.py, also update ethos/models.py to re-export them. Both files must expose the same set of models. BUG NOTE: existing balance.py _GET_BALANCE_VS_TRUST_QUERY references e.trust_score which is never stored on Evaluation nodes — this query returns null. If balance analysis is needed for demo, either add trust_score: Float to Evaluation node in TASK-004's write.py update (computed as (ethos+logos+pathos)/3.0), or rewrite the query to compute inline."
+      "notes": "DDD layering: Create ethos/agents.py as a new domain module for agent listing, profile, history, and cohort queries. API handler calls ethos.list_agents() → agents.py calls graph/read.py:get_all_agents() → graph/read.py owns the Cypher. API NEVER touches graph directly. New Cypher in graph/read.py: MATCH (a:Agent) OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation) WITH a, e ORDER BY e.created_at ASC WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest RETURN a.agent_id, evals, latest. IMPORTANT: collect() does not guarantee order in Neo4j — must ORDER BY before collect() to get the actual latest alignment_status. get_agent(agent_id) wraps existing get_agent_profile() and returns AgentProfile Pydantic model. Follow existing pattern from api/main.py where evaluate_endpoint just calls evaluate() and reflect_endpoint just calls reflect(). Also update api/main.py ReflectRequest to add text: str | None = None field (moved from TASK-007 to avoid parallel file conflict). Also add CORS middleware (FastAPI CORSMiddleware) to api/main.py allowing localhost:3000 for Academy. IMPORTANT: ethos/models.py is a re-export file that existing code imports from. When adding new models to ethos/shared/models.py, also update ethos/models.py to re-export them. Both files must expose the same set of models. BUG NOTE: existing balance.py _GET_BALANCE_VS_TRUST_QUERY references e.trust_score which is never stored on Evaluation nodes — this query returns null. If balance analysis is needed for demo, either add trust_score: Float to Evaluation node in TASK-004's write.py update (computed as (ethos+logos+pathos)/3.0), or rewrite the query to compute inline.",
+      "retryCount": 0
     },
     {
       "id": "TASK-009",

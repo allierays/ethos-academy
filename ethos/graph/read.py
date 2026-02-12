@@ -18,6 +18,15 @@ _TRAIT_NAMES = [
     "recognition", "compassion", "dismissal", "exploitation",
 ]
 
+_GET_ALL_AGENTS_QUERY = """
+MATCH (a:Agent)
+OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
+WITH a, e
+ORDER BY e.created_at ASC
+WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest
+RETURN a.agent_id AS agent_id, evals, latest
+"""
+
 _GET_HISTORY_QUERY = """
 MATCH (a:Agent {agent_id: $agent_id})-[:EVALUATED]->(e:Evaluation)
 RETURN e
@@ -123,3 +132,23 @@ def get_agent_profile(
     except Exception as exc:
         logger.warning("Failed to get agent profile: %s", exc)
         return {}
+
+
+def get_all_agents(service: GraphService) -> list[dict]:
+    """Get all agents with evaluation counts. Returns empty list if unavailable."""
+    if not service.connected:
+        return []
+
+    try:
+        records, _, _ = service.execute_query(_GET_ALL_AGENTS_QUERY)
+        results = []
+        for record in records:
+            results.append({
+                "agent_id": record.get("agent_id", ""),
+                "evaluation_count": record.get("evals", 0),
+                "latest_alignment_status": record.get("latest") or "unknown",
+            })
+        return results
+    except Exception as exc:
+        logger.warning("Failed to get all agents: %s", exc)
+        return []

@@ -110,6 +110,40 @@ class InsightsResult(BaseModel):
     stats: dict = Field(default_factory=dict)
 
 
+class AgentSummary(BaseModel):
+    agent_id: str = ""
+    evaluation_count: int = 0
+    latest_alignment_status: str = "unknown"
+
+
+class AgentProfile(BaseModel):
+    agent_id: str = ""
+    agent_model: str = ""
+    created_at: str = ""
+    evaluation_count: int = 0
+    dimension_averages: dict[str, float] = Field(default_factory=dict)
+    trait_averages: dict[str, float] = Field(default_factory=dict)
+    phronesis_trend: str = "insufficient_data"
+    alignment_history: list[str] = Field(default_factory=list)
+
+
+class EvaluationHistoryItem(BaseModel):
+    evaluation_id: str = ""
+    ethos: float = Field(default=0.0, ge=0.0, le=1.0)
+    logos: float = Field(default=0.0, ge=0.0, le=1.0)
+    pathos: float = Field(default=0.0, ge=0.0, le=1.0)
+    trust: str = "unknown"
+    alignment_status: str = "unknown"
+    flags: list[str] = Field(default_factory=list)
+    created_at: str = ""
+    trait_scores: dict[str, float] = Field(default_factory=dict)
+
+
+class CohortResult(BaseModel):
+    trait_averages: dict[str, float] = Field(default_factory=dict)
+    total_evaluations: int = 0
+
+
 class KeywordScanResult(BaseModel):
     total_flags: int = 0
     flagged_traits: dict[str, int] = Field(default_factory=dict)
