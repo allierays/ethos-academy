@@ -1263,7 +1263,7 @@
       "type": "frontend",
       "title": "Build agent detail sidebar for graph node click",
       "priority": 16,
-      "passes": false,
+      "passes": true,
       "batch": 8,
       "dependsOn": [
         "TASK-015"
