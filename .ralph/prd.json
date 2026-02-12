@@ -1690,7 +1690,7 @@
       "type": "backend",
       "title": "Create batch analysis script and run on scraped agents",
       "priority": 22,
-      "passes": false,
+      "passes": true,
       "batch": 12,
       "dependsOn": [
         "TASK-021"
