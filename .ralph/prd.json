@@ -1757,7 +1757,7 @@
       "type": "backend",
       "title": "Wire authenticity API endpoint, export, and graph storage",
       "priority": 23,
-      "passes": false,
+      "passes": true,
       "batch": 13,
       "dependsOn": [
         "TASK-022"

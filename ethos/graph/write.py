@@ -11,7 +11,7 @@ import math
 
 from ethos.graph.service import GraphService
 from ethos.identity.hashing import hash_agent_id
-from ethos.shared.models import EvaluationResult
+from ethos.shared.models import AuthenticityResult, EvaluationResult
 
 logger = logging.getLogger(__name__)
 
@@ -179,3 +179,43 @@ def store_evaluation(
         service.execute_query(_STORE_EVALUATION_QUERY, params)
     except Exception as exc:
         logger.warning("Failed to store evaluation: %s", exc)
+
+
+_STORE_AUTHENTICITY_QUERY = """
+MATCH (a:Agent) WHERE a.agent_name = $agent_name
+SET a.authenticity_score = $authenticity_score,
+    a.authenticity_classification = $classification
+RETURN a.agent_name AS matched
+"""
+
+
+def store_authenticity(
+    service: GraphService,
+    agent_name: str,
+    result: AuthenticityResult,
+) -> None:
+    """Store authenticity score on an existing Agent node.
+
+    Uses MATCH on agent_name (not MERGE) to avoid creating duplicate
+    Agent nodes — existing nodes are keyed by agent_id hash.
+    If no Agent node matches, logs a warning and skips.
+    """
+    if not service.connected:
+        return
+
+    try:
+        records, _, _ = service.execute_query(
+            _STORE_AUTHENTICITY_QUERY,
+            {
+                "agent_name": agent_name,
+                "authenticity_score": result.authenticity_score,
+                "classification": result.classification,
+            },
+        )
+        if not records:
+            logger.info(
+                "No Agent node found for agent_name=%s — skipping authenticity store",
+                agent_name,
+            )
+    except Exception as exc:
+        logger.warning("Failed to store authenticity for %s: %s", agent_name, exc)

@@ -3,6 +3,7 @@
 __version__ = "0.1.0"
 
 from ethos.agents import get_agent, get_agent_history, get_alumni, list_agents
+from ethos.authenticity import analyze_authenticity
 from ethos.evaluate import evaluate
 from ethos.insights import insights
 from ethos.models import (
@@ -25,6 +26,7 @@ from ethos.reflection.history import reflect_history
 from ethos.visualization import get_graph_data
 
 __all__ = [
+    "analyze_authenticity",
     "evaluate",
     "reflect",
     "reflect_history",

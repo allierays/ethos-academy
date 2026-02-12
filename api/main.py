@@ -11,6 +11,7 @@ from api.auth import require_api_key
 from api.rate_limit import rate_limit
 
 from ethos import (
+    analyze_authenticity,
     detect_patterns,
     evaluate,
     get_agent,
@@ -25,6 +26,7 @@ from ethos.models import (
     AgentProfile,
     AgentSummary,
     AlumniResult,
+    AuthenticityResult,
     EvaluationHistoryItem,
     EvaluationResult,
     GraphData,
@@ -179,6 +181,11 @@ def patterns_endpoint(agent_id: str):
 @app.get("/insights/{agent_id}", response_model=InsightsResult)
 def insights_endpoint(agent_id: str):
     return insights(agent_id)
+
+
+@app.get("/agents/{agent_name}/authenticity", response_model=AuthenticityResult)
+def authenticity_endpoint(agent_name: str):
+    return analyze_authenticity(agent_name)
 
 
 @app.get("/graph", response_model=GraphData)
