@@ -393,7 +393,7 @@ Based on this research, Ethos should target integration with:
 
 ### 6.3 Architectural Recommendations
 
-1. **Trust graphs over time** — Neo4j graph structure should model trust relationships between agents, tools, and outputs, enabling detection of transitive trust chain vulnerabilities
+1. **Phronesis (the graph layer)** — Neo4j graph structure should model trust relationships between agents, tools, and outputs over time, enabling detection of transitive trust chain vulnerabilities
 2. **Circuit breaker integration** — Ethos scores could trigger circuit breakers when trust drops below thresholds, preventing cascading failures
 3. **Debate pattern evaluation** — Ethos can evaluate the quality of inter-agent debate transcripts, assessing whether consensus was reached through valid reasoning or groupthink
 4. **Reflection validation** — when agents self-correct, Ethos can evaluate whether the correction improved trustworthiness or introduced new problems (given the 46.7% stubborn self-evaluation finding)

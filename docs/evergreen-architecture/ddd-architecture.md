@@ -53,7 +53,7 @@ evaluate(text, source, config)
     ├── parser.parse(raw, scan, config)     → EvaluationResult
     ├── alignment.compute_status(result)    → "violation" | "misaligned" | "drifting" | "aligned"
     │
-    └── graph.store(source, result)         → async, non-fatal
+    └── graph.store(source, result)         → sync, non-fatal
 ```
 
 ### Key Rules
@@ -294,6 +294,8 @@ PRESETS = {
 - Config validates trait names against Taxonomy. Misspelled traits raise errors with suggestions.
 - Config loads from environment variables by default. Class-based Ethos client overrides env.
 - Config is immutable after creation. `with_priorities()` returns a new config.
+
+> **Current limitation:** `EthosConfig.from_env()` does not load priorities from environment variables. Priorities must be passed programmatically or via presets. Environment-based priority loading is planned.
 
 ---
 

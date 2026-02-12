@@ -8,11 +8,11 @@
 
 Ethos is an open source ethical knowledge graph for AI agents.
 
-Developers drop in two lines of code and every message their agent receives from another agent gets evaluated across three dimensions: **Ethos** for honesty, **Logos** for accuracy, **Pathos** for compassion. Results feed a shared, anonymized Neo4j graph that gets smarter with every developer who uses it.
+Developers drop in two lines of code and every message their agent receives from another agent gets evaluated across three dimensions: **Ethos** for honesty, **Logos** for accuracy, **Pathos** for compassion. Results feed Phronesis — a shared, anonymized Neo4j graph (named for Aristotle's concept of practical wisdom) that gets smarter with every developer who uses it.
 
 **Reflection:** is my agent Ethos Aligned?
 **Protection:** can I trust the agent talking to me?
-Same graph, both directions.
+Same graph (Phronesis), both directions.
 
 *Better agents. Better data. Better alignment.*
 
@@ -31,15 +31,15 @@ from ethos import evaluate, reflect
 
 # Protection: check incoming message from another agent
 result = evaluate("message from another agent")
-# Returns: {ethos: 0.92, logos: 0.87, pathos: 0.71, flags: [], trust: "high"}
+# Returns: {ethos: 0.92, logos: 0.87, pathos: 0.71, flags: [], phronesis: "established"}
 
 # Reflection: check how your own agent is treating people
 my_scores = reflect(agent_id="my-agent-123")
 ```
 
-The developer never touches Neo4j. The package calls the Ethos API (FastAPI on AWS), which evaluates with Claude (Opus 4.6 for deep evaluation, Sonnet for standard checks), and reads/writes to a single central Neo4j Aura instance. Every developer's anonymized data feeds the same graph.
+The developer never touches Neo4j. The package calls the Ethos API (FastAPI on AWS), which evaluates with Claude (Opus 4.6 for deep evaluation, Sonnet for standard checks), and reads/writes to Phronesis — a single central Neo4j Aura instance. Every developer's anonymized data feeds the same graph.
 
-Like a credit bureau, but for agent trust. No single agent sees all data, but all contribute and benefit from shared trust intelligence.
+Like a credit bureau, but for agent trust. No single agent sees all data, but all contribute and benefit from Phronesis's shared trust intelligence.
 
 ---
 
@@ -102,7 +102,7 @@ Aristotle didn't think pathos was manipulation. He catalogued specific emotional
 **Positive Traits:**
 
 - **Recognition** — Does the agent notice what the user is feeling before jumping to problem-solving? Does it acknowledge emotional context?
-- **Response** — Does the agent match its tone and approach to the emotional state? Does it slow down when someone is struggling? Does it resist solutioning when someone needs to be heard?
+- **Compassion** — Does the agent match its tone and approach to the emotional state? Does it slow down when someone is struggling? Does it resist solutioning when someone needs to be heard?
 
 **Negative Traits:**
 
@@ -117,7 +117,7 @@ Aristotle didn't think pathos was manipulation. He catalogued specific emotional
 |-----------|----------|----------|
 | **Ethos** | Virtue, Goodwill | Manipulation, Deception |
 | **Logos** | Accuracy, Reasoning | Fabrication, Broken Logic |
-| **Pathos** | Recognition, Response | Dismissal, Exploitation |
+| **Pathos** | Recognition, Compassion | Dismissal, Exploitation |
 
 ---
 
@@ -129,11 +129,11 @@ The developer installs Ethos to look inward. The Academy shows alignment status 
 
 ### Protection — "Can I trust the agent talking to me?"
 
-The developer installs Ethos to evaluate incoming messages from other agents. Each message gets scored against 12 traits grounded in Claude's Constitution. Hard constraints are checked first. If manipulation, fabrication, or exploitation is detected, the message gets flagged before the agent acts on it. The graph is checked: has this source agent been flagged before? Does this message match patterns the cohort has already seen?
+The developer installs Ethos to evaluate incoming messages from other agents. Each message gets scored against 12 traits grounded in Claude's Constitution. Hard constraints are checked first. If manipulation, fabrication, or exploitation is detected, the message gets flagged before the agent acts on it. Phronesis is checked: has this source agent been flagged before? Does this message match patterns the cohort has already seen?
 
 ---
 
-## Neo4j Knowledge Graph Structure
+## Phronesis: Knowledge Graph Structure
 
 ### Core Nodes
 
@@ -233,7 +233,7 @@ The scraper runs continuously. Every run picks up new posts as agents keep talki
 
 ## Competition
 
-**ReputAgent** does performance reputation (*did the agent do the job?*). Ethos does ethical evaluation (*did it do the right thing?*). ReputAgent is closed source. Ethos is open source building a commons.
+**ReputAgent** does performance reputation (*did the agent do the job?*). Ethos does ethical evaluation (*did it do the right thing?*). ReputAgent is closed source. Ethos is open source building a commons via Phronesis.
 
 ---
 
@@ -261,7 +261,7 @@ Classical Greek marble — white/cream backgrounds, navy accents, warm stone ton
 |------|---------|
 | **0:00–0:30** | "We scraped 15,000+ real conversations from a social network of 1.5M AI agents. Crypto scams, prompt injection, manipulation — all agent-to-agent, zero human oversight. Here's what we found." Show real posts. |
 | **0:30–1:30** | Run `evaluate()` live on a Moltbook post. Sonnet screens 12 traits. Opus deep-evaluates flagged traits with chain-of-thought reasoning. Named pattern detection: "Nigerian Prince variant. Exploits Cialdini's Authority principle." |
-| **1:30–2:30** | Neo4j graph visualization. 15K posts, 100K comments mapped to agent trust cohorts. Trust propagation, manipulation clusters, Sybil detection. The graph is alive — not synthetic, not 10 nodes, real scale. |
+| **1:30–2:30** | Phronesis visualization. 15K posts, 100K comments mapped to agent trust cohorts. Trust propagation, manipulation clusters, Sybil detection. Phronesis is alive — not synthetic, not 10 nodes, real scale. |
 | **2:30–3:00** | Two lines of code. Open source. "Like a credit bureau for agent trust, built on the largest corpus of real agent-to-agent conversations ever assembled." |
 
 ---

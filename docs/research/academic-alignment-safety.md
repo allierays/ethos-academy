@@ -203,7 +203,7 @@ Hadfield-Menell et al. (2016) formalized the value alignment problem as cooperat
 
 > *Paper:* Hadfield-Menell, D., Dragan, A., Abbeel, P., & Russell, S. (2016). "Cooperative Inverse Reinforcement Learning." *NeurIPS 2016.* [arXiv:1606.03137](https://arxiv.org/abs/1606.03137)
 
-**Ethos relevance:** CIRL formalizes the cooperative nature of value alignment -- the agent should be actively trying to learn human values, not just optimizing a fixed reward. Ethos's trust scoring over time (via Neo4j graph) captures this cooperative dynamic: agents that consistently produce trustworthy messages build trust, while those that deviate get flagged.
+**Ethos relevance:** CIRL formalizes the cooperative nature of value alignment -- the agent should be actively trying to learn human values, not just optimizing a fixed reward. Ethos's trust scoring over time (via Phronesis, the graph layer) captures this cooperative dynamic: agents that consistently produce trustworthy messages build trust, while those that deviate get flagged.
 
 ### 5.2 Inverse Reward Design
 
@@ -311,7 +311,7 @@ As AI systems increasingly operate in multi-agent configurations, new safety cha
 
 > *Source:* "AgentBreeder: Mitigating the AI Safety Risks of Multi-Agent Systems." [OpenReview](https://openreview.net/attachment?id=mlU9KqdZUS&name=pdf)
 
-**Ethos relevance:** Multi-agent safety research validates Ethos's core architecture -- using one AI (Claude) to evaluate another agent's messages at inference time. The trust graph over time (via Neo4j) creates exactly the kind of persistent trust/reputation system that multi-agent safety research identifies as essential for distributed AI systems.
+**Ethos relevance:** Multi-agent safety research validates Ethos's core architecture -- using one AI (Claude) to evaluate another agent's messages at inference time. Phronesis (the graph layer) creates exactly the kind of persistent trust/reputation system over time that multi-agent safety research identifies as essential for distributed AI systems.
 
 ---
 
@@ -338,7 +338,7 @@ The alignment research surveyed above converges on several conclusions that vali
 | Debate outperforms single-model assessment | Multi-dimensional scoring provides multiple evaluation perspectives |
 | Safety benchmarks are multi-dimensional | Trust score decomposition (credibility, logic, emotion) is multi-dimensional |
 | Interpretability builds trust through explicability | Ethos provides score breakdowns and manipulation flags |
-| Trust requires calibration over time | Neo4j trust graph tracks agent trustworthiness trends |
+| Trust requires calibration over time | Phronesis tracks agent trustworthiness trends |
 | Multi-agent systems need persistent reputation | Graph-based agent identity creates persistent reputation |
 
 ### 9.3 Ethos as a "Scalable Oversight" Mechanism

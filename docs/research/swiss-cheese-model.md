@@ -144,7 +144,7 @@ No single layer catches everything. A2A authenticates the agent but doesn't eval
 
 Ethos addresses **all four levels**:
 - **Organizational**: Open source framework establishes ethical standards
-- **Supervision**: The Neo4j graph provides continuous monitoring and audit trails
+- **Supervision**: Phronesis (the graph layer) provides continuous monitoring and audit trails
 - **Preconditions**: Protection mode evaluates incoming messages before they're acted on
 - **Unsafe acts**: The 12-trait scoring system detects the specific manipulation at the message level
 

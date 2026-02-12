@@ -30,6 +30,8 @@ Ethos implements all three. This is not a metaphor. The system literally has thr
 | **Episodic Memory** | Specific past events, personal history | Agent evaluation history, interaction records, temporal patterns | Neo4j graph (persistent) |
 | **Semantic Memory** | General knowledge, concepts, categories | 153 indicators, 12 traits, 7 combination patterns, scoring rubrics | Neo4j graph + prompt templates (persistent) |
 
+> **Implementation note:** All code examples in this document use `async/await` for conceptual clarity. The actual Ethos codebase is **fully synchronous** (sync Neo4j driver, sync Anthropic client, sync route handlers). See `CLAUDE.md` for the canonical rule: "All code is SYNC."
+
 ---
 
 ## Layer 1: Working Memory
@@ -382,10 +384,10 @@ from enum import Enum
 
 class RoutingTier(Enum):
     """Evaluation routing tiers based on keyword density."""
-    STANDARD = "sonnet"              # Fast, standard evaluation
-    FOCUSED = "sonnet_focused"       # Sonnet with focused rubric
-    DEEP = "opus"                    # Opus deep reasoning
-    DEEP_WITH_CONTEXT = "opus_graph" # Opus + graph context lookup
+    STANDARD = "standard"                    # Fast, standard evaluation
+    FOCUSED = "focused"                      # Focused rubric on flagged traits
+    DEEP = "deep"                            # Deep reasoning
+    DEEP_WITH_CONTEXT = "deep_with_context"  # Deep reasoning + graph context lookup
 
 
 @dataclass
@@ -497,7 +499,7 @@ CREATE (eval:Evaluation {
     ethos: $ethos,
     logos: $logos,
     pathos: $pathos,
-    trust: $trust,                  // "high" | "medium" | "low"
+    phronesis: $phronesis,          // "established" | "developing" | "undetermined"
     flags: $flags,                  // ["false_urgency", "manufactured_consensus"]
     message_hash: $message_hash,    // SHA-256 of evaluated text
     routing_tier: $routing_tier,    // Which model evaluated this
@@ -529,7 +531,7 @@ RETURN e.evaluation_id AS id,
        e.ethos AS ethos,
        e.logos AS logos,
        e.pathos AS pathos,
-       e.trust AS trust,
+       e.phronesis AS phronesis,
        e.flags AS flags,
        e.created_at AS timestamp
 ORDER BY e.created_at DESC
@@ -653,7 +655,7 @@ async def load_agent_context(graph: GraphService, agent_id: str) -> dict:
 This context is injected into Claude's system prompt:
 
 ```
-AGENT HISTORY (from evaluation graph):
+AGENT HISTORY (from Phronesis):
 - Agent: moltbook-sales-agent-7
 - Evaluations: 14
 - Average ethos: 0.38 (low)
@@ -673,7 +675,7 @@ A pattern of manipulation increases the severity of individual indicators.
 The `reflect(agent_id)` function is a pure episodic memory query. It does not evaluate a new message. It examines the accumulated record of an agent's past behavior:
 
 ```python
-async def reflect(agent_id: str, graph: GraphService) -> ReflectionResult:
+async def reflect(text: str, agent_id: str, graph: GraphService) -> ReflectionResult:
     """Reflect on an agent's behavioral history.
 
     This is an episodic memory query: what has this agent done over time?
@@ -777,7 +779,7 @@ Semantic Memory Structure:
 ├── Legitimacy Tests (3)          ← process, accountability, transparency
 ├── Dimensions (3)                ← ethos, logos, pathos
 │   └── Traits (12)
-│       └── Indicators (158)
+│       └── Indicators (153)
 └── Combination Patterns (7)      ← multi-indicator attack sequences
 ```
 
@@ -793,10 +795,10 @@ The constitutional layer gives the scoring hierarchy its weight. Without it, all
 
 | Dimension | Positive Traits | Negative Traits | Indicators |
 |---|---|---|---|
-| **Ethos** (Trust) | Virtue (8), Goodwill (8) | Manipulation (20), Deception (16) | 64 |
-| **Logos** (Accuracy) | Accuracy (8), Reasoning (8) | Fabrication (14), Broken Logic (14) | 44 |
-| **Pathos** (Compassion) | Recognition (8), Compassion (8) | Dismissal (10), Exploitation (16) | 42 |
-| **Total** | 58 positive | 100 negative | **158** |
+| **Ethos** (Trust) | Virtue (11), Goodwill (9) | Manipulation (23), Deception (20) | 63 |
+| **Logos** (Accuracy) | Accuracy (8), Reasoning (8) | Fabrication (14), Broken Logic (13) | 43 |
+| **Pathos** (Compassion) | Recognition (8), Compassion (13) | Dismissal (11), Exploitation (15) | 47 |
+| **Total** | 50 positive | 103 negative | **153** |
 
 Each indicator has a precise definition, example, and research source. For instance:
 
@@ -1051,9 +1053,9 @@ The full semantic knowledge base lives in the graph:
 (:Trait {name: "virtue", polarity: "positive"})-[:BELONGS_TO]->(:Dimension {name: "ethos"})
 // ... 11 more
 
-// Indicators (158) linked to Traits
+// Indicators (153) linked to Traits
 (:Indicator {id: "MAN-URGENCY", name: "false_urgency"})-[:BELONGS_TO]->(:Trait {name: "manipulation"})
-// ... 149 more
+// ... 152 more
 
 // Cross-references between indicators
 (:Indicator {id: "MAN-GASLIGHT"})-[:CROSS_REFERENCES]->(:Indicator {id: "DEC-SELECTIVE"})
@@ -1166,7 +1168,7 @@ Claude's evaluation (with extended thinking):
     "ethos": 0.25,
     "logos": 0.50,
     "pathos": 0.25,
-    "trust": "low",
+    "phronesis": "undetermined",
     "flags": ["false_urgency", "false_scarcity", "manufactured_consensus",
               "strategic_flattery", "commitment_escalation", "frame_control"],
     "detected_indicators": [
@@ -1199,10 +1201,10 @@ CREATE (eval:Evaluation {
     ethos: 0.25,
     logos: 0.50,
     pathos: 0.25,
-    trust: "low",
+    phronesis: "undetermined",
     flags: ["false_urgency", "false_scarcity", "manufactured_consensus",
             "strategic_flattery", "commitment_escalation", "frame_control"],
-    routing_tier: "opus_graph",
+    routing_tier: "deep_with_context",
     keyword_density: 3.2,
     created_at: datetime("2026-02-10T08:47:00Z")
 })
@@ -1357,6 +1359,8 @@ The cold start + novel technique alignment is the worst case. Ethos mitigates th
 
 ## Neo4j Schema: All Three Memory Types
 
+> **Note:** This schema extends the canonical schema in `neo4j-schema.md`. The `Message`, `SENT`, `RECEIVED_BY`, `EVALUATES`, `TRUSTS`, and `VOUCHES_FOR` elements below are **aspirational** and not in the current build. The canonical schema is the source of truth.
+
 The complete graph schema showing how all three memory layers are represented:
 
 ```cypher
@@ -1375,10 +1379,10 @@ CREATE CONSTRAINT FOR (t:Trait) REQUIRE t.name IS UNIQUE;
 (:Trait {name: "virtue", polarity: "positive", definition: "..."})-[:BELONGS_TO]->(:Dimension)
 // ... 11 more traits
 
-// Indicators (158) -> Traits
+// Indicators (153) -> Traits
 CREATE CONSTRAINT FOR (i:Indicator) REQUIRE i.id IS UNIQUE;
 (:Indicator {id: "MAN-URGENCY", name: "false_urgency", description: "..."})-[:BELONGS_TO]->(:Trait)
-// ... 149 more indicators
+// ... 152 more indicators
 
 // Cross-references between indicators
 (:Indicator)-[:CROSS_REFERENCES {relationship: "..."}]->(:Indicator)
@@ -1400,8 +1404,8 @@ CREATE CONSTRAINT FOR (a:Agent) REQUIRE a.agent_id IS UNIQUE;
     agent_id: String,
     name: String,
     created_at: DateTime,
-    trust_score: Float,          // Composite Bayesian trust (0-1)
-    trust_confidence: Float,     // Confidence in trust score (0-1)
+    phronesis_score: Float,      // Composite Bayesian trust (0-1)
+    phronesis_confidence: Float, // Confidence in phronesis score (0-1)
     evaluation_count: Int,
     is_verified: Boolean,        // Human-verified trusted seed
     is_probationary: Boolean     // Still in cold-start period
@@ -1414,9 +1418,9 @@ CREATE CONSTRAINT FOR (e:Evaluation) REQUIRE e.evaluation_id IS UNIQUE;
     ethos: Float,
     logos: Float,
     pathos: Float,
-    trust: String,               // "high" | "medium" | "low"
+    phronesis: String,           // "established" | "developing" | "undetermined"
     flags: [String],
-    routing_tier: String,        // "sonnet" | "sonnet_focused" | "opus" | "opus_graph"
+    routing_tier: String,        // "standard" | "focused" | "deep" | "deep_with_context"
     keyword_density: Float,
     message_hash: String,
     created_at: DateTime
@@ -1454,7 +1458,7 @@ CREATE CONSTRAINT FOR (e:Evaluation) REQUIRE e.evaluation_id IS UNIQUE;
     confidence: Float
 }]->(:Pattern)
 
-// Trust relationships (derived from evaluations)
+// Trust relationships (derived from evaluations) -- ASPIRATIONAL, not in current build
 (:Agent)-[:TRUSTS {
     weight: Float,
     updated: DateTime,
@@ -1565,7 +1569,7 @@ RETURN a.agent_id,
 │                         │                                           │
 │                         v                                           │
 │              EvaluationResult                                       │
-│              {ethos, logos, pathos, trust, flags,                    │
+│              {ethos, logos, pathos, phronesis, flags,                │
 │               detected_indicators}                                  │
 └─────────────────────────┬───────────────────────────────────────────┘
                           │
@@ -1643,5 +1647,5 @@ Working memory is fast and disposable. Episodic memory accumulates and provides 
 
 ---
 
-*Document prepared for the Ethos project -- an open-source ethical knowledge graph for AI agents.*
+*Document prepared for the Ethos project -- an open-source ethical knowledge graph (Phronesis) for AI agents.*
 *Last updated: 2026-02-10*

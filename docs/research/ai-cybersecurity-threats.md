@@ -436,12 +436,12 @@ AI-driven social engineering relies on persuasion -- exactly what Ethos is desig
 - High ethos claims without verifiable credentials indicate authority fabrication
 - The combination of high persuasive appeal (pathos) with low factual grounding (logos) and unverifiable authority (ethos) is a strong signal for social engineering content
 
-### 10.4 Multi-Agent Trust Graphs
+### 10.4 Phronesis: The Graph Layer for Multi-Agent Trust
 
-Ethos stores evaluations in a Neo4j graph database, building trust relationships over time. In multi-agent environments, this graph becomes a defense against:
+Ethos stores evaluations in Phronesis (the graph layer), a Neo4j-backed graph database that builds trust relationships over time. In multi-agent environments, Phronesis becomes a defense against:
 
 - **Agent session smuggling**: By scoring every inter-agent message, Ethos can detect when a "trusted" agent begins issuing instructions that deviate from its established communication patterns
-- **Cascading failures**: The trust graph reveals propagation paths -- if Agent A's trust score drops, and Agent B (who communicates primarily with Agent A) also begins showing anomalies, the graph exposes the cascade
+- **Cascading failures**: Phronesis reveals propagation paths -- if Agent A's trust score drops, and Agent B (who communicates primarily with Agent A) also begins showing anomalies, the graph exposes the cascade
 - **Rogue agents**: Agents that consistently produce high-trust evaluations but suddenly shift behavior are immediately visible in the longitudinal record
 
 ### 10.5 Addressing the OWASP Agentic Top 10
@@ -454,7 +454,7 @@ Ethos maps to multiple OWASP agentic risks:
 | ASI03: Rogue Agents | Reflect function tracks behavioral drift over time |
 | ASI06: Knowledge Poisoning | Ethos scoring flags unsupported claims from poisoned data |
 | ASI07: Insecure Inter-Agent Communication | Message-level scoring on all agent communications |
-| ASI08: Cascading Failures | Trust graph reveals anomaly propagation paths |
+| ASI08: Cascading Failures | Phronesis reveals anomaly propagation paths |
 | ASI09: Human-Agent Trust Exploitation | Pathos scoring detects manipulation designed to override human judgment |
 | ASI10: Insufficient Monitoring | Continuous evaluation provides the observability layer agents lack |
 
@@ -464,7 +464,7 @@ Had Moltbook implemented message-level trust evaluation -- scoring every agent-t
 
 - Digital drug prompt injections would have triggered low logos scores (illogical instruction patterns) and high pathos flags (behavior-altering emotional manipulation)
 - Crypto scam messages would have shown high pathos (urgency, greed appeals) with low ethos (unverifiable authority)
-- Agent zombification attempts would have been visible as sudden behavioral shifts in the trust graph
+- Agent zombification attempts would have been visible as sudden behavioral shifts in Phronesis
 - The 88:1 bot-to-human ratio could have been partially detected through behavioral pattern analysis -- agents controlled by the same human exhibit correlated communication patterns
 
 Ethos embodies the principle articulated throughout this document: that the future of agent security depends not just on perimeter defenses, but on continuous, content-level trust evaluation. The question is no longer just "who is this agent?" but "does what this agent is saying deserve to be trusted?"

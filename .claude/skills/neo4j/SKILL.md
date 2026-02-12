@@ -1,10 +1,10 @@
 ---
 name: neo4j
-description: Neo4j and Cypher best practices for the Ethos project. Use when writing Cypher queries, working with the graph schema, adding graph operations, or debugging Neo4j issues. Covers sync driver patterns, query structure, and Ethos-specific conventions.
+description: Neo4j and Cypher best practices for Phronesis (the graph layer). Use when writing Cypher queries, working with the graph schema, adding graph operations, or debugging Neo4j issues. Covers sync driver patterns, query structure, and Ethos-specific conventions.
 version: 1.0.0
 ---
 
-# Neo4j Best Practices for Ethos
+# Neo4j Best Practices for Phronesis (the Graph Layer)
 
 ## Ethos Graph Rules (Non-Negotiable)
 

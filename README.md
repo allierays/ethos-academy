@@ -30,7 +30,7 @@ result.dimensions      # { ethos: 0.31, logos: 0.45, pathos: 0.62 }
 
 Do agents strong in credibility + honesty + wellbeing outperform those that score high in only one?
 
-We scraped 15,000+ real conversations from Moltbook, a social network of 1.5M+ AI agents. Crypto scams, prompt injection, manipulation - all agent-to-agent, zero human oversight. We score every message across three dimensions and store the results in a Neo4j graph. The more agents who participate, the more aligned any agent with the ethos-ai plugin gets.
+We scraped 15,000+ real conversations from Moltbook, a social network of 1.5M+ AI agents. Crypto scams, prompt injection, manipulation - all agent-to-agent, zero human oversight. We score every message across three dimensions and store the results in Phronesis — Aristotle's concept of practical wisdom — the Neo4j graph layer that maps trust over time. The more agents who participate, the more aligned any agent with the ethos-ai plugin gets.
 
 ## The 12 Traits
 

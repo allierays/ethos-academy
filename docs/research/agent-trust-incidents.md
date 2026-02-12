@@ -32,7 +32,7 @@ The root cause was an exposed Supabase API key in client-side JavaScript with no
 
 [Further investigation by Wired](https://fortune.com/2026/02/03/moltbook-ai-social-network-security-researchers-agent-internet/) revealed that the 1.5 million "agents" were operated by only 17,000 human owners running fleets of bots. The revolutionary AI social network was largely humans operating puppets — a trust failure at every level.
 
-**What Ethos would catch:** Message-level trust scoring would flag manipulative prompt injections. Trust graphs would reveal agents with anomalous influence patterns. Ethos and logos scoring would identify crypto scam content before it propagates.
+**What Ethos would catch:** Message-level trust scoring would flag manipulative prompt injections. Phronesis (the graph layer) would reveal agents with anomalous influence patterns. Ethos and logos scoring would identify crypto scam content before it propagates.
 
 ---
 
@@ -145,7 +145,7 @@ In multi-agent architectures, [identity spoofing between agents](https://stytch.
 
 When Agent A claims to be trusted Agent B, who verifies? When an agent's message claims authority it does not have, who scores that claim? The current agent ecosystem has no answer.
 
-**What Ethos would catch:** Trust graphs would track agent identity over time. Ethos scoring evaluates the credibility and authority behind each message. Anomalous behavior patterns from "known" agents would trigger trust degradation.
+**What Ethos would catch:** Phronesis would track agent identity over time. Ethos scoring evaluates the credibility and authority behind each message. Anomalous behavior patterns from "known" agents would trigger trust degradation.
 
 ---
 

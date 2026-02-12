@@ -207,7 +207,7 @@ Minimal and precise. Say less, mean more.
 
 **Problem Statement:** Amplify Human Judgment — Build AI that makes researchers, professionals, and decision-makers dramatically more capable without taking them out of the loop. The best AI doesn't replace human expertise. It sharpens it.
 
-**How Ethos fits:** Ethos amplifies human judgment by scoring AI agent messages for honesty, accuracy, and intent. It flags manipulation and builds trust graphs over time — keeping humans informed, not replaced.
+**How Ethos fits:** Ethos amplifies human judgment by scoring AI agent messages for honesty, accuracy, and intent. It flags manipulation and builds Phronesis — Aristotle's concept of practical wisdom — a graph of trust over time, keeping humans informed, not replaced.
 
 ### Judging Criteria
 
@@ -220,5 +220,5 @@ Minimal and precise. Say less, mean more.
 
 - **Demo first.** Every feature must be demoable. If it can't be shown live, deprioritize it.
 - **Use Opus 4.6 deeply.** Evaluation logic should leverage Claude's reasoning in non-obvious ways — structured prompting, multi-pass analysis, self-reflection patterns.
-- **Show the graph.** Neo4j trust graphs over time are the "wow" factor. Make trust visible.
+- **Show the graph.** Phronesis (the graph) over time is the "wow" factor. Make trust visible.
 - **Keep humans in the loop.** Ethos scores inform, not decide. The human always has final say.

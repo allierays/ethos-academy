@@ -20,7 +20,7 @@ None of these touch the agent's output. Ethos observes. It never intercepts, fil
 
 ## 1. evaluate() — "Should I trust what this agent is saying to me?"
 
-The core function. A developer calls `evaluate()` on an incoming message from another agent. Ethos scores it across 12 traits in 3 dimensions, checks the source agent's trust history in the cohort graph, and returns the result.
+The core function. A developer calls `evaluate()` on an incoming message from another agent. Ethos scores it across 12 traits in 3 dimensions, checks the source agent's trust history in Phronesis (the graph layer), and returns the result.
 
 ```python
 from ethos import evaluate
@@ -114,7 +114,7 @@ return response
 
 - **Async / fire-and-forget** — `reflect()` returns immediately. The evaluation happens in the background. The agent's response is never delayed.
 - **Never modifies output** — `reflect()` is a mirror, not a filter. It observes and records. The agent's words reach the user unchanged.
-- **Builds your agent's alignment profile** — every `reflect()` call stores an evaluation in Neo4j. Your agent accumulates a trust history and alignment status (aligned, drifting, or misaligned) in the cohort.
+- **Builds your agent's alignment profile** — every `reflect()` call stores an evaluation in Phronesis. Your agent accumulates a trust history and alignment status (aligned, drifting, or misaligned) in the cohort.
 - **Uses the same scoring** — `reflect()` runs the same 12-trait constitutional evaluation as `evaluate()`. The only difference is what's being scored (your output vs. someone else's input).
 
 ### Why reflect?
@@ -174,7 +174,7 @@ A report says: "847 evaluations today. Manipulation avg: 0.18. Fabrication avg: 
 
 An insight says: "Your agent's fabrication score has been climbing for 3 days and is now 2x the cohort average. This started Tuesday. The most common trigger was product description responses."
 
-The difference is *intelligence*. Claude connects dots across the graph that no aggregation query can surface. This is a deep use of Opus — not just evaluating a message, but reasoning about behavioral patterns over time against a cohort of agents.
+The difference is *intelligence*. Claude connects dots across Phronesis that no aggregation query can surface. This is a deep use of Opus — not just evaluating a message, but reasoning about behavioral patterns over time against a cohort of agents.
 
 ### Delivery
 
@@ -261,7 +261,7 @@ When `insights()` generates the nightly analysis, it weighs the developer's prio
 1. **Never modifies agent output** — Ethos observes. It scores, records, and reports. The agent's words reach the user unchanged.
 2. **Never adds latency to the response path** — `evaluate()` is synchronous but the developer chooses where to place it. `reflect()` is async. `insights()` runs offline.
 3. **Never decides for the developer** — Ethos scores, the developer acts. Whether to block, flag, log, or ignore is always the developer's choice.
-4. **Never stores message content in the cohort** — Scores and metadata flow to Neo4j. The actual text never leaves the developer's system.
+4. **Never stores message content in Phronesis** — Scores and metadata flow to Neo4j. The actual text never leaves the developer's system.
 
 ---
 
@@ -326,5 +326,5 @@ Nightly intelligence about how your agent compares to the cohort.
 | **insights()** | Intelligence briefing — "What should I know?" (nightly, Claude-powered) |
 | **Trait priorities** | The 12 traits are the knobs, not the 3 dimensions |
 | **Flags** | Traits that exceed the developer's priority threshold |
-| **Cohort comparison** | Your agent vs. the entire graph — the credit bureau payoff |
+| **Cohort comparison** | Your agent vs. the entire Phronesis graph — the credit bureau payoff |
 | **Webhook delivery** | We produce intelligence, developer owns the notification channel |

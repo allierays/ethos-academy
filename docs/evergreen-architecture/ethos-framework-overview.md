@@ -149,8 +149,8 @@ All 153 indicators are **equally weighted** within their trait. There are no num
 Trait scores roll up:
 
 ```
-12 trait scores  ──►  3 dimension scores  ──►  1 trust level
-                      (ethos, logos, pathos)    (trusted / cautious / suspicious / untrusted)
+12 trait scores  ──►  3 dimension scores  ──►  1 phronesis level
+                      (ethos, logos, pathos)    (established / developing / undetermined)
 ```
 
 ---
@@ -206,7 +206,7 @@ Phronesis — Aristotle's concept of practical wisdom — is the name for Ethos'
 │ agent_id (hashed) │          │ evaluation_id        │
 │ created_at        │          │ 12 trait scores      │
 │ evaluation_count  │          │ 3 dimension scores   │
-└───────────────────┘          │ trust, flags         │
+└───────────────────┘          │ phronesis, flags     │
      │                         │ alignment_status     │
      │                         │ routing_tier         │
      │                         │ model_used           │

@@ -369,7 +369,7 @@ A2A standardizes how agents communicate. Ethos evaluates what they communicate. 
 
 This produces a **trust score** that:
 - Informs human decision-makers (does not replace them)
-- Accumulates over time in a **trust graph** (Neo4j)
+- Accumulates over time in **Phronesis** (the graph layer, backed by Neo4j)
 - Enables behavioral tracking and drift detection
 - Makes trust visible and auditable
 
@@ -424,7 +424,7 @@ In an agent marketplace, Ethos serves as the **trust layer**:
 
 1. **Pre-interaction**: Evaluate an agent's historical trust profile before delegating
 2. **In-flight**: Score messages in real-time as they flow through A2A channels
-3. **Post-interaction**: Update the trust graph with new evaluation data
+3. **Post-interaction**: Update Phronesis with new evaluation data
 4. **Aggregation**: Build composite trust scores across the agent network
 5. **Human-in-the-loop**: Surface trust scores to decision-makers, flagging concerns before execution
 
@@ -467,7 +467,7 @@ Ethos aligns well with A2A's technical stack:
 - Both use HTTP/JSON (easy integration)
 - A2A's task lifecycle provides natural evaluation checkpoints
 - Agent Cards could be extended with trust metadata
-- Neo4j trust graphs map naturally to agent delegation chains
+- Phronesis graphs map naturally to agent delegation chains
 
 ### 9.3 Market Positioning
 

@@ -429,8 +429,8 @@ RETURN a
 
 ## 4. Trust and Reputation Graph Patterns
 
-Trust and reputation systems are a natural fit for graph databases. The Ethos trust graph
-captures relationships between agents, evaluations, traits, and patterns, enabling
+Trust and reputation systems are a natural fit for graph databases. Phronesis (the graph
+layer) captures relationships between agents, evaluations, traits, and patterns, enabling
 sophisticated trust analysis.
 
 ### Trust Score Propagation
@@ -537,7 +537,7 @@ RETURN path, length(path) AS hops
 
 ## 5. Visualization
 
-Visualizing the Ethos trust graph is central to the project -- it is the "wow" factor
+Visualizing Phronesis is central to the project -- it is the "wow" factor
 for demonstrating how trust relationships evolve over time.
 
 ### Neo4j Browser
@@ -1234,7 +1234,7 @@ async def neo4j_auth_handler(request, exc):
 ## 8. Graph Data Science Library (GDS)
 
 The Neo4j Graph Data Science library provides production-quality implementations of graph
-algorithms. For Ethos, these algorithms enable trust network analysis, community detection,
+algorithms. For Ethos, these algorithms enable Phronesis analysis, community detection,
 and influence scoring.
 
 > **Note:** GDS is available on Neo4j Aura Professional+ and self-hosted Neo4j with the

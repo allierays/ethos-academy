@@ -47,6 +47,7 @@ WITH a,
      avg(e.trait_exploitation) AS avg_exploitation,
      collect(e.alignment_status) AS alignment_history
 RETURN a.agent_id AS agent_id,
+       a.agent_model AS agent_model,
        a.created_at AS created_at,
        eval_count,
        avg_ethos, avg_logos, avg_pathos,
@@ -108,6 +109,7 @@ def get_agent_profile(
 
         return {
             "agent_id": record.get("agent_id", ""),
+            "agent_model": record.get("agent_model", ""),
             "created_at": str(record.get("created_at", "")),
             "evaluation_count": record.get("eval_count", 0),
             "dimension_averages": {

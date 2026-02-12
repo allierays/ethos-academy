@@ -154,7 +154,7 @@ Trust scores should decay over time without fresh data. An agent evaluated 10,00
 
 ### Trust Epidemiology
 
-When a manipulation pattern appears in one developer's system and then shows up in another, trace the propagation path through the graph. Like epidemiologists tracing an outbreak, Ethos traces trust failures across the agent ecosystem. Requires cross-developer correlation that the MVP graph structure supports but doesn't actively analyze.
+When a manipulation pattern appears in one developer's system and then shows up in another, trace the propagation path through Phronesis. Like epidemiologists tracing an outbreak, Ethos traces trust failures across the agent ecosystem. Requires cross-developer correlation that the MVP graph structure supports but doesn't actively analyze.
 
 ### Provider Reputation
 
@@ -242,7 +242,7 @@ Requires awareness of delegation relationships that the MVP graph schema support
 
 ### The Concept
 
-Some enterprises won't send any data to a central graph, period. Local-only mode runs the full evaluation locally (Claude API calls from their infrastructure) and stores results in a local Neo4j instance. They lose cohort intelligence but gain complete data sovereignty.
+Some enterprises won't send any data to the central Phronesis instance, period. Local-only mode runs the full evaluation locally (Claude API calls from their infrastructure) and stores results in a local Neo4j instance. They lose cohort intelligence but gain complete data sovereignty.
 
 This is the "off-grid" option from the trust bureau doc, but fully built out with local graph, local pattern matching, and no external communication except Claude API calls for scoring.
 
@@ -277,4 +277,4 @@ Every post-MVP feature builds on the same foundation:
 - The developer experience stays simple at the surface
 - Complexity is opt-in, never mandatory
 
-The MVP proves the concept: message-level trust scoring with a shared graph. Everything in this doc makes it more robust, more secure, and more useful — but none of it is needed to show that the concept works.
+The MVP proves the concept: message-level trust scoring with Phronesis (the shared graph). Everything in this doc makes it more robust, more secure, and more useful — but none of it is needed to show that the concept works.

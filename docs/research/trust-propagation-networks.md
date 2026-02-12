@@ -1,6 +1,6 @@
 # Trust Propagation in Networks: A Research Survey for Ethos
 
-*Comprehensive analysis of graph-based trust and reputation algorithms, with applications to the Ethos ethical knowledge graph for AI agents.*
+*Comprehensive analysis of graph-based trust and reputation algorithms, with applications to Phronesis (the graph layer) -- Ethos's ethical knowledge graph for AI agents.*
 
 ---
 
@@ -24,13 +24,13 @@
 
 ## 1. Introduction
 
-Ethos is an open-source ethical knowledge graph for AI agents that evaluates messages for trustworthiness across three classical dimensions of persuasion: **Ethos** (credibility), **Logos** (reasoning), and **Pathos** (emotional appeal). The system uses Neo4j to store evaluations as a graph, where nodes represent Agents, Evaluations, Traits, Dimensions, and Patterns, and relationships encode who-evaluated-whom and what-was-found.
+Ethos is an open-source framework for evaluating AI agent messages for trustworthiness across three classical dimensions of persuasion: **Ethos** (credibility), **Logos** (reasoning), and **Pathos** (emotional appeal). Its graph layer, **Phronesis**, uses Neo4j to store evaluations as a knowledge graph, where nodes represent Agents, Evaluations, Traits, Dimensions, and Patterns, and relationships encode who-evaluated-whom and what-was-found.
 
 The core question this document addresses: **How should trust propagate through this network?** If Agent A has been evaluated as trustworthy by many reliable evaluators, and Agent A vouches for Agent B, how much trust should the system assign to Agent B? How do we detect manipulation? How do we handle newcomers?
 
-This survey covers the foundational algorithms (EigenTrust, PageRank, TrustRank), practical reputation systems (eBay, Stack Overflow), attack vectors (Sybil attacks), and mathematical tools (Bayesian inference, Wilson scores, subjective logic) needed to build a robust trust propagation system in Ethos's graph.
+This survey covers the foundational algorithms (EigenTrust, PageRank, TrustRank), practical reputation systems (eBay, Stack Overflow), attack vectors (Sybil attacks), and mathematical tools (Bayesian inference, Wilson scores, subjective logic) needed to build a robust trust propagation system in Phronesis.
 
-### Ethos Graph Schema Reference
+### Phronesis Schema Reference
 
 The algorithms described here map onto these node types:
 
@@ -199,7 +199,7 @@ Where `w(i,j)` is the weight of the edge from *i* to *j*.
 PageRank can compute agent importance/trustworthiness directly:
 
 ```cypher
-// Project the agent trust graph
+// Project the Phronesis agent trust graph
 CALL gds.graph.project(
   'agent-trust',
   'Agent',
@@ -416,7 +416,7 @@ Without some edges of complete confidence:
 - Trust propagation exhibits a **discontinuous phase transition** at a critical fraction of absolute trust
 - Below the threshold, the network cannot sustain global trust
 
-This has profound implications for Ethos: the system needs some "anchor" relationships of very high confidence (e.g., human-verified evaluations, evaluations from known-reliable systems) to bootstrap trust across the entire graph.
+This has profound implications for Phronesis: the system needs some "anchor" relationships of very high confidence (e.g., human-verified evaluations, evaluations from known-reliable systems) to bootstrap trust across the entire graph.
 
 ### Trust and Distrust as Separate Signals
 
@@ -1112,7 +1112,7 @@ Compute global trust using weighted PageRank:
 Detect communities of agents:
 
 ```
-1. Run Leiden community detection on the trust graph
+1. Run Leiden community detection on the Phronesis graph
 2. Identify within-community trust (strong) vs. cross-community trust (weaker but more informative)
 3. Flag communities with unusual patterns (e.g., near-perfect internal trust)
 ```
@@ -1181,7 +1181,7 @@ Phase 4: Advanced
   - Trust decay and recovery models
 ```
 
-### Neo4j Schema for Trust Architecture
+### Neo4j Schema for Phronesis
 
 ```cypher
 // Core nodes
@@ -1304,5 +1304,5 @@ CREATE CONSTRAINT FOR (a:Agent) REQUIRE a.agent_id IS UNIQUE;
 
 ---
 
-*Document prepared for the Ethos project -- an open-source ethical knowledge graph for AI agents.*
+*Document prepared for the Ethos project -- trust scoring for AI agents, powered by Phronesis (the graph layer).*
 *Last updated: 2026-02-10*

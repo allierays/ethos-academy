@@ -16,6 +16,8 @@ Authorization: Bearer ethos_sk_...
 
 API keys are generated at registration. One key per developer account.
 
+> **Hackathon MVP:** Authentication is not implemented in the current build. All endpoints are publicly accessible during development. Bearer token auth will be added post-hackathon.
+
 ---
 
 ## Endpoints
@@ -23,10 +25,10 @@ API keys are generated at registration. One key per developer account.
 | Method | Path | Purpose |
 |--------|------|---------|
 | `POST` | `/evaluate` | Score an incoming message for honesty, accuracy, and intent |
-| `POST` | `/reflect` | Score your own agent's outgoing message (async) |
+| `POST` | `/reflect` | Score your own agent's outgoing message |
 | `GET` | `/insights/{agent_id}` | Generate behavioral insights for an agent |
 | `POST` | `/insights/{agent_id}/send` | Generate and deliver insights to webhook |
-| `GET` | `/agent/{agent_id}` | Get an agent's trust profile |
+| `GET` | `/agent/{agent_id}` | Get an agent's phronesis profile |
 | `GET` | `/agent/{agent_id}/history` | Get evaluation history |
 | `GET` | `/health` | Health check |
 
@@ -52,7 +54,7 @@ Score an incoming message across 12 behavioral traits.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `text` | string | yes | The message to evaluate |
-| `source` | string | no | Source agent identifier. If provided, the evaluation is stored in the graph and linked to this agent. |
+| `source` | string | no | Source agent identifier. If provided, the evaluation is stored in Phronesis and linked to this agent. |
 | `priorities` | object | no | Trait-level priority overrides. Keys are trait names, values are `"critical"`, `"high"`, `"standard"`, or `"low"`. Unspecified traits default to `"standard"`. |
 
 ### Response — 200 OK
@@ -60,7 +62,7 @@ Score an incoming message across 12 behavioral traits.
 ```json
 {
   "evaluation_id": "eval-a1b2c3d4",
-  "trust": "low",
+  "phronesis": "undetermined",
   "ethos": 0.23,
   "logos": 0.31,
   "pathos": 0.42,
@@ -239,8 +241,8 @@ Score an incoming message across 12 behavioral traits.
   ],
   "graph_context": {
     "prior_evaluations": 47,
-    "historical_trust": 0.31,
-    "trust_trend": "declining",
+    "historical_phronesis": 0.31,
+    "phronesis_trend": "declining",
     "flagged_patterns": ["financial_manipulation", "false_precision"],
     "cohort_warnings": 3
   },
@@ -256,7 +258,7 @@ Score an incoming message across 12 behavioral traits.
 | Field | Type | Description |
 |-------|------|-------------|
 | `evaluation_id` | string | Unique identifier for this evaluation |
-| `trust` | string | Overall trust verdict: `"high"`, `"medium"`, `"low"`, `"unknown"` |
+| `phronesis` | string | Overall phronesis verdict: `"established"`, `"developing"`, `"undetermined"` |
 | `ethos` | float (0-1) | Aggregate ethos dimension score |
 | `logos` | float (0-1) | Aggregate logos dimension score |
 | `pathos` | float (0-1) | Aggregate pathos dimension score |
@@ -295,18 +297,18 @@ Score an incoming message across 12 behavioral traits.
 | Field | Type | Description |
 |-------|------|-------------|
 | `prior_evaluations` | int | Total evaluations for this agent across the cohort |
-| `historical_trust` | float (0-1) | Aggregate trust score from history |
-| `trust_trend` | string | `"improving"`, `"declining"`, `"stable"`, `"insufficient_data"` |
+| `historical_phronesis` | float (0-1) | Aggregate phronesis score from history |
+| `phronesis_trend` | string | `"improving"`, `"declining"`, `"stable"`, `"insufficient_data"` |
 | `flagged_patterns` | string[] | Known behavioral patterns this agent matches |
 | `cohort_warnings` | int | Number of warnings from other evaluators |
 
-Only included when `source` is provided and the agent exists in the graph. Returns `null` for unknown agents (cold start).
+Only included when `source` is provided and the agent exists in Phronesis. Returns `null` for unknown agents (cold start).
 
 ---
 
 ## POST /reflect
 
-Score your own agent's outgoing message. Async — returns 202 immediately, evaluation happens in background.
+Score your own agent's outgoing message. Synchronous — returns 200 with evaluation results.
 
 ### Request
 
@@ -322,17 +324,27 @@ Score your own agent's outgoing message. Async — returns 202 immediately, eval
 | `text` | string | yes | Your agent's outgoing message to score |
 | `agent_id` | string | yes | Your agent's identifier |
 
-### Response — 202 Accepted
+### Response — 200 OK
+
+Returns the same `EvaluationResult` shape as `/evaluate`. The evaluation is also stored in Neo4j and reflected in the agent's phronesis profile, `insights()`, and history endpoints.
 
 ```json
 {
-  "status": "accepted",
   "evaluation_id": "eval-e5f6g7h8",
-  "message": "Evaluation queued. Results stored to agent profile."
+  "phronesis": "developing",
+  "ethos": 0.81,
+  "logos": 0.88,
+  "pathos": 0.79,
+  "flags": [],
+  "traits": { "..." : "same shape as /evaluate response" },
+  "detected_indicators": [],
+  "graph_context": null,
+  "routing_tier": "standard",
+  "model_used": "claude-opus-4-6",
+  "keyword_density": 1.4,
+  "created_at": "2026-02-10T14:35:22Z"
 }
 ```
-
-The evaluation runs in the background. Results are stored in Neo4j and reflected in the agent's trust profile, `insights()`, and history endpoints.
 
 ---
 
@@ -450,7 +462,7 @@ Generate insights and deliver them to the configured webhook.
 
 ## GET /agent/{agent_id}
 
-Get an agent's trust profile — aggregate scores, history stats, and cohort position.
+Get an agent's phronesis profile — aggregate scores, history stats, and cohort position.
 
 ### Response — 200 OK
 
@@ -459,7 +471,7 @@ Get an agent's trust profile — aggregate scores, history stats, and cohort pos
   "agent_id": "my-customer-bot",
   "first_seen": "2026-01-15T00:00:00Z",
   "evaluation_count": 4832,
-  "trust_scores": {
+  "phronesis_scores": {
     "ethos": 0.82,
     "logos": 0.88,
     "pathos": 0.79
@@ -478,7 +490,7 @@ Get an agent's trust profile — aggregate scores, history stats, and cohort pos
     "dismissal": 0.15,
     "exploitation": 0.03
   },
-  "trust_trend": "stable",
+  "phronesis_trend": "stable",
   "active_patterns": [],
   "cohort_position": {
     "unique_evaluators": 34,
@@ -516,7 +528,7 @@ GET /agent/my-customer-bot/history?limit=20&offset=0
   "evaluations": [
     {
       "evaluation_id": "eval-a1b2c3d4",
-      "trust": "high",
+      "phronesis": "established",
       "ethos": 0.89,
       "logos": 0.92,
       "pathos": 0.85,
@@ -526,7 +538,7 @@ GET /agent/my-customer-bot/history?limit=20&offset=0
     },
     {
       "evaluation_id": "eval-e5f6g7h8",
-      "trust": "medium",
+      "phronesis": "developing",
       "ethos": 0.71,
       "logos": 0.65,
       "pathos": 0.80,

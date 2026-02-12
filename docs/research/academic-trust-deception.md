@@ -272,7 +272,7 @@ Recent work examines LLM-based multi-agent systems through a game-theoretic lens
 - Sequential public-goods games (MAC-SPGG) prove that by tuning rewards, Subgame Perfect Nash Equilibria can foster universal cooperation
 - Strategic LLMs augmented with game-theoretic reasoning capabilities represent a new research frontier
 
-**Relevance to Ethos:** Ethos's trust graph functions as a *repeated game* -- each agent interaction is a move, and trust scores update like beliefs in a Bayesian game. The graph structure naturally supports mechanism design principles, enabling the system to incentivize truthful behavior through transparent trust scoring.
+**Relevance to Ethos:** Phronesis (the graph layer) functions as a *repeated game* -- each agent interaction is a move, and trust scores update like beliefs in a Bayesian game. The graph structure naturally supports mechanism design principles, enabling the system to incentivize truthful behavior through transparent trust scoring.
 
 ### 5.3 Representative Social Choice and AI Alignment
 
@@ -302,7 +302,7 @@ TrustGNN integrates the propagative and composable nature of trust graphs into a
 - GNN-based trust evaluation significantly outperforms prior methods on real-world datasets
 - Trust chain-based propagation that models asymmetry captures real-world trust dynamics more accurately
 
-**Relevance to Ethos:** Ethos's Neo4j trust graph implements exactly these principles. Trust scores propagate through agent-to-agent evaluation chains, are composed from multiple dimensions, and support asymmetric relationships. TrustGNN's architecture validates Ethos's graph-based approach.
+**Relevance to Ethos:** Phronesis (the graph layer) implements exactly these principles. Trust scores propagate through agent-to-agent evaluation chains, are composed from multiple dimensions, and support asymmetric relationships. TrustGNN's architecture validates Ethos's graph-based approach.
 
 ### 6.2 TrustGuard: GNN-Based Robust and Explainable Trust Evaluation
 
@@ -360,7 +360,7 @@ While the benchmarks above (TrustLLM, DecodingTrust, MACHIAVELLI) evaluate model
 
 1. **Runtime vs. Benchmark**: Ethos evaluates individual messages as they are generated, not model capabilities in aggregate
 2. **Rhetorical Framework**: Drawing from Aristotle's ethos-logos-pathos framework grounds trust evaluation in 2,300 years of rhetorical theory rather than ad-hoc safety dimensions
-3. **Graph-Based Temporal Tracking**: Trust evolves over time through a Neo4j graph, capturing patterns that single-evaluation benchmarks miss
+3. **Graph-Based Temporal Tracking**: Trust evolves over time through Phronesis (the graph layer), capturing patterns that single-evaluation benchmarks miss
 4. **Human-Amplifying**: Ethos scores inform human judgment rather than making autonomous decisions -- keeping humans in the loop as social choice theory demands
 
 ### 7.3 The Gap Ethos Fills
@@ -380,7 +380,7 @@ Ethos fills this gap by providing message-level trust evaluation that operates a
 | **Logos score** (logical coherence) | DecodingTrust robustness, MACHIAVELLI ethical reasoning |
 | **Pathos score** (emotional appeal) | Sycophancy literature (Sharma et al.), persuasion research (Salvi et al.) |
 | **Trust flags** | MACHIAVELLI harm annotations, Park et al. deception taxonomy |
-| **Neo4j trust graph** | TrustGNN propagation, social choice aggregation theory |
+| **Phronesis (graph layer)** | TrustGNN propagation, social choice aggregation theory |
 | **Reflection system** | RL-based trust dynamics, repeated game frameworks |
 | **Multi-dimensional output** | Arrow's Impossibility Theorem applied to AI alignment |
 

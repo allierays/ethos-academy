@@ -1,8 +1,9 @@
-"""Graph dimension balance operations — cross-dimension analysis.
+"""Phronesis dimension balance — the core of the Aristotelian thesis.
 
-Tests the Aristotelian thesis: ethos, logos, and pathos are equally necessary
-and interdependent. All three dimensions matter — none is weighted higher.
-Balance itself predicts trustworthiness.
+Phronesis (practical wisdom) requires all virtues working in balance.
+This module tests that claim empirically: ethos, logos, and pathos are
+equally necessary and interdependent. None is weighted higher. Balance
+itself predicts trustworthiness.
 
 Three questions this module answers:
   1. Is this agent balanced across dimensions? (get_agent_balance)

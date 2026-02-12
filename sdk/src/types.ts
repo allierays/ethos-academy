@@ -27,6 +27,7 @@ export interface ReflectionResult {
 export interface EvaluateOptions {
   text: string
   source?: string
+  agent_model?: string
 }
 
 /** Options for reflect(). */

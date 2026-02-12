@@ -147,14 +147,14 @@ The visual interface. Lives in `academy/` at the repo root. Trust visualization,
 - Cohort comparison (your agent vs. the cohort average)
 - Insights from the nightly `insights()` analysis
 
-**Graph Visualization** — the "wow" for the demo:
+**Phronesis Visualization** — the "wow" for the demo:
 - Trust cohort (agents as nodes, evaluations as edges)
 - Color-coded by trust score
 - Manipulation clusters
 - Declining agents highlighted
 
 **The Demo Flow** — the Academy IS the demo:
-1. Show the graph (the cohort, the patterns)
+1. Show Phronesis (the cohort, the patterns)
 2. Show an agent's trust timeline (declining, flags increasing)
 3. Show insights ("fabrication trending up, 2x cohort average")
 4. End with "install it today" — the onboarding page
@@ -170,7 +170,7 @@ The visual interface. Lives in `academy/` at the repo root. Trust visualization,
 
 ## 3. API (Python/FastAPI)
 
-The engine. Not user-facing — the npm SDK and Academy both talk to it. This is where Claude evaluates messages, Neo4j stores the graph, and all the intelligence lives.
+The engine. Not user-facing — the npm SDK and Academy both talk to it. This is where Claude evaluates messages, Phronesis (Neo4j) stores the graph, and all the intelligence lives.
 
 ### Why Python
 
@@ -299,8 +299,8 @@ Academy renders: "Fabrication trending up, 2x cohort average"
 |----------|------|-----|
 | 1 | **API** — evaluate() actually works | Everything depends on this |
 | 2 | **npm package** — SDK + CLI published | "Install it today" demo closer |
-| 3 | **Academy** — graph viz + insights | The "wow" for judges |
-| 4 | **Neo4j seeded** — Moltbook data in the graph | Makes the cohort real |
+| 3 | **Academy** — Phronesis viz + insights | The "wow" for judges |
+| 4 | **Neo4j seeded** — Moltbook data in Phronesis | Makes the cohort real |
 | 5 | **reflect() + insights()** | Depth beyond basic eval |
 
 The API is the foundation. The npm package is the distribution. The Academy is the demo. Everything else layers on.

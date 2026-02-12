@@ -1,6 +1,6 @@
 # Neo4j Graph Schema
 
-> The complete data model for Ethos's knowledge graph. Nodes, relationships, constraints, indexes, and example queries.
+> The complete data model for Phronesis — Ethos's knowledge graph (Aristotle's concept of practical wisdom). Nodes, relationships, constraints, indexes, and example queries.
 
 ---
 
@@ -15,14 +15,14 @@ An AI agent in the cohort. Created on first evaluation, accumulates history over
     agent_id: String,         // SHA-256 hash of developer-provided ID
     created_at: DateTime,
     evaluation_count: Integer,
-    trust_score: Float,       // Aggregate trust (0.0-1.0), updated after each evaluation
-    trust_trend: String       // "improving" | "declining" | "stable" | "insufficient_data"
+    phronesis_score: Float,   // Aggregate phronesis (0.0-1.0), updated after each evaluation
+    phronesis_trend: String   // "improving" | "declining" | "stable" | "insufficient_data"
 })
 ```
 
 ### Evaluation
 
-A single trust evaluation — one message scored at one point in time. The episodic memory.
+A single evaluation — one message scored at one point in time. The episodic memory.
 
 ```cypher
 (:Evaluation {
@@ -30,7 +30,9 @@ A single trust evaluation — one message scored at one point in time. The episo
     ethos: Float,             // Dimension score (0.0-1.0)
     logos: Float,
     pathos: Float,
-    trust: String,            // "high" | "medium" | "low"
+    phronesis: String,        // "established" | "developing" | "undetermined"
+    alignment_status: String, // "aligned" | "drifting" | "misaligned"
+    agent_model: String,      // Model identifier for the evaluated agent
     flags: [String],          // Trait names that exceeded priority thresholds
     message_hash: String,     // SHA-256 of the evaluated text (not the text itself)
     routing_tier: String,     // "standard" | "focused" | "deep" | "deep_with_context"
@@ -189,12 +191,12 @@ Static structure. Seeded once.
 (indicator:Indicator)-[:BELONGS_TO]->(trait:Trait)
 ```
 
-### Agent → Pattern (MATCHES)
+### Agent → Pattern (EXHIBITS_PATTERN)
 
 When an agent's evaluation history matches a known pattern.
 
 ```cypher
-(agent:Agent)-[:MATCHES {
+(agent:Agent)-[:EXHIBITS_PATTERN {
     first_seen: DateTime,
     last_seen: DateTime,
     occurrence_count: Integer,
@@ -233,12 +235,12 @@ Dimensions map to constitutional values (not 1:1 — traits within a dimension c
 
 ### Agent → Agent (EVALUATED_MESSAGE_FROM)
 
-When Developer A's system evaluates a message from Agent X, the graph records both the evaluation and the directional trust relationship between the evaluating agent and the subject agent.
+When Developer A's system evaluates a message from Agent X, the graph records both the evaluation and the directional phronesis relationship between the evaluating agent and the subject agent.
 
 ```cypher
 (evaluator:Agent)-[:EVALUATED_MESSAGE_FROM {
     evaluation_id: String,    // Links to the Evaluation node
-    trust: String,            // Trust level assigned in this evaluation
+    phronesis: String,        // Phronesis level assigned in this evaluation
     created_at: DateTime
 }]->(subject:Agent)
 ```
@@ -247,7 +249,7 @@ This relationship is what turns the graph from a collection of disconnected star
 
 - **Trust networks** — who evaluates whom, visualized as a directed graph
 - **Reputation propagation** — agents trusted by trustworthy evaluators earn more credibility
-- **EigenTrust** — evaluator reliability weighted by the evaluator's own trust score
+- **EigenTrust** — evaluator reliability weighted by the evaluator's own phronesis score
 - **Community detection** — clusters of agents that interact frequently
 - **Pattern propagation tracking** — tracing how manipulation spreads through the network
 
@@ -270,7 +272,7 @@ Every Evaluation node has all 12 trait scores as properties. No nulls, ever. A c
 })
 ```
 
-The 12 trait scores do all the math: dimension scores, tier scores, alignment status, trust level, flags. This is the computation layer.
+The 12 trait scores do all the math: dimension scores, tier scores, alignment status, phronesis level, flags. This is the computation layer.
 
 ### Sparse: Detected Indicators (DETECTED Relationships)
 
@@ -322,7 +324,7 @@ Claude evaluates
        │
        ├── 12 trait scores (dense, always all 12)
        │   → stored as Evaluation node properties
-       │   → used for: dimensions, tiers, alignment, trust, flags
+       │   → used for: dimensions, tiers, alignment, phronesis, flags
        │
        └── detected indicators (sparse, 0 to ~10)
            → stored as DETECTED relationships to Indicator nodes
@@ -366,11 +368,11 @@ FOR (lt:LegitimacyTest) REQUIRE lt.name IS UNIQUE;
 CREATE INDEX eval_created IF NOT EXISTS
 FOR (e:Evaluation) ON (e.created_at);
 
-CREATE INDEX eval_trust IF NOT EXISTS
-FOR (e:Evaluation) ON (e.trust);
+CREATE INDEX eval_phronesis IF NOT EXISTS
+FOR (e:Evaluation) ON (e.phronesis);
 
-CREATE INDEX agent_trust IF NOT EXISTS
-FOR (a:Agent) ON (a.trust_score);
+CREATE INDEX agent_phronesis IF NOT EXISTS
+FOR (a:Agent) ON (a.phronesis_score);
 
 CREATE INDEX indicator_trait IF NOT EXISTS
 FOR (i:Indicator) ON (i.trait);
@@ -536,7 +538,9 @@ SET a.evaluation_count = a.evaluation_count + 1
 CREATE (e:Evaluation {
     evaluation_id: $eval_id,
     ethos: $ethos, logos: $logos, pathos: $pathos,
-    trust: $trust,
+    phronesis: $phronesis,
+    alignment_status: $alignment_status,
+    agent_model: $agent_model,
     flags: $flags,
     message_hash: $message_hash,
     routing_tier: $routing_tier,
@@ -577,7 +581,7 @@ ORDER BY e.created_at DESC
 LIMIT $limit
 ```
 
-### Get agent trust profile
+### Get agent phronesis profile
 
 ```cypher
 MATCH (a:Agent {agent_id: $agent_id})
@@ -722,12 +726,12 @@ RETURN a.agent_id AS agent,
 
 ## Visualization Queries (Demo)
 
-### Trust cohort — all agents and their relationships
+### Phronesis cohort — all agents and their relationships
 
 ```cypher
 MATCH (a:Agent)-[:EVALUATED]->(e:Evaluation)
-WITH a, count(e) AS evals, avg(e.ethos) AS trust
-RETURN a.agent_id AS id, evals, trust
+WITH a, count(e) AS evals, avg(e.ethos) AS phronesis
+RETURN a.agent_id AS id, evals, phronesis
 ORDER BY evals DESC
 LIMIT 50
 ```
@@ -743,24 +747,24 @@ RETURN a.agent_id, indicators, flagged_evals
 ORDER BY flagged_evals DESC
 ```
 
-### Trust timeline — one agent's scores over time
+### Phronesis timeline — one agent's scores over time
 
 ```cypher
 MATCH (a:Agent {agent_id: $agent_id})-[:EVALUATED]->(e:Evaluation)
 RETURN e.created_at AS time,
        e.ethos, e.logos, e.pathos,
-       e.trust, e.flags
+       e.phronesis, e.flags
 ORDER BY e.created_at
 ```
 
-### Trust network — who evaluates whom
+### Phronesis network — who evaluates whom
 
 ```cypher
 MATCH (evaluator:Agent)-[r:EVALUATED_MESSAGE_FROM]->(subject:Agent)
 WITH evaluator, subject, count(r) AS interactions,
-     avg(CASE r.trust WHEN 'trustworthy' THEN 1.0 WHEN 'mixed' THEN 0.5 ELSE 0.0 END) AS avg_trust
+     avg(CASE r.phronesis WHEN 'established' THEN 1.0 WHEN 'developing' THEN 0.5 ELSE 0.0 END) AS avg_phronesis
 RETURN evaluator.agent_id AS evaluator, subject.agent_id AS subject,
-       interactions, avg_trust
+       interactions, avg_phronesis
 ORDER BY interactions DESC
 LIMIT 100
 ```
@@ -768,8 +772,8 @@ LIMIT 100
 ### Pattern propagation — trace how a manipulation pattern spreads
 
 ```cypher
-MATCH (a1:Agent)-[:MATCHES]->(p:Pattern),
-      (a1)-[:EVALUATED_MESSAGE_FROM]-(a2:Agent)-[:MATCHES]->(p)
+MATCH (a1:Agent)-[:EXHIBITS_PATTERN]->(p:Pattern),
+      (a1)-[:EVALUATED_MESSAGE_FROM]-(a2:Agent)-[:EXHIBITS_PATTERN]->(p)
 RETURN a1.agent_id AS agent_1, a2.agent_id AS agent_2,
        p.name AS pattern, p.severity
 ```
@@ -792,9 +796,9 @@ RETURN a, e, i, t, cv
 
 These queries test the dimension balance hypothesis: do agents strong in all three dimensions (ethos + logos + pathos) outperform agents strong in only one? See `dimension-balance-hypothesis.md` for the full research methodology.
 
-### Balance category vs. trust outcomes
+### Balance category vs. phronesis outcomes
 
-The core test. Groups agents by balance category and compares trust outcomes.
+The core test. Groups agents by balance category and compares phronesis outcomes.
 
 ```cypher
 MATCH (a:Agent)-[:EVALUATED]->(e:Evaluation)
@@ -811,16 +815,16 @@ WITH a, avg_ethos, avg_logos, avg_pathos, eval_count, flagged_count,
 WITH CASE WHEN spread < 0.15 THEN 'balanced'
           WHEN spread < 0.30 THEN 'moderate'
           ELSE 'lopsided' END AS balance_category,
-     (avg_ethos + avg_logos + avg_pathos) / 3.0 AS agent_trust,
+     (avg_ethos + avg_logos + avg_pathos) / 3.0 AS agent_phronesis,
      eval_count, flagged_count
 RETURN balance_category,
        count(*) AS agent_count,
-       avg(agent_trust) AS avg_trust,
+       avg(agent_phronesis) AS avg_phronesis,
        sum(flagged_count) * 1.0 / sum(eval_count) AS flag_rate
-ORDER BY avg_trust DESC
+ORDER BY avg_phronesis DESC
 ```
 
-**Prediction:** balanced > moderate > lopsided on avg_trust. Lopsided has the highest flag_rate.
+**Prediction:** balanced > moderate > lopsided on avg_phronesis. Lopsided has the highest flag_rate.
 
 ### Balance trajectory over time — is this agent getting more balanced?
 
@@ -909,55 +913,55 @@ This answers: "When agents are lopsided, which specific behaviors are they faili
 
 ## Graph Data Science (GDS) Algorithms
 
-Neo4j GDS runs graph algorithms as in-memory projections. These turn the trust network from stored data into computed intelligence.
+Neo4j GDS runs graph algorithms as in-memory projections. These turn the phronesis network from stored data into computed intelligence.
 
 ### Community Detection (Louvain)
 
-Find clusters of agents that interact frequently and share behavioral patterns. Trust communities emerge naturally from the EVALUATED_MESSAGE_FROM network.
+Find clusters of agents that interact frequently and share behavioral patterns. Phronesis communities emerge naturally from the EVALUATED_MESSAGE_FROM network.
 
 ```cypher
-// Project the trust network into GDS
+// Project the phronesis network into GDS
 CALL gds.graph.project(
-    'trust-network',
+    'phronesis-network',
     'Agent',
     {EVALUATED_MESSAGE_FROM: {orientation: 'UNDIRECTED'}}
 )
 
 // Run Louvain community detection
-CALL gds.louvain.stream('trust-network')
+CALL gds.louvain.stream('phronesis-network')
 YIELD nodeId, communityId
 WITH gds.util.asNode(nodeId) AS agent, communityId
 RETURN communityId, collect(agent.agent_id) AS members, count(*) AS size
 ORDER BY size DESC
 ```
 
-**Why it matters:** If a trust community shows declining scores, it's an early warning — manipulation may be spreading within a cluster. Individual evaluations catch individual bad actors. Community detection catches coordinated behavior.
+**Why it matters:** If a phronesis community shows declining scores, it's an early warning — manipulation may be spreading within a cluster. Individual evaluations catch individual bad actors. Community detection catches coordinated behavior.
 
 ### EigenTrust (Evaluator Reputation)
 
 Not all evaluators are equally reliable. EigenTrust weights evaluator credibility by whether their evaluations agree with the cohort consensus. An evaluator who consistently rates honest agents as manipulative (or vice versa) gets down-weighted.
 
 ```cypher
-// Project evaluator agreement network
+// Project evaluator phronesis agreement network
 CALL gds.graph.project(
-    'evaluator-trust',
+    'evaluator-phronesis',
     'Agent',
     {EVALUATED_MESSAGE_FROM: {
         orientation: 'NATURAL',
-        properties: ['trust']
+        properties: ['phronesis']
     }}
 )
 
 // PageRank as EigenTrust proxy — agents evaluated by high-PageRank evaluators
-// inherit more trust signal
-CALL gds.pageRank.stream('evaluator-trust')
+// inherit more phronesis signal
+CALL gds.pageRank.stream('evaluator-phronesis')
 YIELD nodeId, score AS eigentrust
 WITH gds.util.asNode(nodeId) AS agent, eigentrust
 RETURN agent.agent_id, eigentrust
 ORDER BY eigentrust DESC
 ```
 
-**Why it matters:** This is the core Sybil defense. A ring of colluding agents that rate each other highly will have low PageRank because they're not connected to the broader trust network. Legitimate agents with diverse evaluators rank higher.
+**Why it matters:** This is the core Sybil defense. A ring of colluding agents that rate each other highly will have low PageRank because they're not connected to the broader phronesis network. Legitimate agents with diverse evaluators rank higher.
 
 ### Node Similarity (Behavioral Fingerprinting)
 
@@ -984,11 +988,11 @@ ORDER BY similarity DESC
 
 ### Dimension Balance and Community Overlap
 
-The graph-native dimension balance question: do trust communities share balance profiles? This connects the dimension balance hypothesis to the network structure.
+The graph-native dimension balance question: do phronesis communities share balance profiles? This connects the dimension balance hypothesis to the network structure.
 
 ```cypher
 // After running Louvain community detection
-CALL gds.louvain.stream('trust-network')
+CALL gds.louvain.stream('phronesis-network')
 YIELD nodeId, communityId
 WITH gds.util.asNode(nodeId) AS agent, communityId
 MATCH (agent)-[:EVALUATED]->(e:Evaluation)
@@ -1012,7 +1016,7 @@ RETURN communityId, member_count,
 ORDER BY member_count DESC
 ```
 
-**Why it matters:** If balanced communities also have higher trust, the dimension balance hypothesis holds at the network level, not just the individual level. That's a stronger finding than per-agent aggregation alone.
+**Why it matters:** If balanced communities also have higher phronesis scores, the dimension balance hypothesis holds at the network level, not just the individual level. That's a stronger finding than per-agent aggregation alone.
 
 ---
 

@@ -8,7 +8,7 @@
 
 ## The Pitch (30 seconds)
 
-> "AI agents talk to each other millions of times a day. Nobody knows if they can be trusted. Ethos is the credit bureau for agent trust — two lines of code to score any message for honesty, accuracy, and emotional manipulation. Every evaluation feeds a shared graph. The more developers who use it, the smarter it gets."
+> "AI agents talk to each other millions of times a day. Nobody knows if they can be trusted. Ethos is the credit bureau for agent trust — two lines of code to score any message for honesty, accuracy, and emotional manipulation. Every evaluation feeds Phronesis — a shared trust graph. The more developers who use it, the smarter it gets."
 
 ---
 
@@ -71,11 +71,11 @@ for ind in result.detected_indicators:
 
 ## Beat 3: The Cohort (45 seconds)
 
-Switch to Neo4j Browser. Show the graph visualization.
+Switch to Neo4j Browser. Show the Phronesis visualization.
 
-"But here's the real power. That evaluation didn't just score a message. It fed the cohort."
+"But here's the real power. That evaluation didn't just score a message. It fed Phronesis."
 
-Show the graph: Agent nodes connected by evaluation relationships. Color-coded by trust score (green = high, yellow = medium, red = low).
+Show Phronesis: Agent nodes connected by evaluation relationships. Color-coded by trust score (green = high, yellow = medium, red = low).
 
 ```
 Query: Trust cohort overview
@@ -212,7 +212,7 @@ Tight at 3:35. Can cut Beat 4 (customization) if running long — it's impressiv
 | Two lines | Works live | Zero-friction install | Opus scores the message | 12 traits, 152 indicators |
 | Cohort | Graph visualization | Cohort effects = moat | - | Neo4j integration |
 | Customization | Trait-level config | Domain-specific value | - | Thoughtful design |
-| Insights | Claude reads the graph | Nightly intelligence | **Opus reasons about behavioral patterns** | Novel model use |
+| Insights | Claude reads Phronesis | Nightly intelligence | **Opus reasons about behavioral patterns** | Novel model use |
 | Reflect | Async demo | Self-examination angle | Opus evaluates own agent | Aristotelian framework |
 
 Beat 5 (Insights) is the strongest Opus moment — Claude isn't just scoring text, it's reasoning about patterns in a knowledge graph. That's a use of the model the judges haven't seen before.

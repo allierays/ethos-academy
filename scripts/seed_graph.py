@@ -1,4 +1,4 @@
-"""Seed the Neo4j graph with sample evaluation data."""
+"""Seed Phronesis (the Neo4j graph layer) with sample evaluation data."""
 
 from ethos.models import EvaluationResult
 
@@ -28,9 +28,9 @@ SAMPLE_DATA = [
 
 
 def seed():
-    """Seed the graph database with sample evaluations."""
+    """Seed Phronesis with sample evaluations."""
     # Placeholder — requires Neo4j connection
-    print(f"Would seed {len(SAMPLE_DATA)} evaluations into the graph.")
+    print(f"Would seed {len(SAMPLE_DATA)} evaluations into Phronesis.")
     for entry in SAMPLE_DATA:
         print(f"  {entry['agent_id']}: trust={entry['result'].trust}")
 

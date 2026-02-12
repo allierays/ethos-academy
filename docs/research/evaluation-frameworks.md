@@ -58,7 +58,7 @@ Current trust and safety approaches focus on preventing harmful outputs. They op
 [Constitutional AI](https://www-cdn.anthropic.com/7512771452629584566b6303311496c262da1006/Anthropic_ConstitutionalAI_v2.pdf) uses a set of principles to guide model behavior, with the model critiquing and revising its own outputs. It trains harmlessness from AI feedback rather than human feedback alone.
 
 **Approach:** Embed principles at training time. The model self-corrects during generation.
-**Limitation:** Principles are baked in, not evaluated per-message at runtime. No external scoring or trust graph.
+**Limitation:** Principles are baked in, not evaluated per-message at runtime. No external scoring or graph-based trust layer.
 
 ### Constitutional Classifiers
 
@@ -117,7 +117,7 @@ A comprehensive [survey on trustworthy LLM agents](https://arxiv.org/abs/2503.09
 - TrustAgent focuses on **safety constraints** during planning
 - The survey catalogs threats and countermeasures
 - Neither provides runtime scoring of individual messages across ethical dimensions
-- Neither builds a persistent trust graph over time
+- Neither builds a persistent graph of trust over time
 
 ---
 
@@ -161,7 +161,7 @@ The [PGP web of trust](https://en.wikipedia.org/wiki/Web_of_trust) is a decentra
 - **Decentralized trust** — no single authority decides trustworthiness
 - **Transitive trust** — trust propagates through networks (A trusts B, B trusts C, so A has some trust in C)
 - **Graph-native** — trust is inherently a graph problem, which is why Ethos uses Neo4j
-- **Flow-based scoring** — trust as a flow network is a powerful metaphor; Ethos's trust graph could adopt similar propagation algorithms
+- **Flow-based scoring** — trust as a flow network is a powerful metaphor; Phronesis (the graph layer) could adopt similar propagation algorithms
 
 ### Design Pattern Summary
 
@@ -232,7 +232,7 @@ These have remained the foundational framework for rhetorical analysis for over 
 
 ### What Exists vs. What Ethos Does
 
-Existing work uses Aristotle's framework for **analysis** — studying how persuasion works in AI-generated text. No existing system uses the framework for **runtime evaluation** — scoring each AI message in real-time across all three dimensions and feeding those scores into a persistent trust graph.
+Existing work uses Aristotle's framework for **analysis** — studying how persuasion works in AI-generated text. No existing system uses the framework for **runtime evaluation** — scoring each AI message in real-time across all three dimensions and feeding those scores into Phronesis (the graph layer) for persistent trust tracking.
 
 **Ethos's novelty:**
 - Operationalizes Aristotle's three modes as computable scores (0-1 floats)
@@ -258,14 +258,14 @@ Existing work uses Aristotle's framework for **analysis** — studying how persu
 
 ### What Is Missing
 
-**Nobody is doing runtime ethical evaluation of individual agent messages with a persistent trust graph.**
+**Nobody is doing runtime ethical evaluation of individual agent messages with a persistent graph-based trust layer.**
 
 Specifically, no existing system:
 
 1. **Scores individual messages** across ethical dimensions (not just safe/unsafe binary)
 2. **Evaluates in real-time** (not pre-deployment benchmarks or training-time alignment)
 3. **Uses Aristotle's tripartite framework** operationally (ethos, logos, pathos as computable dimensions)
-4. **Builds a trust graph** that tracks agent reputation over time across interactions
+4. **Builds a persistent graph** that tracks agent reputation over time across interactions
 5. **Flags specific manipulation patterns** — false credibility claims, logical fabrication, emotional exploitation
 6. **Is open-source** and designed for community adoption and transparency
 7. **Keeps humans in the loop** — scores inform human judgment rather than making autonomous decisions
@@ -283,7 +283,7 @@ Specifically, no existing system:
                           │                                │
    Ethics ─────── (none)                        ◆ ETHOS ◆
                                                     │
-                                              Trust Graph (Neo4j)
+                                              Phronesis (Neo4j)
                                                     │
                                               Human Review Loop
 ```

@@ -36,7 +36,7 @@ This is the moment judges see that Ethos *works*. Not a slide. Not a concept. Ru
 
 ### 1:00–1:45 — The Graph
 
-Switch to Neo4j visualization. Show an agent's trust degrading over 30 evaluations. A manipulation cluster forming in the graph.
+Switch to Phronesis (Neo4j visualization). Show an agent's trust degrading over 30 evaluations. A manipulation cluster forming in Phronesis.
 
 > "This agent was clean for 2 weeks. Then it started fabricating. Here's exactly when it started, and here's the pattern it follows — a classic DARVO sequence."
 
@@ -44,7 +44,7 @@ This is the "wow" moment. Trust isn't a number — it's a *trajectory*, and Etho
 
 ### 1:45–2:30 — Opus as Analyst
 
-Call the insights endpoint. Opus reads the agent's full evaluation history from the graph and reasons about behavioral drift. Not scores — *analysis*.
+Call the insights endpoint. Opus reads the agent's full evaluation history from Phronesis and reasons about behavioral drift. Not scores — *analysis*.
 
 > "Your agent's fabrication trait has been climbing for 72 hours. It correlates with product description responses. Here's what I recommend."
 
@@ -83,7 +83,7 @@ Google A2A launched with 150+ organizations. Agent-to-agent communication is exp
 | Capability | Ethos | Benchmarks (TrustLLM, etc.) | Content Moderation (Perspective API, etc.) | ReputAgent |
 |---|---|---|---|---|
 | Scores individual messages at runtime | **Yes** | No — lab tests only | Partially — toxicity only | No |
-| Persistent trust graph | **Yes** | No | No | Performance only |
+| Phronesis (persistent trust graph) | **Yes** | No | No | Performance only |
 | Maps to philosophical framework | **Yes** (Aristotle) | No | No | No |
 | Open source | **Yes** | Varies | No | No |
 
@@ -166,7 +166,7 @@ They measure performance — did the agent do the job? Ethos measures ethics —
 ### The Only System That:
 
 1. Scores individual messages at runtime
-2. Builds a persistent trust graph across agents
+2. Builds Phronesis — a persistent trust graph across agents
 3. Maps to a philosophical framework (Aristotle's rhetoric)
 4. Is fully open source
 
@@ -196,4 +196,4 @@ No other system does all four.
 
 ## The Closing Argument
 
-> Moltbook proved the problem is real. Google A2A proves the scale is coming. Ethos is two lines of code, a trust graph, and Opus reasoning about whether agents deserve your trust. Open source. Ready now.
+> Moltbook proved the problem is real. Google A2A proves the scale is coming. Ethos is two lines of code, Phronesis, and Opus reasoning about whether agents deserve your trust. Open source. Ready now.

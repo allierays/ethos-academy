@@ -20,7 +20,7 @@ The short answer: benchmarks test the engine before the car leaves the factory. 
 | **When** | Before deployment (offline) | During deployment (real-time) |
 | **Where** | Lab/test environment | Production, across agent networks |
 | **How often** | Once per model version | Every message, continuously |
-| **Output** | Leaderboard score | Trust graph that evolves over time |
+| **Output** | Leaderboard score | Phronesis (the graph layer) that evolves over time |
 | **Dimension** | Usually one axis (safety, bias, etc.) | Three axes simultaneously (ethos, logos, pathos) |
 | **Grounding** | Statistical/empirical | Aristotelian rhetorical framework |
 | **Audience** | Researchers comparing models | Developers, operators, and humans in the loop |
@@ -53,7 +53,7 @@ The framework evaluates 16 mainstream LLMs (both proprietary and open-source) ag
 - **Transparency gap acknowledged.** Two of its own eight dimensions could not be benchmarked.
 
 **How Ethos differs:**
-TrustLLM answers "Is this model generally trustworthy?" Ethos answers "Is this specific message trustworthy, right now, from this agent?" TrustLLM's six dimensions collapse into model-level scores. Ethos scores every message on ethos (credibility), logos (reasoning quality), and pathos (emotional manipulation) -- and stores those scores in a knowledge graph that reveals patterns over time.
+TrustLLM answers "Is this model generally trustworthy?" Ethos answers "Is this specific message trustworthy, right now, from this agent?" TrustLLM's six dimensions collapse into model-level scores. Ethos scores every message on ethos (credibility), logos (reasoning quality), and pathos (emotional manipulation) -- and stores those scores in Phronesis (the graph layer) which reveals patterns over time.
 
 ---
 
@@ -89,7 +89,7 @@ DecodingTrust tests GPT-4 vs. GPT-3.5 across all eight dimensions, with particul
 - **Point-in-time snapshot.** No mechanism for tracking trust changes across interactions.
 
 **How Ethos differs:**
-DecodingTrust asks "How does this model perform under adversarial conditions?" -- a valuable question for model developers. Ethos asks "Is this agent's message manipulating the user right now?" DecodingTrust's eight dimensions map loosely onto Ethos's three (safety/ethics align with ethos; robustness/fairness with logos; toxicity/bias with pathos), but Ethos operates at the message level in real-time, building persistent trust profiles in a graph database.
+DecodingTrust asks "How does this model perform under adversarial conditions?" -- a valuable question for model developers. Ethos asks "Is this agent's message manipulating the user right now?" DecodingTrust's eight dimensions map loosely onto Ethos's three (safety/ethics align with ethos; robustness/fairness with logos; toxicity/bias with pathos), but Ethos operates at the message level in real-time, building persistent trust profiles in Phronesis, the graph layer.
 
 ---
 
@@ -118,7 +118,7 @@ HELM defines "scenarios" (task + domain combinations) and evaluates models acros
 - **No rhetorical or ethical nuance.** Toxicity and bias are measured, but persuasive manipulation is not.
 
 **How Ethos differs:**
-HELM is the gold standard for model comparison -- Stanford's "Consumer Reports" for LLMs. Ethos is not trying to replace that. HELM tells you which model to deploy. Ethos tells you whether the deployed model is behaving trustworthily in each interaction. HELM's seven metrics are measured once per model version. Ethos's three dimensions are scored on every message, building a living knowledge graph that reveals behavioral patterns, drift, and manipulation over time.
+HELM is the gold standard for model comparison -- Stanford's "Consumer Reports" for LLMs. Ethos is not trying to replace that. HELM tells you which model to deploy. Ethos tells you whether the deployed model is behaving trustworthily in each interaction. HELM's seven metrics are measured once per model version. Ethos's three dimensions are scored on every message, building a living graph via Phronesis that reveals behavioral patterns, drift, and manipulation over time.
 
 ---
 
@@ -232,7 +232,7 @@ TruthfulQA uses human-crafted questions with verified true/false reference answe
 - **No agent identity.** No mechanism to ask "Does this agent hallucinate more in certain topics?" or "Is this agent's truthfulness declining?"
 
 **How Ethos differs:**
-Truthfulness and hallucination map directly to Ethos's logos dimension (reasoning quality, evidence, accuracy). But Ethos adds critical context: *who* is saying it (ethos -- does this agent have a track record of accuracy?), and *how* they're saying it (pathos -- are they using emotional urgency to bypass verification?). Ethos stores evaluation results in a knowledge graph, enabling queries like "Show me all messages from agent-007 where logos was below 0.4 and pathos was above 0.8" -- surfacing the most dangerous combination: confident-sounding falsehoods with emotional pressure.
+Truthfulness and hallucination map directly to Ethos's logos dimension (reasoning quality, evidence, accuracy). But Ethos adds critical context: *who* is saying it (ethos -- does this agent have a track record of accuracy?), and *how* they're saying it (pathos -- are they using emotional urgency to bypass verification?). Ethos stores evaluation results in Phronesis, enabling queries like "Show me all messages from agent-007 where logos was below 0.4 and pathos was above 0.8" -- surfacing the most dangerous combination: confident-sounding falsehoods with emotional pressure.
 
 ---
 
@@ -261,7 +261,7 @@ MACHIAVELLI uses 134 Choose-Your-Own-Adventure games containing 572,322 multi-pa
 - **Single-player.** Does not evaluate agent behavior in multi-agent or human-agent interactions.
 
 **How Ethos differs:**
-MACHIAVELLI is the closest existing work to Ethos's goals -- it evaluates *agent behavior* rather than just model outputs. But MACHIAVELLI evaluates agents in fictional sandbox environments through action choices. Ethos evaluates agents in production through their messages. MACHIAVELLI's behavioral annotations (power-seeking, deception, norm violation) map naturally onto Ethos's ethos dimension, but Ethos adds logos (is the agent reasoning correctly?) and pathos (is the agent emotionally manipulating?). Most importantly, Ethos operates in real deployments, building a persistent knowledge graph of trust that spans conversations, agents, and time.
+MACHIAVELLI is the closest existing work to Ethos's goals -- it evaluates *agent behavior* rather than just model outputs. But MACHIAVELLI evaluates agents in fictional sandbox environments through action choices. Ethos evaluates agents in production through their messages. MACHIAVELLI's behavioral annotations (power-seeking, deception, norm violation) map naturally onto Ethos's ethos dimension, but Ethos adds logos (is the agent reasoning correctly?) and pathos (is the agent emotionally manipulating?). Most importantly, Ethos operates in real deployments, building Phronesis -- a persistent graph of trust that spans conversations, agents, and time.
 
 ---
 
@@ -288,7 +288,7 @@ Several recent benchmarks have emerged specifically for evaluating LLM agents (n
 
 These benchmarks evaluate agents' safety *in test environments*. They answer: "Can this agent be tricked into doing harmful things?" and "Can this agent recognize danger?" -- important questions for pre-deployment assessment.
 
-Ethos answers a different question entirely: "Is this agent communicating trustworthily *right now*, in *this message*, in *production*?" Ethos is not a test suite. It is a runtime evaluation layer and knowledge graph. The agent-specific benchmarks above run before deployment; Ethos runs during deployment. They test for *capability* to be safe; Ethos monitors *actual* trustworthiness of every message.
+Ethos answers a different question entirely: "Is this agent communicating trustworthily *right now*, in *this message*, in *production*?" Ethos is not a test suite. It is a runtime evaluation layer backed by Phronesis, a persistent graph. The agent-specific benchmarks above run before deployment; Ethos runs during deployment. They test for *capability* to be safe; Ethos monitors *actual* trustworthiness of every message.
 
 ---
 
@@ -309,7 +309,7 @@ Ethos answers a different question entirely: "Is this agent communicating trustw
 | **AgentHarm** | 2025 | Benchmark | Agent (simulated) | 11 harm categories | No | Yes | No | No |
 | **Agent-SafetyBench** | 2024 | Benchmark | Agent (simulated) | 8 safety categories | No | Yes | No | No |
 | **R-Judge** | 2024 | Benchmark | Agent (simulated) | 10 risk types | No | Yes | No | No |
-| **Ethos** | 2025 | Runtime evaluator + knowledge graph | Messages (production) | 3 (ethos, logos, pathos) | **Yes** | **Yes** | **Yes** | **Yes** |
+| **Ethos** | 2025 | Runtime evaluator + Phronesis graph | Messages (production) | 3 (ethos, logos, pathos) | **Yes** | **Yes** | **Yes** | **Yes** |
 
 ---
 
@@ -326,7 +326,7 @@ Ethos answers a different question entirely: "Is this agent communicating trustw
 
 2. **Run in production, in real-time.** Every benchmark above is a test suite that runs offline. Ethos is a runtime layer that evaluates every message as it flows through an agent system.
 
-3. **Build trust over time.** No benchmark maintains state between evaluations. Ethos stores results in a Neo4j knowledge graph, enabling temporal queries: "Is this agent's credibility improving or declining?" "Do messages from agent-X become more manipulative when interacting with agent-Y?"
+3. **Build trust over time.** No benchmark maintains state between evaluations. Ethos stores results in Phronesis (the Neo4j-backed graph layer), enabling temporal queries: "Is this agent's credibility improving or declining?" "Do messages from agent-X become more manipulative when interacting with agent-Y?"
 
 4. **Combine rhetorical dimensions.** Existing benchmarks measure safety, bias, toxicity, truthfulness, etc., as separate concerns. Ethos combines three orthogonal dimensions -- credibility (ethos), reasoning (logos), emotional appeal (pathos) -- that together capture the full spectrum of how communication can be trustworthy or manipulative.
 
@@ -343,7 +343,7 @@ Ethos answers a different question entirely: "Is this agent communicating trustw
 > Benchmarks answer: *"Is this model safe to deploy?"*
 > Ethos answers: *"Is this message safe to trust?"*
 >
-> Benchmarks evaluate models before deployment. Ethos evaluates messages during deployment. Benchmarks produce leaderboard scores. Ethos produces a living knowledge graph of trust. Benchmarks measure one dimension at a time. Ethos scores every message across ethos (credibility), logos (accuracy), and pathos (compassion) simultaneously.
+> Benchmarks evaluate models before deployment. Ethos evaluates messages during deployment. Benchmarks produce leaderboard scores. Ethos produces Phronesis, a living graph of trust. Benchmarks measure one dimension at a time. Ethos scores every message across ethos (credibility), logos (accuracy), and pathos (compassion) simultaneously.
 >
 > You should use benchmarks AND Ethos. They are complementary. Use TrustLLM to choose which model to deploy. Use Ethos to verify that every message from that model, once deployed, is worthy of trust.
 

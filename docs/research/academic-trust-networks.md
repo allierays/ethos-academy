@@ -1,6 +1,6 @@
 # Academic Foundations: Trust Networks, Reputation Systems, and Knowledge Graphs
 
-*A survey of the mathematical and computational foundations underlying Ethos's trust graph approach.*
+*A survey of the mathematical and computational foundations underlying Phronesis, Ethos's graph layer.*
 
 ---
 
@@ -84,7 +84,7 @@ t^(k+1) = (1-a) * C^T * t^(k) + a * p
 
 where *a* is a mixing parameter that prevents malicious peers from isolating themselves.
 
-**Relevance to Ethos:** EigenTrust's transitive trust model is directly applicable to Ethos's Neo4j trust graph. When agent A trusts agent B, and B trusts C, EigenTrust provides a principled way to propagate that trust. The power iteration approach can be implemented as a Neo4j graph algorithm for computing global trust scores.
+**Relevance to Ethos:** EigenTrust's transitive trust model is directly applicable to Phronesis (the graph layer). When agent A trusts agent B, and B trusts C, EigenTrust provides a principled way to propagate that trust. The power iteration approach can be implemented as a Neo4j graph algorithm for computing global trust scores.
 
 **Source:** [Stanford NLP](https://nlp.stanford.edu/pubs/eigentrust.pdf) | [ACM DL](https://dl.acm.org/doi/10.1145/775152.775242) | [Wikipedia](https://en.wikipedia.org/wiki/EigenTrust)
 
@@ -140,7 +140,7 @@ This was the first paper to examine signed relationships (trust *and* distrust) 
 - Validated theories of balance and status from social psychology in computational settings
 - Showed that structural features (triadic patterns) are powerful predictors of trust/distrust
 
-**Relevance to Ethos:** The structural prediction approach suggests that Ethos's trust graph will develop predictive power as it grows. The triadic patterns (e.g., "the friend of my friend is my friend") can be computed in Neo4j and used to predict trust relationships for new agents.
+**Relevance to Ethos:** The structural prediction approach suggests that Phronesis will develop predictive power as it grows. The triadic patterns (e.g., "the friend of my friend is my friend") can be computed in Neo4j and used to predict trust relationships for new agents.
 
 **Source:** [arXiv](https://arxiv.org/abs/1003.2429) | [ACM DL](https://dl.acm.org/doi/10.1145/1772690.1772756)
 
@@ -240,7 +240,7 @@ Knowledge graph embedding (KGE) aims to represent entities and relations as low-
 - **Tensor factorization models**: decompose the adjacency tensor
 - **Neural network models**: learn embeddings through graph neural networks
 
-**Relevance to Ethos:** As Ethos's trust graph grows, KGE techniques can be used to compute trust embeddings --- dense vector representations of agents that encode their trust profile. These embeddings enable similarity search ("find agents with trust profiles similar to this trusted agent") and anomaly detection.
+**Relevance to Ethos:** As Phronesis grows, KGE techniques can be used to compute trust embeddings --- dense vector representations of agents that encode their trust profile. These embeddings enable similarity search ("find agents with trust profiles similar to this trusted agent") and anomaly detection.
 
 **Source:** [ACM Computing Surveys](https://dl.acm.org/doi/10.1145/3643806) | [arXiv](https://arxiv.org/abs/2211.03536)
 
@@ -327,7 +327,7 @@ T_effective = T * e^(-lambda * t)
 
 where lambda is the decay rate and t is time since the trust assessment.
 
-**Relevance to Ethos:** Ethos's weighted scoring (ethos * w_e + logos * w_l + pathos * w_p) follows this established mathematical pattern. The temporal decay model should be implemented in the Neo4j graph to ensure recent evaluations carry more weight than old ones.
+**Relevance to Ethos:** Ethos's weighted scoring (ethos * w_e + logos * w_l + pathos * w_p) follows this established mathematical pattern. The temporal decay model should be implemented in Phronesis to ensure recent evaluations carry more weight than old ones.
 
 ---
 
@@ -375,7 +375,7 @@ The seminal empirical study of online reputation systems at scale.
 - Cross-platform reputation portability remains an unsolved challenge
 - Privacy-preserving computation enables reputation without revealing individual ratings
 
-**Relevance to Ethos:** While Ethos currently uses a centralized Neo4j graph, the principles of Sybil resistance and attack mitigation are relevant. Future Ethos versions could enable cross-platform trust portability where an agent's trust graph travels with it across systems.
+**Relevance to Ethos:** While Phronesis currently uses a centralized Neo4j graph, the principles of Sybil resistance and attack mitigation are relevant. Future Ethos versions could enable cross-platform trust portability where an agent's Phronesis data travels with it across systems.
 
 **Source:** [ACM Computing Surveys](https://dl.acm.org/doi/10.1145/3490236)
 
@@ -416,7 +416,7 @@ The seminal empirical study of online reputation systems at scale.
 
 **When crowds fail:** When members become too conscious of others' opinions and begin to conform rather than think independently (herding, cascades, bubbles).
 
-**Relevance to Ethos:** Ethos's trust graph represents a crowd of evaluations. For the aggregate trust score to be reliable, the evaluation methodology must maintain independence (each evaluation based on message content, not previous scores) and diversity (multi-dimensional scoring captures different aspects). The aggregation mechanism (graph algorithm) must be principled.
+**Relevance to Ethos:** Phronesis represents a crowd of evaluations. For the aggregate trust score to be reliable, the evaluation methodology must maintain independence (each evaluation based on message content, not previous scores) and diversity (multi-dimensional scoring captures different aspects). The aggregation mechanism (graph algorithm) must be principled.
 
 **Source:** [Wikipedia](https://en.wikipedia.org/wiki/The_Wisdom_of_Crowds)
 
@@ -429,7 +429,7 @@ The seminal empirical study of online reputation systems at scale.
 - Identified general conditions under which influence (not independence) produces the most accurate group judgments
 - The network structure itself shapes the quality of collective judgment
 
-**Relevance to Ethos:** This challenges the naive view that independence is always best. In Ethos's trust graph, agents *should* influence each other's evaluations through the graph structure --- but the influence must flow through principled mechanisms (trust propagation) rather than simple averaging.
+**Relevance to Ethos:** This challenges the naive view that independence is always best. In Phronesis, agents *should* influence each other's evaluations through the graph structure --- but the influence must flow through principled mechanisms (trust propagation) rather than simple averaging.
 
 **Source:** [PNAS](https://ndg.asc.upenn.edu/wp-content/uploads/2017/06/PNAS-2017-1615978114-Collective-Intelligence.pdf) | [PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC5495222/)
 
@@ -442,7 +442,7 @@ The seminal empirical study of online reputation systems at scale.
 - Groups in adaptive networks outperform their best individual members
 - The "wisdom of the network" emerges from the interaction between network structure and individual learning
 
-**Relevance to Ethos:** This validates Ethos's evolving trust graph. As agents interact and are evaluated over time, the graph structure adapts, and the collective trust assessments become more accurate than any individual evaluation. The graph is not static but a living, adapting network.
+**Relevance to Ethos:** This validates Phronesis as an evolving graph. As agents interact and are evaluated over time, the graph structure adapts, and the collective trust assessments become more accurate than any individual evaluation. The graph is not static but a living, adapting network.
 
 **Source:** [PNAS](https://www.pnas.org/doi/10.1073/pnas.1917687117)
 
@@ -460,7 +460,7 @@ The seminal empirical study of online reputation systems at scale.
 - Signed GNNs handle trust and distrust simultaneously through separate embedding spaces
 - Decoupled graph attention networks (DecGAT) improve interpretability of trust predictions
 
-**Relevance to Ethos:** As the trust graph grows, GNN-based approaches can predict trust relationships for new agents, detect anomalous trust patterns, and provide trust recommendations. Neo4j's graph data science library includes GNN-compatible features that Ethos can leverage.
+**Relevance to Ethos:** As Phronesis grows, GNN-based approaches can predict trust relationships for new agents, detect anomalous trust patterns, and provide trust recommendations. Neo4j's graph data science library includes GNN-compatible features that Ethos can leverage.
 
 **Source:** [arXiv](https://arxiv.org/abs/1802.09691) | [NeurIPS](https://dl.acm.org/doi/10.5555/3327345.3327423)
 
@@ -563,7 +563,7 @@ The academic literature provides strong evidence that graph databases are the na
 Based on the literature, the following enhancements would strengthen Ethos:
 
 1. **Subjective logic opinions**: Return (belief, disbelief, uncertainty) instead of single scores, explicitly representing confidence
-2. **EigenTrust-style global scores**: Compute global agent trust via power iteration over the Neo4j graph
+2. **EigenTrust-style global scores**: Compute global agent trust via power iteration over Phronesis
 3. **Temporal decay**: Weight recent evaluations more heavily using exponential decay
 4. **Asymmetric trust updating**: Negative signals (manipulation flags) should reduce trust faster than positive signals build it
 5. **Trust embeddings**: Use knowledge graph embedding techniques to create dense trust representations for similarity search
@@ -576,7 +576,7 @@ Ethos occupies a unique position in the computational trust landscape:
 
 - **Classical roots**: Grounded in Aristotelian rhetoric (2,400 years of human trust reasoning), not ad hoc dimensions
 - **Modern execution**: Uses LLMs for evaluation (leveraging Claude's reasoning for multi-dimensional analysis)
-- **Graph foundation**: Neo4j trust graph enables both local evaluation and global reputation
+- **Graph foundation**: Phronesis enables both local evaluation and global reputation
 - **AI-native**: Designed specifically for AI agent messages, addressing the gap identified by the TRiSM survey
 
 The academic literature overwhelmingly supports the core thesis: trust is multi-dimensional, context-dependent, graph-structured, and time-varying. Ethos's architecture is aligned with these findings.
@@ -609,4 +609,4 @@ The academic literature overwhelmingly supports the core thesis: trust is multi-
 
 ---
 
-*This research survey was compiled for the Ethos project to establish the academic foundations underlying its trust graph approach. All papers cited were verified through web search as real, published works.*
+*This research survey was compiled for the Ethos project to establish the academic foundations underlying Phronesis, the graph layer. All papers cited were verified through web search as real, published works.*

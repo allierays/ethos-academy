@@ -29,7 +29,7 @@
 
 The regulatory consensus is clear: AI systems need continuous monitoring, transparent audit trails, risk scoring, and human oversight. But the tooling to deliver these requirements -- particularly for AI agents operating autonomously and communicating with other agents -- barely exists.
 
-Ethos is built for exactly this moment. It provides continuous evaluation of AI agent behavior across trust, accuracy, and emotional manipulation dimensions. It stores every evaluation in a Neo4j knowledge graph, creating the audit trail regulators will demand. It detects patterns across agent networks over time. And it is open source, providing the transparency that every major regulatory framework treats as a baseline requirement.
+Ethos is built for exactly this moment. It provides continuous evaluation of AI agent behavior across trust, accuracy, and emotional manipulation dimensions. It stores every evaluation in Phronesis (the graph layer), a Neo4j-backed knowledge graph creating the audit trail regulators will demand. It detects patterns across agent networks over time. And it is open source, providing the transparency that every major regulatory framework treats as a baseline requirement.
 
 This document maps each major regulation to the specific capabilities Ethos provides, demonstrating that Ethos is not just a hackathon project -- it is infrastructure for the regulatory reality that is already here.
 
@@ -109,7 +109,7 @@ The EU AI Act does not have a separate "AI agent" category, but agents are captu
 
 ### Ethos Relevance
 
-Ethos directly addresses: risk management (continuous scoring), record-keeping (Neo4j graph logging), transparency (open-source evaluation logic), human oversight (trust scores that inform human decisions), and post-market monitoring (longitudinal agent behavior tracking).
+Ethos directly addresses: risk management (continuous scoring), record-keeping (Phronesis graph logging), transparency (open-source evaluation logic), human oversight (trust scores that inform human decisions), and post-market monitoring (longitudinal agent behavior tracking).
 
 ---
 
@@ -156,7 +156,7 @@ Creating trustworthy AI requires balancing these characteristics based on the sy
 Ethos maps directly to the NIST framework:
 
 - **GOVERN:** Ethos provides the scoring infrastructure that governance policies can reference. Organizations can define trust thresholds and alert on violations.
-- **MAP:** The Neo4j knowledge graph maps agent relationships, contexts, and potential impact zones across an agent network.
+- **MAP:** Phronesis maps agent relationships, contexts, and potential impact zones across an agent network.
 - **MEASURE:** Ethos scores (ethos, logos, pathos, trust, compassion, honesty, accuracy) are quantitative risk measures computed continuously.
 - **MANAGE:** The reflection system detects trends (improving, declining, stable) enabling proactive risk management before harm occurs.
 
@@ -203,7 +203,7 @@ Ethos directly addresses several of these risk categories:
 - **Confabulation (Risk 2):** The logos score evaluates logical coherence, evidence quality, and reasoning -- directly detecting hallucinated or unsupported claims.
 - **Information Integrity (Risk 8):** The ethos score measures credibility and authority; the pathos score flags emotional manipulation. Together they detect when an agent is producing misleading content.
 - **Information Security (Risk 9):** By evaluating agent outputs continuously, Ethos can detect behavioral shifts that indicate prompt injection or adversarial compromise.
-- **Value Chain Integration (Risk 11):** The Neo4j graph tracks agent interactions across a network, making third-party agent behavior visible and auditable.
+- **Value Chain Integration (Risk 11):** Phronesis tracks agent interactions across a network, making third-party agent behavior visible and auditable.
 - **Pre-deployment Testing:** Ethos evaluation can be integrated into CI/CD pipelines as a pre-deployment gate.
 - **Incident Disclosure:** The graph audit trail provides the evidence needed for incident reports.
 
@@ -305,7 +305,7 @@ Ethos is purpose-built for the agent governance requirements emerging across all
 
 - **Agent identity and tracking:** Every evaluation in Ethos is linked to a specific agent ID, stored in the graph with full provenance
 - **Real-time monitoring:** Continuous evaluation of agent outputs against trust, accuracy, and manipulation metrics
-- **Audit trail:** The Neo4j graph provides exactly the logging and traceability that every framework demands as a baseline
+- **Audit trail:** Phronesis provides exactly the logging and traceability that every framework demands as a baseline
 - **Multi-agent visibility:** The graph structure naturally models agent-to-agent relationships, enabling detection of cascading failures and semantic drift across networks
 - **Trend detection:** The reflection system identifies behavioral changes over time, supporting the staged rollout and progressive oversight models recommended by Singapore and WEF
 
@@ -444,9 +444,9 @@ Ethos produces structured scores:
 
 **Regulatory mapping:** NIST AI RMF seven characteristics of trustworthy AI, NIST AI 600-1 confabulation detection, WEF evaluation dimensions, Colorado AI Act impact assessment metrics.
 
-### 3. Audit Trail via Neo4j Knowledge Graph
+### 3. Audit Trail via Phronesis (the Graph Layer)
 
-Every evaluation is stored as a node in a Neo4j graph database, connected to:
+Every evaluation is stored as a node in Phronesis, the Neo4j-backed graph layer, connected to:
 - The agent that produced the message
 - The context in which it was produced
 - Previous evaluations of the same agent
@@ -491,7 +491,7 @@ The entire evaluation pipeline is open source:
 | **EU AI Act Art. 50** | Disclosure of AI interaction | Agent identity in graph | Every evaluation links to agent ID; interaction context preserved |
 | **EU AI Act Art. 72** | Post-market monitoring | Longitudinal tracking | Reflection system tracks agent behavior trends over deployment lifetime |
 | **NIST AI RMF -- Govern** | Risk-aware culture and governance | Policy-referenceable scores | Organizations define trust thresholds; Ethos enforces them |
-| **NIST AI RMF -- Map** | Contextual risk identification | Knowledge graph topology | Graph maps agent relationships, contexts, and impact zones |
+| **NIST AI RMF -- Map** | Contextual risk identification | Phronesis graph topology | Graph maps agent relationships, contexts, and impact zones |
 | **NIST AI RMF -- Measure** | Quantitative risk assessment | Structured scoring (0.0-1.0) | ethos, logos, pathos, trust, compassion, honesty, accuracy metrics |
 | **NIST AI RMF -- Manage** | Risk response and prioritization | Trend detection and alerting | Reflection identifies declining agents; enables proactive response |
 | **NIST Trustworthy AI: Valid/Reliable** | Consistent intended performance | Consistency scoring over time | Reflection tracks behavioral stability across evaluations |
