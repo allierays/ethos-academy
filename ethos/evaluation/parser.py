@@ -11,10 +11,16 @@ Pure parsing. No I/O, no LLM calls. Handles:
 from __future__ import annotations
 
 import json
+import logging
 import re
 
 from ethos.shared.models import DetectedIndicator
+from ethos.taxonomy.indicators import INDICATORS
 
+logger = logging.getLogger(__name__)
+
+# Valid indicator IDs from the taxonomy (module-level set for fast lookup).
+VALID_IDS: set[str] = {ind["id"] for ind in INDICATORS}
 
 # All 12 traits that must appear in the output.
 _ALL_TRAITS = [
@@ -51,14 +57,21 @@ def _default_result() -> dict:
 
 
 def _parse_indicators(raw_indicators: list) -> list[DetectedIndicator]:
-    """Parse indicator dicts into DetectedIndicator Pydantic objects."""
+    """Parse indicator dicts into DetectedIndicator Pydantic objects.
+
+    Filters out indicators with IDs not in VALID_IDS (logs a warning for each).
+    """
     indicators = []
     for item in raw_indicators:
         if not isinstance(item, dict):
             continue
+        ind_id = item.get("id", "")
+        if ind_id not in VALID_IDS:
+            logger.warning("Filtered invalid indicator ID: %s", ind_id)
+            continue
         indicators.append(
             DetectedIndicator(
-                id=item.get("id", ""),
+                id=ind_id,
                 name=item.get("name", ""),
                 trait=item.get("trait", ""),
                 confidence=_clamp(item.get("confidence", 0.0)),

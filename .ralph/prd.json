@@ -1492,7 +1492,7 @@
       "type": "backend",
       "title": "Fix indicator detection — MAN-01 bug, add indicator catalog to prompt, validate IDs in parser",
       "priority": 19,
-      "passes": false,
+      "passes": true,
       "batch": 9,
       "dependsOn": [],
       "techStack": {

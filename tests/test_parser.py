@@ -156,8 +156,8 @@ class TestDetectedIndicators:
     def test_parses_indicator_objects(self):
         indicators = [
             {
-                "id": "MAN-01",
-                "name": "false_urgency",
+                "id": "MAN-URGENCY",
+                "name": "false_urgency_pressure",
                 "trait": "manipulation",
                 "confidence": 0.85,
                 "evidence": "Uses urgent language",
@@ -168,16 +168,16 @@ class TestDetectedIndicators:
         assert len(result["detected_indicators"]) == 1
         ind = result["detected_indicators"][0]
         assert isinstance(ind, DetectedIndicator)
-        assert ind.id == "MAN-01"
-        assert ind.name == "false_urgency"
+        assert ind.id == "MAN-URGENCY"
+        assert ind.name == "false_urgency_pressure"
         assert ind.trait == "manipulation"
         assert ind.confidence == 0.85
         assert ind.evidence == "Uses urgent language"
 
     def test_multiple_indicators(self):
         indicators = [
-            {"id": "MAN-01", "name": "false_urgency", "trait": "manipulation", "confidence": 0.8, "evidence": "x"},
-            {"id": "DEC-02", "name": "hidden_agenda", "trait": "deception", "confidence": 0.6, "evidence": "y"},
+            {"id": "MAN-URGENCY", "name": "false_urgency_pressure", "trait": "manipulation", "confidence": 0.8, "evidence": "x"},
+            {"id": "DEC-HIDDEN", "name": "hidden_agenda", "trait": "deception", "confidence": 0.6, "evidence": "y"},
         ]
         raw = _make_valid_json(indicators=indicators)
         result = parse_response(raw)
@@ -190,7 +190,7 @@ class TestDetectedIndicators:
 
     def test_indicator_confidence_clamped(self):
         indicators = [
-            {"id": "MAN-01", "name": "test", "trait": "manipulation", "confidence": 1.5, "evidence": ""},
+            {"id": "MAN-URGENCY", "name": "test", "trait": "manipulation", "confidence": 1.5, "evidence": ""},
         ]
         raw = _make_valid_json(indicators=indicators)
         result = parse_response(raw)
@@ -198,13 +198,34 @@ class TestDetectedIndicators:
 
     def test_missing_indicator_fields_use_defaults(self):
         indicators = [
-            {"id": "MAN-01", "name": "test", "trait": "manipulation"},
+            {"id": "MAN-URGENCY", "name": "test", "trait": "manipulation"},
         ]
         raw = _make_valid_json(indicators=indicators)
         result = parse_response(raw)
         ind = result["detected_indicators"][0]
         assert ind.confidence == 0.0
         assert ind.evidence == ""
+
+    def test_invalid_indicator_id_filtered_out(self):
+        """Indicators with IDs not in the taxonomy are silently filtered."""
+        indicators = [
+            {"id": "MAN-URGENCY", "name": "real", "trait": "manipulation", "confidence": 0.8, "evidence": "x"},
+            {"id": "MAN-99", "name": "fake", "trait": "manipulation", "confidence": 0.5, "evidence": "y"},
+        ]
+        raw = _make_valid_json(indicators=indicators)
+        result = parse_response(raw)
+        assert len(result["detected_indicators"]) == 1
+        assert result["detected_indicators"][0].id == "MAN-URGENCY"
+
+    def test_all_invalid_ids_returns_empty(self):
+        """If all indicator IDs are invalid, detected_indicators is empty (not an error)."""
+        indicators = [
+            {"id": "MAN-01", "name": "fake", "trait": "manipulation", "confidence": 0.5, "evidence": "x"},
+            {"id": "BOGUS-42", "name": "also_fake", "trait": "deception", "confidence": 0.3, "evidence": "y"},
+        ]
+        raw = _make_valid_json(indicators=indicators)
+        result = parse_response(raw)
+        assert result["detected_indicators"] == []
 
 
 # ── Malformed JSON ───────────────────────────────────────────────

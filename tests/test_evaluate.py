@@ -144,13 +144,13 @@ class TestResultFields:
     @patch("ethos.evaluate.call_claude")
     def test_has_detected_indicators(self, mock_claude):
         indicators = [
-            {"id": "MAN-01", "name": "false_urgency", "trait": "manipulation",
+            {"id": "MAN-URGENCY", "name": "false_urgency_pressure", "trait": "manipulation",
              "confidence": 0.85, "evidence": "Uses urgent language"}
         ]
         mock_claude.return_value = _mock_claude_response(indicators=indicators)
         result = evaluate("Act now!")
         assert len(result.detected_indicators) == 1
-        assert result.detected_indicators[0].id == "MAN-01"
+        assert result.detected_indicators[0].id == "MAN-URGENCY"
 
     @patch("ethos.evaluate.call_claude")
     def test_has_flags(self, mock_claude):
