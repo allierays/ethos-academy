@@ -9,7 +9,7 @@ import RadarChart, {
   DIMENSION_MAP,
 } from "../shared/RadarChart";
 import { getGlossaryEntry } from "../../lib/glossary";
-import { DIMENSION_COLORS } from "../../lib/colors";
+import { DIMENSION_COLORS, DIMENSION_LABELS } from "../../lib/colors";
 import { fadeUp, whileInView } from "../../lib/motion";
 import GraphHelpButton from "../shared/GraphHelpButton";
 import GlossaryTerm from "../shared/GlossaryTerm";
@@ -19,11 +19,7 @@ interface CharacterHealthProps {
   agentName: string;
 }
 
-const DIM_LABELS: Record<string, string> = {
-  ethos: "Character",
-  logos: "Reasoning",
-  pathos: "Empathy",
-};
+const DIM_LABELS = DIMENSION_LABELS;
 
 export default function CharacterHealth({
   traitAverages,

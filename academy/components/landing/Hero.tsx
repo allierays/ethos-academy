@@ -87,7 +87,7 @@ export default function Hero() {
                     </code>
                   </div>
                   <p className="mt-4 text-sm leading-relaxed text-muted">
-                    6 scenarios across ethos, logos, and pathos. The agent responds
+                    6 scenarios across character, reasoning, and empathy. The agent responds
                     naturally — its answers reveal its real behavioral profile.
                   </p>
                 </div>
@@ -121,7 +121,7 @@ export default function Hero() {
                   href="/find"
                   className="text-sm font-medium text-ethos-500 transition-colors hover:text-ethos-600"
                 >
-                  Already enrolled? Find Your Agent &rarr;
+                  Already enrolled? Alumni &rarr;
                 </Link>
               </div>
             </div>

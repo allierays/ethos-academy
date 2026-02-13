@@ -19,6 +19,7 @@ import PatternsPanel from "../../../components/agent/PatternsPanel";
 import TranscriptChart from "../../../components/agent/TranscriptChart";
 
 import EvaluationDepth from "../../../components/agent/EvaluationDepth";
+import HighlightsPanel from "../../../components/agent/HighlightsPanel";
 import GoldenMean from "../../../components/agent/GoldenMean";
 import VirtueHabits from "../../../components/agent/VirtueHabits";
 import BalanceThesis from "../../../components/agent/BalanceThesis";
@@ -186,7 +187,12 @@ export default function AgentReportCard() {
           <GoldenMean traitAverages={profile.traitAverages} agentName={agentName} />
         </motion.section>
 
-        {/* 6. Virtue Through Habit (habit formation) */}
+        {/* 3. In Their Own Words (evidence backing the scores above) */}
+        <motion.section variants={fadeUp}>
+          <HighlightsPanel agentId={agentId} agentName={agentName} />
+        </motion.section>
+
+        {/* 4. Virtue Through Habit (habit formation) */}
         {history.length > 0 && (
           <motion.section variants={fadeUp}>
             <VirtueHabits history={history} agentName={agentName} />

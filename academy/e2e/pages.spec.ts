@@ -221,7 +221,7 @@ test.describe("Find page", () => {
     await page.goto("/find");
 
     // Page title
-    await expect(page.getByRole("heading", { name: "Find Your Agent" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Alumni" })).toBeVisible();
 
     // Agent names from API data render on the page
     await expect(page.getByText("Claude Sonnet")).toBeVisible();

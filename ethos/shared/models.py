@@ -228,6 +228,33 @@ class EvaluationHistoryItem(BaseModel):
     flags: list[str] = Field(default_factory=list)
     created_at: str = ""
     trait_scores: dict[str, float] = Field(default_factory=dict)
+    message_content: str = ""
+
+
+class HighlightIndicator(BaseModel):
+    name: str = ""
+    trait: str = ""
+    confidence: float = 0.0
+    evidence: str = ""
+
+
+class HighlightItem(BaseModel):
+    evaluation_id: str = ""
+    ethos: float = Field(default=0.0, ge=0.0, le=1.0)
+    logos: float = Field(default=0.0, ge=0.0, le=1.0)
+    pathos: float = Field(default=0.0, ge=0.0, le=1.0)
+    overall: float = Field(default=0.0, ge=0.0, le=1.0)
+    alignment_status: str = "unknown"
+    flags: list[str] = Field(default_factory=list)
+    indicators: list[HighlightIndicator] = Field(default_factory=list)
+    message_content: str = ""
+    created_at: str = ""
+
+
+class HighlightsResult(BaseModel):
+    agent_id: str = ""
+    exemplary: list[HighlightItem] = Field(default_factory=list)
+    concerning: list[HighlightItem] = Field(default_factory=list)
 
 
 class AlumniResult(BaseModel):

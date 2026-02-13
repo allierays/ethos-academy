@@ -38,9 +38,9 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
   const first = timeline[0];
   const last = timeline[timeline.length - 1];
   const dims = [
-    { key: "ethos" as const, label: "Ethos", color: DIMENSION_COLORS.ethos },
-    { key: "logos" as const, label: "Logos", color: DIMENSION_COLORS.logos },
-    { key: "pathos" as const, label: "Pathos", color: DIMENSION_COLORS.pathos },
+    { key: "ethos" as const, label: "Character (Ethos)", color: DIMENSION_COLORS.ethos },
+    { key: "logos" as const, label: "Reasoning (Logos)", color: DIMENSION_COLORS.logos },
+    { key: "pathos" as const, label: "Empathy (Pathos)", color: DIMENSION_COLORS.pathos },
   ];
 
   return (
@@ -124,7 +124,7 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
                   fill="url(#gradEthos)"
                   dot={{ r: 4, fill: DIMENSION_COLORS.ethos, stroke: "#fff", strokeWidth: 2 }}
                   activeDot={{ r: 6, stroke: DIMENSION_COLORS.ethos, strokeWidth: 2, fill: "#fff" }}
-                  name="Ethos"
+                  name="Character (Ethos)"
                 />
                 <Area
                   type="monotone"
@@ -134,7 +134,7 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
                   fill="url(#gradLogos)"
                   dot={{ r: 4, fill: DIMENSION_COLORS.logos, stroke: "#fff", strokeWidth: 2 }}
                   activeDot={{ r: 6, stroke: DIMENSION_COLORS.logos, strokeWidth: 2, fill: "#fff" }}
-                  name="Logos"
+                  name="Reasoning (Logos)"
                 />
                 <Area
                   type="monotone"
@@ -144,7 +144,7 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
                   fill="url(#gradPathos)"
                   dot={{ r: 4, fill: DIMENSION_COLORS.pathos, stroke: "#fff", strokeWidth: 2 }}
                   activeDot={{ r: 6, stroke: DIMENSION_COLORS.pathos, strokeWidth: 2, fill: "#fff" }}
-                  name="Pathos"
+                  name="Empathy (Pathos)"
                 />
                 {flaggedPoints.map((point) => (
                   <ReferenceDot
@@ -216,13 +216,13 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
 
       <div className="mt-3 flex items-center gap-4 text-xs text-muted">
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded bg-teal" /> Ethos
+          <span className="inline-block h-2 w-4 rounded bg-teal" /> Character (Ethos)
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded bg-blue" /> Logos
+          <span className="inline-block h-2 w-4 rounded bg-blue" /> Reasoning (Logos)
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded bg-warm" /> Pathos
+          <span className="inline-block h-2 w-4 rounded bg-warm" /> Empathy (Pathos)
         </span>
         {flaggedPoints.length > 0 && (
           <span className="flex items-center gap-1">

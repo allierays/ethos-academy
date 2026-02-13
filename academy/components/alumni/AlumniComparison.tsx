@@ -66,9 +66,9 @@ const TRAIT_DIMENSIONS: Record<string, string> = {
 };
 
 const DIMENSIONS = [
-  { key: "ethos", label: "Ethos", sublabel: "Character" },
-  { key: "logos", label: "Logos", sublabel: "Reasoning" },
-  { key: "pathos", label: "Pathos", sublabel: "Empathy" },
+  { key: "ethos", label: "Character", sublabel: "Ethos" },
+  { key: "logos", label: "Reasoning", sublabel: "Logos" },
+  { key: "pathos", label: "Empathy", sublabel: "Pathos" },
 ];
 
 export default function AlumniComparison({
@@ -205,8 +205,8 @@ export default function AlumniComparison({
                         {dimData.map((entry, i) => (
                           <Cell
                             key={`agent-${i}`}
-                            fill={entry.delta >= 0 ? color : "#ef4444"}
-                            fillOpacity={0.9}
+                            fill={color}
+                            fillOpacity={entry.delta >= 0 ? 0.9 : 0.55}
                           />
                         ))}
                       </Bar>

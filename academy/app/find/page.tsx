@@ -56,7 +56,7 @@ export default function FindPage() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-              Find Your Agent
+              Alumni
             </h1>
             <p className="mt-2 text-sm font-semibold uppercase tracking-widest text-ethos-600">
               Alumni Directory

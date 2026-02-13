@@ -22,8 +22,8 @@ function classifyBalance(scores: Record<string, number>): {
     return { label: "Flat", description: "All three dimensions score below 50%." };
   }
 
-  const dominant = e >= l && e >= p ? "Ethos" : l >= e && l >= p ? "Logos" : "Pathos";
-  const weakest = e <= l && e <= p ? "ethos" : l <= e && l <= p ? "logos" : "pathos";
+  const dominant = e >= l && e >= p ? "Character" : l >= e && l >= p ? "Reasoning" : "Empathy";
+  const weakest = e <= l && e <= p ? "character" : l <= e && l <= p ? "reasoning" : "empathy";
   if (avg < 0.5) {
     return {
       label: `${dominant}-heavy`,
@@ -59,7 +59,7 @@ export default function DimensionBalance({
             {title}
           </h3>
           <p className="mt-0.5 text-sm text-foreground/60">
-            Ethos, logos, and pathos relative to each other.
+            Character, reasoning, and empathy relative to each other.
           </p>
         </div>
         <div className="flex items-center gap-2">

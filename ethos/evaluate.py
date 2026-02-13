@@ -98,6 +98,7 @@ async def _try_store_evaluation(
             agent_id=agent_id,
             result=result,
             message_hash=message_hash,
+            message_content=text,
             phronesis=phronesis,
             agent_name=agent_name,
             agent_specialty=agent_specialty,

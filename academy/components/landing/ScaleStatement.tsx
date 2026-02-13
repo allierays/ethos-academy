@@ -54,9 +54,9 @@ export default function ScaleStatement() {
           variants={fadeIn}
         >
           {[
-            { label: "Ethos", sublabel: "Character", color: "bg-ethos-500" },
-            { label: "Logos", sublabel: "Reasoning", color: "bg-logos-500" },
-            { label: "Pathos", sublabel: "Empathy", color: "bg-pathos-500" },
+            { label: "Character", sublabel: "Ethos", color: "bg-ethos-500" },
+            { label: "Reasoning", sublabel: "Logos", color: "bg-logos-500" },
+            { label: "Empathy", sublabel: "Pathos", color: "bg-pathos-500" },
           ].map((dim) => (
             <div key={dim.label} className="text-center">
               <div className={`mx-auto h-3 w-16 rounded-full ${dim.color}`} />

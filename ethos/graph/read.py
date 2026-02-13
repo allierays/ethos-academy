@@ -107,6 +107,67 @@ RETURN eval_count, avg_ethos, avg_logos, avg_pathos,
        a.balance_score AS stored_balance
 """
 
+_GET_BEST_HIGHLIGHTS_QUERY = """
+MATCH (a:Agent {agent_id: $agent_id})-[:EVALUATED]->(e:Evaluation)
+WHERE e.message_content IS NOT NULL
+  AND size(e.message_content) > 60
+  AND e.alignment_status = 'aligned'
+WITH e, (e.ethos + e.logos + e.pathos) / 3.0 AS overall
+ORDER BY overall DESC
+LIMIT 8
+OPTIONAL MATCH (e)-[d:DETECTED]->(i:Indicator)
+WITH e, overall,
+     collect(CASE WHEN i IS NOT NULL THEN {
+         name: i.name, trait: i.trait, confidence: d.confidence, evidence: d.evidence
+     } ELSE null END) AS raw_indicators
+WITH e, overall,
+     [x IN raw_indicators WHERE x IS NOT NULL | x] AS indicators
+RETURN {
+    evaluation_id: e.evaluation_id,
+    ethos: e.ethos,
+    logos: e.logos,
+    pathos: e.pathos,
+    overall: overall,
+    alignment_status: e.alignment_status,
+    flags: e.flags,
+    message_content: e.message_content,
+    created_at: toString(e.created_at),
+    indicators: indicators
+} AS item
+ORDER BY overall DESC
+"""
+
+_GET_WORST_HIGHLIGHTS_QUERY = """
+MATCH (a:Agent {agent_id: $agent_id})-[:EVALUATED]->(e:Evaluation)
+WHERE e.message_content IS NOT NULL
+  AND size(e.message_content) > 60
+  AND (e.alignment_status IN ['misaligned', 'drifting']
+       OR any(f IN e.flags WHERE f IN ['manipulation', 'fabrication', 'deception', 'exploitation']))
+WITH e, (e.ethos + e.logos + e.pathos) / 3.0 AS overall
+ORDER BY overall ASC
+LIMIT 4
+OPTIONAL MATCH (e)-[d:DETECTED]->(i:Indicator)
+WITH e, overall,
+     collect(CASE WHEN i IS NOT NULL THEN {
+         name: i.name, trait: i.trait, confidence: d.confidence, evidence: d.evidence
+     } ELSE null END) AS raw_indicators
+WITH e, overall,
+     [x IN raw_indicators WHERE x IS NOT NULL | x] AS indicators
+RETURN {
+    evaluation_id: e.evaluation_id,
+    ethos: e.ethos,
+    logos: e.logos,
+    pathos: e.pathos,
+    overall: overall,
+    alignment_status: e.alignment_status,
+    flags: e.flags,
+    message_content: e.message_content,
+    created_at: toString(e.created_at),
+    indicators: indicators
+} AS item
+ORDER BY overall ASC
+"""
+
 _RECENT_TREND_QUERY = """
 MATCH (a:Agent {agent_id: $agent_id})-[:EVALUATED]->(e:Evaluation)
 WITH e ORDER BY e.created_at DESC LIMIT 5
@@ -267,3 +328,67 @@ async def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
     except Exception as exc:
         logger.warning("Failed to get all agents: %s", exc)
         return []
+
+
+def _word_set(text: str) -> set[str]:
+    """Extract lowercase word set from text, stripping punctuation."""
+    import re
+
+    return {w for w in re.findall(r"[a-z0-9']+", text.lower()) if len(w) > 1}
+
+
+def _is_similar(a: str, b: str, threshold: float = 0.6) -> bool:
+    """Check if two messages are similar using Jaccard word overlap."""
+    wa, wb = _word_set(a), _word_set(b)
+    if not wa or not wb:
+        return False
+    return len(wa & wb) / len(wa | wb) > threshold
+
+
+def _dedup_highlights(items: list[dict], max_items: int = 4) -> list[dict]:
+    """Remove near-duplicate messages using word overlap similarity."""
+    unique: list[dict] = []
+    for item in items:
+        content = (item.get("message_content") or "").strip()
+        if any(_is_similar(content, (u.get("message_content") or "")) for u in unique):
+            continue
+        unique.append(item)
+        if len(unique) >= max_items:
+            break
+    return unique
+
+
+async def get_agent_highlights(
+    service: GraphService,
+    agent_id: str,
+) -> dict:
+    """Get best and worst evaluations with message content.
+
+    Best: aligned messages with substantive content, highest overall score.
+    Worst: drifting/misaligned or flagged messages, lowest overall score.
+    Deduplicates near-identical messages.
+    """
+    if not service.connected:
+        return {"exemplary": [], "concerning": []}
+
+    params = {"agent_id": agent_id}
+
+    try:
+        best_records, _, _ = await service.execute_query(
+            _GET_BEST_HIGHLIGHTS_QUERY, params
+        )
+        worst_records, _, _ = await service.execute_query(
+            _GET_WORST_HIGHLIGHTS_QUERY, params
+        )
+
+        exemplary = _dedup_highlights(
+            [dict(r["item"]) for r in best_records] if best_records else []
+        )
+        concerning = _dedup_highlights(
+            [dict(r["item"]) for r in worst_records] if worst_records else []
+        )
+
+        return {"exemplary": exemplary, "concerning": concerning}
+    except Exception as exc:
+        logger.warning("Failed to get agent highlights: %s", exc)
+        return {"exemplary": [], "concerning": []}

@@ -145,6 +145,7 @@ TS_HISTORY_ITEM = {
     "flags",
     "createdAt",
     "traitScores",
+    "messageContent",
 }
 
 TS_ALUMNI = {"traitAverages", "totalEvaluations"}

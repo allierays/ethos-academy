@@ -1,7 +1,7 @@
 """Graph write operations — store evaluations, merge nodes.
 
 All Cypher for mutations lives here. Uses MERGE for idempotent writes.
-Message content is NEVER stored — only scores, hashes, and metadata.
+Message content is stored for public/consented content only (e.g. Moltbook posts).
 """
 
 from __future__ import annotations
@@ -41,6 +41,7 @@ CREATE (e:Evaluation {
     alignment_status: $alignment_status,
     flags: $flags,
     message_hash: $message_hash,
+    message_content: $message_content,
     routing_tier: $routing_tier,
     keyword_density: $keyword_density,
     model_used: $model_used,
@@ -96,6 +97,7 @@ async def store_evaluation(
     agent_id: str,
     result: EvaluationResult,
     message_hash: str = "",
+    message_content: str = "",
     phronesis: str = "undetermined",
     agent_name: str = "",
     agent_specialty: str = "",
@@ -189,6 +191,7 @@ async def store_evaluation(
         "phronesis_score": phronesis_score,
         "flags": result.flags,
         "message_hash": message_hash,
+        "message_content": message_content,
         "routing_tier": result.routing_tier,
         "keyword_density": result.keyword_density,
         "model_used": result.model_used,

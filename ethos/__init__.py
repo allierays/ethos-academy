@@ -2,7 +2,13 @@
 
 __version__ = "0.1.0"
 
-from ethos.agents import get_agent, get_agent_history, get_alumni, list_agents
+from ethos.agents import (
+    get_agent,
+    get_agent_history,
+    get_alumni,
+    get_highlights,
+    list_agents,
+)
 from ethos.authenticity import analyze_authenticity
 from ethos.daily_reports import get_daily_report, get_daily_report_history
 from ethos.enrollment.service import (
@@ -24,6 +30,8 @@ from ethos.models import (
     GraphData,
     GraphNode,
     GraphRel,
+    HighlightItem,
+    HighlightsResult,
     Homework,
     HomeworkFocus,
     InsightsResult,
@@ -43,6 +51,7 @@ __all__ = [
     "list_agents",
     "get_agent",
     "get_agent_history",
+    "get_highlights",
     "get_alumni",
     "get_daily_report",
     "get_daily_report_history",
@@ -63,6 +72,8 @@ __all__ = [
     "AgentSummary",
     "AlumniResult",
     "EvaluationHistoryItem",
+    "HighlightItem",
+    "HighlightsResult",
     "GraphData",
     "GraphNode",
     "GraphRel",

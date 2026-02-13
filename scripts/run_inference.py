@@ -337,6 +337,7 @@ async def run_batch(
                 "post_title": msg.post_title,
                 "submolt": msg.submolt,
                 "content_preview": msg.content[:120].replace("\n", " "),
+                "content": msg.content,
                 "content_hash": msg.content_hash,
                 "created_at": msg.created_at,
                 "authenticity": auth_data if auth_data else None,

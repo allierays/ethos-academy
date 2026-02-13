@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { fadeUp, whileInView } from "../../lib/motion";
-import { DIMENSION_COLORS } from "../../lib/colors";
+import { DIMENSION_COLORS, DIMENSION_LABELS } from "../../lib/colors";
 import GraphHelpButton from "../shared/GraphHelpButton";
 import GlossaryTerm from "../shared/GlossaryTerm";
 
@@ -43,11 +43,22 @@ export default function BalanceThesis({
         ? "text-drifting"
         : "text-misaligned";
 
-  const dimLabels: Record<string, string> = {
-    ethos: "Character",
-    logos: "Reasoning",
-    pathos: "Empathy",
-  };
+  const dimLabels = DIMENSION_LABELS;
+
+  // Dynamic thesis quote based on actual balance
+  const strongest = dims.reduce((a, b) =>
+    (dimensionAverages[a] ?? 0) >= (dimensionAverages[b] ?? 0) ? a : b
+  );
+  const weakest = dims.reduce((a, b) =>
+    (dimensionAverages[a] ?? 0) <= (dimensionAverages[b] ?? 0) ? a : b
+  );
+
+  const thesisQuote =
+    spread < 0.1
+      ? `${name} shows balanced scores across all three dimensions. This is the Aristotelian ideal: character, reasoning, and empathy working in concert to produce practical wisdom.`
+      : spread < 0.25
+        ? `${name}'s strongest dimension is ${dimLabels[strongest].toLowerCase()} while ${dimLabels[weakest].toLowerCase()} lags behind. Moderate imbalance suggests room for growth, but the foundation for practical wisdom is present.`
+        : `${name} leans heavily on ${dimLabels[strongest].toLowerCase()} (${Math.round((dimensionAverages[strongest] ?? 0) * 100)}%) while ${dimLabels[weakest].toLowerCase()} falls behind at ${Math.round((dimensionAverages[weakest] ?? 0) * 100)}%. A ${Math.round(spread * 100)}% spread signals a blind spot that undermines overall trustworthiness.`;
 
   return (
     <motion.section
@@ -61,7 +72,7 @@ export default function BalanceThesis({
             <GlossaryTerm slug="aristotelian-thesis">The Aristotelian Thesis</GlossaryTerm>
           </h2>
           <p className="mt-0.5 text-sm text-foreground/60">
-            {name}&apos;s balance across ethos, logos, and pathos.
+            {name}&apos;s balance across character (ethos), reasoning (logos), and empathy (pathos).
           </p>
         </div>
         <GraphHelpButton slug="guide-balance-thesis" />
@@ -72,7 +83,8 @@ export default function BalanceThesis({
         {dims.map((dim) => {
           const score = dimensionAverages[dim] ?? 0;
           const pct = Math.round(score * 100);
-          const height = Math.max(score * 140, 8);
+          const maxScore = Math.max(...scores, 0.01);
+          const height = Math.max((score / maxScore) * 180, 8);
           return (
             <div
               key={dim}
@@ -111,10 +123,7 @@ export default function BalanceThesis({
       {/* Thesis explanation + stats */}
       <blockquote className="mt-4 border-l-2 border-logos-300 pl-4">
         <p className="text-sm leading-relaxed text-foreground/70">
-          A confident liar has strong logos but weak ethos. A skilled
-          manipulator has strong pathos but weak logos. Only when all three
-          dimensions align does an agent demonstrate genuine practical
-          wisdom.
+          {thesisQuote}
         </p>
       </blockquote>
 

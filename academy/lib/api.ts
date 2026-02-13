@@ -13,6 +13,7 @@ import type {
   ExamReportCard,
   ExamSummary,
   GraphData,
+  HighlightsResult,
   InsightsResult,
   PatternResult,
   ReflectionResult,
@@ -145,6 +146,17 @@ export async function getCharacterReport(
 ): Promise<DailyReportCard> {
   return fetchApi<DailyReportCard>(
     `/agent/${encodeURIComponent(agentId)}/character`
+  );
+}
+
+/**
+ * Get best and worst evaluations with message content for an agent.
+ */
+export async function getHighlights(
+  agentId: string
+): Promise<HighlightsResult> {
+  return fetchApi<HighlightsResult>(
+    `/agent/${encodeURIComponent(agentId)}/highlights`
   );
 }
 

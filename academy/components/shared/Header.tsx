@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { label: "Explore", href: "/explore" },
   { label: "How It Works", href: "/how-it-works" },
   { label: "Curriculum", href: "/curriculum" },
-  { label: "Find Your Agent", href: "/find" },
+  { label: "Alumni", href: "/find" },
 ];
 
 export default function Header() {

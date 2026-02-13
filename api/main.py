@@ -23,6 +23,7 @@ from ethos import (
     get_daily_report_history,
     get_exam_report,
     get_graph_data,
+    get_highlights,
     list_agents,
     list_exams,
     register_for_exam,
@@ -42,6 +43,7 @@ from ethos.models import (
     ExamReportCard,
     ExamSummary,
     GraphData,
+    HighlightsResult,
     PatternResult,
 )
 from ethos.shared.errors import (
@@ -221,6 +223,11 @@ async def agent_history_endpoint(agent_id: str):
 @app.get("/alumni", response_model=AlumniResult)
 async def alumni_endpoint():
     return await get_alumni()
+
+
+@app.get("/agent/{agent_id}/highlights", response_model=HighlightsResult)
+async def highlights_endpoint(agent_id: str):
+    return await get_highlights(agent_id)
 
 
 @app.get("/agent/{agent_id}/patterns", response_model=PatternResult)

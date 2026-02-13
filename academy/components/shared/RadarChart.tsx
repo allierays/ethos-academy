@@ -199,13 +199,13 @@ export default function RadarChart({ traits, alumni, selectedTrait, onTraitClick
       {/* Legend */}
       <div className="mt-1 flex items-center justify-center gap-4 text-[10px] text-muted">
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#3b8a98" }} /> <GlossaryTerm slug="ethos">Ethos</GlossaryTerm>
+          <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#3b8a98" }} /> <GlossaryTerm slug="ethos">Character (Ethos)</GlossaryTerm>
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#2e4a6e" }} /> <GlossaryTerm slug="logos">Logos</GlossaryTerm>
+          <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#2e4a6e" }} /> <GlossaryTerm slug="logos">Reasoning (Logos)</GlossaryTerm>
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#e0a53c" }} /> <GlossaryTerm slug="pathos">Pathos</GlossaryTerm>
+          <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#e0a53c" }} /> <GlossaryTerm slug="pathos">Empathy (Pathos)</GlossaryTerm>
         </span>
         {alumni && (
           <span className="flex items-center gap-1">

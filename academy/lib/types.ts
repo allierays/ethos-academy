@@ -111,6 +111,33 @@ export interface EvaluationHistoryItem {
   flags: string[];
   createdAt: string;
   traitScores: Record<string, number>;
+  messageContent: string;
+}
+
+export interface HighlightIndicator {
+  name: string;
+  trait: string;
+  confidence: number;
+  evidence: string;
+}
+
+export interface HighlightItem {
+  evaluationId: string;
+  ethos: number;
+  logos: number;
+  pathos: number;
+  overall: number;
+  alignmentStatus: string;
+  flags: string[];
+  indicators: HighlightIndicator[];
+  messageContent: string;
+  createdAt: string;
+}
+
+export interface HighlightsResult {
+  agentId: string;
+  exemplary: HighlightItem[];
+  concerning: HighlightItem[];
 }
 
 export interface AlumniResult {

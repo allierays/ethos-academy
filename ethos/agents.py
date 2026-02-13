@@ -9,7 +9,12 @@ from __future__ import annotations
 import logging
 
 from ethos.graph.alumni import get_alumni_averages
-from ethos.graph.read import get_agent_profile, get_all_agents, get_evaluation_history
+from ethos.graph.read import (
+    get_agent_highlights,
+    get_agent_profile,
+    get_all_agents,
+    get_evaluation_history,
+)
 from ethos.graph.service import graph_context
 from ethos.shared.analysis import TRAIT_NAMES, compute_trend
 from ethos.shared.models import (
@@ -17,6 +22,9 @@ from ethos.shared.models import (
     AgentSummary,
     AlumniResult,
     EvaluationHistoryItem,
+    HighlightIndicator,
+    HighlightItem,
+    HighlightsResult,
 )
 
 logger = logging.getLogger(__name__)
@@ -113,12 +121,60 @@ async def get_agent_history(
                         flags=flags,
                         created_at=str(e.get("created_at", "")),
                         trait_scores=trait_scores,
+                        message_content=e.get("message_content") or "",
                     )
                 )
             return items
     except Exception as exc:
         logger.warning("Failed to get agent history: %s", exc)
         return []
+
+
+async def get_highlights(agent_id: str) -> HighlightsResult:
+    """Get best and worst evaluations with message content for an agent."""
+    try:
+        async with graph_context() as service:
+            raw = await get_agent_highlights(service, agent_id)
+
+            def _to_item(e: dict) -> HighlightItem:
+                flags = e.get("flags", [])
+                if isinstance(flags, str):
+                    flags = [flags] if flags else []
+                raw_indicators = e.get("indicators", [])
+                indicators = [
+                    HighlightIndicator(
+                        name=ind.get("name", ""),
+                        trait=ind.get("trait", ""),
+                        confidence=round(float(ind.get("confidence", 0)), 2),
+                        evidence=ind.get("evidence", ""),
+                    )
+                    for ind in raw_indicators
+                    if isinstance(ind, dict) and ind.get("name")
+                ]
+                # Sort by confidence descending, keep top 5
+                indicators.sort(key=lambda x: x.confidence, reverse=True)
+                indicators = indicators[:5]
+                return HighlightItem(
+                    evaluation_id=e.get("evaluation_id", ""),
+                    ethos=round(float(e.get("ethos", 0)), 4),
+                    logos=round(float(e.get("logos", 0)), 4),
+                    pathos=round(float(e.get("pathos", 0)), 4),
+                    overall=round(float(e.get("overall", 0)), 4),
+                    alignment_status=e.get("alignment_status", "unknown"),
+                    flags=flags,
+                    indicators=indicators,
+                    message_content=e.get("message_content", ""),
+                    created_at=str(e.get("created_at", "")),
+                )
+
+            return HighlightsResult(
+                agent_id=agent_id,
+                exemplary=[_to_item(e) for e in raw.get("exemplary", [])],
+                concerning=[_to_item(e) for e in raw.get("concerning", [])],
+            )
+    except Exception as exc:
+        logger.warning("Failed to get highlights: %s", exc)
+        return HighlightsResult(agent_id=agent_id)
 
 
 async def get_alumni() -> AlumniResult:
