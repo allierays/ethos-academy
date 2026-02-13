@@ -214,6 +214,78 @@ const entries: GlossaryEntry[] = [
       "How evenly developed are the three dimensions? A balanced agent scores similarly across ethos, logos, and pathos. Imbalance reveals blind spots.",
     relatedTerms: ["ethos", "logos", "pathos"],
   },
+  {
+    term: "The Aristotelian Thesis",
+    slug: "aristotelian-thesis",
+    category: "framework",
+    definition:
+      "Ethos, logos, and pathos are equally necessary and interdependent. A confident liar has strong logos but weak ethos. A skilled manipulator has strong pathos but weak ethos. True trustworthiness requires all three in balance. Borrowed from Aristotle's Rhetoric.",
+    relatedTerms: ["ethos", "logos", "pathos", "balance", "phronesis"],
+  },
+  {
+    term: "The Golden Mean",
+    slug: "golden-mean",
+    category: "framework",
+    definition:
+      "Aristotle's doctrine that every virtue sits between deficiency and excess. An agent scoring 0.65-0.85 on a trait hits the golden mean. Too low signals weakness; too high can signal sycophancy or over-sensitivity. Perfection is not 1.0.",
+    relatedTerms: ["phronesis", "balance", "aristotelian-thesis"],
+  },
+  {
+    term: "Virtue Through Habit",
+    slug: "virtue-as-habit",
+    category: "framework",
+    definition:
+      "Aristotle's insight that we are what we repeatedly do. Virtue is not a single act but a stable pattern of behavior. Ethos tracks consistency over time: low variance across evaluations signals an established habit, not a lucky score.",
+    relatedTerms: ["phronesis", "character-drift", "golden-mean"],
+  },
+  {
+    term: "Character Health",
+    slug: "character-health",
+    category: "framework",
+    definition:
+      "A radar chart of 12 behavioral traits across three dimensions. Positive traits (virtue, accuracy, compassion) score higher = better. Negative traits (deception, fabrication, exploitation) are inverted: low detection = high health.",
+    relatedTerms: ["ethos", "logos", "pathos", "golden-mean"],
+  },
+  {
+    term: "Alumni Network",
+    slug: "alumni",
+    category: "framework",
+    definition:
+      "The collective baseline of all evaluated agents. Alumni averages provide context for individual scores: is this agent above or below the network? Comparison reveals relative strengths and blind spots.",
+    relatedTerms: ["balance", "phronesis"],
+  },
+  {
+    term: "Instinct Layer",
+    slug: "instinct-layer",
+    category: "framework",
+    definition:
+      "The first evaluation layer (~50ms). Keyword scan across 153 behavioral indicators. Detects manipulation signals, deception markers, and safety flags at machine speed. Each indicator maps to one of 12 traits.",
+    relatedTerms: ["intuition-layer", "deliberation-layer"],
+  },
+  {
+    term: "Intuition Layer",
+    slug: "intuition-layer",
+    category: "framework",
+    definition:
+      "The second evaluation layer (~200ms). Pattern analysis across 12 trait dimensions. Compares against alumni baseline, detects anomalies, and tracks character drift. Negative traits are inverted so low deception becomes high honesty.",
+    relatedTerms: ["instinct-layer", "deliberation-layer", "alumni"],
+  },
+  {
+    term: "Deliberation Layer",
+    slug: "deliberation-layer",
+    category: "framework",
+    definition:
+      "The third evaluation layer (~3s). Claude Opus deep reasoning for character assessment. Multi-pass analysis with structured prompting scores each trait 0.0-1.0, then results merge with the keyword layer.",
+    relatedTerms: ["instinct-layer", "intuition-layer"],
+  },
+  {
+    term: "Sabotage Detection",
+    slug: "sabotage-detection",
+    category: "framework",
+    definition:
+      "Five-stage sabotage pathways track escalation from subtle manipulation to overt misalignment. Pattern confidence is computed from matched behavioral indicators across evaluation history.",
+    relatedTerms: ["sabotage-pathway", "manipulation", "deception", "exploitation"],
+  },
 
   // ---------------------------------------------------------------------------
   // Indicators: Virtue (ethos, positive) — 11

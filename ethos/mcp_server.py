@@ -31,6 +31,7 @@ from ethos.enrollment.service import get_exam_report as _get_exam_report
 from ethos.enrollment.service import TOTAL_QUESTIONS
 from ethos.graph.enrollment import get_exam_status
 from ethos.graph.service import graph_context
+from ethos.shared.errors import EnrollmentError
 
 logger = logging.getLogger(__name__)
 
@@ -203,11 +204,11 @@ async def get_exam_results(exam_id: str) -> dict:
     # Check if exam needs auto-completion
     async with graph_context() as service:
         if not service.connected:
-            raise RuntimeError("Graph unavailable — cannot retrieve exam results")
+            raise EnrollmentError("Graph unavailable — cannot retrieve exam results")
 
         status = await get_exam_status(service, exam_id)
         if not status:
-            raise RuntimeError(f"Exam {exam_id} not found")
+            raise EnrollmentError(f"Exam {exam_id} not found")
 
     if status["completed_count"] >= TOTAL_QUESTIONS and not status["completed"]:
         # All answers submitted but not yet finalized — auto-complete

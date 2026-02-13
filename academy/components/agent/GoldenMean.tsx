@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { fadeUp, whileInView } from "../../lib/motion";
 import { DIMENSION_COLORS } from "../../lib/colors";
 import GraphHelpButton from "../shared/GraphHelpButton";
+import GlossaryTerm from "../shared/GlossaryTerm";
 
 interface GoldenMeanProps {
   traitAverages: Record<string, number>;
@@ -87,7 +88,7 @@ export default function GoldenMean({ traitAverages, agentName }: GoldenMeanProps
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-            The Golden Mean
+            <GlossaryTerm slug="golden-mean">The Golden Mean</GlossaryTerm>
           </h2>
           <p className="mt-0.5 text-sm text-foreground/60">
             Where {name} falls between deficiency and excess.

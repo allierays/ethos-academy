@@ -17,6 +17,7 @@ import { getAlumni } from "../../lib/api";
 import { DIMENSION_COLORS } from "../../lib/colors";
 import { fadeUp, whileInView } from "../../lib/motion";
 import GraphHelpButton from "../shared/GraphHelpButton";
+import GlossaryTerm from "../shared/GlossaryTerm";
 
 interface AlumniComparisonProps {
   agentTraitAverages: Record<string, number>;
@@ -120,8 +121,8 @@ export default function AlumniComparison({
     >
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
-            Alumni Comparison
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-[#1a2538]">
+            <GlossaryTerm slug="alumni">Alumni Comparison</GlossaryTerm>
           </h3>
           <p className="mt-0.5 text-xs text-muted">
             {name}&apos;s scores overlaid on network averages.

@@ -27,14 +27,28 @@ function toCamelCase(key: string): string {
   return key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
 
-function transformKeys<T>(obj: unknown): T {
+/**
+ * Keys whose child object keys are data values (trait names, dimension names)
+ * and must NOT be converted to camelCase.
+ */
+const DATA_MAP_KEYS = new Set([
+  "traitScores",
+  "traitAverages",
+  "dimensionAverages",
+  "tierScores",
+  "dimensions",
+  "dimensionDeltas",
+]);
+
+function transformKeys<T>(obj: unknown, preserveKeys = false): T {
   if (Array.isArray(obj)) {
     return obj.map((item) => transformKeys(item)) as T;
   }
   if (obj !== null && typeof obj === "object") {
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
-      result[toCamelCase(key)] = transformKeys(value);
+      const newKey = preserveKeys ? key : toCamelCase(key);
+      result[newKey] = transformKeys(value, DATA_MAP_KEYS.has(newKey));
     }
     return result as T;
   }

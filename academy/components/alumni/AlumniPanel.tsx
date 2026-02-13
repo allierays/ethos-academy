@@ -78,7 +78,7 @@ export default function AlumniPanel() {
     <div className="rounded-xl border border-border bg-white p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-[#1a2538]">
             Alumni Averages
           </h3>
           <p className="mt-0.5 text-xs text-muted">

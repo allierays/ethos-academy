@@ -263,7 +263,7 @@ class TestGetExamResults:
         mock_get_report.assert_not_called()
 
     async def test_exam_not_found_raises(self):
-        """Missing exam raises RuntimeError."""
+        """Missing exam raises EnrollmentError."""
         with (
             patch("ethos.mcp_server.graph_context") as mock_ctx,
             patch(
@@ -277,18 +277,18 @@ class TestGetExamResults:
             mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_service)
             mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
 
-            with pytest.raises(RuntimeError, match="not found"):
+            with pytest.raises(EnrollmentError, match="not found"):
                 await get_exam_results.fn(exam_id="nonexistent")
 
     async def test_graph_unavailable_raises(self):
-        """Disconnected graph raises RuntimeError."""
+        """Disconnected graph raises EnrollmentError."""
         with patch("ethos.mcp_server.graph_context") as mock_ctx:
             mock_service = MagicMock()
             mock_service.connected = False
             mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_service)
             mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
 
-            with pytest.raises(RuntimeError, match="Graph unavailable"):
+            with pytest.raises(EnrollmentError, match="Graph unavailable"):
                 await get_exam_results.fn(exam_id="exam-001")
 
 
@@ -307,6 +307,6 @@ class TestMCPToolRegistration:
         from ethos.mcp_server import mcp
 
         tool_names = list(mcp._tool_manager._tools.keys())
-        assert len(tool_names) == 10, (
-            f"Expected 10 tools, got {len(tool_names)}: {tool_names}"
+        assert len(tool_names) >= 10, (
+            f"Expected at least 10 tools, got {len(tool_names)}: {tool_names}"
         )

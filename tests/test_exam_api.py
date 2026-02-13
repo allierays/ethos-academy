@@ -261,11 +261,21 @@ class TestGetExam:
         assert data["exam_id"] == "exam-001"
         assert data["per_question_detail"][0]["question_id"] == "q1"
 
-    def test_get_enrollment_error_returns_409(self):
+    def test_get_enrollment_error_not_found_returns_404(self):
         with patch(
             "api.main.get_exam_report",
             new_callable=AsyncMock,
             side_effect=EnrollmentError("Exam not found"),
+        ):
+            resp = client.get("/agent/test-agent/exam/exam-001")
+
+        assert resp.status_code == 404
+
+    def test_get_enrollment_error_conflict_returns_409(self):
+        with patch(
+            "api.main.get_exam_report",
+            new_callable=AsyncMock,
+            side_effect=EnrollmentError("Agent already has an active exam"),
         ):
             resp = client.get("/agent/test-agent/exam/exam-001")
 

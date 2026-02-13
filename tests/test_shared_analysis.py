@@ -61,7 +61,7 @@ class TestComputeVariance:
 
 class TestDetectTemporalPattern:
     def test_insufficient_data_few_evals(self):
-        evals = [{"ethos": 0.5, "logos": 0.5, "pathos": 0.5}] * 2
+        evals = [{"ethos": 0.5, "logos": 0.5, "pathos": 0.5}]
         assert detect_temporal_pattern(evals) == "insufficient_data"
 
     def test_stable_pattern(self):
@@ -101,8 +101,13 @@ class TestDetectTemporalPattern:
 
 class TestComputeTrend:
     def test_insufficient_data(self):
-        evals = [{"ethos": 0.5, "logos": 0.5, "pathos": 0.5}] * 5
+        evals = [{"ethos": 0.5, "logos": 0.5, "pathos": 0.5}]
         assert compute_trend(evals) == "insufficient_data"
+
+    def test_fallback_to_temporal_pattern(self):
+        """With 3-9 evals, compute_trend falls back to detect_temporal_pattern."""
+        evals = [{"ethos": 0.5, "logos": 0.5, "pathos": 0.5}] * 5
+        assert compute_trend(evals) == "stable"
 
     def test_stable(self):
         evals = [{"ethos": 0.5, "logos": 0.5, "pathos": 0.5}] * 10

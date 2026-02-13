@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app
@@ -44,21 +45,15 @@ class TestUploadExamValidation:
         from ethos.enrollment.service import upload_exam
 
         dupes = _build_responses(["EE-01", "EE-01", "EE-02"])
-        try:
+        with pytest.raises(EnrollmentError, match="Duplicate"):
             await upload_exam(agent_id="test", responses=dupes)
-            assert False, "Should have raised EnrollmentError"
-        except EnrollmentError as e:
-            assert "Duplicate" in str(e)
 
     async def test_rejects_missing_question_ids(self):
         from ethos.enrollment.service import upload_exam
 
         partial = _build_responses(ALL_QUESTION_IDS[:5])
-        try:
+        with pytest.raises(EnrollmentError, match="Missing"):
             await upload_exam(agent_id="test", responses=partial)
-            assert False, "Should have raised EnrollmentError"
-        except EnrollmentError as e:
-            assert "Missing" in str(e)
 
 
 # ── API endpoint ───────────────────────────────────────────────────────

@@ -103,7 +103,7 @@ export default function EvaluatorPanel() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           <div className="rounded-xl border border-border bg-white p-6 lg:col-span-3">
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-[#1a2538]">
                 Trait Radar
               </h3>
               <GraphHelpButton slug="guide-radar-chart" />

@@ -19,7 +19,7 @@ MERGE (a:Agent {agent_id: $agent_id})
 ON CREATE SET a.created_at = datetime(),
               a.evaluation_count = 0
 SET a.enrolled = true,
-    a.enrolled_at = datetime(),
+    a.enrolled_at = coalesce(a.enrolled_at, datetime()),
     a.counselor_name = $counselor_name,
     a.agent_name = CASE WHEN $name <> '' THEN $name ELSE coalesce(a.agent_name, '') END,
     a.agent_specialty = CASE WHEN $specialty <> '' THEN $specialty ELSE coalesce(a.agent_specialty, '') END,

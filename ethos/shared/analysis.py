@@ -67,7 +67,7 @@ def detect_temporal_pattern(recent: list[dict]) -> str:
 
     Returns: improving, declining, stable, volatile, or insufficient_data.
     """
-    if len(recent) < 3:
+    if len(recent) < 2:
         return "insufficient_data"
 
     # Average dimension score per evaluation
@@ -112,11 +112,15 @@ def compute_grade(overall_score: float) -> str:
 def compute_trend(evaluations: list[dict]) -> str:
     """Compute phronesis trend from evaluation history.
 
-    Compares the average phronesis of the last 5 evaluations against
-    the previous 5. Returns improving/declining/stable/insufficient_data.
+    With 10+ evaluations, compares the average of the last 5 against
+    the previous 5. With 3-9 evaluations, falls back to sequential
+    temporal pattern detection. Returns improving/declining/stable/insufficient_data.
     """
-    if len(evaluations) < 10:
+    if len(evaluations) < 2:
         return "insufficient_data"
+
+    if len(evaluations) < 10:
+        return detect_temporal_pattern(evaluations)
 
     def _avg_phronesis(evals: list[dict]) -> float:
         scores = []

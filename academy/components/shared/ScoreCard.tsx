@@ -44,7 +44,7 @@ export default function ScoreCard({ result }: ScoreCardProps) {
       data-testid="score-card"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-[#1a2538]">
           Dimensions
         </h3>
         <div className="flex items-center gap-2">

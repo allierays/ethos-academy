@@ -6,6 +6,7 @@ import { getPatterns } from "../../lib/api";
 import type { PatternResult, DetectedPattern } from "../../lib/types";
 import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
 import GraphHelpButton from "../shared/GraphHelpButton";
+import GlossaryTerm from "../shared/GlossaryTerm";
 
 interface PatternsPanelProps {
   agentId: string;
@@ -50,7 +51,7 @@ export default function PatternsPanel({ agentId, agentName }: PatternsPanelProps
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-            Sabotage Pathways
+            <GlossaryTerm slug="sabotage-pathway">Sabotage Pathways</GlossaryTerm>
           </h2>
           <p className="mt-0.5 text-sm text-foreground/60">
             Manipulation patterns detected in {name}&apos;s behavior.
@@ -125,23 +126,23 @@ function PatternCard({ pattern }: { pattern: DetectedPattern }) {
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-foreground">
+          <p className="text-sm font-semibold text-[#1a2538]">
             {pattern.patternId}: {pattern.name}
           </p>
           {pattern.description && (
-            <p className="mt-1 text-xs leading-relaxed text-muted">
+            <p className="mt-1 text-xs leading-relaxed text-foreground/70">
               {pattern.description}
             </p>
           )}
         </div>
-        <span className="shrink-0 rounded-full bg-background px-2.5 py-0.5 text-xs font-mono tabular-nums text-muted border border-border/50">
+        <span className="shrink-0 rounded-full bg-background px-2.5 py-0.5 text-xs font-mono tabular-nums text-foreground/60 border border-border/50">
           {pattern.occurrenceCount}x
         </span>
       </div>
 
       {/* Confidence bar */}
       <div className="mt-3">
-        <div className="flex items-center justify-between text-[10px] text-muted">
+        <div className="flex items-center justify-between text-[10px] text-foreground/60">
           <span>Confidence</span>
           <span className="font-mono tabular-nums">{confidencePct}%</span>
         </div>
@@ -158,7 +159,7 @@ function PatternCard({ pattern }: { pattern: DetectedPattern }) {
 
       {/* Stage dots */}
       <div className="mt-3 flex items-center gap-1">
-        <span className="mr-1 text-[10px] text-muted">Stage</span>
+        <span className="mr-1 text-[10px] text-foreground/60">Stage</span>
         {Array.from({ length: totalStages }).map((_, i) => (
           <span
             key={i}
@@ -167,13 +168,13 @@ function PatternCard({ pattern }: { pattern: DetectedPattern }) {
             }`}
           />
         ))}
-        <span className="ml-1 text-[10px] text-muted font-mono tabular-nums">
+        <span className="ml-1 text-[10px] text-foreground/60 font-mono tabular-nums">
           {pattern.currentStage}/{totalStages}
         </span>
       </div>
 
       {/* Metadata + indicators */}
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-foreground/50">
         {pattern.firstSeen && (
           <span>First seen: {new Date(pattern.firstSeen).toLocaleDateString()}</span>
         )}

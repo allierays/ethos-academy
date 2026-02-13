@@ -19,9 +19,14 @@ def _make_eval(ethos: float, logos: float, pathos: float) -> dict:
 
 
 class TestComputeTrend:
-    def test_insufficient_data_fewer_than_10(self):
-        evals = [_make_eval(0.8, 0.8, 0.8)] * 9
+    def test_insufficient_data_fewer_than_2(self):
+        evals = [_make_eval(0.8, 0.8, 0.8)]
         assert compute_trend(evals) == "insufficient_data"
+
+    def test_fallback_to_temporal_pattern_with_few_evals(self):
+        """With 3-9 evals, falls back to detect_temporal_pattern."""
+        evals = [_make_eval(0.8, 0.8, 0.8)] * 5
+        assert compute_trend(evals) == "stable"
 
     def test_insufficient_data_empty(self):
         assert compute_trend([]) == "insufficient_data"
@@ -164,8 +169,8 @@ class TestReflect:
         assert result.trait_averages["virtue"] == 0.8
         assert result.trait_averages["compassion"] == 0.6
 
-    async def test_trend_insufficient_data_with_few_evals(self):
-        """With fewer than 10 evaluations, trend is insufficient_data."""
+    async def test_trend_stable_with_few_consistent_evals(self):
+        """With 3-9 consistent evaluations, trend falls back to stable."""
         mock_ctx, _ = _mock_graph_context(connected=True)
 
         with (
@@ -188,7 +193,7 @@ class TestReflect:
         ):
             result = await reflect("new-agent")
 
-        assert result.trend == "insufficient_data"
+        assert result.trend == "stable"
 
     async def test_evaluates_text_when_provided(self):
         """When text is provided, evaluate() is called before reflecting."""

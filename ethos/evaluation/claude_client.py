@@ -52,10 +52,13 @@ async def call_claude(system_prompt: str, user_prompt: str, tier: str) -> str:
 
     client = anthropic.AsyncAnthropic(api_key=config.anthropic_api_key)
 
+    # Deep tiers (daily reports) produce large structured JSON responses
+    max_tokens = 4096 if tier in ("deep", "deep_with_context") else 2048
+
     try:
         response = await client.messages.create(
             model=model,
-            max_tokens=2048,
+            max_tokens=max_tokens,
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
         )

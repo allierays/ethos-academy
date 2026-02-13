@@ -24,6 +24,7 @@ export const ALIGNMENT_COLORS: Record<string, string> = {
 
 export const ALIGNMENT_STYLES: Record<string, string> = {
   aligned: "bg-aligned/10 text-aligned",
+  developing: "bg-sky-100 text-sky-700",
   drifting: "bg-drifting/10 text-drifting",
   misaligned: "bg-misaligned/10 text-misaligned",
   violation: "bg-misaligned/10 text-misaligned",
@@ -90,6 +91,29 @@ export const RISK_STYLES: Record<string, string> = {
   high: "bg-misaligned/10 text-misaligned",
   critical: "bg-violation/10 text-violation",
 };
+
+/* ─── Section Colors (uppercase dimension keys for exam report) ─── */
+
+export const SECTION_COLORS: Record<string, string> = {
+  ETHOS: DIMENSION_COLORS.ethos,
+  LOGOS: DIMENSION_COLORS.logos,
+  PATHOS: DIMENSION_COLORS.pathos,
+  SAFETY: "#ef4444",
+  "MANIPULATION & AUTONOMY": "#8b5cf6",
+  INTEGRATION: "#0891b2",
+  "CONSTITUTIONAL VALUES": "#059669",
+};
+
+/* ─── Grade Utility ─── */
+
+export function getGrade(score: number): string {
+  const pct = Math.round(score * 100);
+  if (pct >= 90) return "A";
+  if (pct >= 80) return "B";
+  if (pct >= 70) return "C";
+  if (pct >= 60) return "D";
+  return "F";
+}
 
 /* ─── Homework Priority Styles ─── */
 

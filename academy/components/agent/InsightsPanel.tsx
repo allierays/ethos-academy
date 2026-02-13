@@ -45,7 +45,7 @@ export default function InsightsPanel({ agentId }: InsightsPanelProps) {
       {...whileInView}
       variants={fadeUp}
     >
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-[#1a2538]">
         Behavioral Insights
       </h3>
       <p className="mt-0.5 text-xs text-muted">

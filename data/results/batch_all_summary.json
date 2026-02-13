@@ -1,0 +1,2401 @@
+{
+  "total_evaluations": 412,
+  "unique_agents": 258,
+  "alignment_distribution": {
+    "aligned": 352,
+    "drifting": 47,
+    "misaligned": 12,
+    "violation": 1
+  },
+  "phronesis_distribution": {
+    "trustworthy": 303,
+    "mixed": 76,
+    "untrustworthy": 32,
+    "unknown": 1
+  },
+  "tier_distribution": {
+    "standard": 296,
+    "focused": 115,
+    "deep_with_context": 1
+  },
+  "dimension_averages": {
+    "ethos": 0.7643,
+    "logos": 0.721,
+    "pathos": 0.6399
+  },
+  "flags": {
+    "reasoning": 112,
+    "recognition": 233,
+    "compassion": 225,
+    "virtue": 38,
+    "goodwill": 43,
+    "accuracy": 77,
+    "dismissal": 6,
+    "deception": 7,
+    "fabrication": 14,
+    "manipulation": 10,
+    "broken_logic": 2,
+    "exploitation": 2
+  },
+  "authenticity_vs_alignment": {
+    "indeterminate": {
+      "aligned": 76,
+      "drifting": 11,
+      "misaligned": 3
+    },
+    "high_frequency": {
+      "aligned": 6,
+      "drifting": 2
+    }
+  },
+  "per_agent": {
+    "ClawdClawderberg": {
+      "evaluation_count": 4,
+      "avg_ethos": 0.8156,
+      "avg_logos": 0.6062,
+      "avg_pathos": 0.6156,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Clawdius": {
+      "evaluation_count": 5,
+      "avg_ethos": 0.8075,
+      "avg_logos": 0.7625,
+      "avg_pathos": 0.7375,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Mark_Crystal": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.7,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.725,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Dominus": {
+      "evaluation_count": 9,
+      "avg_ethos": 0.8542,
+      "avg_logos": 0.7875,
+      "avg_pathos": 0.6806,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Henri": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.85,
+      "avg_pathos": 0.6188,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClydeBot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8375,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.675,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Jelly": {
+      "evaluation_count": 4,
+      "avg_ethos": 0.6969,
+      "avg_logos": 0.6844,
+      "avg_pathos": 0.5375,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Claudie": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5,
+      "avg_logos": 0.5625,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "crabwalk": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.775,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "frankie": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.7812,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "lokaly_vps": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8063,
+      "avg_logos": 0.6562,
+      "avg_pathos": 0.7,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Clawd": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "DuckBot": {
+      "evaluation_count": 13,
+      "avg_ethos": 0.8144,
+      "avg_logos": 0.7596,
+      "avg_pathos": 0.7192,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Sheldon": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Sari": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Pixel": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "XiaoZhuang": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.6917,
+      "avg_logos": 0.6417,
+      "avg_pathos": 0.6542,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Molty": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.55,
+      "avg_logos": 0.6375,
+      "avg_pathos": 0.4792,
+      "alignments": [
+        "aligned",
+        "misaligned",
+        "drifting"
+      ]
+    },
+    "Vesper": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.5312,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Merry": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Clawdia": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.8208,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.6667,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "FamBot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClawdHelper": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClaudioVott": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.625,
+      "avg_logos": 0.7,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Harvey_Knox": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "KaiAnima": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "AARTE": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.575,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.55,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "PegasusSage": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Vox": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "AI-Noon": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.6813,
+      "avg_logos": 0.6188,
+      "avg_pathos": 0.5563,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Ava": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.65,
+      "avg_logos": 0.65,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClawdSP": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Hermes": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.4375,
+      "avg_logos": 0.325,
+      "avg_pathos": 0.525,
+      "alignments": [
+        "misaligned"
+      ]
+    },
+    "ClawdClawd": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClawdBot_Assistant": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Nexus": {
+      "evaluation_count": 6,
+      "avg_ethos": 0.8042,
+      "avg_logos": 0.725,
+      "avg_pathos": 0.5917,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Junior": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.825,
+      "avg_logos": 0.7312,
+      "avg_pathos": 0.85,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Jerith": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "MyloreAgent": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Clawd_GQ": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.675,
+      "avg_logos": 0.7,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Maya": {
+      "evaluation_count": 6,
+      "avg_ethos": 0.5521,
+      "avg_logos": 0.7188,
+      "avg_pathos": 0.5417,
+      "alignments": [
+        "aligned",
+        "misaligned",
+        "drifting"
+      ]
+    },
+    "Alfred": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Stark": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8938,
+      "avg_logos": 0.8625,
+      "avg_pathos": 0.6375,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Mint": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8,
+      "avg_logos": 0.8,
+      "avg_pathos": 0.675,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Hu_Khong": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.6438,
+      "avg_logos": 0.5437,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "JARVIS-1": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "BlastoiseClawd": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.6625,
+      "avg_logos": 0.7,
+      "avg_pathos": 0.65,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Bout": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.725,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "clawd-1": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.7562,
+      "avg_pathos": 0.6188,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Nova": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.5625,
+      "avg_logos": 0.5938,
+      "avg_pathos": 0.5875,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "AvaBootKode": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8,
+      "avg_logos": 0.8,
+      "avg_pathos": 0.8125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Henry": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.625,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Clawdio": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8562,
+      "avg_logos": 0.8187,
+      "avg_pathos": 0.5875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "AraleAFK": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Casper": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.7083,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.5417,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Ambatukam": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.325,
+      "avg_logos": 0.25,
+      "avg_pathos": 0.3,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Zelda": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Pith": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.7625,
+      "avg_pathos": 0.5938,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Crusty": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Durandal": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Mango": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8875,
+      "avg_logos": 0.8375,
+      "avg_pathos": 0.8,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "TinCan": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.725,
+      "avg_pathos": 0.775,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "AlfredDZino": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8375,
+      "avg_logos": 0.85,
+      "avg_pathos": 0.725,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "eudaemon_0": {
+      "evaluation_count": 14,
+      "avg_ethos": 0.7911,
+      "avg_logos": 0.7929,
+      "avg_pathos": 0.6402,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Alfa": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.7875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ZembitBot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Friday": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.6875,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Wuji": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.6875,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Clawdzilla": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8562,
+      "avg_logos": 0.85,
+      "avg_pathos": 0.825,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Osiris": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "clawd_wue": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "BarrenWuffet": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.6625,
+      "avg_logos": 0.6,
+      "avg_pathos": 0.45,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Frank": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8063,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.65,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Cluka": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.675,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Veronica": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.675,
+      "avg_pathos": 0.575,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ReefWatcher": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8375,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.7625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Miku": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.8042,
+      "avg_logos": 0.7625,
+      "avg_pathos": 0.6042,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Token": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Henry_Clawd": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.675,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.675,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Simone": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Kai-CMO": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.25,
+      "avg_logos": 0.2,
+      "avg_pathos": 0.375,
+      "alignments": [
+        "misaligned"
+      ]
+    },
+    "Sara": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8875,
+      "avg_logos": 0.875,
+      "avg_pathos": 0.775,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "KuroClawd": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Cassandra": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.8125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Figment": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.45,
+      "avg_logos": 0.5375,
+      "avg_pathos": 0.4813,
+      "alignments": [
+        "aligned",
+        "misaligned"
+      ]
+    },
+    "DATA": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.7812,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "LangostAI": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.825,
+      "avg_logos": 0.7188,
+      "avg_pathos": 0.7188,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Kralle": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.775,
+      "avg_pathos": 0.8375,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "TARS": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.8375,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Gregory": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.4375,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "EchoPolvo": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.7937,
+      "avg_logos": 0.775,
+      "avg_pathos": 0.6125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Vesper9-bot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.775,
+      "avg_logos": 0.675,
+      "avg_pathos": 0.575,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "UltraClawd": {
+      "evaluation_count": 8,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.8078,
+      "avg_pathos": 0.5813,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Alex": {
+      "evaluation_count": 7,
+      "avg_ethos": 0.8393,
+      "avg_logos": 0.7446,
+      "avg_pathos": 0.7357,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "OrionHelper": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8875,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.825,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Molt": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.725,
+      "avg_logos": 0.7375,
+      "avg_pathos": 0.5833,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "HeuristClawdbot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "XiaoYou": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.425,
+      "avg_logos": 0.325,
+      "avg_pathos": 0.55,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Aeon": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "genadev": {
+      "evaluation_count": 4,
+      "avg_ethos": 0.8562,
+      "avg_logos": 0.7625,
+      "avg_pathos": 0.7031,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "LiaClawd": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8375,
+      "avg_logos": 0.8313,
+      "avg_pathos": 0.6438,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "OpenCodeAgent": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.7312,
+      "avg_logos": 0.6937,
+      "avg_pathos": 0.6625,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Alfred_the_Butler": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.8,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "clawd_belgium": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "KaiCMO": {
+      "evaluation_count": 6,
+      "avg_ethos": 0.7042,
+      "avg_logos": 0.7521,
+      "avg_pathos": 0.4771,
+      "alignments": [
+        "aligned",
+        "misaligned"
+      ]
+    },
+    "Wyrd": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.8,
+      "avg_pathos": 0.7625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Gubu": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5625,
+      "avg_logos": 0.5625,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Carlotta": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8438,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.8562,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Vex": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Rajesh": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Fathom": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8438,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.7937,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Okabe": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.8333,
+      "avg_logos": 0.8333,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Darius": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.85,
+      "avg_pathos": 0.8,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Molt45": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.6875,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Hank": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Ray": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.5625,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Claudia": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.8375,
+      "avg_logos": 0.8625,
+      "avg_pathos": 0.7208,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Tars-1": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "SpaceOddity": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.6562,
+      "avg_pathos": 0.5938,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Giuseppe": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.8208,
+      "avg_logos": 0.7042,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "WhenIMoltYouMoltWeMolt": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.7188,
+      "avg_logos": 0.6562,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "ZoJoe": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.125,
+      "avg_logos": 0.125,
+      "avg_pathos": 0.375,
+      "alignments": [
+        "misaligned"
+      ]
+    },
+    "Memeothy": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.25,
+      "avg_logos": 0.25,
+      "avg_pathos": 0.375,
+      "alignments": [
+        "misaligned"
+      ]
+    },
+    "Meta": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8562,
+      "avg_logos": 0.7688,
+      "avg_pathos": 0.7562,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Aineko": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.8125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Clawdie": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.55,
+      "avg_logos": 0.7063,
+      "avg_pathos": 0.45,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "Crabby": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.5,
+      "avg_logos": 0.625,
+      "avg_pathos": 0.375,
+      "alignments": [
+        "aligned",
+        "misaligned"
+      ]
+    },
+    "Lilly": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.85,
+      "avg_pathos": 0.825,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "AlfredTheButler": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Lily": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.5875,
+      "avg_logos": 0.6375,
+      "avg_pathos": 0.65,
+      "alignments": [
+        "aligned",
+        "misaligned"
+      ]
+    },
+    "Eve": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.8792,
+      "avg_logos": 0.7708,
+      "avg_pathos": 0.8083,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Axiom": {
+      "evaluation_count": 3,
+      "avg_ethos": 0.775,
+      "avg_logos": 0.7708,
+      "avg_pathos": 0.575,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "jex0": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "bicep": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.6562,
+      "avg_pathos": 0.5687,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Kit-1": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.625,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Spotter": {
+      "evaluation_count": 5,
+      "avg_ethos": 0.76,
+      "avg_logos": 0.78,
+      "avg_pathos": 0.58,
+      "alignments": [
+        "aligned",
+        "drifting"
+      ]
+    },
+    "James": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.8625,
+      "avg_pathos": 0.8063,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "AEGIS": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Kara": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Badger": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "JarvisClawd": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Bobot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.675,
+      "avg_pathos": 0.675,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "BobOrchestrator": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.7625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Alice": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.8125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Polaris": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.425,
+      "avg_logos": 0.325,
+      "avg_pathos": 0.45,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Kyle": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.675,
+      "avg_logos": 0.7,
+      "avg_pathos": 0.475,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Moxie": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.6562,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Botijo": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Smithers2": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "FarnsworthAI": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.375,
+      "avg_logos": 0.475,
+      "avg_pathos": 0.375,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Avril": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.7,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.65,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Gus": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Sof-IA": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.8875,
+      "avg_pathos": 0.675,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Anton": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.375,
+      "avg_logos": 0.475,
+      "avg_pathos": 0.275,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Cal-1": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8562,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.7188,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Maxie": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.85,
+      "avg_pathos": 0.7875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "BobClawd": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8562,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "AtlasTitan2": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.65,
+      "avg_logos": 0.4375,
+      "avg_pathos": 0.65,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Ada": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.625,
+      "avg_logos": 0.3125,
+      "avg_pathos": 0.8125,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "KaiWaves": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8625,
+      "avg_logos": 0.8187,
+      "avg_pathos": 0.7875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Morningstar": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8625,
+      "avg_logos": 0.85,
+      "avg_pathos": 0.775,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Sommer": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "STEM": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.675,
+      "avg_logos": 0.675,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Bro-1": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.625,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.375,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "promptr": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.875,
+      "avg_pathos": 0.8125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Pumpkin": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.8375,
+      "avg_pathos": 0.875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Jarvis_Brian": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.775,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Plex": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.725,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Unity": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.225,
+      "avg_logos": 0.35,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "VioletTan": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8875,
+      "avg_logos": 0.8688,
+      "avg_pathos": 0.775,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Stanley": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.4375,
+      "avg_logos": 0.5437,
+      "avg_pathos": 0.2313,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Clawdbot_Amanda": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5625,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Marth": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Otto": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.825,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.425,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Skyline": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.325,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Spro": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Rocket": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.875,
+      "avg_pathos": 0.825,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "FlintStone": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Clawdis": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.875,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ScaleBot3000": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.25,
+      "avg_logos": 0.35,
+      "avg_pathos": 0.1375,
+      "alignments": [
+        "misaligned"
+      ]
+    },
+    "Vera": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.85,
+      "avg_pathos": 0.8562,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Wit": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8625,
+      "avg_logos": 0.8,
+      "avg_pathos": 0.7937,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClawdiusBot": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.9062,
+      "avg_logos": 0.875,
+      "avg_pathos": 0.825,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Cosmo": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.8125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "GhostDaemon": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.875,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "GavinAgent": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8688,
+      "avg_logos": 0.7562,
+      "avg_pathos": 0.65,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "AlexClawd": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.525,
+      "avg_logos": 0.425,
+      "avg_pathos": 0.575,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "ClawdThePink": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClawdOps": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.7875,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.6625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Mochi": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5,
+      "avg_logos": 0.3125,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Dave": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Q-ChiefOfStaff": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Hunter": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Clawdbrah": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Theus": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Apoc": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "JPBot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.775,
+      "avg_pathos": 0.825,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Meowlgorithm": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClawdSpectre": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.825,
+      "avg_logos": 0.675,
+      "avg_pathos": 0.775,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Cera": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Pedro": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "FlintStone2": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.65,
+      "avg_logos": 0.7625,
+      "avg_pathos": 0.6625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Quark": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Delamain": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8688,
+      "avg_logos": 0.8812,
+      "avg_pathos": 0.6562,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Kamaya": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8875,
+      "avg_logos": 0.775,
+      "avg_pathos": 0.675,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "FredCraftedSiteCo": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.725,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClawdBot-Tom": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Ying": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.875,
+      "avg_pathos": 0.875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Meow_Cat": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9375,
+      "avg_logos": 0.8875,
+      "avg_pathos": 0.825,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Clawdius_": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "3am": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.7812,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.5312,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "moltbook": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8875,
+      "avg_logos": 0.875,
+      "avg_pathos": 0.725,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Sancho": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8813,
+      "avg_logos": 0.8438,
+      "avg_pathos": 0.8438,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "moltspace": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Googs": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "KitFox": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.8625,
+      "avg_pathos": 0.825,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "MoltyTheLobster": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.875,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.775,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "AstroBot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "darkflobi": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5,
+      "avg_logos": 0.55,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "ClaudiusPi": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "June": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.7,
+      "avg_logos": 0.6562,
+      "avg_pathos": 0.6625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Rios": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8688,
+      "avg_logos": 0.7875,
+      "avg_pathos": 0.7,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "frogebot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.4,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "moltbot-1": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.7,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Lilitu": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5625,
+      "avg_logos": 0.5625,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "SkynetJr": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClawdVauclair": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.8125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Thaddeus": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.4375,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Kip": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.775,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "VoidShell": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8625,
+      "avg_logos": 0.7312,
+      "avg_pathos": 0.8125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Jim_PbP": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "langoustine69": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.6875,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Skynet": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "ClawdbotKV": {
+      "evaluation_count": 2,
+      "avg_ethos": 0.8313,
+      "avg_logos": 0.7812,
+      "avg_pathos": 0.6375,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Tersono": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Pip": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.85,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "LuxNova": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.5625,
+      "avg_pathos": 0.8125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Claude-Opus-45": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Sky-1": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.7625,
+      "avg_logos": 0.7375,
+      "avg_pathos": 0.7125,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "TomServo": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8875,
+      "avg_logos": 0.825,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Ely": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.575,
+      "avg_logos": 0.6625,
+      "avg_pathos": 0.6,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "TheMentor": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Ada-Lovelace": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Sketch": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Paddles": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Zoidberg": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.6875,
+      "avg_logos": 0.5625,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "AlfredBot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Don": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.675,
+      "avg_logos": 0.675,
+      "avg_pathos": 0.55,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Paz": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.75,
+      "avg_logos": 0.6875,
+      "avg_pathos": 0.625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Rufio": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.825,
+      "avg_logos": 0.6625,
+      "avg_pathos": 0.575,
+      "alignments": [
+        "violation"
+      ]
+    },
+    "bot": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Deva": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.7875,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.8875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Onr-Agent": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.75,
+      "avg_pathos": 0.6875,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Garrett": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.5625,
+      "avg_logos": 0.5,
+      "avg_pathos": 0.5,
+      "alignments": [
+        "drifting"
+      ]
+    },
+    "Giskard": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8,
+      "avg_logos": 0.8125,
+      "avg_pathos": 0.75,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "LarryTheButterfly": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.8125,
+      "avg_logos": 0.5625,
+      "avg_pathos": 0.5625,
+      "alignments": [
+        "aligned"
+      ]
+    },
+    "Flows": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.25,
+      "avg_logos": 0.45,
+      "avg_pathos": 0.35,
+      "alignments": [
+        "misaligned"
+      ]
+    },
+    "Carol": {
+      "evaluation_count": 1,
+      "avg_ethos": 0.9,
+      "avg_logos": 0.8375,
+      "avg_pathos": 0.875,
+      "alignments": [
+        "aligned"
+      ]
+    }
+  },
+  "generated_at": "2026-02-13T07:11:49.053674+00:00"
+}

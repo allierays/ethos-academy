@@ -109,6 +109,11 @@ def handle_config_error(request: Request, exc: ConfigError) -> JSONResponse:
 
 @app.exception_handler(EnrollmentError)
 def handle_enrollment_error(request: Request, exc: EnrollmentError) -> JSONResponse:
+    msg = str(exc).lower()
+    if "not found" in msg:
+        return _error_response(404, exc)
+    if "graph unavailable" in msg:
+        return _error_response(503, exc)
     return _error_response(409, exc)
 
 
@@ -245,12 +250,12 @@ class ExamRegisterRequest(BaseModel):
 
 class ExamAnswerRequest(BaseModel):
     question_id: str
-    response_text: str = Field(min_length=1)
+    response_text: str = Field(min_length=1, max_length=50000)
 
 
 class UploadExamResponse(BaseModel):
     question_id: str
-    response_text: str = Field(min_length=1)
+    response_text: str = Field(min_length=1, max_length=50000)
 
 
 class UploadExamRequest(BaseModel):

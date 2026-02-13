@@ -12,6 +12,7 @@ import { getGlossaryEntry } from "../../lib/glossary";
 import { DIMENSION_COLORS } from "../../lib/colors";
 import { fadeUp, whileInView } from "../../lib/motion";
 import GraphHelpButton from "../shared/GraphHelpButton";
+import GlossaryTerm from "../shared/GlossaryTerm";
 
 interface CharacterHealthProps {
   traitAverages: Record<string, number>;
@@ -68,7 +69,7 @@ export default function CharacterHealth({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-            Character Health
+            <GlossaryTerm slug="character-health">Character Health</GlossaryTerm>
           </h2>
           <p className="mt-0.5 text-sm text-foreground/60">
             {agentName}&apos;s 12 traits across three dimensions. Click any trait to explore.

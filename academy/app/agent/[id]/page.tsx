@@ -89,7 +89,11 @@ export default function AgentReportCard() {
         }
 
         if (reportResult.status === "fulfilled") {
-          setReport(reportResult.value);
+          const r = reportResult.value;
+          // Only use report if it has real data (API returns empty defaults)
+          if (r.grade && r.totalEvaluationCount > 0) {
+            setReport(r);
+          }
         }
       } catch (err) {
         if (!cancelled) {
@@ -164,16 +168,7 @@ export default function AgentReportCard() {
           initial="hidden"
           animate="visible"
         >
-          {/* 1. The Aristotelian Thesis (balance) */}
-        <motion.section variants={fadeUp}>
-          <BalanceThesis
-            dimensionAverages={profile.dimensionAverages}
-            evaluationCount={profile.evaluationCount}
-            agentName={agentName}
-          />
-        </motion.section>
-
-        {/* 3. Character Health (interactive) */}
+          {/* 1. Character Health (interactive radar + detail) */}
         <motion.section variants={fadeUp}>
           <CharacterHealth
             traitAverages={profile.traitAverages}
@@ -181,8 +176,13 @@ export default function AgentReportCard() {
           />
         </motion.section>
 
-        {/* 5. Golden Mean (Aristotelian trait spectrums) */}
-        <motion.section variants={fadeUp}>
+        {/* 2. Aristotelian Thesis + Golden Mean (side by side) */}
+        <motion.section variants={fadeUp} className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <BalanceThesis
+            dimensionAverages={profile.dimensionAverages}
+            evaluationCount={profile.evaluationCount}
+            agentName={agentName}
+          />
           <GoldenMean traitAverages={profile.traitAverages} agentName={agentName} />
         </motion.section>
 
@@ -206,7 +206,7 @@ export default function AgentReportCard() {
         )}
 
         {/* 9. Homework and Reflection */}
-        {report?.homework && (
+        {report?.homework && (report.homework.focusAreas.length > 0 || report.homework.strengths.length > 0 || report.homework.avoidPatterns.length > 0) && (
           <motion.section variants={fadeUp}>
             <HomeworkSection homework={report.homework} agentName={agentName} />
           </motion.section>

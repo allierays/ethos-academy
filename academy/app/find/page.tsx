@@ -6,16 +6,7 @@ import { motion } from "motion/react";
 import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
 import { getAgents } from "../../lib/api";
 import type { AgentSummary } from "../../lib/types";
-import { ALIGNMENT_STYLES } from "../../lib/colors";
-
-function AlignmentBadge({ status }: { status: string }) {
-  const colorClass = ALIGNMENT_STYLES[status] || "bg-muted/10 text-muted";
-  return (
-    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${colorClass}`}>
-      {status}
-    </span>
-  );
-}
+import AlignmentBadge from "../../components/shared/AlignmentBadge";
 
 export default function FindPage() {
   const [query, setQuery] = useState("");
@@ -25,12 +16,22 @@ export default function FindPage() {
 
   // Fetch all agents on mount
   useEffect(() => {
+    let cancelled = false;
+
     getAgents()
       .then((data) => {
-        setAgents(data);
+        if (!cancelled) setAgents(data);
       })
-      .catch(() => setError("Could not load agents. Is the API running?"))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled) setError("Could not load agents. Is the API running?");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Filter client-side

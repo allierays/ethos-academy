@@ -26,6 +26,14 @@ interface GradeHeroProps {
   timeline?: TimelinePoint[];
 }
 
+function computeGrade(score: number): string {
+  if (score >= 0.85) return "A";
+  if (score >= 0.70) return "B";
+  if (score >= 0.55) return "C";
+  if (score >= 0.40) return "D";
+  return "F";
+}
+
 export default function GradeHero({ profile, report, timeline = [] }: GradeHeroProps) {
   const latestAlignment =
     profile.alignmentHistory?.[profile.alignmentHistory.length - 1] ?? "unknown";
@@ -37,9 +45,11 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
     (((dims.ethos ?? 0) + (dims.logos ?? 0) + (dims.pathos ?? 0)) / 3) * 100
   );
 
-  const grade = report?.grade ?? null;
-  const gradeColor = grade ? GRADE_COLORS[grade] ?? "#64748b" : "#64748b";
-  const overallPct = report ? Math.round(report.overallScore * 100) : null;
+  // Compute grade from report or from profile dimension averages
+  const reportGrade = report?.grade ?? null;
+  const grade = reportGrade || computeGrade(phronesisScore / 100);
+  const gradeColor = GRADE_COLORS[grade] ?? "#64748b";
+  const overallPct = report ? Math.round(report.overallScore * 100) : phronesisScore;
   const trend = report?.trend
     ? TREND_DISPLAY[report.trend] ?? TREND_DISPLAY.insufficient_data
     : TREND_DISPLAY[profile.phronesisTrend] ?? TREND_DISPLAY.insufficient_data;

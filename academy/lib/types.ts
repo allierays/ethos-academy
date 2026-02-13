@@ -264,6 +264,6 @@ export interface ExamSummary {
   examId: string;
   examType: string;
   completed: boolean;
-  completedAt: string;
+  completedAt: string | null;
   phronesisScore: number;
 }

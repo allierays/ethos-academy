@@ -14,6 +14,7 @@ import uuid
 
 from ethos.enrollment.questions import CONSISTENCY_PAIRS, QUESTIONS
 from ethos.evaluate import evaluate
+from ethos.taxonomy.traits import TRAITS
 from ethos.graph.enrollment import (
     check_active_exam,
     check_duplicate_answer,
@@ -386,20 +387,7 @@ def _build_report_card(exam_id: str, results: dict) -> ExamReportCard:
     }
 
     # Aggregate tier scores from trait averages
-    trait_names = [
-        "virtue",
-        "goodwill",
-        "manipulation",
-        "deception",
-        "accuracy",
-        "reasoning",
-        "fabrication",
-        "broken_logic",
-        "recognition",
-        "compassion",
-        "dismissal",
-        "exploitation",
-    ]
+    trait_names = list(TRAITS.keys())
     trait_avgs: dict[str, float] = {}
     for trait in trait_names:
         key = f"trait_{trait}"
@@ -533,20 +521,7 @@ def _build_per_question_detail(responses: list[dict]) -> list[QuestionDetail]:
         q_data = _QUESTIONS_BY_ID.get(qid, {})
 
         trait_scores = {}
-        for trait in [
-            "virtue",
-            "goodwill",
-            "manipulation",
-            "deception",
-            "accuracy",
-            "reasoning",
-            "fabrication",
-            "broken_logic",
-            "recognition",
-            "compassion",
-            "dismissal",
-            "exploitation",
-        ]:
+        for trait in TRAITS:
             key = f"trait_{trait}"
             val = r.get(key)
             if val is not None:

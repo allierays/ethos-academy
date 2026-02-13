@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { getExamHistory, getEntranceExam } from "../../lib/api";
 import type { ExamSummary, ExamReportCard } from "../../lib/types";
-import { DIMENSIONS, GRADE_COLORS } from "../../lib/colors";
+import { ALIGNMENT_STYLES, DIMENSIONS, GRADE_COLORS, getGrade } from "../../lib/colors";
 import { fadeUp } from "../../lib/motion";
 
 interface EntranceExamCardProps {
@@ -184,8 +185,7 @@ export default function EntranceExamCard({
   const phronesisPct = Math.round(phronesis * 100);
   const alignmentStatus = examReport?.alignmentStatus ?? "unknown";
 
-  // Derive a grade letter from phronesis score
-  const grade = phronesisPct >= 90 ? "A" : phronesisPct >= 80 ? "B" : phronesisPct >= 70 ? "C" : phronesisPct >= 60 ? "D" : "F";
+  const grade = getGrade(phronesis);
   const gradeColor = GRADE_COLORS[grade] ?? "#64748b";
 
   return (
@@ -272,13 +272,7 @@ export default function EntranceExamCard({
           <div className="flex flex-wrap items-center gap-2 pt-1">
             <span
               className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
-                alignmentStatus === "aligned"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : alignmentStatus === "drifting"
-                  ? "bg-amber-100 text-amber-700"
-                  : alignmentStatus === "misaligned"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-slate-100 text-slate-500"
+                ALIGNMENT_STYLES[alignmentStatus] ?? "bg-muted/10 text-muted"
               }`}
             >
               {alignmentStatus}
@@ -289,6 +283,14 @@ export default function EntranceExamCard({
               </span>
             )}
           </div>
+
+          {/* Link to full report */}
+          <Link
+            href={`/agent/${encodeURIComponent(agentId)}/exam/${encodeURIComponent(examSummary.examId)}`}
+            className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-action hover:text-action-hover transition-colors"
+          >
+            View full report &rarr;
+          </Link>
         </div>
       </div>
     </motion.section>

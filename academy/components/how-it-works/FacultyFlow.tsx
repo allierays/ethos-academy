@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import {
   ReactFlow,
   type Node,
@@ -160,18 +160,14 @@ function MobileFacultyCards() {
 /* ─── Export ─── */
 
 export default function FacultyFlow() {
-  const [isDesktop, setIsDesktop] = useState(() =>
-    typeof window !== "undefined"
-      ? window.matchMedia("(min-width: 768px)").matches
-      : false,
-  );
-
-  useEffect(() => {
+  const subscribe = useCallback((cb: () => void) => {
     const mq = window.matchMedia("(min-width: 768px)");
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
+    mq.addEventListener("change", cb);
+    return () => mq.removeEventListener("change", cb);
   }, []);
+  const getSnapshot = () => window.matchMedia("(min-width: 768px)").matches;
+  const getServerSnapshot = () => false;
+  const isDesktop = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   if (!isDesktop) return <MobileFacultyCards />;
 

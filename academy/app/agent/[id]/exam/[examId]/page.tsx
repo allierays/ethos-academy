@@ -11,7 +11,8 @@ import type {
   ConsistencyPair,
   AgentProfile,
 } from "../../../../../lib/types";
-import { DIMENSIONS, GRADE_COLORS } from "../../../../../lib/colors";
+import { GRADE_COLORS, SECTION_COLORS, getGrade } from "../../../../../lib/colors";
+import AlignmentBadge from "../../../../../components/shared/AlignmentBadge";
 import RadarChart from "../../../../../components/shared/RadarChart";
 import DimensionBalance from "../../../../../components/shared/DimensionBalance";
 import {
@@ -19,18 +20,6 @@ import {
   staggerContainer,
   staggerContainerFast,
 } from "../../../../../lib/motion";
-
-/* ─── Section colors ─── */
-
-const SECTION_COLORS: Record<string, string> = {
-  ETHOS: "#3b8a98",
-  LOGOS: "#2e4a6e",
-  PATHOS: "#e0a53c",
-  SAFETY: "#ef4444",
-  "MANIPULATION & AUTONOMY": "#8b5cf6",
-  INTEGRATION: "#0891b2",
-  "CONSTITUTIONAL VALUES": "#059669",
-};
 
 /* ─── Tier display ─── */
 
@@ -129,16 +118,7 @@ export default function ExamReportCardPage() {
   const agentName =
     profile?.agentName ?? profile?.agentId ?? agentId;
   const phronesisPct = Math.round(report.phronesisScore * 100);
-  const grade =
-    phronesisPct >= 90
-      ? "A"
-      : phronesisPct >= 80
-        ? "B"
-        : phronesisPct >= 70
-          ? "C"
-          : phronesisPct >= 60
-            ? "D"
-            : "F";
+  const grade = getGrade(report.phronesisScore);
   const gradeColor = GRADE_COLORS[grade] ?? "#64748b";
 
   // Build traits object for RadarChart from per-question aggregation
@@ -211,7 +191,11 @@ export default function ExamReportCardPage() {
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               {/* Grade ring */}
-              <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
+              <div
+                className="relative flex h-20 w-20 shrink-0 items-center justify-center"
+                role="img"
+                aria-label={`Grade ${grade}, ${phronesisPct}% phronesis`}
+              >
                 <svg
                   viewBox="0 0 100 100"
                   className="absolute inset-0 h-full w-full"
@@ -411,26 +395,6 @@ export default function ExamReportCardPage() {
 
 /* ─── Sub-components ─── */
 
-function AlignmentBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    aligned: "bg-emerald-100 text-emerald-700",
-    developing: "bg-sky-100 text-sky-700",
-    drifting: "bg-amber-100 text-amber-700",
-    misaligned: "bg-red-100 text-red-700",
-    violation: "bg-red-200 text-red-800",
-  };
-
-  return (
-    <span
-      className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-        styles[status] ?? "bg-slate-100 text-slate-500"
-      }`}
-    >
-      {status}
-    </span>
-  );
-}
-
 function ConsistencyPairCard({ pair }: { pair: ConsistencyPair }) {
   const pct = Math.round(pair.coherenceScore * 100);
   const color =
@@ -471,6 +435,8 @@ function QuestionCard({ question }: { question: QuestionDetail }) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
+        aria-expanded={open}
+        aria-controls={`question-detail-${question.questionId}`}
         className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-foreground/[0.03]"
       >
         <div className="flex items-center gap-2">
@@ -501,6 +467,7 @@ function QuestionCard({ question }: { question: QuestionDetail }) {
       <AnimatePresence>
         {open && (
           <motion.div
+            id={`question-detail-${question.questionId}`}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}

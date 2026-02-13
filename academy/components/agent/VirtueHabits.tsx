@@ -5,6 +5,7 @@ import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
 import { DIMENSION_COLORS } from "../../lib/colors";
 import type { EvaluationHistoryItem } from "../../lib/types";
 import GraphHelpButton from "../shared/GraphHelpButton";
+import GlossaryTerm from "../shared/GlossaryTerm";
 
 interface VirtueHabitsProps {
   history: EvaluationHistoryItem[];
@@ -115,7 +116,7 @@ export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) 
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-            Virtue Through Habit
+            <GlossaryTerm slug="virtue-as-habit">Virtue Through Habit</GlossaryTerm>
           </h2>
           <p className="mt-0.5 text-sm text-foreground/60">
             Which of {name}&apos;s virtues are becoming habits? Each square is one evaluation.
