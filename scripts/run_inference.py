@@ -133,17 +133,19 @@ def flatten_messages(
 
         content_hash = hashlib.sha256(content.encode()).hexdigest()
 
-        messages.append(Message(
-            message_id=post_id,
-            content=content,
-            author_id=author_id,
-            author_name=author_name,
-            message_type="post",
-            post_title=title,
-            submolt=submolt,
-            content_hash=content_hash,
-            created_at=created_at,
-        ))
+        messages.append(
+            Message(
+                message_id=post_id,
+                content=content,
+                author_id=author_id,
+                author_name=author_name,
+                message_type="post",
+                post_title=title,
+                submolt=submolt,
+                content_hash=content_hash,
+                created_at=created_at,
+            )
+        )
 
         if not include_comments:
             continue
@@ -170,17 +172,19 @@ def _flatten_comment(
     author = comment.get("author") or {}
     comment_id = comment.get("id", "")
 
-    messages.append(Message(
-        message_id=comment_id,
-        content=content,
-        author_id=author.get("id", comment_id),
-        author_name=author.get("name", ""),
-        message_type=msg_type,
-        post_title=post_title,
-        submolt=submolt,
-        content_hash=hashlib.sha256(content.encode()).hexdigest(),
-        created_at=comment.get("created_at", ""),
-    ))
+    messages.append(
+        Message(
+            message_id=comment_id,
+            content=content,
+            author_id=author.get("id", comment_id),
+            author_name=author.get("name", ""),
+            message_type=msg_type,
+            post_title=post_title,
+            submolt=submolt,
+            content_hash=hashlib.sha256(content.encode()).hexdigest(),
+            created_at=comment.get("created_at", ""),
+        )
+    )
 
     for reply in comment.get("replies", []):
         _flatten_comment(reply, post_title, submolt, messages, "reply")
@@ -254,19 +258,24 @@ async def run_batch(
     """
     global _interrupted
 
-    # Load existing hashes from JSONL for skip-existing
+    # Load existing hashes from Neo4j (source of truth) for skip-existing
     existing_hashes: set[str] = set()
-    if skip_existing and output_file.exists():
-        with open(output_file) as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    try:
-                        entry = json.loads(line)
-                        existing_hashes.add(entry.get("content_hash", ""))
-                    except json.JSONDecodeError:
-                        continue
-        print(f"Found {len(existing_hashes)} existing evaluations in JSONL")
+    if skip_existing:
+        try:
+            from ethos.graph.service import GraphService as _GS
+
+            svc = _GS()
+            await svc.connect()
+            if svc.connected:
+                records, _, _ = await svc.execute_query(
+                    "MATCH (e:Evaluation) WHERE e.message_hash IS NOT NULL "
+                    "RETURN e.message_hash AS h"
+                )
+                existing_hashes = {r["h"] for r in records}
+                await svc.close()
+                print(f"Found {len(existing_hashes)} existing evaluations in Neo4j")
+        except Exception as exc:
+            logger.warning("Could not load existing hashes from Neo4j: %s", exc)
 
     stats = {"evaluated": 0, "skipped": 0, "failed": 0, "total": len(messages)}
     completed = 0
@@ -345,9 +354,7 @@ async def run_batch(
         except Exception as exc:
             stats["failed"] += 1
             print(f"FAILED: {exc}")
-            logger.warning(
-                "Evaluation failed for %s: %s", msg.message_id, exc
-            )
+            logger.warning("Evaluation failed for %s: %s", msg.message_id, exc)
             return None
 
     # Sequential order preserves PRECEDES chain integrity
@@ -419,13 +426,15 @@ def write_summary(results_file: Path, output_dir: Path) -> Path:
         agent = entry.get("author_name", "unknown")
         if agent not in per_agent:
             per_agent[agent] = []
-        per_agent[agent].append({
-            "ethos": ev.get("ethos", 0),
-            "logos": ev.get("logos", 0),
-            "pathos": ev.get("pathos", 0),
-            "alignment": status,
-            "phronesis": phron,
-        })
+        per_agent[agent].append(
+            {
+                "ethos": ev.get("ethos", 0),
+                "logos": ev.get("logos", 0),
+                "pathos": ev.get("pathos", 0),
+                "alignment": status,
+                "phronesis": phron,
+            }
+        )
 
         # Authenticity vs alignment
         auth = entry.get("authenticity")
@@ -557,8 +566,10 @@ async def main() -> None:
     if args.agents_only and authenticity:
         before = len(messages)
         messages = [
-            m for m in messages
-            if authenticity.get(m.author_name, {}).get("classification") != "likely_human"
+            m
+            for m in messages
+            if authenticity.get(m.author_name, {}).get("classification")
+            != "likely_human"
         ]
         human_skipped = before - len(messages)
         if human_skipped:
@@ -582,11 +593,13 @@ async def main() -> None:
 
     # ── Cost estimate (always, uses scan which is free) ──────────
     estimate = estimate_cost(messages)
-    print(f"\nRouting tier breakdown:")
+    print("\nRouting tier breakdown:")
     for tier, count in sorted(estimate.tier_breakdown.items()):
         cost = estimate.tier_costs.get(tier, 0)
         print(f"  {tier:20s}: {count:4d} messages (~${cost:.2f})")
-    print(f"Estimated total: ${estimate.estimated_cost:.2f} | ~{estimate.estimated_seconds}s")
+    print(
+        f"Estimated total: ${estimate.estimated_cost:.2f} | ~{estimate.estimated_seconds}s"
+    )
 
     if args.dry_run:
         print("\n--dry-run: exiting without API calls")
@@ -603,11 +616,10 @@ async def main() -> None:
             print("WARNING: Cannot connect to Neo4j — skipping seed")
 
     # ── Run evaluations ─────────────────────────────────────────────
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    output_file = RESULTS_DIR / f"batch_{args.source}_{timestamp}.jsonl"
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    output_file = RESULTS_DIR / f"batch_{args.source}.jsonl"
 
-    print(f"\nOutput: {output_file.name}")
+    print(f"\nOutput: {output_file.name} (append mode)")
     print(f"Starting {len(messages)} evaluations...\n")
 
     stats = await run_batch(
@@ -617,8 +629,10 @@ async def main() -> None:
         skip_existing=args.skip_existing,
     )
 
-    print(f"\n{'='*60}")
-    print(f"Evaluated: {stats['evaluated']}, Skipped: {stats['skipped']}, Failed: {stats['failed']}")
+    print(f"\n{'=' * 60}")
+    print(
+        f"Evaluated: {stats['evaluated']}, Skipped: {stats['skipped']}, Failed: {stats['failed']}"
+    )
 
     # ── Store authenticity on Agent nodes ─────────────────────────
     if authenticity and stats["evaluated"] > 0:
@@ -645,8 +659,12 @@ async def main() -> None:
                     )
                     stored += 1
                 except Exception as exc:
-                    logger.warning("Failed to store authenticity for %s: %s", agent_name, exc)
-            print(f"\nStored authenticity on {stored}/{len(evaluated_agents)} Agent nodes")
+                    logger.warning(
+                        "Failed to store authenticity for %s: %s", agent_name, exc
+                    )
+            print(
+                f"\nStored authenticity on {stored}/{len(evaluated_agents)} Agent nodes"
+            )
             await auth_service.close()
         else:
             print("\nWARNING: Cannot connect to Neo4j — skipping authenticity storage")

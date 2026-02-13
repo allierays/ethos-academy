@@ -3,24 +3,35 @@
 import json
 from unittest.mock import AsyncMock, patch
 
-from ethos.shared.models import EvaluationResult, InsightsResult
+from ethos.shared.models import DailyReportCard, EvaluationResult
 from ethos.tools import character_report, evaluate_incoming, evaluate_outgoing
 
 
 ALL_TRAITS = [
-    "virtue", "goodwill", "manipulation", "deception",
-    "accuracy", "reasoning", "fabrication", "broken_logic",
-    "recognition", "compassion", "dismissal", "exploitation",
+    "virtue",
+    "goodwill",
+    "manipulation",
+    "deception",
+    "accuracy",
+    "reasoning",
+    "fabrication",
+    "broken_logic",
+    "recognition",
+    "compassion",
+    "dismissal",
+    "exploitation",
 ]
 
 
 def _mock_claude_response() -> str:
-    return json.dumps({
-        "trait_scores": {t: 0.5 for t in ALL_TRAITS},
-        "detected_indicators": [],
-        "overall_trust": "trustworthy",
-        "alignment_status": "aligned",
-    })
+    return json.dumps(
+        {
+            "trait_scores": {t: 0.5 for t in ALL_TRAITS},
+            "detected_indicators": [],
+            "overall_trust": "trustworthy",
+            "alignment_status": "aligned",
+        }
+    )
 
 
 class TestEvaluateIncoming:
@@ -58,10 +69,11 @@ class TestEvaluateOutgoing:
 
 
 class TestCharacterReport:
-    @patch("ethos.tools.insights", new_callable=AsyncMock)
-    async def test_delegates_to_insights(self, mock_insights):
-        mock_insights.return_value = InsightsResult(agent_id="test-agent")
+    @patch("ethos.tools.get_daily_report", new_callable=AsyncMock)
+    async def test_delegates_to_get_daily_report(self, mock_get_report):
+        mock_get_report.return_value = DailyReportCard(agent_id="test-agent", grade="B")
         result = await character_report("test-agent")
-        assert isinstance(result, InsightsResult)
+        assert isinstance(result, DailyReportCard)
         assert result.agent_id == "test-agent"
-        mock_insights.assert_called_once_with("test-agent")
+        assert result.grade == "B"
+        mock_get_report.assert_called_once_with("test-agent")

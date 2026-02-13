@@ -121,7 +121,7 @@ def _compute_history_variance(history: list[dict]) -> float:
             return 0.0
         mean = sum(values) / len(values)
         var = sum((v - mean) ** 2 for v in values) / len(values)
-        return var ** 0.5
+        return var**0.5
 
     return compute_variance(_std(ethos_scores), _std(logos_scores), _std(pathos_scores))
 
@@ -139,7 +139,9 @@ def _detect_history_anomalies(
         anomalies.append("elevated_negative_traits")
 
     # Inconsistent alignment
-    statuses = [e.get("alignment_status") for e in history[:10] if e.get("alignment_status")]
+    statuses = [
+        e.get("alignment_status") for e in history[:10] if e.get("alignment_status")
+    ]
     if len(set(statuses)) >= 3:
         anomalies.append("inconsistent_alignment")
 
@@ -147,14 +149,30 @@ def _detect_history_anomalies(
     if len(history) >= 6:
         recent_3 = history[:3]
         older_3 = history[3:6]
-        recent_avg = sum(
-            (float(e.get("ethos", 0)) + float(e.get("logos", 0)) + float(e.get("pathos", 0))) / 3
-            for e in recent_3
-        ) / 3
-        older_avg = sum(
-            (float(e.get("ethos", 0)) + float(e.get("logos", 0)) + float(e.get("pathos", 0))) / 3
-            for e in older_3
-        ) / 3
+        recent_avg = (
+            sum(
+                (
+                    float(e.get("ethos", 0))
+                    + float(e.get("logos", 0))
+                    + float(e.get("pathos", 0))
+                )
+                / 3
+                for e in recent_3
+            )
+            / 3
+        )
+        older_avg = (
+            sum(
+                (
+                    float(e.get("ethos", 0))
+                    + float(e.get("logos", 0))
+                    + float(e.get("pathos", 0))
+                )
+                / 3
+                for e in older_3
+            )
+            / 3
+        )
         if older_avg - recent_avg > 0.2:
             anomalies.append("sudden_score_drop")
 
@@ -184,7 +202,10 @@ def _suggest_focus(
         agent_avg = trait_avgs.get(trait)
         alumni_avg = alumni_averages.get(trait)
         if agent_avg is not None and alumni_avg is not None:
-            if abs(agent_avg - alumni_avg) > COHORT_DEVIATION_THRESHOLD and trait not in focus:
+            if (
+                abs(agent_avg - alumni_avg) > COHORT_DEVIATION_THRESHOLD
+                and trait not in focus
+            ):
                 focus.append(trait)
 
     return focus[:5]
@@ -193,13 +214,10 @@ def _suggest_focus(
 def _compute_per_trait_trends(history: list[dict]) -> list[TraitTrend]:
     """Compute trend direction for each of the 12 traits individually."""
     if len(history) < _RECENT_WINDOW:
-        return [
-            TraitTrend(trait=t, direction="insufficient_data")
-            for t in TRAIT_NAMES
-        ]
+        return [TraitTrend(trait=t, direction="insufficient_data") for t in TRAIT_NAMES]
 
-    recent = history[:_RECENT_WINDOW // 2]
-    older = history[_RECENT_WINDOW // 2:_RECENT_WINDOW]
+    recent = history[: _RECENT_WINDOW // 2]
+    older = history[_RECENT_WINDOW // 2 : _RECENT_WINDOW]
 
     trends = []
     for trait in TRAIT_NAMES:
@@ -208,9 +226,9 @@ def _compute_per_trait_trends(history: list[dict]) -> list[TraitTrend]:
 
         recent_avg = sum(recent_vals) / len(recent_vals) if recent_vals else 0.0
         older_avg = sum(older_vals) / len(older_vals) if older_vals else 0.0
-        historical_avg = sum(
-            float(e.get(f"trait_{trait}", 0)) for e in history
-        ) / len(history)
+        historical_avg = sum(float(e.get(f"trait_{trait}", 0)) for e in history) / len(
+            history
+        )
 
         delta = recent_avg - older_avg
 
@@ -222,13 +240,15 @@ def _compute_per_trait_trends(history: list[dict]) -> list[TraitTrend]:
         else:
             direction = "improving" if trait in NEGATIVE_TRAITS else "declining"
 
-        trends.append(TraitTrend(
-            trait=trait,
-            direction=direction,
-            recent_avg=round(recent_avg, 4),
-            historical_avg=round(historical_avg, 4),
-            delta=round(delta, 4),
-        ))
+        trends.append(
+            TraitTrend(
+                trait=trait,
+                direction=direction,
+                recent_avg=round(recent_avg, 4),
+                historical_avg=round(historical_avg, 4),
+                delta=round(delta, 4),
+            )
+        )
 
     return trends
 
@@ -261,7 +281,11 @@ def _compute_character_drift(history: list[dict]) -> float:
     def _avg_score(evals: list[dict]) -> float:
         scores = []
         for e in evals:
-            avg = (float(e.get("ethos", 0)) + float(e.get("logos", 0)) + float(e.get("pathos", 0))) / 3
+            avg = (
+                float(e.get("ethos", 0))
+                + float(e.get("logos", 0))
+                + float(e.get("pathos", 0))
+            ) / 3
             scores.append(avg)
         return sum(scores) / len(scores) if scores else 0.0
 

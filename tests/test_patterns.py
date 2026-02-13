@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -152,9 +152,7 @@ class TestDetectPatterns:
 
     @patch("ethos.patterns.get_agent_evaluation_count", new_callable=AsyncMock)
     @patch("ethos.patterns.graph_context")
-    async def test_insufficient_evaluations_returns_empty(
-        self, mock_ctx, mock_count
-    ):
+    async def test_insufficient_evaluations_returns_empty(self, mock_ctx, mock_count):
         mock_service = AsyncMock()
         mock_service.connected = True
         mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_service)

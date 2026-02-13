@@ -7,9 +7,9 @@ Intelligence: character_report()   — learn from the pattern
 
 from __future__ import annotations
 
+from ethos.daily_reports import get_daily_report
 from ethos.evaluate import evaluate
-from ethos.reflection.insights import insights
-from ethos.shared.models import EvaluationResult, InsightsResult
+from ethos.shared.models import DailyReportCard, EvaluationResult
 
 
 async def evaluate_incoming(
@@ -70,13 +70,13 @@ async def evaluate_outgoing(
     )
 
 
-async def character_report(agent_id: str) -> InsightsResult:
-    """Generate a character report for an agent.
+async def character_report(agent_id: str) -> DailyReportCard:
+    """Get the latest character report for an agent.
 
-    Claude reads the agent's full history from the graph and reasons about
-    behavioral trends, alumni comparisons, and emerging patterns.
+    Returns the most recent daily report card from the nightly
+    reflection process -- grade, trends, insights, and homework.
 
     Args:
-        agent_id: The agent identifier to generate a report for.
+        agent_id: The agent identifier to get the report for.
     """
-    return await insights(agent_id)
+    return await get_daily_report(agent_id)

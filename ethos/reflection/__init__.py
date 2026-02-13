@@ -8,8 +8,10 @@ Three cognitive faculties:
 Plus:
   - reflect() — evaluate + profile in one call
   - reflect_history() — profile-only read (no evaluation)
+  - generate_daily_report() — nightly report card + homework
 """
 
+from ethos.reflection.daily_report import generate_daily_report
 from ethos.reflection.history import reflect_history
 from ethos.reflection.insights import insights
 from ethos.reflection.instinct import scan_history
@@ -22,4 +24,5 @@ __all__ = [
     "insights",
     "scan_history",
     "intuit_history",
+    "generate_daily_report",
 ]

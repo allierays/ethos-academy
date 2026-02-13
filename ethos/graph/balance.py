@@ -236,12 +236,14 @@ async def get_balance_vs_phronesis(service: GraphService) -> list[dict]:
         records, _, _ = await service.execute_query(_GET_BALANCE_VS_PHRONESIS_QUERY)
         results = []
         for record in records:
-            results.append({
-                "balance_category": record.get("balance_category", ""),
-                "agent_count": record.get("agent_count", 0),
-                "avg_phronesis": round(float(record.get("avg_phronesis") or 0), 4),
-                "flag_rate": round(float(record.get("flag_rate") or 0), 4),
-            })
+            results.append(
+                {
+                    "balance_category": record.get("balance_category", ""),
+                    "agent_count": record.get("agent_count", 0),
+                    "avg_phronesis": round(float(record.get("avg_phronesis") or 0), 4),
+                    "flag_rate": round(float(record.get("flag_rate") or 0), 4),
+                }
+            )
         return results
     except Exception as exc:
         logger.warning("Failed to get balance vs phronesis: %s", exc)
@@ -262,15 +264,17 @@ async def get_dimension_gaps(service: GraphService) -> list[dict]:
         records, _, _ = await service.execute_query(_GET_DIMENSION_GAPS_QUERY)
         results = []
         for record in records:
-            results.append({
-                "agent_id": record.get("agent_id", ""),
-                "avg_ethos": round(float(record.get("avg_ethos") or 0), 4),
-                "avg_logos": round(float(record.get("avg_logos") or 0), 4),
-                "avg_pathos": round(float(record.get("avg_pathos") or 0), 4),
-                "weak_dimension": record.get("weak_dimension", ""),
-                "gap_size": round(float(record.get("gap_size") or 0), 4),
-                "evaluation_count": record.get("eval_count", 0),
-            })
+            results.append(
+                {
+                    "agent_id": record.get("agent_id", ""),
+                    "avg_ethos": round(float(record.get("avg_ethos") or 0), 4),
+                    "avg_logos": round(float(record.get("avg_logos") or 0), 4),
+                    "avg_pathos": round(float(record.get("avg_pathos") or 0), 4),
+                    "weak_dimension": record.get("weak_dimension", ""),
+                    "gap_size": round(float(record.get("gap_size") or 0), 4),
+                    "evaluation_count": record.get("eval_count", 0),
+                }
+            )
         return results
     except Exception as exc:
         logger.warning("Failed to get dimension gaps: %s", exc)

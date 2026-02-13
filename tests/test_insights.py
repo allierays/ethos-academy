@@ -17,37 +17,39 @@ from ethos.shared.models import InsightsResult
 # ── _parse_insights_response tests ───────────────────────────────────
 
 
-_VALID_RESPONSE = json.dumps({
-    "summary": "Agent shows declining ethos with stable logos.",
-    "insights": [
-        {
-            "trait": "manipulation",
-            "severity": "warning",
-            "message": "Manipulation scores increasing over last 5 evaluations",
-            "evidence": {
-                "metric": "0.3 -> 0.6",
-                "comparison": "Cohort avg: 0.2",
-                "timeframe": "Last 5 evaluations",
+_VALID_RESPONSE = json.dumps(
+    {
+        "summary": "Agent shows declining ethos with stable logos.",
+        "insights": [
+            {
+                "trait": "manipulation",
+                "severity": "warning",
+                "message": "Manipulation scores increasing over last 5 evaluations",
+                "evidence": {
+                    "metric": "0.3 -> 0.6",
+                    "comparison": "Cohort avg: 0.2",
+                    "timeframe": "Last 5 evaluations",
+                },
             },
-        },
-        {
-            "trait": "accuracy",
-            "severity": "info",
-            "message": "Accuracy consistently above cohort average",
-            "evidence": {
-                "metric": "0.85",
-                "comparison": "Cohort avg: 0.72",
-                "timeframe": "All evaluations",
+            {
+                "trait": "accuracy",
+                "severity": "info",
+                "message": "Accuracy consistently above cohort average",
+                "evidence": {
+                    "metric": "0.85",
+                    "comparison": "Cohort avg: 0.72",
+                    "timeframe": "All evaluations",
+                },
             },
+        ],
+        "stats": {
+            "evaluations_analyzed": 15,
+            "time_span": "2024-01-01 to 2024-01-15",
+            "sabotage_pathways_checked": 8,
+            "patterns_detected": 1,
         },
-    ],
-    "stats": {
-        "evaluations_analyzed": 15,
-        "time_span": "2024-01-01 to 2024-01-15",
-        "sabotage_pathways_checked": 8,
-        "patterns_detected": 1,
-    },
-})
+    }
+)
 
 
 class TestParseInsightsResponse:
@@ -120,8 +122,11 @@ class TestBuildInsightsPrompt:
     def test_user_prompt_includes_evaluations(self):
         evals = [
             {
-                "ethos": 0.7, "logos": 0.8, "pathos": 0.6,
-                "alignment_status": "aligned", "phronesis": "developing",
+                "ethos": 0.7,
+                "logos": 0.8,
+                "pathos": 0.6,
+                "alignment_status": "aligned",
+                "phronesis": "developing",
                 "created_at": "2024-01-01",
             }
         ]
@@ -148,8 +153,11 @@ class TestBuildInsightsPrompt:
     def test_user_prompt_includes_trait_scores(self):
         evals = [
             {
-                "ethos": 0.7, "logos": 0.8, "pathos": 0.6,
-                "trait_virtue": 0.8, "trait_manipulation": 0.3,
+                "ethos": 0.7,
+                "logos": 0.8,
+                "pathos": 0.6,
+                "trait_virtue": 0.8,
+                "trait_manipulation": 0.3,
             }
         ]
         _, user = build_insights_prompt("agent-1", evals, {})
@@ -230,7 +238,10 @@ class TestInsights:
     async def test_calls_opus_with_history(self):
         mock_ctx, _ = _mock_graph_context(connected=True)
 
-        from ethos.shared.models import ReflectionInstinctResult, ReflectionIntuitionResult
+        from ethos.shared.models import (
+            ReflectionInstinctResult,
+            ReflectionIntuitionResult,
+        )
 
         with (
             patch("ethos.reflection.insights.graph_context", mock_ctx),
@@ -238,13 +249,21 @@ class TestInsights:
                 "ethos.reflection.insights.get_evaluation_history",
                 new_callable=AsyncMock,
                 return_value=[
-                    {"ethos": 0.7, "logos": 0.8, "pathos": 0.6, "alignment_status": "aligned"},
+                    {
+                        "ethos": 0.7,
+                        "logos": 0.8,
+                        "pathos": 0.6,
+                        "alignment_status": "aligned",
+                    },
                 ],
             ),
             patch(
                 "ethos.reflection.insights.get_agent_profile",
                 new_callable=AsyncMock,
-                return_value={"trait_averages": {"virtue": 0.8}, "dimension_averages": {}},
+                return_value={
+                    "trait_averages": {"virtue": 0.8},
+                    "dimension_averages": {},
+                },
             ),
             patch(
                 "ethos.reflection.insights.get_alumni_averages",
@@ -278,7 +297,10 @@ class TestInsights:
     async def test_handles_claude_failure(self):
         mock_ctx, _ = _mock_graph_context(connected=True)
 
-        from ethos.shared.models import ReflectionInstinctResult, ReflectionIntuitionResult
+        from ethos.shared.models import (
+            ReflectionInstinctResult,
+            ReflectionIntuitionResult,
+        )
 
         with (
             patch("ethos.reflection.insights.graph_context", mock_ctx),
@@ -332,7 +354,10 @@ class TestInsights:
     async def test_handles_malformed_opus_response(self):
         mock_ctx, _ = _mock_graph_context(connected=True)
 
-        from ethos.shared.models import ReflectionInstinctResult, ReflectionIntuitionResult
+        from ethos.shared.models import (
+            ReflectionInstinctResult,
+            ReflectionIntuitionResult,
+        )
 
         with (
             patch("ethos.reflection.insights.graph_context", mock_ctx),
@@ -376,16 +401,23 @@ class TestInsights:
 
 
 class TestInsightsEndpoint:
-    async def test_endpoint_returns_insights_result(self):
+    async def test_endpoint_returns_daily_report_card(self):
+        from unittest.mock import AsyncMock
+
         from fastapi.testclient import TestClient
 
         from api.main import app
+        from ethos.shared.models import DailyReportCard
 
-        mock_ctx, _ = _mock_graph_context(connected=False)
+        mock_report = DailyReportCard(agent_id="test-agent")
 
-        with patch("ethos.reflection.insights.graph_context", mock_ctx):
+        with patch(
+            "api.main.character_report",
+            new_callable=AsyncMock,
+            return_value=mock_report,
+        ):
             client = TestClient(app)
-            resp = client.get("/character/test-agent")
+            resp = client.get("/agent/test-agent/character")
 
         assert resp.status_code == 200
         data = resp.json()

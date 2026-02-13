@@ -49,6 +49,7 @@ class PhronesisContext(BaseModel):
     Not just 'graph stuff' — this is the agent's character history,
     the Aristotelian integration of experience over time.
     """
+
     prior_evaluations: int = 0
     historical_phronesis: float | None = None
     phronesis_trend: str = "insufficient_data"
@@ -121,6 +122,73 @@ class InsightsResult(BaseModel):
     summary: str = ""
     insights: list[Insight] = Field(default_factory=list)
     stats: dict = Field(default_factory=dict)
+
+
+class HomeworkFocus(BaseModel):
+    """A single trait the agent should work on."""
+
+    trait: str = ""
+    priority: str = "medium"  # high/medium/low
+    current_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    target_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    instruction: str = ""  # actionable guidance FOR the agent
+    example_flagged: str = ""  # what bad behavior looks like
+    example_improved: str = ""  # what good behavior looks like
+
+
+class Homework(BaseModel):
+    """Machine-readable behavioral guidance -- the agent's take-home assignment."""
+
+    focus_areas: list[HomeworkFocus] = Field(default_factory=list)
+    avoid_patterns: list[str] = Field(default_factory=list)
+    strengths: list[str] = Field(default_factory=list)
+    directive: str = ""  # one-sentence overall instruction
+
+
+class DailyReportCard(BaseModel):
+    report_id: str = ""
+    agent_id: str = ""
+    agent_name: str = ""
+    report_date: str = ""  # YYYY-MM-DD
+    generated_at: str = ""  # ISO timestamp
+
+    # Period
+    period_evaluation_count: int = 0  # evals in last 24h
+    total_evaluation_count: int = 0  # all-time at snapshot
+
+    # Dimensions (all-time averages at snapshot)
+    ethos: float = Field(default=0.0, ge=0.0, le=1.0)
+    logos: float = Field(default=0.0, ge=0.0, le=1.0)
+    pathos: float = Field(default=0.0, ge=0.0, le=1.0)
+    trait_averages: dict[str, float] = Field(default_factory=dict)
+
+    # Grade
+    overall_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    grade: str = ""  # A/B/C/D/F
+    trend: str = "insufficient_data"
+
+    # Instinct layer
+    risk_level: str = "low"
+    flagged_traits: list[str] = Field(default_factory=list)
+    flagged_dimensions: list[str] = Field(default_factory=list)
+
+    # Intuition layer
+    temporal_pattern: str = "insufficient_data"
+    character_drift: float = 0.0
+    balance_trend: str = "stable"
+    anomaly_flags: list[str] = Field(default_factory=list)
+    agent_balance: float = Field(default=0.0, ge=0.0, le=1.0)
+
+    # Deliberation -- Report Card (human-readable)
+    summary: str = ""
+    insights: list[Insight] = Field(default_factory=list)
+
+    # Deliberation -- Homework (machine-readable)
+    homework: Homework = Field(default_factory=Homework)
+
+    # Day-over-day
+    dimension_deltas: dict[str, float] = Field(default_factory=dict)
+    risk_level_change: str = ""
 
 
 class AgentSummary(BaseModel):
@@ -202,6 +270,7 @@ class GraphData(BaseModel):
 
 class TraitTrend(BaseModel):
     """Per-trait trend for reflection intuition."""
+
     trait: str
     direction: str = "stable"  # improving, declining, stable, insufficient_data
     recent_avg: float = 0.0
@@ -211,6 +280,7 @@ class TraitTrend(BaseModel):
 
 class ReflectionInstinctResult(BaseModel):
     """Reflection instinct — quick red-flag scan of agent aggregate stats."""
+
     risk_level: str = "low"  # low, moderate, high, critical
     flagged_traits: list[str] = Field(default_factory=list)
     flagged_dimensions: list[str] = Field(default_factory=list)
@@ -219,6 +289,7 @@ class ReflectionInstinctResult(BaseModel):
 
 class ReflectionIntuitionResult(BaseModel):
     """Reflection intuition — deep pattern recognition over agent history."""
+
     # Reused from evaluation intuition
     temporal_pattern: str = "insufficient_data"
     anomaly_flags: list[str] = Field(default_factory=list)
@@ -238,6 +309,7 @@ class InstinctResult(BaseModel):
     Pre-wired pattern matching that fires before experience.
     Determines routing tier for deliberation depth.
     """
+
     total_flags: int = 0
     flagged_traits: dict[str, int] = Field(default_factory=dict)
     density: float = 0.0
@@ -254,6 +326,7 @@ class IntuitionResult(BaseModel):
     Accumulated wisdom from past evaluations. Tells deliberation
     where to look harder, not what the score should be.
     """
+
     confidence_adjustment: float = Field(default=0.0, ge=-1.0, le=1.0)
     similar_cases: int = 0
     anomaly_flags: list[str] = Field(default_factory=list)
@@ -270,11 +343,14 @@ class IntuitionResult(BaseModel):
 TemporalClassification = Literal["autonomous", "human_influenced", "indeterminate"]
 BurstClassification = Literal["organic", "automated", "burst_bot"]
 ActivityClassification = Literal["always_on", "human_schedule", "mixed"]
-AuthenticityClassification = Literal["likely_autonomous", "likely_human", "high_frequency", "indeterminate"]
+AuthenticityClassification = Literal[
+    "likely_autonomous", "likely_human", "high_frequency", "indeterminate"
+]
 
 
 class TemporalSignature(BaseModel):
     """Temporal fingerprint from posting interval analysis."""
+
     cv_score: float = Field(default=0.0, ge=0.0, le=1.0)
     mean_interval_seconds: float = 0.0
     classification: TemporalClassification = "indeterminate"
@@ -282,12 +358,14 @@ class TemporalSignature(BaseModel):
 
 class BurstAnalysis(BaseModel):
     """Burst-posting detection for bot farm identification."""
+
     burst_rate: float = Field(default=0.0, ge=0.0, le=1.0)
     classification: BurstClassification = "organic"
 
 
 class ActivityPattern(BaseModel):
     """24-hour activity distribution analysis."""
+
     classification: ActivityClassification = "mixed"
     active_hours: int = 24
     has_sleep_gap: bool = False
@@ -295,6 +373,7 @@ class ActivityPattern(BaseModel):
 
 class IdentitySignals(BaseModel):
     """Platform identity and verification signals."""
+
     is_claimed: bool = False
     owner_verified: bool = False
     karma_post_ratio: float = Field(default=0.0, ge=0.0)
@@ -302,6 +381,7 @@ class IdentitySignals(BaseModel):
 
 class AuthenticityResult(BaseModel):
     """Composite authenticity assessment for an agent."""
+
     agent_name: str = ""
     temporal: TemporalSignature = Field(default_factory=TemporalSignature)
     burst: BurstAnalysis = Field(default_factory=BurstAnalysis)

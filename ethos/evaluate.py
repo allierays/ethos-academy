@@ -161,7 +161,11 @@ async def evaluate(
 
     # Step 3a: Build prompts (intuition context enriches the prompt)
     system_prompt, user_prompt = build_evaluation_prompt(
-        text, instinct_result, tier, intuition_result, direction=direction,
+        text,
+        instinct_result,
+        tier,
+        intuition_result,
+        direction=direction,
     )
 
     # Step 3b: Call Claude
@@ -205,7 +209,11 @@ async def evaluate(
             async with graph_context() as service:
                 phronesis_ctx = await _build_phronesis_context(service, source)
                 await _try_store_evaluation(
-                    service, source, result, text, phronesis,
+                    service,
+                    source,
+                    result,
+                    text,
+                    phronesis,
                     agent_name=source_name,
                     agent_specialty=agent_specialty,
                     message_timestamp=message_timestamp,

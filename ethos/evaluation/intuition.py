@@ -42,8 +42,7 @@ def _detect_anomalies(
 
     # Agent with rising negative trait averages
     neg_avg = [
-        v for v in [avg_manipulation, avg_deception, avg_fabrication]
-        if v is not None
+        v for v in [avg_manipulation, avg_deception, avg_fabrication] if v is not None
     ]
     if neg_avg and sum(neg_avg) / len(neg_avg) > 0.4:
         anomalies.append("elevated_negative_traits")

@@ -27,11 +27,12 @@ logger = logging.getLogger(__name__)
 _RESULTS_CACHE: dict | None = None
 _STORED_AGENTS: set[str] = set()
 _RESULTS_FILE = (
-    Path(__file__).resolve().parent.parent / "data" / "moltbook" / "authenticity_results.json"
+    Path(__file__).resolve().parent.parent
+    / "data"
+    / "moltbook"
+    / "authenticity_results.json"
 )
-_AGENTS_DIR = (
-    Path(__file__).resolve().parent.parent / "data" / "moltbook" / "agents"
-)
+_AGENTS_DIR = Path(__file__).resolve().parent.parent / "data" / "moltbook" / "agents"
 
 
 def _load_results_cache() -> dict:
@@ -98,7 +99,12 @@ def _compute_from_profile(agent_name: str) -> AuthenticityResult | None:
     identity = analyze_identity_signals(data.get("agent", {}))
 
     return compute_authenticity(
-        temporal, burst, activity, identity, len(timestamps), agent_name=agent_name,
+        temporal,
+        burst,
+        activity,
+        identity,
+        len(timestamps),
+        agent_name=agent_name,
     )
 
 

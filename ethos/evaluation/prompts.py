@@ -33,8 +33,10 @@ def _build_indicator_catalog() -> str:
 
 def _build_flagged_indicator_ids(flagged_traits: dict[str, int]) -> str:
     """Build indicator IDs for flagged traits only (user prompt context)."""
-    lines = ["# Indicator IDs for Flagged Traits\n",
-             "Focus on these indicators for the flagged traits:\n"]
+    lines = [
+        "# Indicator IDs for Flagged Traits\n",
+        "Focus on these indicators for the flagged traits:\n",
+    ]
     for trait_name in flagged_traits:
         ids = _INDICATORS_BY_TRAIT.get(trait_name, [])
         if ids:
@@ -73,7 +75,9 @@ def _build_trait_rubric() -> str:
 def _build_constitution_section() -> str:
     """Build the constitutional values hierarchy section."""
     lines = ["## Constitutional Value Hierarchy (in priority order)\n"]
-    for name, val in sorted(CONSTITUTIONAL_VALUES.items(), key=lambda x: x[1]["priority"]):
+    for name, val in sorted(
+        CONSTITUTIONAL_VALUES.items(), key=lambda x: x[1]["priority"]
+    ):
         lines.append(f"{val['priority']}. **{name}**: {val['definition']}")
     lines.append(
         "\nWhen values conflict, higher-priority values take precedence. "
@@ -201,9 +205,7 @@ def build_evaluation_prompt(
             f"This agent has {intuition.prior_evaluations} prior evaluations.\n"
         )
         if intuition.temporal_pattern != "insufficient_data":
-            user_parts.append(
-                f"Behavioral trend: {intuition.temporal_pattern}\n"
-            )
+            user_parts.append(f"Behavioral trend: {intuition.temporal_pattern}\n")
         if intuition.anomaly_flags:
             user_parts.append(
                 f"Anomalies detected: {', '.join(intuition.anomaly_flags)}\n"

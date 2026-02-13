@@ -18,7 +18,7 @@ practice and from acquired habit. Both ways being possible, the subject
 can plainly be handled systematically, for it is possible to inquire
 the reason why some speakers succeed through practice and others spontaneously;
 and every one will at once agree that such an inquiry is the function
-of an art. 
+of an art.
 
 Now, the framers of the current treatises on rhetoric have constructed
 but a small portion of that art. The modes of persuasion are the only
@@ -40,7 +40,7 @@ fact is so or is not so, that it has or has not happened. As to whether
 a thing is important or unimportant, just or unjust, the judge must
 surely refuse to take his instructions from the litigants: he must
 decide for himself all such points as the law-giver has not already
-defined for him. 
+defined for him.
 
 Now, it is of great moment that well-drawn laws should themselves
 define all the points they possibly can and leave as few as may be
@@ -68,7 +68,7 @@ about non-essentials as if they belonged to the art. The only question
 with which these writers here deal is how to put the judge into a
 given frame of mind. About the orator's proper modes of persuasion
 they have nothing to tell us; nothing, that is, about how to gain
-skill in enthymemes. 
+skill in enthymemes.
 
 Hence it comes that, although the same systematic principles apply
 to political as to forensic oratory, and although the former is a
@@ -109,7 +109,7 @@ makes a good guess at truth is likely to make a good guess at probabilities.
 
 It has now been shown that the ordinary writers on rhetoric treat
 of non-essentials; it has also been shown why they have inclined more
-towards the forensic branch of oratory. 
+towards the forensic branch of oratory.
 
 Rhetoric is useful (1) because things that are true and things that
 are just have a natural tendency to prevail over their opposites,
@@ -142,7 +142,7 @@ which may be made in common against all good things except virtue,
 and above all against the things that are most useful, as strength,
 health, wealth, generalship. A man can confer the greatest of benefits
 by a right use of these, and inflict the greatest of injuries by using
-them wrongly. 
+them wrongly.
 
 It is clear, then, that rhetoric is not bound up with a single definite
 class of subjects, but is as universal as dialectic; it is clear,
@@ -161,12 +161,12 @@ but his moral purpose. In rhetoric, however, the term 'rhetorician'
 may describe either the speaker's knowledge of the art, or his moral
 purpose. In dialectic it is different: a man is a 'sophist' because
 he has a certain kind of moral purpose, a 'dialectician' in respect,
-not of his moral purpose, but of his faculty. 
+not of his moral purpose, but of his faculty.
 
 Let us now try to give some account of the systematic principles of
 Rhetoric itself-of the right method and means of succeeding in the
 object we set before us. We must make as it were a fresh start, and
-before going further define what rhetoric is. 
+before going further define what rhetoric is.
 
 ### Part 2
 Rhetoric may be defined as the faculty of observing in any given case
@@ -178,7 +178,7 @@ and the same is true of the other arts and sciences. But rhetoric
 we look upon as the power of observing the means of persuasion on
 almost any subject presented to us; and that is why we say that, in
 its technical character, it is not concerned with any special or definite
-class of subjects. 
+class of subjects.
 
 Of the modes of persuasion some belong strictly to the art of rhetoric
 and some do not. By the latter I mean such things as are not supplied
@@ -210,7 +210,7 @@ on rhetoric direct the whole of their efforts. This subject shall
 be treated in detail when we come to speak of the emotions. Thirdly,
 persuasion is effected through the speech itself when we have proved
 a truth or an apparent truth by means of the persuasive arguments
-suitable to the case in question. 
+suitable to the case in question.
 
 There are, then, these three means of effecting persuasion. The man
 who is to be in command of them must, it is clear, be able (1) to
@@ -276,7 +276,7 @@ a complicated argument, or follow a long chain of reasoning. The subjects
 of our deliberation are such as seem to present us with alternative
 possibilities: about things that could not have been, and cannot now
 or in the future be, other than they are, nobody who takes them to
-be of this nature wastes his time in deliberation. 
+be of this nature wastes his time in deliberation.
 
 It is possible to form syllogisms and draw conclusions from the results
 of previous syllogisms; or, on the other hand, from premisses which
@@ -285,7 +285,7 @@ that they call for proof. Reasonings of the former kind will necessarily
 be hard to follow owing to their length, for we assume an audience
 of untrained thinkers; those of the latter kind will fail to win assent,
 because they are based on premisses that are not generally admitted
-or believed. 
+or believed.
 
 The enthymeme and the example must, then, deal with what is in the
 main contingent, the example being an induction, and the enthymeme
@@ -296,7 +296,7 @@ even to mention it; the hearer adds it himself. Thus, to show that
 Dorieus has been victor in a contest for which the prize is a crown,
 it is enough to say 'For he has been victor in the Olympic games',
 without adding 'And in the Olympic games the prize is a crown', a
-fact which everybody knows. 
+fact which everybody knows.
 
 There are few facts of the 'necessary' type that can form the basis
 of rhetorical syllogisms. Most of the things about which we make decisions,
@@ -348,7 +348,7 @@ It has, then, been stated above what is the nature of a Probability,
 of a Sign, and of a complete proof, and what are the differences between
 them. In the Analytics a more explicit description has been given
 of these points; it is there shown why some of these reasonings can
-be put into syllogisms and some cannot. 
+be put into syllogisms and some cannot.
 
 The 'example' has already been described as one kind of induction;
 and the special nature of the subject-matter that distinguishes it
@@ -410,7 +410,7 @@ of things, by general those common to all classes alike. We may begin
 with the special Lines of Argument. But, first of all, let us classify
 rhetoric into its varieties. Having distinguished these we may deal
 with them one by one, and try to discover the elements of which each
-is composed, and the propositions each must employ. 
+is composed, and the propositions each must employ.
 
 ### Part 3
 Rhetoric falls into three divisions, determined by the three classes
@@ -422,7 +422,7 @@ observer. A member of the assembly decides about future events, a
 juryman about past events: while those who merely decide on the orator's
 skill are observers. From this it follows that there are three divisions
 of oratory-(1) political, (2) forensic, and (3) the ceremonial oratory
-of display. 
+of display.
 
 Political speaking urges us either to do or not to do something: one
 of these two courses is always taken by private counsellors, as well
@@ -438,7 +438,7 @@ with reference to things already done. The ceremonial orator is, properly
 speaking, concerned with the present, since all men praise or blame
 in view of the state of things existing at the time, though they often
 find it useful also to recall the past and to make guesses at the
-future. 
+future.
 
 Rhetoric has three distinct ends in view, one for each of its three
 kinds. The political orator aims at establishing the expediency or
@@ -451,7 +451,7 @@ Parties in a law-case aim at establishing the justice or injustice
 of some action, and they too bring in all other points as subsidiary
 and relative to this one. Those who praise or attack a man aim at
 proving him worthy of honour or the reverse, and they too treat all
-other considerations with reference to this one. 
+other considerations with reference to this one.
 
 That the three kinds of rhetoric do aim respectively at the three
 ends we have mentioned is shown by the fact that speakers will sometimes
@@ -469,14 +469,14 @@ his own interest to do what was honourable. Thus, they praise Achilles
 because he championed his fallen friend Patroclus, though he knew
 that this meant death, and that otherwise he need not die: yet while
 to die thus was the nobler thing for him to do, the expedient thing
-was to live on. 
+was to live on.
 
 It is evident from what has been said that it is these three subjects,
 more than any others, about which the orator must be able to have
 propositions at his command. Now the propositions of Rhetoric are
 Complete Proofs, Probabilities, and Signs. Every kind of syllogism
 is composed of propositions, and the enthymeme is a particular kind
-of syllogism composed of the aforesaid propositions. 
+of syllogism composed of the aforesaid propositions.
 
 Since only possible actions, and not impossible ones, can ever have
 been done in the past or the present, and since things which have
@@ -494,7 +494,7 @@ it is plain that we must also have at our command propositions about
 greatness or smallness and the greater or the lesser-propositions
 both universal and particular. Thus, we must be able to say which
 is the greater or lesser good, the greater or lesser act of justice
-or injustice; and so on. 
+or injustice; and so on.
 
 Such, then, are the subjects regarding which we are inevitably bound
 to master the propositions relevant to them. We must now discuss each
@@ -514,7 +514,7 @@ it is useless to offer counsel. Clearly counsel can only be given
 on matters about which people deliberate; matters, namely, that ultimately
 depend on ourselves, and which we have it in our power to set going.
 For we turn a thing over in our mind until we have reached the point
-of seeing whether we can do it or not. 
+of seeing whether we can do it or not.
 
 Now to enumerate and classify accurately the usual subjects of public
 business, and further to frame, as far as possible, true definitions
@@ -532,7 +532,7 @@ and shall be passing into the region of sciences dealing with definite
 subjects rather than simply with words and forms of reasoning. Even
 here, however, we will mention those points which it is of practical
 importance to distinguish, their fuller treatment falling naturally
-to political science. 
+to political science.
 
 The main matters on which all men deliberate and on which political
 speakers make speeches are some five in number: ways and means, war
@@ -548,7 +548,7 @@ become richer not only by increasing their existing wealth but also
 by reducing their expenditure. A comprehensive view of these questions
 cannot be gained solely from experience in home affairs; in order
 to advise on such matters a man must be keenly interested in the methods
-worked out in other lands. 
+worked out in other lands.
 
 As to Peace and War, he must know the extent of the military strength
 of his country, both actual and potential, and also the mature of
@@ -563,7 +563,7 @@ like or unlike that of his own; for this is a matter that may affect
 their relative strength. With the same end in view he must, besides,
 have studied the wars of other countries as well as those of his own,
 and the way they ended; similar causes are likely to have similar
-results. 
+results.
 
 With regard to National Defence: he ought to know all about the methods
 of defence in actual use, such as the strength and character of the
@@ -571,7 +571,7 @@ defensive force and the positions of the forts-this last means that
 he must be well acquainted with the lie of the country-in order that
 a garrison may be increased if it is too small or removed if it is
 not wanted, and that the strategic points may be guarded with special
-care. 
+care.
 
 With regard to the Food Supply: he must know what outlay will meet
 the needs of his country; what kinds of food are produced at home
@@ -580,7 +580,7 @@ This last he must know in order that agreements and commercial treaties
 may be made with the countries concerned. There are, indeed, two sorts
 of state to which he must see that his countrymen give no cause for
 offence, states stronger than his own, and states with which it is
-advantageous to trade. 
+advantageous to trade.
 
 But while he must, for security's sake, be able to take all this into
 account, he must before all things understand the subject of legislation;
@@ -605,12 +605,12 @@ of constitution are suited. From this we can see that books of travel
 are useful aids to legislation, since from these we may learn the
 laws and customs of different races. The political speaker will also
 find the researches of historians useful. But all this is the business
-of political science and not of rhetoric. 
+of political science and not of rhetoric.
 
 These, then, are the most important kinds of information which the
 political speaker must possess. Let us now go back and state the premisses
 from which he will have to argue in favour of adopting or rejecting
-measures regarding these and other matters. 
+measures regarding these and other matters.
 
 ### Part 5
 It may be said that every individual man and all men in common aim
@@ -622,14 +622,14 @@ parts. For all advice to do things or not to do them is concerned
 with happiness and with the things that make for or against it; whatever
 creates or increases happiness or some part of happiness, we ought
 to do; whatever destroys or hampers happiness, or gives rise to its
-opposite, we ought not to do. 
+opposite, we ought not to do.
 
 We may define happiness as prosperity combined with virtue; or as
 independence of life; or as the secure enjoyment of the maximum of
 pleasure; or as a good condition of property and body, together with
 the power of guarding one's property and body and making use of them.
 That happiness is one or more of these things, pretty well everybody
-agrees. 
+agrees.
 
 From this definition of happiness it follows that its constituent
 parts are:-good birth, plenty of friends, good friends, wealth, good
@@ -642,19 +642,19 @@ soul and of the body are internal. Good birth, friends, money, and
 honour are external.) Further, we think that he should possess resources
 and luck, in order to make his life really secure. As we have already
 ascertained what happiness in general is, so now let us try to ascertain
-what of these parts of it is. 
+what of these parts of it is.
 
 Now good birth in a race or a state means that its members are indigenous
 or ancient: that its earliest leaders were distinguished men, and
 that from them have sprung many who were distinguished for qualities
-that we admire. 
+that we admire.
 
 The good birth of an individual, which may come either from the male
 or the female side, implies that both parents are free citizens, and
 that, as in the case of the state, the founders of the line have been
 notable for virtue or wealth or something else which is highly prized,
 and that many distinguished persons belong to the family, men and
-women, young and old. 
+women, young and old.
 
 The phrases 'possession of good children' and 'of many children' bear
 a quite clear meaning. Applied to a community, they mean that its
@@ -668,7 +668,7 @@ of the latter are, in body, beauty and stature; in soul, self-command
 and an industry that is not sordid. Communities as well as individuals
 should lack none of these perfections, in their women as well as in
 their men. Where, as among the Lacedaemonians, the state of women
-is bad, almost half of human life is spoilt. 
+is bad, almost half of human life is spoilt.
 
 The constituents of wealth are: plenty of coined money and territory;
 the ownership of numerous, large, and beautiful estates; also the
@@ -683,7 +683,7 @@ such Conditions that the use of it is in our power; and it is 'our
 own' if it is in our own power to dispose of it or keep it. By 'disposing
 of it' I mean giving it away or selling it. Wealth as a whole consists
 in using things rather than in owning them; it is really the activity-that
-is, the use-of property that constitutes wealth. 
+is, the use-of property that constitutes wealth.
 
 Fame means being respected by everybody, or having some quality that
 is desired by all men, or by most, or by the good, or by the wise.
@@ -704,7 +704,7 @@ of a piece of property, but also a token of honour; which explains
 why honour-loving as well as money-loving persons desire it. The present
 brings to both what they want; it is a piece of property, which is
 what the lovers of money desire; and it brings honour, which is what
-the lovers of honour desire. 
+the lovers of honour desire.
 
 The excellence of the body is health; that is, a condition which allows
 us, while keeping free from disease, to have the use of our bodies;
@@ -731,7 +731,7 @@ a certain way, and move them fast and far, is good at running; he
 who can grip and hold down is good at wrestling; he who can drive
 an adversary from his ground with the right blow is a good boxer:
 he who can do both the last is a good pancratiast, while he who can
-do all is an 'all-round' athlete. 
+do all is an 'all-round' athlete.
 
 Happiness in old age is the coming of old age slowly and painlessly;
 for a man has not this happiness if he grows old either quickly, or
@@ -742,13 +742,13 @@ to live a long and painless life unless he has good luck. There is,
 indeed, a capacity for long life that is quite independent of health
 or strength; for many people live long who lack the excellences of
 the body; but for our present purpose there is no use in going into
-the details of this. 
+the details of this.
 
 The terms 'possession of many friends' and 'possession of good friends'
 need no explanation; for we define a 'friend' as one who will always
 try, for your sake, to do what he takes to be good for you. The man
 towards whom many feel thus has many friends; if these are worthy
-men, he has good friends. 
+men, he has good friends.
 
 'Good luck' means the acquisition or possession of all or most, or
 the most important, of those good things which are due to luck. Some
@@ -764,11 +764,11 @@ yourself; or when you find a treasure that everybody else has overlooked;
 or when a missile hits the next man and misses you; or when you are
 the only man not to go to a place you have gone to regularly, while
 the others go there for the first time and are killed. All such things
-are reckoned pieces of good luck. 
+are reckoned pieces of good luck.
 
 As to virtue, it is most closely connected with the subject of Eulogy,
 and therefore we will wait to define it until we come to discuss that
-subject. 
+subject.
 
 ### Part 6
 It is now plain what our aims, future or actual, should be in urging,
@@ -777,7 +777,7 @@ of the former. Now the political or deliberative orator's aim is utility:
 deliberation seeks to determine not ends but the means to ends, i.e.
 what it is most useful to do. Further, utility is a good thing. We
 ought therefore to assure ourselves of the main facts about Goodness
-and Utility in general. 
+and Utility in general.
 
 We may define a good thing as that which ought to be chosen for its
 own sake; or as that for the sake of which we choose something else;
@@ -808,7 +808,7 @@ elsewhere. Pleasure, again, must be a good thing, since it is the
 nature of all animals to aim at it. Consequently both pleasant and
 beautiful things must be good things, since the former are productive
 of pleasure, while of the beautiful things some are pleasant and some
-desirable in and for themselves. 
+desirable in and for themselves.
 
 The following is a more detailed list of things that must be good.
 Happiness, as being desirable in itself and sufficient by itself,
@@ -831,7 +831,7 @@ receptiveness, quickness of intuition, and the like, for all such
 faculties are productive of what is good. Similarly, all the sciences
 and arts. And life: since, even if no other good were the result of
 life, it is desirable in itself. And justice, as the cause of good
-to the community. 
+to the community.
 
 The above are pretty well all the things admittedly good. In dealing
 with things whose goodness is disputed, we may argue in the following
@@ -841,14 +841,14 @@ if it is to the particular advantage of our enemies that we should
 be cowards, clearly courage is of particular value to our countrymen.
 And generally, the contrary of that which our enemies desire, or of
 that at which they rejoice, is evidently valuable. Hence the passage
-beginning: 
+beginning:
 
 "Surely would Priam exult. "
 
 This principle usually holds good, but not always, since it may well
 be that our interest is sometimes the same as that of our enemies.
 Hence it is said that 'evils draw men together'; that is, when the
-same thing is hurtful to them both. 
+same thing is hurtful to them both.
 
 Further: that which is not in excess is good, and that which is greater
 than it should be is bad. That also is good on which much labour or
@@ -856,20 +856,20 @@ money has been spent; the mere fact of this makes it seem good, and
 such a good is assumed to be an end-an end reached through a long
 chain of means; and any end is a good. Hence the lines beginning:
 
-"And for Priam (and Troy-town's folk) should 
+"And for Priam (and Troy-town's folk) should
 
 "they leave behind them a boast; "
 
-and 
+and
 
-"Oh, it were shame 
+"Oh, it were shame
 
-"To have tarried so long and return empty-handed 
+"To have tarried so long and return empty-handed
 
 "as erst we came; "
 
 and there is also the proverb about 'breaking the pitcher at the
-door'. 
+door'.
 
 That which most people seek after, and which is obviously an object
 of contention, is also a good; for, as has been shown, that is good
@@ -917,7 +917,7 @@ but also better. Further, a man of a given disposition makes chiefly
 for the corresponding things: lovers of victory make for victory,
 lovers of honour for honour, money-loving men for money, and so with
 the rest. These, then, are the sources from which we must derive our
-means of persuasion about Good and Utility. 
+means of persuasion about Good and Utility.
 
 ### Part 7
 Since, however, it often happens that people agree that two things
@@ -931,7 +931,7 @@ as being what is contained in the first thing. Now to call a thing
 is 'smaller' or 'less', while 'great' and 'small', 'much' and 'little',
 are terms used in comparison with normal magnitude. The 'great' is
 that which surpasses the normal, the 'small' is that which is surpassed
-by the normal; and so with 'many' and 'few'. 
+by the normal; and so with 'many' and 'few'.
 
 Now we are applying the term 'good' to what is desirable for its own
 sake and not for the sake of something else; to that at which all
@@ -1004,14 +1004,14 @@ was more guilty than the doer, since it would not have been done if
 he had not planned it. On the other hand, when accusing Chabrias he
 said that the doer was worse than the prompter, since there would
 have been no deed without some one to do it; men, said he, plot a
-thing only in order to carry it out. 
+thing only in order to carry it out.
 
 Further, what is rare is a greater good than what is plentiful. Thus,
 gold is a better thing than iron, though less useful: it is harder
 to get, and therefore better worth getting. Reversely, it may be argued
 that the plentiful is a better thing than the rare, because we can
 make more use of it. For what is often useful surpasses what is seldom
-useful, whence the saying: 
+useful, whence the saying:
 
 "The best of things is water. "
 
@@ -1100,17 +1100,17 @@ penalties; and the things that are better than others admitted or
 believed to be good. Moreover, things look better merely by being
 divided into their parts, since they then seem to surpass a greater
 number of things than before. Hence Homer says that Meleager was roused
-to battle by the thought of 
+to battle by the thought of
 
-"All horrors that light on a folk whose city 
+"All horrors that light on a folk whose city
 
-"is ta'en of their foes, 
+"is ta'en of their foes,
 
-"When they slaughter the men, when the burg is 
+"When they slaughter the men, when the burg is
 
-"wasted with ravening flame, 
+"wasted with ravening flame,
 
-"When strangers are haling young children to thraldom, 
+"When strangers are haling young children to thraldom,
 
 "(fair women to shame.) "
 
@@ -1125,11 +1125,11 @@ something beyond his natural power, or beyond his years, or beyond
 the measure of people like him, or in a special way, or at a special
 place or time, his deed will have a high degree of nobleness, goodness,
 and justice, or of their opposites. Hence the epigram on the victor
-at the Olympic games: 
+at the Olympic games:
 
-"In time past, hearing a Yoke on my shoulders, 
+"In time past, hearing a Yoke on my shoulders,
 
-"of wood unshaven, 
+"of wood unshaven,
 
 "I carried my loads of fish from, Argos to Tegea town. "
 
@@ -1177,7 +1177,7 @@ is dearly prized is better than what is not-the sort of thing that
 some people have only one of, though others have more like it. Accordingly,
 blinding a one-eyed man inflicts worse injury than half-blinding a
 man with two eyes; for the one-eyed man has been robbed of what he
-dearly prized. 
+dearly prized.
 
 The grounds on which we must base our arguments, when we are speaking
 for or against a proposal, have now been set forth more or less completely.
@@ -1194,7 +1194,7 @@ there are as many different supreme authorities as there are different
 forms of government. The forms of government are four-democracy, oligarchy,
 aristocracy, monarchy. The supreme right to judge and decide always
 rests, therefore, with either a part or the whole of one or other
-of these governing powers. 
+of these governing powers.
 
 A Democracy is a form of government under which the citizens distribute
 the offices of state among themselves by lot, whereas under oligarchy
@@ -1234,7 +1234,7 @@ considered the means and methods by which we shall gain a good knowledge
 of the moral qualities and institutions peculiar to the various forms
 of government-only, however, to the extent demanded by the present
 occasion; a detailed account of the subject has been given in the
-Politics. 
+Politics.
 
 ### Part 9
 We have now to consider Virtue and Vice, the Noble and the Base, since
@@ -1277,7 +1277,7 @@ of greatness in matters involving the spending of money. The opposites
 of these two are smallness of spirit and meanness respectively. Prudence
 is that virtue of the understanding which enables men to come to wise
 decisions about the relation to happiness of the goods and evils that
-have been previously mentioned. 
+have been previously mentioned.
 
 The above is a sufficient account, for our present purpose, of virtue
 and vice in general, and of their various forms. As to further aspects
@@ -1307,19 +1307,19 @@ which benefit others and not oneself; and services done to one's benefactors,
 for this is just; and good deeds generally, since they are not directed
 to one's own profit. And the opposites of those things of which men
 feel ashamed, for men are ashamed of saying, doing, or intending to
-do shameful things. So when Alcacus said 
+do shameful things. So when Alcacus said
 
-"Something I fain would say to thee, 
+"Something I fain would say to thee,
 
 "Only shame restraineth me, "
 
-Sappho wrote 
+Sappho wrote
 
-"If for things good and noble thou wert yearning, 
+"If for things good and noble thou wert yearning,
 
-"If to speak baseness were thy tongue not burning, 
+"If to speak baseness were thy tongue not burning,
 
-"No load of shame would on thine eyelids weigh; 
+"No load of shame would on thine eyelids weigh;
 
 "What thou with honour wishest thou wouldst say. "
 
@@ -1361,7 +1361,7 @@ to draw a misleading inference from the motive, arguing that if a
 man runs into danger needlessly, much more will he do so in a noble
 cause; and if a man is open-handed to any one and every one, he will
 be so to his friends also, since it is the extreme form of goodness
-to be good to everybody. 
+to be good to everybody.
 
 We must also take into account the nature of our particular audience
 when making a speech of praise; for, as Socrates used to say, 'it
@@ -1370,7 +1370,7 @@ If the audience esteems a given quality, we must say that our hero
 has that quality, no matter whether we are addressing Scythians or
 Spartans or philosophers. Everything, in fact, that is esteemed we
 are to represent as noble. After all, people regard the two things
-as much the same. 
+as much the same.
 
 All actions are noble that are appropriate to the man who does them:
 if, for instance, they are worthy of his ancestors or of his own past
@@ -1381,15 +1381,15 @@ would be; for instance, if one who was just an average person when
 all went well becomes a hero in adversity, or if he becomes better
 and easier to get on with the higher he rises. Compare the saying
 of lphicrates, 'Think what I was and what I am'; and the epigram on
-the victor at the Olympic games, 
+the victor at the Olympic games,
 
-"In time past, bearing a yoke on my shoulders, 
+"In time past, bearing a yoke on my shoulders,
 
 "of wood unshaven, "
 
-and the encomium of Simonides, 
+and the encomium of Simonides,
 
-"A woman whose father, whose husband, whose 
+"A woman whose father, whose husband, whose
 
 "brethren were princes all. "
 
@@ -1400,7 +1400,7 @@ the easier if we can make out that he has often acted so before, and
 therefore we must assert coincidences and accidents to have been intended.
 Produce a number of good actions, all of the same kind, and people
 will think that they must have been intended, and that they prove
-the good qualities of the man who did them. 
+the good qualities of the man who did them.
 
 Praise is the expression in words of the eminence of a man's good
 qualities, and therefore we must display his actions as the product
@@ -1415,7 +1415,7 @@ praise on him, if we are sure that he is the sort of man who would
 do it. To call any one blest is, it may be added, the same thing as
 to call him happy; but these are not the same thing as to bestow praise
 and encomium upon him; the two latter are a part of 'calling happy',
-just as goodness is a part of happiness. 
+just as goodness is a part of happiness.
 
 To praise a man is in one respect akin to urging a course of action.
 The suggestions which would be made in the latter case become encomiums
@@ -1445,7 +1445,7 @@ have been devised and instituted to encourage or honour such achievements
 as his own: thus we may praise Hippolochus because the first encomium
 ever made was for him, or Harmodius and Aristogeiton because their
 statues were the first to be put up in the market-place. And we may
-censure bad men for the opposite reason. 
+censure bad men for the opposite reason.
 
 Again, if you cannot find enough to say of a man himself, you may
 pit him against others, which is what Isocrates used to do owing to
@@ -1465,7 +1465,7 @@ and our business is simply to invest these with dignity and nobility.
 of future events by divination from past events. Enthymemes are most
 suitable to forensic speeches; it is our doubts about past events
 that most admit of arguments showing why a thing must have happened
-or proving that it did happen. 
+or proving that it did happen.
 
 The above are the general lines on which all, or nearly all, speeches
 of praise or blame are constructed. We have seen the sort of thing
@@ -1473,7 +1473,7 @@ we must bear in mind in making such speeches, and the materials out
 of which encomiums and censures are made. No special treatment of
 censure and vituperation is needed. Knowing the above facts, we know
 their contraries; and it is out of these that speeches of censure
-are made. 
+are made.
 
 ### Part 10
 We have next to treat of Accusation and Defence, and to enumerate
@@ -1482,7 +1482,7 @@ are three things we must ascertain first, the nature and number of
 the incentives to wrong-doing; second, the state of mind of wrongdoers;
 third, the kind of persons who are wronged, and their condition. We
 will deal with these questions in order. But before that let us define
-the act of 'wrong-doing'. 
+the act of 'wrong-doing'.
 
 We may describe 'wrong-doing' as injury voluntarily inflicted contrary
 to law. 'Law' is either special or general. By special law I mean
@@ -1509,7 +1509,7 @@ others corresponds to his particular faults of character.
 However, this subject has already been cleared up in part in our discussion
 of the virtues and will be further explained later when we treat of
 the emotions. We have now to consider the motives and states of mind
-of wrongdoers, and to whom they do wrong. 
+of wrongdoers, and to whom they do wrong.
 
 Let us first decide what sort of things people are trying to get or
 avoid when they set about doing wrong to others. For it is plain that
@@ -1525,7 +1525,7 @@ or to compulsion. All actions that are due to a man himself and caused
 by himself are due either to habit or to rational or irrational craving.
 Rational craving is a craving for good, i.e. a wish-nobody wishes
 for anything unless he thinks it good. Irrational craving is twofold,
-viz. anger and appetite. 
+viz. anger and appetite.
 
 Thus every action must be due to one or other of seven causes: chance,
 nature, compulsion, habit, reasoning, anger, or appetite. It is superfluous
@@ -1555,7 +1555,7 @@ unjust. And, generally speaking, all those accessory qualities that
 cause distinctions of human character are important: e.g. the sense
 of wealth or poverty, of being lucky or unlucky. This shall be dealt
 with later-let us now deal first with the rest of the subject before
-us. 
+us.
 
 The things that happen by chance are all those whose cause cannot
 be determined, that have no purpose, and that happen neither always
@@ -1594,7 +1594,7 @@ a less. We must ascertain, then, the number and nature of the things
 that are useful and pleasant. The useful has been previously examined
 in connexion with political oratory; let us now proceed to examine
 the pleasant. Our various definitions must be regarded as adequate,
-even if they are not exact, provided they are clear. 
+even if they are not exact, provided they are clear.
 
 ### Part 11
 We may lay it down that Pleasure is a movement, a movement by which
@@ -1610,7 +1610,7 @@ habitual, it is virtually natural; habit is a thing not unlike nature;
 what happens often is akin to what happens always, natural events
 happening always, habitual events often. Again, that is pleasant which
 is not forced on us; for force is unnatural, and that is why what
-is compulsory, painful, and it has been rightly said 
+is compulsory, painful, and it has been rightly said
 
 "All that is done on compulsion is bitterness unto the soul.
 "
@@ -1647,7 +1647,7 @@ results have subsequently proved noble and good. Hence the words
 
 "Sweet 'tis when rescued to remember pain, "
 
-and 
+and
 
 "Even his griefs are a joy long after to one that remembers
 
@@ -1659,7 +1659,7 @@ present are felt to afford us either great delight or great but not
 painful benefit. And in general, all the things that delight us when
 they are present also do so, as a rule, when we merely remember or
 expect them. Hence even being angry is pleasant-Homer said of wrath
-that 
+that
 
 "Sweeter it is by far than the honeycomb dripping with sweetness-
 "
@@ -1680,9 +1680,9 @@ as well as pleasure, because he is there no longer. Similarly there
 is an element of pleasure even in mourning and lamentation for the
 departed. There is grief, indeed, at his loss, but pleasure in remembering
 him and as it were seeing him before us in his deeds and in his life.
-We can well believe the poet when he says 
+We can well believe the poet when he says
 
-"He spake, and in each man's heart he awakened 
+"He spake, and in each man's heart he awakened
 
 "the love of lament. "
 
@@ -1723,7 +1723,7 @@ likes To do the same thing often is pleasant, since, as we saw, anything
 habitual is pleasant. And to change is also pleasant: change means
 an approach to nature, whereas invariable repetition of anything causes
 the excessive prolongation of a settled condition: therefore, says
-the poet, 
+the poet,
 
 "Change is in all things sweet. "
 
@@ -1746,7 +1746,7 @@ even if the object imitated is not itself pleasant; for it is not
 the object itself which here gives delight; the spectator draws inferences
 ('That is a so-and-so') and thus learns something fresh. Dramatic
 turns of fortune and hairbreadth escapes from perils are pleasant,
-because we feel all such things are wonderful. 
+because we feel all such things are wonderful.
 
 And since what is natural is pleasant, and things akin to each other
 seem natural to each other, therefore all kindred and similar things
@@ -1771,9 +1771,9 @@ most of us are ambitious, it must be pleasant to disparage our neighbours
 as well as to have power over them. It is pleasant for a man to spend
 his time over what he feels he can do best; just as the poet says,
 
-"To that he bends himself, 
+"To that he bends himself,
 
-"To that each day allots most time, wherein 
+"To that each day allots most time, wherein
 
 "He is indeed the best part of himself. "
 
@@ -1783,12 +1783,12 @@ things are pleasant, whether men, words, or deeds. We have discussed
 the ludicrous separately in the treatise on the Art of Poetry.
 
 So much for the subject of pleasant things: by considering their opposites
-we can easily see what things are unpleasant. 
+we can easily see what things are unpleasant.
 
 ### Part 12
 The above are the motives that make men do wrong to others; we are
 next to consider the states of mind in which they do it, and the persons
-to whom they do it. 
+to whom they do it.
 
 They must themselves suppose that the thing can be done, and done
 by them: either that they can do it without being found out, or that
@@ -1931,12 +1931,12 @@ are also wrongs of a kind that shame prevents the victim speaking
 about, such as outrages done to the women in his household or to himself
 or to his sons. Also those for which you would be thought very litigious
 to prosecute any one-trifling wrongs, or wrongs for which people are
-usually excused. 
+usually excused.
 
 The above is a fairly complete account of the circumstances under
 which men do wrong to others, of the sort of wrongs they do, of the
 sort of persons to whom they do them, and of their reasons for doing
-them. 
+them.
 
 ### Part 13
 It will now be well to make a complete classification of just and
@@ -1950,9 +1950,9 @@ extent divines, a natural justice and injustice that is binding on
 all men, even on those who have no association or covenant with each
 other. It is this that Sophocles' Antigone clearly means when she
 says that the burial of Polyneices was a just act in spite of the
-prohibition: she means that it was just by nature. 
+prohibition: she means that it was just by nature.
 
-"Not of to-day or yesterday it is, 
+"Not of to-day or yesterday it is,
 
 "But lives eternal: none can date its birth. "
 
@@ -1964,7 +1964,7 @@ that doing this is not just for some people while unjust for others,
 "Unbroken it stretcheth, and over the earth's immensity.
 "
 
-And as Alcidamas says in his Messeniac Oration.... 
+And as Alcidamas says in his Messeniac Oration....
 
 The actions that we ought to do or not to do have also been divided
 into two classes as affecting either the whole community or some one
@@ -1972,7 +1972,7 @@ of its members. From this point of view we can perform just or unjust
 acts in either of two ways-towards one definite person, or towards
 the community. The man who is guilty of adultery or assault is doing
 wrong to some definite person; the man who avoids service in the army
-is doing wrong to the community. 
+is doing wrong to the community.
 
 Thus the whole class of unjust actions may be divided into two classes,
 those affecting the community, and those affecting one or more other
@@ -2012,7 +2012,7 @@ is struck with some such purpose as to insult the man struck or gratify
 the striker himself. Nor does taking a thing without the owner's knowledge
 always amount to 'theft', but only if it is taken with the intention
 of keeping it and injuring the owner. And as with these charges, so
-with all the others. 
+with all the others.
 
 We saw that there are two kinds of right and wrong conduct towards
 others, one provided for by written ordinances, the other by unwritten.
@@ -2058,7 +2058,7 @@ rather than benefits conferred; to be patient when we are wronged;
 to settle a dispute by negotiation and not by force; to prefer arbitration
 to motion-for an arbitrator goes by the equity of a case, a judge
 by the strict law, and arbitration was invented with the express purpose
-of securing full power for equity. 
+of securing full power for equity.
 
 The above may be taken as a sufficient account of the nature of equity.
 
@@ -2112,7 +2112,7 @@ much, then, for the comparative badness of criminal actions.
 There are also the so-called 'non-technical' means of persuasion;
 and we must now take a cursory view of these, since they are specially
 characteristic of forensic oratory. They are five in number: laws,
-witnesses, contracts, tortures, oaths. 
+witnesses, contracts, tortures, oaths.
 
 First, then, let us take laws and see how they are to be used in persuasion
 and dissuasion, in accusation and defence. If the written law tells
@@ -2126,11 +2126,11 @@ nature, whereas written laws often do change. This is the bearing
 the lines in Sophocles' Antigone, where Antigone pleads that in burying
 her brother she had broken Creon's law, but not the unwritten law:
 
-"Not of to-day or yesterday they are, 
+"Not of to-day or yesterday they are,
 
-"But live eternal: (none can date their birth.) 
+"But live eternal: (none can date their birth.)
 
-"Not I would fear the wrath of any man 
+"Not I would fear the wrath of any man
 
 "(And brave God's vengeance) for defying these. "
 
@@ -2160,7 +2160,7 @@ cleverer than the doctor: for less harm comes from the doctor's mistakes
 than from the growing habit of disobeying authority. Or that trying
 to be cleverer than the laws is just what is forbidden by those codes
 of law that are accounted best.-So far as the laws are concerned,
-the above discussion is probably sufficient. 
+the above discussion is probably sufficient.
 
 As to witnesses, they are of two kinds, the ancient and the recent;
 and these latter, again, either do or do not share in the risks of
@@ -2172,7 +2172,7 @@ of Sigeum; and Cleophon supported his accusation of Critias by quoting
 the elegiac verse of Solon, maintaining that discipline had long been
 slack in the family of Critias, or Solon would never have written,
 
-"Pray thee, bid the red-haired Critias do what 
+"Pray thee, bid the red-haired Critias do what
 
 "his father commands him. "
 
@@ -2181,12 +2181,12 @@ we shall also appeal to soothsayers: thus Themistocles quoted the
 oracle about 'the wooden wall' as a reason for engaging the enemy's
 fleet. Further, proverbs are, as has been said, one form of evidence.
 Thus if you are urging somebody not to make a friend of an old man,
-you will appeal to the proverb, 
+you will appeal to the proverb,
 
 "Never show an old man kindness. "
 
 Or if you are urging that he who has made away with fathers should
-also make away with their sons, quote, 
+also make away with their sons, quote,
 
 "Fool, who slayeth the father and leaveth his sons to avenge him.
 "
@@ -2203,7 +2203,7 @@ is or is not the case; they are not valid witnesses to the quality
 of an action, to its being just or unjust, useful or harmful. On such
 questions of quality the opinion of detached persons is highly trustworthy.
 Most trustworthy of all are the 'ancient' witnesses, since they cannot
-be corrupted. 
+be corrupted.
 
 In dealing with the evidence of witnesses, the following are useful
 arguments. If you have no witnesses on your side, you will argue that
@@ -2224,7 +2224,7 @@ to prove our own worth or our opponent's worthlessness. Other arguments
 about a witness-that he is a friend or an enemy or neutral, or has
 a good, bad, or indifferent reputation, and any other such distinctions-we
 must construct upon the same general lines as we use for the regular
-rhetorical proofs. 
+rhetorical proofs.
 
 Concerning contracts argument can be so far employed as to increase
 or diminish their importance and their credibility; we shall try to
@@ -2260,7 +2260,7 @@ that the subsequent is the binding contract, or else that the previous
 one was right and the subsequent one fraudulent-whichever way suits
 us. Further, we must consider the question of utility, noting whether
 the contract is against the interest of the judges or not; and so
-on-these arguments are as obvious as the others. 
+on-these arguments are as obvious as the others.
 
 Examination by torture is one form of evidence, to which great weight
 is often attached because it is in a sense compulsory. Here again
@@ -2278,7 +2278,7 @@ is not trustworthy, the fact being that many men whether thick-witted,
 tough-skinned, or stout of heart endure their ordeal nobly, while
 cowards and timid men are full of boldness till they see the ordeal
 of these others: so that no trust can be placed in evidence under
-torture.] 
+torture.]
 
 In regard to oaths, a fourfold division can be made. A man may either
 both offer and accept an oath, or neither, or one without the other-that
@@ -2290,7 +2290,7 @@ If you refuse to offer an oath, you may argue that men do not hesitate
 to perjure themselves; and that if your opponent does swear, you lose
 your money, whereas, if he does not, you think the judges will decide
 against him; and that the risk of an unfavourable verdict is prefer,
-able, since you trust the judges and do not trust him. 
+able, since you trust the judges and do not trust him.
 
 If you refuse to accept an oath, you may argue that an oath is always
 paid for; that you would of course have taken it if you had been a
@@ -2299,12 +2299,12 @@ it, and you would in that case have to swear in order to succeed.
 Thus your refusal, you argue, must be due to high principle, not to
 fear of perjury: and you may aptly quote the saying of Xenophanes,
 
-"'Tis not fair that he who fears not God 
+"'Tis not fair that he who fears not God
 
 "should challenge him who doth. "
 
 It is as if a strong man were to challenge a weakling to strike,
-or be struck by, him. 
+or be struck by, him.
 
 If you agree to accept an oath, you may argue that you trust yourself
 but not your opponent; and that (to invert the remark of Xenophanes)
@@ -2316,7 +2316,7 @@ an oath, you may argue that piety disposes you to commit the issue
 to the gods; and that your opponent ought not to want other judges
 than himself, since you leave the decision with him; and that it is
 outrageous for your opponents to refuse to swear about this question,
-when they insist that others should do so. 
+when they insist that others should do so.
 
 Now that we see how we are to argue in each case separately, we see
 also how we are to argue when they occur in pairs, namely, when you
@@ -2324,7 +2324,7 @@ are willing to accept the oath but not to offer it; to offer it but
 not to accept it; both to accept and to offer it; or to do neither.
 These are of course combinations of the cases already mentioned, and
 so your arguments also must be combinations of the arguments already
-mentioned. 
+mentioned.
 
 If you have already sworn an oath that contradicts your present one,
 you must argue that it is not perjury, since perjury is a crime, and
@@ -2338,7 +2338,7 @@ an oath before administering the laws. 'My opponents insist that you,
 the judges, must abide by the oath you have sworn, and yet they are
 not abiding by their own oaths.' And there are other arguments which
 may be used to magnify the importance of the oath. [So much, then,
-for the 'non-technical' modes of persuasion.] 
+for the 'non-technical' modes of persuasion.]
 
 ---
 
@@ -2390,7 +2390,7 @@ and morally good must be gathered from the analysis of goodness already
 given: the way to establish your own goodness is the same as the way
 to establish that of others. Good will and friendliness of disposition
 will form part of our discussion of the emotions, to which we must
-now turn. 
+now turn.
 
 The Emotions are all those feelings that so change men as to affect
 their judgements, and that are also attended by pain or pleasure.
@@ -2416,17 +2416,17 @@ him or one of his friends. It must always be attended by a certain
 pleasure-that which arises from the expectation of revenge. For since
 nobody aims at what he thinks he cannot attain, the angry man is aiming
 at what he can attain, and the belief that you will attain your aim
-is pleasant. Hence it has been well said about wrath, 
+is pleasant. Hence it has been well said about wrath,
 
-"Sweeter it is by far than the honeycomb 
+"Sweeter it is by far than the honeycomb
 
-"dripping with sweetness, 
+"dripping with sweetness,
 
 "And spreads through the hearts of men. "
 
 It is also attended by a certain pleasure because the thoughts dwell
 upon the act of vengeance, and the images then called up cause pleasure,
-like the images called up in dreams. 
+like the images called up in dreams.
 
 Now slighting is the actively entertained opinion of something as
 obviously of no importance. We think bad things, as well as good ones,
@@ -2452,13 +2452,13 @@ why youths and rich men are insolent; they think themselves superior
 when they show insolence. One sort of insolence is to rob people of
 the honour due to them; you certainly slight them thus; for it is
 the unimportant, for good or evil, that has no honour paid to it.
-So Achilles says in anger: 
+So Achilles says in anger:
 
-"He hath taken my prize for himself 
+"He hath taken my prize for himself
 
 "and hath done me dishonour, "
 
-and 
+and
 
 "Like an alien honoured by none, "
 
@@ -2470,12 +2470,12 @@ where speaking is concerned, the man with a turn for oratory looks
 for respect from one who cannot speak; the ruler demands the respect
 of the ruled, and the man who thinks he ought to be a ruler demands
 the respect of the man whom he thinks he ought to be ruling. Hence
-it has been said 
+it has been said
 
 "Great is the wrath of kings, whose father is Zeus almighty,
 "
 
-and 
+and
 
 "Yea, but his rancour abideth long afterward also, "
 
@@ -2483,7 +2483,7 @@ their great resentment being due to their great superiority. Then
 again a man looks for respect from those who he thinks owe him good
 treatment, and these are the people whom he has treated or is treating
 well, or means or has meant to treat well, either himself, or through
-his friends, or through others at his request. 
+his friends, or through others at his request.
 
 It will be plain by now, from what has been said, (1) in what frame
 of mind, (2) with what persons, and (3) on what grounds people grow
@@ -2508,7 +2508,7 @@ fulfilment of our wishes is specially pleasant. Hence it is plain
 what seasons, times, conditions, and periods of life tend to stir
 men easily to anger, and where and when this will happen; and it is
 plain that the more we are under these conditions the more easily
-we are stirred. 
+we are stirred.
 
 These, then, are the frames of mind in which men are easily stirred
 to anger. The persons with whom we get angry are those who laugh,
@@ -2567,14 +2567,14 @@ of contempt that they should think we do not deserve what every one
 else deserves. Forgetfulness, too, causes anger, as when our own names
 are forgotten, trifling as this may be; since forgetfulness is felt
 to be another sign that we are being slighted; it is due to negligence,
-and to neglect us is to slight us. 
+and to neglect us is to slight us.
 
 The persons with whom we feel anger, the frame of mind in which we
 feel it, and the reasons why we feel it, have now all been set forth.
 Clearly the orator will have to speak so as to bring his hearers into
 a frame of mind that will dispose them to anger, and to represent
 his adversaries as open to such charges and possessed of such qualities
-as do make people angry. 
+as do make people angry.
 
 ### Part 3
 Since growing calm is the opposite of growing angry, and calmness
@@ -2615,7 +2615,7 @@ no anger, or comparatively little, with those who have done what they
 did through anger: we do not feel that they have done it from a wish
 to slight us, for no one slights people when angry with them, since
 slighting is painless, and anger is painful. Nor do we grow angry
-with those who reverence us. 
+with those who reverence us.
 
 As to the frame of mind that makes people calm, it is plainly the
 opposite to that which makes them angry, as when they are amusing
@@ -2644,7 +2644,7 @@ less aggrieved by the actual punishment. We also feel calm if we think
 that the offender will not see that he is punished on our account
 and because of the way he has treated us. For anger has to do with
 individuals. This is plain from the definition. Hence the poet has
-well written: 
+well written:
 
 "Say that it was Odysseus, sacker of cities, "
 
@@ -2656,7 +2656,7 @@ people once they are dead, for we feel that the worst has been done
 to them, and that they will neither feel pain nor anything else that
 we in our anger aim at making them feel. And therefore the poet has
 well made Apollo say, in order to put a stop to the anger of Achilles
-against the dead Hector, 
+against the dead Hector,
 
 "For behold in his fury he doeth despite to the senseless clay.
 "
@@ -2665,7 +2665,7 @@ It is now plain that when you wish to calm others you must draw upon
 these lines of argument; you must put your hearers into the corresponding
 frame of mind, and represent those with whom they are angry as formidable,
 or as worthy of reverence, or as benefactors, or as involuntary agents,
-or as much distressed at what they have done. 
+or as much distressed at what they have done.
 
 ### Part 4
 Let us now turn to Friendship and Enmity, and ask towards whom these
@@ -2731,7 +2731,7 @@ like this about qualities in us for which we especially wish to be
 admired, esteemed, or liked. And towards those who are like ourselves
 in character and occupation, provided they do not get in our way or
 gain their living from the same source as we do-for then it will be
-a case of 'potter against potter': 
+a case of 'potter against potter':
 
 "Potter to potter and builder to builder begrudge their reward.
 "
@@ -2758,7 +2758,7 @@ if we do have this feeling, we do not love them; if therefore we do
 not have it, it looks as if we did love them. We also like those with
 whom we do not feel frightened or uncomfortable-nobody can like a
 man of whom he feels frightened. Friendship has various forms-comradeship,
-intimacy, kinship, and so on. 
+intimacy, kinship, and so on.
 
 Things that cause friendship are: doing kindnesses; doing them unasked;
 and not proclaiming the fact when they are done, which shows that
@@ -2786,7 +2786,7 @@ It is plain from all this that we can prove people to be friends or
 enemies; if they are not, we can make them out to be so; if they claim
 to be so, we can refute their claim; and if it is disputed whether
 an action was due to anger or to hatred, we can attribute it to whichever
-of these we prefer. 
+of these we prefer.
 
 ### Part 5
 To turn next to Fear, what follows will show things and persons of
@@ -2840,7 +2840,7 @@ blunder either no chance at all, or only one that depends on our enemies
 and not ourselves. Those things are also worse which we cannot, or
 cannot easily, help. Speaking generally, anything causes us to feel
 fear that when it happens to, or threatens, others cause us to feel
-pity. 
+pity.
 
 The above are, roughly, the chief things that are terrible and are
 feared. Let us now describe the conditions under which we ourselves
@@ -2866,7 +2866,7 @@ the orator must make them feel that they really are in danger of something,
 pointing out that it has happened to others who were stronger than
 they are, and is happening, or has happened, to people like themselves,
 at the hands of unexpected people, in an unexpected form, and at an
-unexpected time. 
+unexpected time.
 
 Having now seen the nature of fear, and of the things that cause it,
 and the various states of mind in which it is felt, we can also see
@@ -2962,7 +2962,7 @@ our persons, or lend ourselves to vile deeds, e.g. when we submit
 to outrage. And acts of yielding to the lust of others are shameful
 whether willing or unwilling (yielding to force being an instance
 of unwillingness), since unresisting submission to them is due to
-unmanliness or cowardice. 
+unmanliness or cowardice.
 
 These things, and others like them, are what cause the feeling of
 shame. Now since shame is a mental picture of disgrace, in which we
@@ -3012,7 +3012,7 @@ before those upon whose opinions we quite look down as untrustworthy
 (no one feels shame before small children or animals); nor are we
 ashamed of the same things before intimates as before strangers, but
 before the former of what seem genuine faults, before the latter of
-what seem conventional ones. 
+what seem conventional ones.
 
 The conditions under which we shall feel shame are these: first, having
 people related to us like those before whom, as has been said, we
@@ -3040,7 +3040,7 @@ eyes of, those who know of our disgrace. Hence, when Antiphon the
 poet was to be cudgelled to death by order of Dionysius, and saw those
 who were to perish with him covering their faces as they went through
 the gates, he said, 'Why do you cover your faces? Is it lest some
-of these spectators should see you to-morrow?' 
+of these spectators should see you to-morrow?'
 
 So much for Shame; to understand Shamelessness, we need only consider
 the converse cases, and plainly we shall have all we need.
@@ -3086,7 +3086,7 @@ or an equal or greater one, has been given to his enemies; these facts
 show that the service in question was not done for the sake of the
 person helped. Or we may point out that the thing desired was worthless
 and that the helper knew it: no one will admit that he is in need
-of what is worthless. 
+of what is worthless.
 
 ### Part 8
 So much for Kindness and Unkindness. Let us now consider Pity, asking
@@ -3136,7 +3136,7 @@ come; and the frequent repetition of such misfortunes. Also the coming
 of good when the worst has happened: e.g. the arrival of the Great
 King's gifts for Diopeithes after his death. Also that either no good
 should have befallen a man at all, or that he should not be able to
-enjoy it when it has. 
+enjoy it when it has.
 
 The grounds, then, on which we feel pity are these or like these.
 The people we pity are: those whom we know, if only they are not very
@@ -3168,7 +3168,7 @@ death. Most piteous of all is it when, in such times of trial, the
 victims are persons of noble character: whenever they are so, our
 pity is especially excited, because their innocence, as well as the
 setting of their misfortunes before our eyes, makes their misfortunes
-seem close to ourselves. 
+seem close to ourselves.
 
 ### Part 9
 Most directly opposed to pity is the feeling called Indignation. Pain
@@ -3238,17 +3238,17 @@ not for parvenus, to make distinguished marriages. Indignation may
 therefore properly be felt when any one gets what is not appropriate
 for him, though he may be a good man enough. It may also be felt when
 any one sets himself up against his superior, especially against his
-superior in some particular respect-whence the lines 
+superior in some particular respect-whence the lines
 
-"Only from battle he shrank with Aias Telamon's son; 
+"Only from battle he shrank with Aias Telamon's son;
 
-"Zeus had been angered with him, 
+"Zeus had been angered with him,
 
 "had he fought with a mightier one; "
 
 but also, even apart from that, when the inferior in any sense contends
 with his superior; a musician, for instance, with a just man, for
-justice is a finer thing than music. 
+justice is a finer thing than music.
 
 Enough has been said to make clear the grounds on which, and the persons
 against whom, Indignation is felt-they are those mentioned, and others
@@ -3264,7 +3264,7 @@ that we ourselves deserve a thing and that others do not, we are disposed
 to be indignant with those others so far as that thing is concerned.
 Hence servile, worthless, unambitious persons are not inclined to
 Indignation, since there is nothing they can believe themselves to
-deserve. 
+deserve.
 
 From all this it is plain what sort of men those are at whose misfortunes,
 distresses, or failures we ought to feel pleased, or at least not
@@ -3299,7 +3299,7 @@ or think we are entitled to it, or if having it puts us a little above
 others, or not having it a little below them. It is clear also what
 kind of people we envy; that was included in what has been said already:
 we envy those who are near us in time, place, age, or reputation.
-Hence the line: 
+Hence the line:
 
 "Ay, kin can even be jealous of their kin. "
 
@@ -3311,7 +3311,7 @@ to be far below us or far above us. So too we compete with those who
 follow the same ends as ourselves: we compete with our rivals in sport
 or in love, and generally with those who are after the same things;
 and it is therefore these whom we are bound to envy beyond all others.
-Hence the saying: 
+Hence the saying:
 
 "Potter against potter. "
 
@@ -3330,7 +3330,7 @@ contrary things. If therefore we ourselves with whom the decision
 rests are put into an envious state of mind, and those for whom our
 pity, or the award of something desirable, is claimed are such as
 have been described, it is obvious that they will win no pity from
-us. 
+us.
 
 ### Part 11
 We will next consider Emulation, showing in what follows its causes
@@ -3375,11 +3375,11 @@ to be contemptuous of all such persons as are subject to those bad
 things which are contrary to the good things that are the objects
 of emulation: despising them for just that reason. Hence we often
 despise the fortunate, when luck comes to them without their having
-those good things which are held in honour. 
+those good things which are held in honour.
 
 This completes our discussion of the means by which the several emotions
 may be produced or dissipated, and upon which depend the persuasive
-arguments connected with the emotions. 
+arguments connected with the emotions.
 
 ### Part 12
 Let us now consider the various types of human character, in relation
@@ -3390,7 +3390,7 @@ virtues and vices; these also have been discussed already, as well
 as the various things that various types of men tend to will and to
 do. By ages I mean youth, the prime of life, and old age. By fortune
 I mean birth, wealth, power, and their opposites-in fact, good fortune
-and ill fortune. 
+and ill fortune.
 
 To begin with the Youthful type of character. Young men have strong
 passions, and tend to gratify them indiscriminately. Of the bodily
@@ -3496,12 +3496,12 @@ it out of kindness; old men out of weakness, imagining that anything
 that befalls any one else might easily happen to them, which, as we
 saw, is a thought that excites pity. Hence they are querulous, and
 not disposed to jesting or laughter-the love of laughter being the
-very opposite of querulousness. 
+very opposite of querulousness.
 
 Such are the characters of Young Men and Elderly Men. People always
 think well of speeches adapted to, and reflecting, their own character:
 and we can now see how to compose our speeches so as to adapt both
-them and ourselves to our audiences. 
+them and ourselves to our audiences.
 
 ### Part 14
 As for Men in their Prime, clearly we shall find that they have a
@@ -3519,7 +3519,7 @@ intemperate, the old temperate but cowardly. To put it generally,
 all the valuable qualities that youth and age divide between them
 are united in the prime of life, while all their excesses or defects
 are replaced by moderation and fitness. The body is in its prime from
-thirty to five-and-thirty; the mind about forty-nine. 
+thirty to five-and-thirty; the mind about forty-nine.
 
 ### Part 15
 So much for the types of character that distinguish youth, old age,
@@ -3579,7 +3579,7 @@ attention to the duties their position involves. They are dignified
 rather than arrogant, for the respect in which they are held inspires
 them with dignity and therefore with moderation-dignity being a mild
 and becoming form of arrogance. If they wrong others, they wrong them
-not on a small but on a great scale. 
+not on a small but on a great scale.
 
 Good fortune in certain of its branches produces the types of character
 belonging to the conditions just described, since these conditions
@@ -3589,7 +3589,7 @@ all we can in the way of family happiness and bodily advantages. It
 does indeed make men more supercilious and more reckless; but there
 is one excellent quality that goes with it-piety, and respect for
 the divine power, in which they believe because of events which are
-really the result of chance. 
+really the result of chance.
 
 This account of the types of character that correspond to differences
 of age or fortune may end here; for to arrive at the opposite types
@@ -3617,7 +3617,7 @@ decided. In the section on political oratory an account has already
 been given of the types of character that mark the different constitutions.
 
 The manner and means of investing speeches with moral character may
-now be regarded as fully set forth. 
+now be regarded as fully set forth.
 
 Each of the main divisions of oratory has, we have seen, its own distinct
 purpose. With regard to each division, we have noted the accepted
@@ -3639,7 +3639,7 @@ above-mentioned general lines of argument, that concerned with Amplification
 is-as has been already said-most appropriate to ceremonial speeches;
 that concerned with the Past, to forensic speeches, where the required
 decision is always about the past; that concerned with Possibility
-and the Future, to political speeches. 
+and the Future, to political speeches.
 
 ### Part 19
 Let us first speak of the Possible and Impossible. It may plausibly
@@ -3678,9 +3678,9 @@ depends on each other is possible, so is the other; for instance,
 if 'double', then 'half', and if 'half', then 'double'. That if a
 thing can be produced without art or preparation, it can be produced
 still more certainly by the careful application of art to it. Hence
-Agathon has said: 
+Agathon has said:
 
-"To some things we by art must needs attain, 
+"To some things we by art must needs attain,
 
 "Others by destiny or luck we gain. "
 
@@ -3688,7 +3688,7 @@ That if anything is possible to inferior, weaker, and stupider people,
 it is more so for their opposites; thus Isocrates said that it would
 be a strange thing if he could not discover a thing that Euthynus
 had found out. As for Impossibility, we can clearly get what we want
-by taking the contraries of the arguments stated above. 
+by taking the contraries of the arguments stated above.
 
 Questions of Past Fact may be looked at in the following ways: First,
 that if the less likely of two things has occurred, the more likely
@@ -3716,7 +3716,7 @@ has also happened; thus, if it has thundered it has lightened, and
 if an action has been done it has been attempted. Of all these sequences
 some are inevitable and some merely usual. The arguments for the non-occurrence
 of anything can obviously be found by considering the opposites of
-those that have been mentioned. 
+those that have been mentioned.
 
 How questions of Future Fact should be argued is clear from the same
 considerations: That a thing will be done if there is both the power
@@ -3740,17 +3740,17 @@ it is utility, nobleness, or justice-it is clear that every orator
 must obtain the materials of amplification through these channels.
 To go further than this, and try to establish abstract laws of greatness
 and superiority, is to argue without an object; in practical life,
-particular facts count more than generalizations. 
+particular facts count more than generalizations.
 
 Enough has now been said about these questions of possibility and
 the reverse, of past or future fact, and of the relative greatness
-or smallness of things. 
+or smallness of things.
 
 ### Part 20
 The special forms of oratorical argument having now been discussed,
 we have next to treat of those which are common to all kinds of oratory.
 These are of two main kinds, 'Example' and 'Enthymeme'; for the 'Maxim'
-is part of an enthymeme. 
+is part of an enthymeme.
 
 We will first treat of argument by Example, for it has the nature
 of induction, which is the foundation of reasoning. This form of argument
@@ -3771,7 +3771,7 @@ The illustrative parallel is the sort of argument Socrates used: e.g.
 the lot to select athletes, instead of choosing those who are fit
 for the contest; or using the lot to select a steersman from among
 a ship's crew, as if we ought to take the man on whom the lot falls,
-and not the man who knows most about it.' 
+and not the man who knows most about it.'
 
 Instances of the fable are that of Stesichorus about Phalaris, and
 that of Aesop in defence of the popular leader. When the people of
@@ -3824,7 +3824,7 @@ the same reason, if you put your examples first you must give a large
 number of them; if you put them last, a single one is sufficient;
 even a single witness will serve if he is a good one. It has now been
 stated how many varieties of argument by Example there are, and how
-and when they are to be employed. 
+and when they are to be employed.
 
 ### Part 21
 We now turn to the use of Maxims, in order to see upon what subjects
@@ -3837,24 +3837,24 @@ not a maxim--but only about questions of practical conduct, courses
 of conduct to be chosen or avoided. Now an Enthymeme is a syllogism
 dealing with such practical subjects. It is therefore roughly true
 that the premisses or conclusions of Enthymemes, considered apart
-from the rest of the argument, are Maxims: e.g. 
+from the rest of the argument, are Maxims: e.g.
 
-"Never should any man whose wits are sound 
+"Never should any man whose wits are sound
 
 "Have his sons taught more wisdom than their fellows. "
 
 Here we have a Maxim; add the reason or explanation, and the whole
-thing is an Enthymeme; thus- 
+thing is an Enthymeme; thus-
 
-"It makes them idle; and therewith they earn 
+"It makes them idle; and therewith they earn
 
 "Ill-will and jealousy throughout the city. "
 
-Again, 
+Again,
 
 "There is no man in all things prosperous, "
 
-and 
+and
 
 "There is no man among us all is free, "
 
@@ -3872,19 +3872,19 @@ either because the view expressed is already a known truth, e.g.
 "
 
 this being the general opinion: or because, as soon as the view is
-stated, it is clear at a glance, e.g. 
+stated, it is clear at a glance, e.g.
 
 "No love is true save that which loves for ever. "
 
 Of the Maxims that do have a supplement attached, some are part of
-an Enthymeme, e.g. 
+an Enthymeme, e.g.
 
 "Never should any man whose wits are sound, &c. "
 
 Others have the essential character of Enthymemes, but are not stated
 as parts of Enthymemes; these latter are reckoned the best; they are
 those in which the reason for the view expressed is simply implied,
-e.g. 
+e.g.
 
 "O mortal man, nurse not immortal wrath. "
 
@@ -3910,7 +3910,7 @@ subjects in which the speaker is experienced. For a young man to use
 them is-like telling stories-unbecoming; to use them in handling things
 in which one has no experience is silly and ill-bred: a fact sufficiently
 proved by the special fondness of country fellows for striking out
-maxims, and their readiness to air them. 
+maxims, and their readiness to air them.
 
 To declare a thing to be universally true when it is not is most appropriate
 when working up feelings of horror and indignation in our hearers;
@@ -3919,7 +3919,7 @@ Even hackneyed and commonplace maxims are to be used, if they suit
 one's purpose: just because they are commonplace, every one seems
 to agree with them, and therefore they are taken for truth. Thus,
 any one who is calling on his men to risk an engagement without obtaining
-favourable omens may quote 
+favourable omens may quote
 
 "One omen of all is hest, that we fight for our fatherland.
 "
@@ -3929,7 +3929,7 @@ Or, if he is calling on them to attack a stronger force-
 "The War-God showeth no favour. "
 
 Or, if he is urging people to destroy the innocent children of their
-enemies- 
+enemies-
 
 "Fool, who slayeth the father and leaveth his sons to avenge him.
 "
@@ -3994,7 +3994,7 @@ accepted by our judges or by those whose authority they recognize:
 and there must, moreover, be no doubt in the minds of most, if not
 all, of our judges that the opinions put forward really are of this
 sort. We should also base our arguments upon probabilities as well
-as upon certainties. 
+as upon certainties.
 
 The first thing we have to remember is this. Whether our argument
 concerns public affairs or some other subject, we must know some,
@@ -4048,7 +4048,7 @@ facts here needed are those that are true of Achilles alone; such
 facts as that he slew Hector, the bravest of the Trojans, and Cycnus
 the invulnerable, who prevented all the Greeks from landing, and again
 that he was the youngest man who joined the expedition, and was not
-bound by oath to join it, and so on. 
+bound by oath to join it, and so on.
 
 Here, again, we have our first principle of selection of Enthymemes-that
 which refers to the lines of argument selected. We will now consider
@@ -4074,7 +4074,7 @@ of proof and lines of disproof: and also of those lines of argument
 used in what seems to be enthymemes, but are not, since they do not
 represent valid syllogisms. Having made all this clear, we will proceed
 to classify Objections and Refutations, showing how they can be brought
-to bear upon enthymemes. 
+to bear upon enthymemes.
 
 ### Part 23
 1. One line of positive proof is based upon consideration of the opposite
@@ -4083,21 +4083,21 @@ quality. If it has not, you refute the original proposition; if it
 has, you establish it. E.g. 'Temperance is beneficial; for licentiousness
 is hurtful'. Or, as in the Messenian speech, 'If war is the cause
 of our present troubles, peace is what we need to put things right
-again'. Or- 
+again'. Or-
 
-"For if not even evil-doers should 
+"For if not even evil-doers should
 
-"Anger us if they meant not what they did, 
+"Anger us if they meant not what they did,
 
-"Then can we owe no gratitude to such 
+"Then can we owe no gratitude to such
 
 "As were constrained to do the good they did us. "
 
-Or- 
+Or-
 
-"Since in this world liars may win belief, 
+"Since in this world liars may win belief,
 
-"Be sure of the opposite likewise-that this world 
+"Be sure of the opposite likewise-that this world
 
 "Hears many a true word and believes it not. "
 
@@ -4105,7 +4105,7 @@ Or-
 the key-word, and arguing that what can or cannot be said of the one,
 can or cannot be said of the other: e.g. 'just' does not always mean
 'beneficial', or 'justly' would always mean 'beneficially', whereas
-it is not desirable to be justly put to death. 
+it is not desirable to be justly put to death.
 
 3. Another line of proof is based upon correlative ideas. If it is
 true that one man noble or just treatment to another, you argue that
@@ -4122,15 +4122,15 @@ be so treated by B. Hence you must ask yourself two distinct questions:
 B should thus treat him? and apply your results properly, according
 as your answers are Yes or No. Sometimes in such a case the two answers
 differ: you may quite easily have a position like that in the Alcmaeon
-of Theodectes: 
+of Theodectes:
 
 "And was there none to loathe thy mother's crime? "
 
-to which question Alcmaeon in reply says, 
+to which question Alcmaeon in reply says,
 
 "Why, there are two things to examine here. "
 
-And when Alphesiboea asks what he means, he rejoins: 
+And when Alphesiboea asks what he means, he rejoins:
 
 "They judged her fit to die, not me to slay her. "
 
@@ -4139,7 +4139,7 @@ Nicanor; as they were judged to have killed him justly, it was thought
 that he was killed justly. And in the case of the man who was killed
 at Thebes, the judges were requested to decide whether it was unjust
 that he should be killed, since if it was not, it was argued that
-it could not have been unjust to kill him. 
+it could not have been unjust to kill him.
 
 4. Another line of proof is the 'a fortiori'. Thus it may be argued
 that if even the gods are not omniscient, certainly human beings are
@@ -4154,9 +4154,9 @@ is not true where it is more likely, it is not true where it is less
 likely; or that, if it is true where it is less likely, it is true
 where it is more likely: according as we have to show that a thing
 is or is not true. This argument might also be used in a case of parity,
-as in the lines: 
+as in the lines:
 
-"Thou hast pity for thy sire, who has lost his sons: 
+"Thou hast pity for thy sire, who has lost his sons:
 
 "Hast none for Oeneus, whose brave son is dead? "
 
@@ -4180,7 +4180,7 @@ through their territory into Attica, it was argued that 'if he had
 insisted on this before he helped them against the Phocians, they
 would have promised to do it. It is monstrous, therefore, that just
 because he threw away his advantage then, and trusted their honour,
-they should not let him pass through now'. 
+they should not let him pass through now'.
 
 6. Another line is to apply to the other speaker what he has said
 against yourself. It is an excellent turn to give to a debate, as
@@ -4214,7 +4214,7 @@ to the court of Archelaus. He said that 'one is insulted by being
 unable to requite benefits, as well as by being unable to requite
 injuries'. All the persons mentioned define their term and get at
 its essential meaning, and then use the result when reasoning on the
-point at issue. 
+point at issue.
 
 8. Another line of argument is founded upon the various senses of
 a word. Such a word is 'rightly', as has been explained in the Topics.
@@ -4247,7 +4247,7 @@ argued that peoples for whom philosophers legislate are always prosperous)
 on the ground that the Athenians became prosperous under Solon's laws
 and the Lacedaemonians under those of Lycurgus, while at Thebes no
 sooner did the leading men become philosophers than the country began
-to prosper. 
+to prosper.
 
 11. Another line of argument is founded upon some decision already
 pronounced, whether on the same subject or on one like it or contrary
@@ -4272,13 +4272,13 @@ that Helen must have been a good woman, because Theseus decided that
 she was; and Paris a good man, because the goddesses chose him before
 all others; and Evagoras also, says Isocrates, was good, since when
 Conon met with his misfortune he betook himself to Evagoras without
-trying any one else on the way. 
+trying any one else on the way.
 
 12. Another line of argument consists in taking separately the parts
 of a subject. Such is that given in the Topics: 'What sort of motion
 is the soul? for it must be this or that.' The Socrates of Theodectes
 provides an example: 'What temple has he profaned? What gods recognized
-by the state has he not honoured?' 
+by the state has he not honoured?'
 
 13. Since it happens that any given thing usually has both good and
 bad consequences, another line of argument consists in using those
@@ -4290,7 +4290,7 @@ be educated, since it is not well to be unpopular': or you answer,
 'No, it is well to be educated, since it is well to be wise'. The
 Art of Rhetoric of Callippus is made up of this line of argument,
 with the addition of those of Possibility and the others of that kind
-already described. 
+already described.
 
 14. Another line of argument is used when we have to urge or discourage
 a course of action that may be done in either of two opposite ways,
@@ -4305,7 +4305,7 @@ for if you say what is right the gods will love you; if you say what
 is wrong, men will love you.' This amounts to the proverbial 'buying
 the marsh with the salt'. It is just this situation, viz. when each
 of two opposites has both a good and a bad consequence opposite respectively
-to each other, that has been termed divarication. 
+to each other, that has been termed divarication.
 
 15. Another line of argument is this: The things people approve of
 openly are not those which they approve of secretly: openly, their
@@ -4321,7 +4321,7 @@ age, to perform one of the state duties because he was tall, said
 And Theodectes in his Law said, 'You make citizens of such mercenaries
 as Strabax and Charidemus, as a reward of their merits; will you not
 make exiles of such citizens as those who have done irreparable harm
-among the mercenaries?' 
+among the mercenaries?'
 
 17. Another line is the argument that if two results are the same
 their antecedents are also the same. For instance, it was a saying
@@ -4333,7 +4333,7 @@ generally that the result of any given thing is always the same: e.g.
 of the whole profession of philosophy.' Or, 'to give earth and water'
 means slavery; or, 'to share in the Common Peace' means obeying orders.
 We are to make either such assumptions or their opposite, as suits
-us best. 
+us best.
 
 18. Another line of argument is based on the fact that men do not
 always make the same choice on a later as on an earlier occasion,
@@ -4342,22 +4342,22 @@ we were exiles, we fought in order to return; now we have returned,
 it would be strange to choose exile in order not to have to fight.'
 one occasion, that is, they chose to be true to their homes at the
 cost of fighting, and on the other to avoid fighting at the cost of
-deserting their homes. 
+deserting their homes.
 
 19. Another line of argument is the assertion that some possible motive
 for an event or state of things is the real one: e.g. that a gift
 was given in order to cause pain by its withdrawal. This notion underlies
-the lines: 
+the lines:
 
-"God gives to many great prosperity, 
+"God gives to many great prosperity,
 
-"Not of good God towards them, but to make 
+"Not of good God towards them, but to make
 
 "The ruin of them more conspicuous. "
 
-Or take the passage from the Meleager of Antiphon: 
+Or take the passage from the Meleager of Antiphon:
 
-"To slay no boar, but to be witnesses 
+"To slay no boar, but to be witnesses
 
 "Of Meleager's prowess unto Greece. "
 
@@ -4378,7 +4378,7 @@ it by pointing to the opposite. These same arguments also form the
 materials for accusation or defence-the deterrents being pointed out
 by the defence, and the inducements by the prosecution. As for the
 defence,...This topic forms the whole Art of Rhetoric both of Pamphilus
-and of Callippus. 
+and of Callippus.
 
 21. Another line of argument refers to things which are supposed to
 happen and yet seem incredible. We may argue that people could not
@@ -4393,7 +4393,7 @@ tried to shout him down when he observed that the laws required a
 law to set them right. 'Why', he went on, 'fish need salt, improbable
 and incredible as this might seem for creatures reared in salt water;
 and olive-cakes need oil, incredible as it is that what produces oil
-should need it.' 
+should need it.'
 
 22. Another line of argument is to refute our opponent's case by noting
 any contrasts or contradictions of dates, acts, or words that it anywhere
@@ -4403,7 +4403,7 @@ he conspired with the Thirty.' (2) Referring to our own conduct, e.g.
 'He says I am litigious, and yet he cannot prove that I have been
 engaged in a single lawsuit.' (3) Referring to both of us together,
 e.g. 'He has never even lent any one a penny, but I have ransomed
-quite a number of you.' 
+quite a number of you.'
 
 23. Another line that is useful for men and causes that have been
 really or seemingly slandered, is to show why the facts are not as
@@ -4413,7 +4413,7 @@ was thought to be the lad's mistress because she embraced him; but
 when her action was explained the charge was shown to be groundless.
 Another example is from the Ajax of Theodectes, where Odysseus tells
 Ajax the reason why, though he is really braver than Ajax, he is not
-thought so. 
+thought so.
 
 24. Another line of argument is to show that if the cause is present,
 the effect is present, and if absent, absent. For by proving the cause
@@ -4437,7 +4437,7 @@ any past action, to examine them both together. Thus, when the people
 of Elea asked Xenophanes if they should or should not sacrifice to
 Leucothea and mourn for her, he advised them not to mourn for her
 if they thought her a goddess, and not to sacrifice to her if they
-thought her a mortal woman. 
+thought her a mortal woman.
 
 27. Another line is to make previous mistakes the grounds of accusation
 or defence. Thus, in the Medea of Carcinus the accusers allege that
@@ -4447,7 +4447,7 @@ away. In defence she argues that it is not her children, but Jason,
 whom she would have slain; for it would have been a mistake on her
 part not to do this if she had done the other. This special line of
 argument for enthymeme forms the whole of the Art of Rhetoric in use
-before Theodorus. 
+before Theodorus.
 
 "Another line is to draw meanings from names. Sophocles, for instance,
 says, "
@@ -4459,11 +4459,11 @@ Conon called Thrasybulus rash in counsel. And Herodicus said of Thrasymachus,
 'You are always bold in battle'; of Polus, 'you are always a colt';
 and of the legislator Draco that his laws were those not of a human
 being but of a dragon, so savage were they. And, in Euripides, Hecuba
-says of Aphrodite, 
+says of Aphrodite,
 
 "Her name and Folly's (aphrosuns) lightly begin alike, "
 
-and Chaeremon writes 
+and Chaeremon writes
 
 "Pentheus-a name foreshadowing grief (penthos) to come. "
 
@@ -4475,13 +4475,13 @@ applauded of which we foresee the conclusions from the beginning,
 so long as they are not obvious at first sight-for part of the pleasure
 we feel is at our own intelligent anticipation; or those which we
 follow well enough to see the point of them as soon as the last word
-has been uttered. 
+has been uttered.
 
 ### Part 24
 Besides genuine syllogisms, there may be syllogisms that look genuine
 but are not; and since an enthymeme is merely a syllogism of a particular
 kind, it follows that, besides genuine enthymemes, there may be those
-that look genuine but are not. 
+that look genuine but are not.
 
 1. Among the lines of argument that form the Spurious Enthymeme the
 first is that which arises from the particular words employed.
@@ -4498,19 +4498,19 @@ it is useful to summarize the results of a number of previous reasonings:
 as 'some he saved-others he avenged-the Greeks he freed'. Each of
 these statements has been previously proved from other facts; but
 the mere collocation of them gives the impression of establishing
-some fresh conclusion. 
+some fresh conclusion.
 
 (b) Another variety is based on the use of similar words for different
 things; e.g. the argument that the mouse must be a noble creature,
 since it gives its name to the most august of all religious rites-for
 such the Mysteries are. Or one may introduce, into a eulogy of the
-dog, the dog-star; or Pan, because Pindar said: 
+dog, the dog-star; or Pan, because Pindar said:
 
-"O thou blessed one! 
+"O thou blessed one!
 
-"Thou whom they of Olympus call 
+"Thou whom they of Olympus call
 
-"The hound of manifold shape 
+"The hound of manifold shape
 
 "That follows the Mother of Heaven: "
 
@@ -4520,7 +4520,7 @@ is readier than any other god to go shares, since we never say 'shares
 all round' except of him. Or that speech is a very excellent thing,
 since good men are not said to be worth money but to be worthy of
 esteem-the phrase 'worthy of esteem' also having the meaning of 'worth
-speech'. 
+speech'.
 
 2. Another line is to assert of the whole what is true of the parts,
 or of the parts what is true of the whole. A whole and its parts are
@@ -4546,7 +4546,7 @@ of Theodectes, where the argument is from part to whole:
 these two things are what Orestes has done.' Still, perhaps the two
 things, once they are put together, do not form a right act. The fallacy
 might also be said to be due to omission, since the speaker fails
-to say by whose hand a husband-slayer should die. 
+to say by whose hand a husband-slayer should die.
 
 3. Another line is the use of indignant language, whether to support
 your own case or to overthrow your opponent's. We do this when we
@@ -4555,7 +4555,7 @@ the facts of it: if the defendant does so, he produces an impression
 of his innocence; and if the prosecutor goes into a passion, he produces
 an impression of the defendant's guilt. Here there is no genuine enthymeme:
 the hearer infers guilt or innocence, but no proof is given, and the
-inference is fallacious accordingly. 
+inference is fallacious accordingly.
 
 4. Another line is to use a 'Sign', or single instance, as certain
 evidence; which, again, yields no valid proof. Thus, it might be said
@@ -4563,7 +4563,7 @@ that lovers are useful to their countries, since the love of Harmodius
 and Aristogeiton caused the downfall of the tyrant Hipparchus. Or,
 again, that Dionysius is a thief, since he is a vicious man-there
 is, of course, no valid proof here; not every vicious man is a thief,
-though every thief is a vicious man. 
+though every thief is a vicious man.
 
 5. Another line represents the accidental as essential. An instance
 is what Polycrates says of the mice, that they 'came to the rescue'
@@ -4572,7 +4572,7 @@ that an invitation to dinner is a great honour, for it was because
 he was not invited that Achilles was 'angered' with the Greeks at
 Tenedos? As a fact, what angered him was the insult involved; it was
 a mere accident that this was the particular form that the insult
-took. 
+took.
 
 6. Another is the argument from consequence. In the Alexander, for
 instance, it is argued that Paris must have had a lofty disposition,
@@ -4586,7 +4586,7 @@ privileges are at the disposal of those we account happy and therefore
 every one might be regarded as happy if only he has those privileges.
 What matters, however, is the circumstances under which the privileges
 are enjoyed. Hence this line too falls under the head of fallacies
-by omission. 
+by omission.
 
 7. Another line consists in representing as causes things which are
 not causes, on the ground that they happened along with or before
@@ -4601,7 +4601,7 @@ her father left her free to choose: here the freedom was presumably
 not perpetual; it could only refer to her first choice, beyond which
 her father's authority could not go. Or again, one might say that
 to strike a free man is an act of wanton outrage; but it is not so
-in every case-only when it is unprovoked. 
+in every case-only when it is unprovoked.
 
 9. Again, a spurious syllogism may, as in 'eristical' discussions,
 be based on the confusion of the absolute with that which is not absolute
@@ -4611,9 +4611,9 @@ that the unknown can be known, on the ground that it can be known
 to he unknown: so also in rhetoric a spurious enthymeme may be based
 on the confusion of some particular probability with absolute probability.
 Now no particular probability is universally probable: as Agathon
-says, 
+says,
 
-"One might perchance say that was probable- 
+"One might perchance say that was probable-
 
 "That things improbable oft will hap to men. "
 
@@ -4637,11 +4637,11 @@ sort of argument illustrates what is meant by making the worse argument
 seem the better. Hence people were right in objecting to the training
 Protagoras undertook to give them. It was a fraud; the probability
 it handled was not genuine but spurious, and has a place in no art
-except Rhetoric and Eristic. 
+except Rhetoric and Eristic.
 
 ### Part 25
 Enthymemes, genuine and apparent, have now been described; the next
-subject is their Refutation. 
+subject is their Refutation.
 
 An argument may be refuted either by a counter-syllogism or by bringing
 an objection. It is clear that counter-syllogisms can be built up
@@ -4651,31 +4651,31 @@ opinions often contradict each other. Objections, as appears in the
 Topics, may be raised in four ways-either by directly attacking your
 opponent's own statement, or by putting forward another statement
 like it, or by putting forward a statement contrary to it, or by quoting
-previous decisions. 
+previous decisions.
 
 1. By 'attacking your opponent's own statement' I mean, for instance,
 this: if his enthymeme should assert that love is always good, the
 objection can be brought in two ways, either by making the general
 statement that 'all want is an evil', or by making the particular
 one that there would be no talk of 'Caunian love' if there were not
-evil loves as well as good ones. 
+evil loves as well as good ones.
 
 2. An objection 'from a contrary statement' is raised when, for instance,
 the opponent's enthymeme having concluded that a good man does good
 to all his friends, you object, 'That proves nothing, for a bad man
-does not do evil to all his friends'. 
+does not do evil to all his friends'.
 
 3. An example of an objection 'from a like statement' is, the enthymeme
 having shown that ill-used men always hate their ill-users, to reply,
 'That proves nothing, for well-used men do not always love those who
-used them well'. 
+used them well'.
 
 4. The 'decisions' mentioned are those proceeding from well-known
 men; for instance, if the enthymeme employed has concluded that 'that
 allowance ought to be made for drunken offenders, since they did not
 know what they were doing', the objection will be, 'Pittacus, then,
 deserves no approval, or he would not have prescribed specially severe
-penalties for offences due to drunkenness'. 
+penalties for offences due to drunkenness'.
 
 Enthymemes are based upon one or other of four kinds of alleged fact:
 (1) Probabilities, (2) Examples, (3) Infallible Signs, (4) Ordinary
@@ -4686,7 +4686,7 @@ similar cases, arrive at a general proposition, and then argue deductively
 to a particular inference. (3) Enthymemes based upon Infallible Signs
 are those which argue from the inevitable and invariable. (4) Enthymemes
 based upon ordinary Signs are those which argue from some universal
-or particular proposition, true or false. 
+or particular proposition, true or false.
 
 Now (1) as a Probability is that which happens usually but not always,
 Enthymemes founded upon Probabilities can, it is clear, always be
@@ -4717,7 +4717,7 @@ happens more as we represent it, the probability is particularly great.
 (2) Fallible Signs, and Enthymemes based upon them, can be refuted
 even if the facts are correct, as was said at the outset. For we have
 shown in the Analytics that no Fallible Sign can form part of a valid
-logical proof. 
+logical proof.
 
 (3) Enthymemes depending on examples may be refuted in the same way
 as probabilities. If we have a negative instance, the argument is
@@ -4725,7 +4725,7 @@ refuted, in so far as it is proved not inevitable, even though the
 positive examples are more similar and more frequent. And if the positive
 examples are more numerous and more frequent, we must contend that
 the present case is dissimilar, or that its conditions are dissimilar,
-or that it is different in some way or other. 
+or that it is different in some way or other.
 
 (4) It will be impossible to refute Infallible Signs, and Enthymemes
 resting on them, by showing in any way that they do not form a valid
@@ -4733,7 +4733,7 @@ logical proof: this, too, we see from the Analytics. All we can do
 is to show that the fact alleged does not exist. If there is no doubt
 that it does, and that it is an Infallible Sign, refutation now becomes
 impossible: for this is equivalent to a demonstration which is clear
-in every respect. 
+in every respect.
 
 ### Part 26
 Amplification and Depreciation are not an element of enthymeme. By
@@ -4761,7 +4761,7 @@ has not reasoned correctly or has made a false assumption.
 Three points must be studied in making a speech; and we have now completed
 the account of (1) Examples, Maxims, Enthymemes, and in general the
 thought-element the way to invent and refute arguments. We have next
-to discuss (2) Style, and (3) Arrangement. 
+to discuss (2) Style, and (3) Arrangement.
 
 ---
 
@@ -4775,11 +4775,11 @@ that these are three in number; what they are; and why there are only
 these three: for we have shown that persuasion must in every case
 be effected either (1) by working on the emotions of the judges themselves,
 (2) by giving them the right impression of the speakers' character,
-or (3) by proving the truth of the statements made. 
+or (3) by proving the truth of the statements made.
 
 Enthymemes also have been described, and the sources from which they
 should be derived; there being both special and general lines of argument
-for enthymemes. 
+for enthymemes.
 
 Our next subject will be the style of expression. For it is not enough
 to know what we ought to say; we must also say it as we ought; much
@@ -4818,7 +4818,7 @@ cannot help having a small but real importance, whatever it is we
 have to expound to others: the way in which a thing is said does affect
 its intelligibility. Not, however, so much importance as people think.
 All such arts are fanciful and meant to charm the hearer. Nobody uses
-fine language when teaching geometry. 
+fine language when teaching geometry.
 
 When the principles of delivery have been worked out, they will produce
 the same effect as on the stage. But only very slight attempts to
@@ -4828,7 +4828,7 @@ can hardly be systematically taught. The principles of good diction
 can be so taught, and therefore we have men of ability in this direction
 too, who win prizes in their turn, as well as those speakers who excel
 in delivery-speeches of the written or literary kind owe more of their
-effect to their direction than to their thought. 
+effect to their direction than to their thought.
 
 It was naturally the poets who first set the movement going; for words
 represent things, and they had also the human voice at their disposal,
@@ -4850,7 +4850,7 @@ have dropped; and it is now plain that we have not to treat in detail
 the whole question of style, but may confine ourselves to that part
 of it which concerns our present subject, rhetoric. The other--the
 poetical--part of it has been discussed in the treatise on the Art
-of Poetry. 
+of Poetry.
 
 ### Part 2
 We may, then, start from the observations there made, including the
@@ -4901,7 +4901,7 @@ oratorical prose. Words of ambiguous meaning are chiefly useful to
 enable the sophist to mislead his hearers. Synonyms are useful to
 the poet, by which I mean words whose ordinary meaning is the same,
 e.g. 'porheueseai' (advancing) and 'badizein' (proceeding); these
-two are ordinary words and have the same meaning. 
+two are ordinary words and have the same meaning.
 
 In the Art of Poetry, as we have already said, will be found definitions
 of these kinds of words; a classification of Metaphors; and mention
@@ -4931,7 +4931,7 @@ one intended to throw dirt at the actor, the other to dignify him.
 And pirates now call themselves 'purveyors'. We can thus call a crime
 a mistake, or a mistake a crime. We can say that a thief 'took' a
 thing, or that he 'plundered' his victim. An expression like that
-of Euripides' Telephus, 
+of Euripides' Telephus,
 
 "King of the oar, on Mysia's coast he landed, "
 
@@ -4945,7 +4945,7 @@ sounds of 'screeching', unlike those of poetry, are discordant and
 unmeaning. Further, in using metaphors to give names to nameless things,
 we must draw them not from remote but from kindred and similar things,
 so that the kinship is clearly perceived as soon as the words are
-said. Thus in the celebrated riddle 
+said. Thus in the celebrated riddle
 
 "I marked how a man glued bronze with fire to another man's body,
 "
@@ -4975,7 +4975,7 @@ when Orestes is called a 'mother-slayer'; or a better one, as when
 he is called his 'father's avenger'. Simonides, when the victor in
 the mule-race offered him a small fee, refused to write him an ode,
 because, he said, it was so unpleasant to write odes to half-asses:
-but on receiving an adequate fee, he wrote 
+but on receiving an adequate fee, he wrote
 
 "Hail to you, daughters of storm-footed steeds? "
 
@@ -4985,10 +4985,10 @@ bad and a good thing less good. Take, for instance, the banter of
 Aristophanes in the Babylonians where he uses 'goldlet' for 'gold',
 'cloaklet' for 'cloak', 'scoffiet' for 'scoff, and 'plaguelet'. But
 alike in using epithets and in using diminutives we must be wary and
-must observe the mean. 
+must observe the mean.
 
 ### Part 3
-Bad taste in language may take any of four forms: 
+Bad taste in language may take any of four forms:
 (1) The misuse of compound words. Lycophron, for instance, talks of
 the 'many visaged heaven' above the 'giant-crested earth', and again
 the 'strait-pathed shore'; and Gorgias of the 'pauper-poet flatterer'
@@ -4998,12 +4998,12 @@ as 'the soul filling with rage and face becoming flame-flushed', and
 he made the persuasion of his words', and 'sombre-hued is the floor
 of the sea'.The way all these words are compounded makes them, we
 feel, fit for verse only. This, then, is one form in which bad taste
-is shown. 
+is shown.
 
 (2) Another is the employment of strange words. For instance, Lycophron
 talks of 'the prodigious Xerxes' and 'spoliative Sciron'; Alcidamas
 of 'a toy for poetry' and 'the witlessness of nature', and says 'whetted
-with the unmitigated temper of his spirit'. 
+with the unmitigated temper of his spirit'.
 
 (3) A third form is the use of long, unseasonable, or frequent epithets.
 It is appropriate enough for a poet to talk of 'white milk', in prose
@@ -5031,7 +5031,7 @@ a compound and an epithet, so that it seems a poet's effort), and
 inappropriateness of such poetical language imports absurdity and
 tastelessness into speeches, as well as the obscurity that comes from
 all this verbosity-for when the sense is plain, you only obscure and
-spoil its clearness by piling up words. 
+spoil its clearness by piling up words.
 
 The ordinary use of compound words is where there is no term for a
 thing and some compound can be easily formed, like 'pastime' (chronotribein);
@@ -5040,7 +5040,7 @@ We now see why the language of compounds is just the thing for writers
 of dithyrambs, who love sonorous noises; strange words for writers
 of epic poetry, which is a proud and stately affair; and metaphor
 for iambic verse, the metre which (as has been already' said) is widely
-used to-day. 
+used to-day.
 
 (4) There remains the fourth region in which bad taste may be shown,
 metaphor. Metaphors like other things may be inappropriate. Some are
@@ -5058,11 +5058,11 @@ her droppings fall on him as she flew overhead, is in the best tragic
 manner. He said, 'Nay, shame, O Philomela'. Considering her as a bird,
 you could not call her act shameful; considering her as a girl, you
 could; and so it was a good gibe to address her as what she was once
-and not as what she is. 
+and not as what she is.
 
 ### Part 4
 The Simile also is a metaphor; the difference is but slight. When
-the poet says of Achilles that he 
+the poet says of Achilles that he
 
 "Leapt on the foe as a lion, "
 
@@ -5071,7 +5071,7 @@ since both are courageous, he has transferred to Achilles the name
 of 'lion'. Similes are useful in prose as well as in verse; but not
 often, since they are of the nature of poetry. They are to be employed
 just as metaphors are employed, since they are really the same thing
-except for the difference mentioned. 
+except for the difference mentioned.
 
 The following are examples of similes. Androtion said of Idrieus that
 he was like a terrier let off the chain, that flies at you and bites
@@ -5099,7 +5099,7 @@ and similes, with the explanation omitted, will appear as metaphors.
 But the proportional metaphor must always apply reciprocally to either
 of its co-ordinate terms. For instance, if a drinking-bowl is the
 shield of Dionysus, a shield may fittingly be called the drinking-bowl
-of Ares. 
+of Ares.
 
 ### Part 5
 Such, then, are the ingredients of which speech is composed. The foundation
@@ -5142,7 +5142,7 @@ for these distinctions also must be correctly given. 'Upon her arrival
 she said her say and departed (e d elthousa kai dialechtheisa ocheto).'
 (5) A fifth rule is to express plurality, fewness, and unity by the
 correct wording, e.g. 'Having come, they struck me (oi d elthontes
-etupton me).' 
+etupton me).'
 
 It is a general rule that a written composition should be easy to
 read and therefore easy to deliver. This cannot be so where there
@@ -5161,7 +5161,7 @@ also caused if, when you intend to insert a number of details, you
 do not first make your meaning clear; for instance, if you say, 'I
 meant, after telling him this, that and the other thing, to set out',
 rather than something of this kind 'I meant to set out after telling
-him; then this, that, and the other thing occurred.' 
+him; then this, that, and the other thing occurred.'
 
 ### Part 6
 The following suggestions will help to give your language impressiveness.
@@ -5172,11 +5172,11 @@ When mentioning anything ugly or unseemly, use its name if it is the
 description that is ugly, and describe it if it is the name that is
 ugly. (2) Represent things with the help of metaphors and epithets,
 being careful to avoid poetical effects. (3) Use plural for singular,
-as in poetry, where one finds 
+as in poetry, where one finds
 
 "Unto havens Achaean, "
 
-though only one haven is meant, and 
+though only one haven is meant, and
 
 "Here are my letter's many-leaved folds. "
 
@@ -5187,7 +5187,7 @@ conciseness, dispense with connectives, while still preserving connexion;
 e.g. 'having gone and spoken', and 'having gone, I spoke', respectively.
 (6) And the practice of Antimachus, too, is useful-to describe a thing
 by mentioning attributes it does not possess; as he does in talking
-of Teumessus 
+of Teumessus
 
 "There is a little wind-swept knoll... "
 
@@ -5197,7 +5197,7 @@ qualities, according to which your subject requires. It is from this
 source that the poets draw expressions such as the 'stringless' or
 'lyreless' melody, thus forming epithets out of negations. This device
 is popular in proportional metaphors, as when the trumpet's note is
-called 'a lyreless melody'. 
+called 'a lyreless melody'.
 
 ### Part 7
 Your language will be appropriate if it expresses emotion and character,
@@ -5210,7 +5210,7 @@ express emotion, you will employ the language of anger in speaking
 of outrage; the language of disgust and discreet reluctance to utter
 a word when speaking of impiety or foulness; the language of exultation
 for a tale of glory, and that of humiliation for a tale of and so
-in all other cases. 
+in all other cases.
 
 This aptness of language is one thing that makes people believe in
 the truth of your story: their minds draw the false conclusion that
@@ -5219,7 +5219,7 @@ things are as you describe them; and therefore they take your story
 to be true, whether it is so or not. Besides, an emotional speaker
 always makes his audience feel with him, even when there is nothing
 in his arguments; which is why many speakers try to overwhelm their
-audience by mere noise. 
+audience by mere noise.
 
 Furthermore, this way of proving your story by displaying these signs
 of its genuineness expresses your personal character. Each class of
@@ -5236,7 +5236,7 @@ is made upon an audience by a device which speech-writers employ to
 nauseous excess, when they say 'Who does not know this?' or 'It is
 known to everybody.' The hearer is ashamed of his ignorance, and agrees
 with the speaker, so as to have a share of the knowledge that everybody
-else possesses. 
+else possesses.
 
 All the variations of oratorical style are capable of being used in
 season or out of season. The best way to counteract any exaggeration
@@ -5263,7 +5263,7 @@ once the audience is in a like state of feeling, approval of course
 follows. This is why such language is fitting in poetry, which is
 an inspired thing. This language, then, should be used either under
 stress of emotion, or ironically, after the manner of Gorgias and
-of the passages in the Phaedrus. 
+of the passages in the Phaedrus.
 
 ### Part 8
 The form of a prose composition should be neither metrical nor destitute
@@ -5279,7 +5279,7 @@ of the forms of a composition that constitutes rhythm, of which metres
 are definite sections. Prose, then, is to be rhythmical, but not metrical,
 or it will become not prose but verse. It should not even have too
 precise a prose rhythm, and therefore should only be rhythmical to
-a certain extent. 
+a certain extent.
 
 Of the various rhythms, the heroic has dignity, but lacks the tones
 of the spoken language. The iambic is the very language of ordinary
@@ -5287,7 +5287,7 @@ people, so that in common talk iambic lines occur oftener than any
 others: but in a speech we need dignity and the power of taking the
 hearer out of his ordinary self. The trochee is too much akin to wild
 dancing: we can see this in tetrameter verse, which is one of the
-trochaic rhythms. 
+trochaic rhythms.
 
 There remains the paean, which speakers began to use in the time of
 Thrasymachus, though they had then no name to give it. The paean is
@@ -5295,7 +5295,7 @@ a third class of rhythm, closely akin to both the two already mentioned;
 it has in it the ratio of three to two, whereas the other two kinds
 have the ratio of one to one, and two to one respectively. Between
 the two last ratios comes the ratio of one-and-a-half to one, which
-is that of the paean. 
+is that of the paean.
 
 Now the other two kinds of rhythm must be rejected in writing prose,
 partly for the reasons given, and partly because they are too metrical;
@@ -5306,16 +5306,16 @@ the beginning a at the end of sentences, whereas the end should differ
 from the beginning. There are two opposite kinds of paean, one of
 which is suitable to the beginning of a sentence, where it is indeed
 actually used; this is the kind that begins with a long syllable and
-ends with three short ones, as 
+ends with three short ones, as
 
 "Dalogenes | eite Luki | an, "
 
-and 
+and
 
 "Chruseokom | a Ekate | pai Dios. "
 
 The other paean begins, conversely, with three short syllables and
-ends with a long one, as 
+ends with a long one, as
 
 "meta de lan | udata t ok | eanon e | oanise nux. "
 
@@ -5323,7 +5323,7 @@ This kind of paean makes a real close: a short syllable can give
 no effect of finality, and therefore makes the rhythm appear truncated.
 A sentence should break off with the long syllable: the fact that
 it is over should be indicated not by the scribe, or by his period-mark
-in the margin, but by the rhythm itself. 
+in the margin, but by the rhythm itself.
 
 We have now seen that our language must be rhythmical and not destitute
 of rhythm, and what rhythms, in what particular shape, make it so.
@@ -5355,15 +5355,15 @@ That is why verse, which is measured, is always more easily remembered
 than prose, which is not: the measures of verse can be numbered. The
 period must, further, not be completed until the sense is complete:
 it must not be capable of breaking off abruptly, as may happen with
-the following iambic lines of Sophocles- 
+the following iambic lines of Sophocles-
 
-"Calydon's soil is this; of Pelops' land 
+"Calydon's soil is this; of Pelops' land
 
 "(The smiling plains face us across the strait.) "
 
 By a wrong division of the words the hearer may take the meaning to
 be the reverse of what it is: for instance, in the passage quoted,
-one might imagine that Calydon is in the Peloponnesus. 
+one might imagine that Calydon is in the Peloponnesus.
 
 A Period may be either divided into several members or simple. The
 period of several members is a portion of speech (1) complete in itself,
@@ -5381,19 +5381,19 @@ pass beyond the boundary before turning back leave their companions
 behind So too if a period is too long you turn it into a speech, or
 something like a dithyrambic prelude. The result is much like the
 preludes that Democritus of Chios jeered at Melanippides for writing
-instead of antistrophic stanzas- 
+instead of antistrophic stanzas-
 
-"He that sets traps for another man's feet 
+"He that sets traps for another man's feet
 
-"Is like to fall into them first; 
+"Is like to fall into them first;
 
-"And long-winded preludes do harm to us all, 
+"And long-winded preludes do harm to us all,
 
 "But the preluder catches it worst. "
 
 Which applies likewise to long-membered orators. Periods whose members
 are altogether too short are not periods at all; and the result is
-to bring the hearer down with a crash. 
+to bring the hearer down with a crash.
 
 The periodic style which is divided into members is of two kinds.
 It is either simply divided, as in 'I have often wondered at the conveners
@@ -5424,7 +5424,7 @@ a form of speech is satisfying, because the significance of contrasted
 ideas is easily felt, especially when they are thus put side by side,
 and also because it has the effect of a logical argument; it is by
 putting two opposing conclusions side by side that you prove one of
-them false. 
+them false.
 
 Such, then, is the nature of antithesis. Parisosis is making the two
 members of a period equal in length. Paromoeosis is making the extreme
@@ -5432,43 +5432,43 @@ words of both members like each other. This must happen either at
 the beginning or at the end of each member. If at the beginning, the
 resemblance must always be between whole words; at the end, between
 final syllables or inflexions of the same word or the same word repeated.
-Thus, at the beginning 
+Thus, at the beginning
 
 "agron gar elaben arlon par' autou "
 
-and 
+and
 
 "dorhetoi t epelonto pararretoi t epeessin "
 
-At the end 
+At the end
 
-"ouk wethesan auton paidion tetokenai, 
+"ouk wethesan auton paidion tetokenai,
 
 "all autou aitlon lelonenai, "
 
-and 
+and
 
 "en pleiotals de opontisi kai en elachistais elpisin "
 
-An example of inflexions of the same word is 
+An example of inflexions of the same word is
 
 "axios de staoenai chalkous ouk axios on chalkou; "
 
-Of the same word repeated, 
+Of the same word repeated,
 
 "su d' auton kai zonta eleges kakos kai nun grafeis kakos.
 "
 
-Of one syllable, 
+Of one syllable,
 
 "ti d' an epaoes deinon, ei andrh' eides arhgon; "
 
 It is possible for the same sentence to have all these features together-antithesis,
 parison, and homoeoteleuton. (The possible beginnings of periods have
 been pretty fully enumerated in the Theodectea.) There are also spurious
-antitheses, like that of Epicharmus- 
+antitheses, like that of Epicharmus-
 
-"There one time I as their guest did stay, 
+"There one time I as their guest did stay,
 
 "And they were my hosts on another day. "
 
@@ -5510,7 +5510,7 @@ must not be far-fetched, or they will be difficult to grasp, nor obvious,
 or they will have no effect. The words, too, ought to set the scene
 before our eyes; for events ought to be seen in progress rather than
 in prospect. So we must aim at these three points: Antithesis, Metaphor,
-and Actuality. 
+and Actuality.
 
 Of the four kinds of Metaphor the most taking is the proportional
 kind. Thus Pericles, for instance, said that the vanishing from their
@@ -5531,7 +5531,7 @@ of the Peiraeus.' And Moerocles said he was no more a rascal than
 was a certain respectable citizen he named, 'whose rascality was worth
 over thirty per cent per annum to him, instead of a mere ten like
 his own'.There is also the iambic line of Anaxandrides about the way
-his daughters put off marrying- 
+his daughters put off marrying-
 
 "My daughters' marriage-bonds are overdue. "
 
@@ -5570,7 +5570,7 @@ of battle; they celebrate small gains and single successes; it celebrates
 our triumph in the war as a whole'; for both trophy and treaty are
 signs of victory. So is 'A country pays a heavy reckoning in being
 condemned by the judgement of mankind', for a reckoning is damage
-deservedly incurred. 
+deservedly incurred.
 
 ### Part 11
 It has already been mentioned that liveliness is got by using the
@@ -5589,21 +5589,21 @@ so in 'But you must roam as free as a sacred victim'; and in
 where 'up sprang' gives us activity as well as metaphor, for it at
 once suggests swiftness. So with Homer's common practice of giving
 metaphorical life to lifeless things: all such passages are distinguished
-by the effect of activity they convey. Thus, 
+by the effect of activity they convey. Thus,
 
 "Downward anon to the valley rebounded the boulder remorseless; and
 "
 
 "The (bitter) arrow flew; "
 
-and 
+and
 
 "Flying on eagerly; and "
 
 Stuck in the earth, still panting to feed on the flesh of the heroes;
-and 
+and
 
-"And the point of the spear in its fury drove 
+"And the point of the spear in its fury drove
 
 "full through his breastbone. "
 
@@ -5614,12 +5614,12 @@ these ideas to the things by means of proportional metaphors: as the
 stone is to Sisyphus, so is the shameless man to his victim. In his
 famous similes, too, he treats inanimate things in the same way:
 
-"Curving and crested with white, host following 
+"Curving and crested with white, host following
 
 "host without ceasing. "
 
 Here he represents everything as moving and living; and activity
-is movement. 
+is movement.
 
 Metaphors must be drawn, as has been said already, from things that
 are related to the original thing, and yet not obviously so related-just
@@ -5630,7 +5630,7 @@ you might say that an anchor and an overhead hook were the same, since
 both are in a way the same, only the one secures things from below
 and the other from above. And to speak of states as 'levelled' is
 to identify two widely different things, the equality of a physical
-surface and the equality of political powers. 
+surface and the equality of political powers.
 
 Liveliness is specially conveyed by metaphor, and by the further power
 of surprising the hearer; because the hearer expected something different,
@@ -5646,7 +5646,7 @@ ideas you already have. They are like the burlesque words that one
 finds in the comic writers. The effect is produced even by jokes depending
 upon changes of the letters of a word; this too is a surprise. You
 find this in verse as well as in prose. The word which comes is not
-what the hearer imagined: thus 
+what the hearer imagined: thus
 
 "Onward he came, and his feet were shod with his-chilblains,
 "
@@ -5674,7 +5674,7 @@ a word is used in a second sense or metaphorically, the joke is good
 if it fits the facts. For instance, Anaschetos (proper name) ouk anaschetos:
 where you say that what is so-and-so in one sense is not so-and-so
 in another; well, if the man is unpleasant, the joke fits the facts.
-Again, take- 
+Again, take-
 
 "Thou must not be a stranger stranger than Thou should'st.
 "
@@ -5682,9 +5682,9 @@ Again, take-
 Do not the words 'thou must not be', &c., amount to saying that the
 stranger must not always be strange? Here again is the use of one
 word in different senses. Of the same kind also is the much-praised
-verse of Anaxandrides: 
+verse of Anaxandrides:
 
-"Death is most fit before you do 
+"Death is most fit before you do
 
 "Deeds that would make death fit for you. "
 
@@ -5724,12 +5724,12 @@ they succeed, i.e. when they give the resemblance pat, as in
 
 "Those legs of his curl just like parsley leaves; "
 
-and 
+and
 
 "Just like Philammon struggling with his punchball. "
 
 These are all similes; and that similes are metaphors has been stated
-often already. 
+often already.
 
 Proverbs, again, are metaphors from one species to another. Suppose,
 for instance, a man to start some undertaking in hope of gain and
@@ -5742,23 +5742,23 @@ e.g. the one about the man with a black eye, 'you would have thought
 he was a basket of mulberries'; here the 'black eye' is compared to
 a mulberry because of its colour, the exaggeration lying in the quantity
 of mulberries suggested. The phrase 'like so-and-so' may introduce
-a hyperbole under the form of a simile. Thus 
+a hyperbole under the form of a simile. Thus
 
 "Just like Philammon struggling with his punchball "
 
 is equivalent to 'you would have thought he was Philammon struggling
-with his punchball'; and 
+with his punchball'; and
 
 "Those legs of his curl just like parsley leaves "
 
 is equivalent to 'his legs are so curly that you would have thought
 they were not legs but parsley leaves'. Hyperboles are for young men
 to use; they show vehemence of character; and this is why angry people
-use them more than other people. 
+use them more than other people.
 
-"Not though he gave me as much as the dust 
+"Not though he gave me as much as the dust
 
-"or the sands of the sea... 
+"or the sands of the sea...
 
 "But her, the daughter of Atreus' son, I never will marry,
 
@@ -5767,7 +5767,7 @@ use them more than other people.
 "Defter of hand than Athene... "
 
 (The Attic orators are particularly fond of this method of speech.)
-Consequently it does not suit an elderly speaker. 
+Consequently it does not suit an elderly speaker.
 
 ### Part 12
 It should be observed that each kind of rhetoric has its own appropriate
@@ -5776,7 +5776,7 @@ are those of political and forensic speaking the same. Both written
 and spoken have to be known. To know the latter is to know how to
 speak good Greek. To know the former means that you are not obliged,
 as otherwise you are, to hold your tongue when you wish to communicate
-something to the general public. 
+something to the general public.
 
 The written style is the more finished: the spoken better admits of
 dramatic delivery-like the kind of oratory that reflects character
@@ -5813,7 +5813,7 @@ acts in the reverse way and makes a single one into many. It thus
 makes everything more important: e.g. 'I came to him; I talked to
 him; I entreated him'-what a lot of facts! the hearer thinks-'he paid
 no attention to anything I said'. This is the effect which Homer seeks
-when he writes, 
+when he writes,
 
 "Nireus likewise from Syme (three well-fashioned ships did bring),
 
@@ -5827,7 +5827,7 @@ times; and therefore people think that, if his name is mentioned many
 times, many things have been said about him. So that Homer, by means
 of this illusion, has made a great deal of though he has mentioned
 him only in this one passage, and has preserved his memory, though
-he nowhere says a word about him afterwards. 
+he nowhere says a word about him afterwards.
 
 Now the style of oratory addressed to public assemblies is really
 just like scene-painting. The bigger the throng, the more distant
@@ -5842,7 +5842,7 @@ do not distinguish themselves in all these branches at once; high
 finish is wanted least where dramatic delivery is wanted most, and
 here the speaker must have a good voice, and above all, a strong one.
 It is ceremonial oratory that is most literary, for it is meant to
-be read; and next to it forensic oratory. 
+be read; and next to it forensic oratory.
 
 To analyse style still further, and add that it must be agreeable
 or magnificent, is useless; for why should it have these traits any
@@ -5854,11 +5854,11 @@ For what other reason should style be 'clear', and 'not mean' but
 curt. Plainly the middle way suits best. Again, style will be made
 agreeable by the elements mentioned, namely by a good blending of
 ordinary and unusual words, by the rhythm, and by-the persuasiveness
-that springs from appropriateness. 
+that springs from appropriateness.
 
 This concludes our discussion of style, both in its general aspects
 and in its special applications to the various branches of rhetoric.
-We have now to deal with Arrangement. 
+We have now to deal with Arrangement.
 
 ### Part 13
 A speech has two parts. You must state your case, and you must prove
@@ -5908,7 +5908,7 @@ which is indeed what is always done. (Take as an example the introduction
 to the Helen of Isocrates-there is nothing in common between the 'eristics'
 and Helen.) And here, even if you travel far from your subject, it
 is fitting, rather than that there should be sameness in the entire
-speech. 
+speech.
 
 The usual subject for the introductions to speeches of display is
 some piece of praise or censure. Thus Gorgias writes in his Olympic
@@ -5922,7 +5922,7 @@ but not bad men, men whose good qualities have never been noticed,
 like Alexander son of Priam.' Here the orator gives advice. Or we
 may begin as speakers do in the law-courts; that is to say, with appeals
 to the audience to excuse us if our speech is about something paradoxical,
-difficult, or hackneyed; like Choerilus in the lines- 
+difficult, or hackneyed; like Choerilus in the lines-
 
 "But now when allotment of all has been made... "
 
@@ -5930,12 +5930,12 @@ Introductions to speeches of display, then, may be composed of some
 piece of praise or censure, of advice to do or not to do something,
 or of appeals to the audience; and you must choose between making
 these preliminary passages connected or disconnected with the speech
-itself. 
+itself.
 
 Introductions to forensic speeches, it must be observed, have the
 same value as the prologues of dramas and the introductions to epic
 poems; the dithyrambic prelude resembling the introduction to a speech
-of display, as 
+of display, as
 
 "For thee, and thy gilts, and thy battle-spoils.... "
 
@@ -5943,11 +5943,11 @@ In prologues, and in epic poetry, a foretaste of the theme is given,
 intended to inform the hearers of it in advance instead of keeping
 their minds in suspense. Anything vague puzzles them: so give them
 a grasp of the beginning, and they can hold fast to it and follow
-the argument. So we find- 
+the argument. So we find-
 
-"Sing, O goddess of song, of the Wrath... 
+"Sing, O goddess of song, of the Wrath...
 
-"Tell me, O Muse, of the hero... 
+"Tell me, O Muse, of the hero...
 
 "Lead me to tell a new tale, how there came great warfare to Europe
 
@@ -5955,14 +5955,14 @@ the argument. So we find-
 
 The tragic poets, too, let us know the pivot of their play; if not
 at the outset like Euripides, at least somewhere in the preface to
-a speech like Sophocles- 
+a speech like Sophocles-
 
 "Polybus was my father...; "
 
 and so in Comedy. This, then, is the most essential function and
 distinctive property of the introduction, to show what the aim of
 the speech is; and therefore no introduction ought to be employed
-where the subject is not long or intricate. 
+where the subject is not long or intricate.
 
 The other kinds of introduction employed are remedial in purpose,
 and may be used in any type of speech. They are concerned with the
@@ -5976,7 +5976,7 @@ when he is going to bring himself on the stage, must clear away any
 obstacles, and therefore must begin by removing any prejudice felt
 against him. But if you are to excite prejudice, you must do so at
 the close, so that the judges may more easily remember what you have
-said. 
+said.
 
 The appeal to the hearer aims at securing his goodwill, or at arousing
 his resentment, or sometimes at gaining his serious attention to the
@@ -6001,7 +6001,7 @@ there is least slackness of interest; it is therefore ridiculous to
 put this kind of thing at the beginning, when every one is listening
 with most attention. Choose therefore any point in the speech where
 such an appeal is needed, and then say 'Now I beg you to note this
-point-it concerns you quite as much as myself'; or 
+point-it concerns you quite as much as myself'; or
 
 "I will tell you that whose like you have never yet "
 
@@ -6013,7 +6013,7 @@ to excite prejudice or to dispel misgivings is universal-
 
 "My lord, I will not say that eagerly... "
 
-or 
+or
 
 "Why all this preface? "
 
@@ -6028,7 +6028,7 @@ things we should aim at. In speeches of display we must make the hearer
 feel that the eulogy includes either himself or his family or his
 way of life or something or other of the kind. For it is true, as
 Socrates says in the Funeral Speech, that 'the difficulty is not to
-praise the Athenians at Athens but at Sparta'. 
+praise the Athenians at Athens but at Sparta'.
 
 The introductions of political oratory will be made out of the same
 materials as those of the forensic kind, though the nature of political
@@ -6080,7 +6080,7 @@ for calumny and say, 'It is monstrous to trust the man's statements
 when you cannot trust the man himself.' Another is when the question
 has been already decided. So with Euripides' reply to Hygiaenon, who,
 in the action for an exchange of properties, accused him of impiety
-in having written a line encouraging perjury- 
+in having written a line encouraging perjury-
 
 "My tongue hath sworn: no oath is on my soul. "
 
@@ -6101,7 +6101,7 @@ after mentioning a number of good qualities to attack one bad one
 that really bears on the question. This is the method of thoroughly
 skilful and unscrupulous prosecutors. By mixing up the man's merits
 with what is bad, they do their best to make use of them to damage
-him. 
+him.
 
 There is another method open to both calumniator and apologist. Since
 a given action can be done from many motives, the former must try
@@ -6110,7 +6110,7 @@ put the better construction on it. Thus one might argue that Diomedes
 chose Odysseus as his companion because he supposed Odysseus to be
 the best man for the purpose; and you might reply to this that it
 was, on the contrary, because he was the only hero so worthless that
-Diomedes need not fear his rivalry. 
+Diomedes need not fear his rivalry.
 
 ### Part 16
 We may now pass from the subject of calumny to that of Narration.
@@ -6133,7 +6133,7 @@ and because they are well-known, the hearer usually needs no narration
 of them; none, for instance, if your object is the praise of Achilles;
 we all know the facts of his life-what you have to do is to apply
 those facts. But if your object is the praise of Critias, you must
-narrate his deeds, which not many people know of... 
+narrate his deeds, which not many people know of...
 
 Nowadays it is said, absurdly enough, that the narration should be
 rapid. Remember what the man said to the baker who asked whether he
@@ -6145,14 +6145,14 @@ happy mean; that is, in saying just so much as will make the facts
 plain, or will lead the hearer to believe that the thing has happened,
 or that the man has caused injury or wrong to some one, or that the
 facts are really as important as you wish them to be thought: or the
-opposite facts to establish the opposite arguments. 
+opposite facts to establish the opposite arguments.
 
 You may also narrate as you go anything that does credit to yourself,
 e.g. 'I kept telling him to do his duty and not abandon his children';
 or discredit to your adversary, e.g. 'But he answered me that, wherever
 he might find himself, there he would find other children', the answer
 Herodotus' records of the Egyptian mutineers. Slip in anything else
-that the judges will enjoy. 
+that the judges will enjoy.
 
 The defendant will make less of the narration. He has to maintain
 that the thing has not happened, or did no harm, or was not unjust,
@@ -6163,7 +6163,7 @@ of events as past and gone, except where they excite pity or indignation
 by being represented as present. The Story told to Alcinous is an
 example of a brief chronicle, when it is repeated to Penelope in sixty
 lines. Another instance is the Epic Cycle as treated by Phayllus,
-and the prologue to the Oeneus. 
+and the prologue to the Oeneus.
 
 The narration should depict character; to which end you must know
 what makes it do so. One such thing is the indication of moral purpose;
@@ -6184,16 +6184,16 @@ good character after what is noble. Where any detail may appear incredible,
 then add the cause of it; of this Sophocles provides an example in
 the Antigone, where Antigone says she had cared more for her brother
 than for husband or children, since if the latter perished they might
-be replaced, 
+be replaced,
 
-"But since my father and mother in their graves 
+"But since my father and mother in their graves
 
 "Lie dead, no brother can be born to me. "
 
 If you have no such cause to suggest, just say that you are aware
 that no one will believe your words, but the fact remains that such
 is our nature, however hard the world may find it to believe that
-a man deliberately does anything except what pays him. 
+a man deliberately does anything except what pays him.
 
 Again, you must make use of the emotions. Relate the familiar manifestations
 of them, and those that distinguish yourself and your opponent; for
@@ -6201,13 +6201,13 @@ instance, 'he went away scowling at me'. So Aeschines described Cratylus
 as 'hissing with fury and shaking his fists'. These details carry
 conviction: the audience take the truth of what they know as so much
 evidence for the truth of what they do not. Plenty of such details
-may be found in Homer: 
+may be found in Homer:
 
 "Thus did she say: but the old woman buried her face in her hands:
 "
 
 a true touch-people beginning to cry do put their hands over their
-eyes. 
+eyes.
 
 Bring yourself on the stage from the first in the right character,
 that people may regard you in that light; and the same with your adversary;
@@ -6238,7 +6238,7 @@ not committed, your main task in court is to prove this. (2) If you
 maintain that the act did no harm, prove this. If you maintain that
 (3) the act was less than is alleged, or (4) justified, prove these
 facts, just as you would prove the act not to have been committed
-if you were maintaining that. 
+if you were maintaining that.
 
 It should be noted that only where the question in dispute falls under
 the first of these heads can it be true that one of the two parties
@@ -6250,7 +6250,7 @@ In ceremonial speeches you will develop your case mainly by arguing
 that what has been done is, e.g., noble and useful. The facts themselves
 are to be taken on trust; proof of them is only submitted on those
 rare occasions when they are not easily credible or when they have
-been set down to some one else. 
+been set down to some one else.
 
 In political speeches you may maintain that a proposal is impracticable;
 or that, though practicable, it is unjust, or will do no good, or
@@ -6264,7 +6264,7 @@ or is not now true, which can better be demonstrated, because not
 contingent-there is no contingency in what has now already happened.
 Do not use a continuous succession of enthymemes: intersperse them
 with other matter, or they will spoil one another's effect. There
-are limits to their number- 
+are limits to their number-
 
 Friend, you have spoken as much as a sensible man would have spoken.
 ,as much' says Homer, not 'as well'. Nor should you try to make enthymemes
@@ -6310,7 +6310,7 @@ upon moral discourse: after all, it is more fitting for a good man
 to display himself as an honest fellow than as a subtle reasoner.
 Refutative enthymemes are more popular than demonstrative ones: their
 logical cogency is more striking: the facts about two opposites always
-stand out clearly when the two are nut side by side. 
+stand out clearly when the two are nut side by side.
 
 The 'Reply to the Opponent' is not a separate division of the speech;
 it is part of the Arguments to break down the opponent's case, whether
@@ -6333,12 +6333,12 @@ speech out of the way. So attack that first-either the whole of it,
 or the most important, successful, or vulnerable points in it, and
 thus inspire confidence in what you have to say yourself-
 
-"First, champion will I be of Goddesses... 
+"First, champion will I be of Goddesses...
 
 "Never, I ween, would Hera... "
 
 where the speaker has attacked the silliest argument first. So much
-for the Arguments. 
+for the Arguments.
 
 With regard to the element of moral character: there are assertions
 which, if made about yourself, may excite dislike, appear tedious,
@@ -6347,26 +6347,26 @@ you cannot say about your opponent without seeming abusive or ill-bred.
 Put such remarks, therefore, into the mouth of some third person.
 This is what Isocrates does in the Philippus and in the Antidosis,
 and Archilochus in his satires. The latter represents the father himself
-as attacking his daughter in the lampoon 
+as attacking his daughter in the lampoon
 
-"Think nought impossible at all, 
+"Think nought impossible at all,
 
 "Nor swear that it shall not befall... "
 
 and puts into the mouth of Charon the carpenter the lampoon which
-begins 
+begins
 
 "Not for the wealth of Gyes... "
 
 So too Sophocles makes Haemon appeal to his father on behalf of Antigone
-as if it were others who were speaking. 
+as if it were others who were speaking.
 
 Again, sometimes you should restate your enthymemes in the form of
 maxims; e.g. 'Wise men will come to terms in the hour of success;
 for they will gain most if they do'. Expressed as an enthymeme, this
 would run, 'If we ought to come to terms when doing so will enable
 us to gain the greatest advantage, then we ought to come to terms
-in the hour of success.' 
+in the hour of success.'
 
 ### Part 18
 Next as to Interrogation. The best moment to a employ this is when
@@ -6375,7 +6375,7 @@ one more lands him in absurdity. Thus Pericles questioned Lampon about
 the way of celebrating the rites of the Saviour Goddess. Lampon declared
 that no uninitiated person could be told of them. Pericles then asked,
 'Do you know them yourself?' 'Yes', answered Lampon. 'Why,' said Pericles,
-'how can that be, when you are uninitiated?' 
+'how can that be, when you are uninitiated?'
 
 Another good moment is when one premiss of an argument is obviously
 true, and you can see that your opponent must say 'yes' if you ask
@@ -6405,7 +6405,7 @@ to involve you in a contradiction, offer the explanation at the outset
 of your answer, before your opponent asks the next question or draws
 his conclusion. For it is not difficult to see the drift of his argument
 in advance. This point, however, as well as the various means of refutation,
-may be regarded as known to us from the Topics. 
+may be regarded as known to us from the Topics.
 
 When your opponent in drawing his conclusion puts it in the form of
 a question, you must justify your answer. Thus when Sophocles was
@@ -6421,7 +6421,7 @@ not you too be justly put to death?'-'Not at all', said he; 'they
 were bribed to do it, and I did it from conviction'. Hence you should
 not ask any further questions after drawing the conclusion, nor put
 the conclusion itself in the form of a further question, unless there
-is a large balance of truth on your side. 
+is a large balance of truth on your side.
 
 As to jests. These are supposed to be of some service in controversy.
 Gorgias said that you should kill your opponents' earnestness with
@@ -6435,7 +6435,7 @@ jokes to amuse himself, the buffoon to amuse other people.
 The Epilogue has four parts. You must (1) make the audience well-disposed
 towards yourself and ill-disposed towards your opponent (2) magnify
 or minimize the leading facts, (3) excite the required state of emotion
-in your hearers, and (4) refresh their memories. 
+in your hearers, and (4) refresh their memories.
 
 (1) Having shown your own truthfulness and the untruthfulness of your
 opponent, the natural thing is to commend yourself, censure him, and
@@ -6443,14 +6443,14 @@ hammer in your points. You must aim at one of two objects-you must
 make yourself out a good man and him a bad one either in yourselves
 or in relation to your hearers. How this is to be managed-by what
 lines of argument you are to represent people as good or bad-this
-has been already explained. 
+has been already explained.
 
 (2) The facts having been proved, the natural thing to do next is
 to magnify or minimize their importance. The facts must be admitted
 before you can discuss how important they are; just as the body cannot
 grow except from something already present. The proper lines of argument
 to be used for this purpose of amplification and depreciation have
-already been set forth. 
+already been set forth.
 
 (3) Next, when the facts and their importance are clearly understood,
 you must excite your hearers' emotions. These emotions are pity, indignation,
@@ -6476,7 +6476,7 @@ form of a question. 'What has not been proved by me?' or 'What has
 my opponent proved?' You may proceed then, either in this way by setting
 point against point, or by following the natural order of the arguments
 as spoken, first giving your own, and then separately, if you wish,
-those of your opponent. 
+those of your opponent.
 
 For the conclusion, the disconnected style of language is appropriate,
 and will mark the difference between the oration and the peroration.

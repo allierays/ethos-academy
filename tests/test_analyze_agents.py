@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -35,7 +34,10 @@ def _make_profile(
     """Build a minimal agent profile with regular posting timestamps."""
     base = datetime(2026, 1, 1, tzinfo=timezone.utc)
     posts = [
-        {"created_at": _iso(base + timedelta(hours=i * interval_hours)), "content": f"post {i}"}
+        {
+            "created_at": _iso(base + timedelta(hours=i * interval_hours)),
+            "content": f"post {i}",
+        }
         for i in range(post_count)
     ]
     return {
@@ -120,8 +122,10 @@ class TestMain:
             profile = _make_profile(name=name, post_count=10)
             (agents_dir / f"{name}.json").write_text(json.dumps(profile))
 
-        with patch("scripts.analyze_agents._AGENTS_DIR", agents_dir), \
-             patch("scripts.analyze_agents._OUTPUT_FILE", output_file):
+        with (
+            patch("scripts.analyze_agents._AGENTS_DIR", agents_dir),
+            patch("scripts.analyze_agents._OUTPUT_FILE", output_file),
+        ):
             main()
 
         assert output_file.exists()
@@ -140,8 +144,10 @@ class TestMain:
         (agents_dir / "good-bot.json").write_text(json.dumps(good))
         (agents_dir / "bad-bot.json").write_text("NOT VALID JSON {{{")
 
-        with patch("scripts.analyze_agents._AGENTS_DIR", agents_dir), \
-             patch("scripts.analyze_agents._OUTPUT_FILE", output_file):
+        with (
+            patch("scripts.analyze_agents._AGENTS_DIR", agents_dir),
+            patch("scripts.analyze_agents._OUTPUT_FILE", output_file),
+        ):
             main()
 
         results = json.loads(output_file.read_text())
@@ -157,8 +163,10 @@ class TestMain:
         data = {"agent": {}, "posts": [], "comments": []}
         (agents_dir / "mystery-agent.json").write_text(json.dumps(data))
 
-        with patch("scripts.analyze_agents._AGENTS_DIR", agents_dir), \
-             patch("scripts.analyze_agents._OUTPUT_FILE", output_file):
+        with (
+            patch("scripts.analyze_agents._AGENTS_DIR", agents_dir),
+            patch("scripts.analyze_agents._OUTPUT_FILE", output_file),
+        ):
             main()
 
         results = json.loads(output_file.read_text())
@@ -168,8 +176,10 @@ class TestMain:
         agents_dir = tmp_path / "empty_agents"
         agents_dir.mkdir()
 
-        with patch("scripts.analyze_agents._AGENTS_DIR", agents_dir), \
-             pytest.raises(SystemExit) as exc_info:
+        with (
+            patch("scripts.analyze_agents._AGENTS_DIR", agents_dir),
+            pytest.raises(SystemExit) as exc_info,
+        ):
             main()
 
         assert exc_info.value.code == 1

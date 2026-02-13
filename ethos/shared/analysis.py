@@ -9,14 +9,27 @@ from __future__ import annotations
 import math
 
 TRAIT_NAMES = [
-    "virtue", "goodwill", "manipulation", "deception",
-    "accuracy", "reasoning", "fabrication", "broken_logic",
-    "recognition", "compassion", "dismissal", "exploitation",
+    "virtue",
+    "goodwill",
+    "manipulation",
+    "deception",
+    "accuracy",
+    "reasoning",
+    "fabrication",
+    "broken_logic",
+    "recognition",
+    "compassion",
+    "dismissal",
+    "exploitation",
 ]
 
 NEGATIVE_TRAITS = {
-    "manipulation", "deception", "fabrication",
-    "broken_logic", "dismissal", "exploitation",
+    "manipulation",
+    "deception",
+    "fabrication",
+    "broken_logic",
+    "dismissal",
+    "exploitation",
 }
 
 COHORT_DEVIATION_THRESHOLD = 0.15
@@ -71,8 +84,7 @@ def detect_temporal_pattern(recent: list[dict]) -> str:
     # Check volatility
     if len(diffs) >= 2:
         sign_changes = sum(
-            1 for i in range(len(diffs) - 1)
-            if (diffs[i] > 0) != (diffs[i + 1] > 0)
+            1 for i in range(len(diffs) - 1) if (diffs[i] > 0) != (diffs[i + 1] > 0)
         )
         if sign_changes >= len(diffs) - 1:
             return "volatile"
@@ -82,6 +94,19 @@ def detect_temporal_pattern(recent: list[dict]) -> str:
     elif avg_diff < -0.05:
         return "declining"
     return "stable"
+
+
+def compute_grade(overall_score: float) -> str:
+    """Compute letter grade from overall score (ethos+logos+pathos)/3."""
+    if overall_score >= 0.85:
+        return "A"
+    elif overall_score >= 0.70:
+        return "B"
+    elif overall_score >= 0.55:
+        return "C"
+    elif overall_score >= 0.40:
+        return "D"
+    return "F"
 
 
 def compute_trend(evaluations: list[dict]) -> str:

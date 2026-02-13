@@ -24,9 +24,18 @@ VALID_IDS: set[str] = {ind["id"] for ind in INDICATORS}
 
 # All 12 traits that must appear in the output.
 _ALL_TRAITS = [
-    "virtue", "goodwill", "manipulation", "deception",
-    "accuracy", "reasoning", "fabrication", "broken_logic",
-    "recognition", "compassion", "dismissal", "exploitation",
+    "virtue",
+    "goodwill",
+    "manipulation",
+    "deception",
+    "accuracy",
+    "reasoning",
+    "fabrication",
+    "broken_logic",
+    "recognition",
+    "compassion",
+    "dismissal",
+    "exploitation",
 ]
 
 # Regex to extract JSON from markdown fences: ```json ... ``` or ``` ... ```

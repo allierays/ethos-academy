@@ -212,12 +212,16 @@ class TestAnalyzeIdentitySignals:
         assert result.karma_post_ratio == 0.0
 
     def test_claimed_profile(self):
-        result = analyze_identity_signals({"is_claimed": True, "owner": {"x_verified": False}})
+        result = analyze_identity_signals(
+            {"is_claimed": True, "owner": {"x_verified": False}}
+        )
         assert result.is_claimed is True
         assert result.owner_verified is False
 
     def test_verified_owner(self):
-        result = analyze_identity_signals({"is_claimed": True, "owner": {"x_verified": True}})
+        result = analyze_identity_signals(
+            {"is_claimed": True, "owner": {"x_verified": True}}
+        )
         assert result.is_claimed is True
         assert result.owner_verified is True
 
@@ -261,7 +265,9 @@ class TestComputeAuthenticity:
         activity = ActivityPattern(classification="always_on")
         identity = IdentitySignals(is_claimed=False)
 
-        result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=50)
+        result = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=50
+        )
         assert result.classification == "likely_autonomous"
         assert result.authenticity_score > 0.7
         assert result.confidence == 0.9
@@ -272,7 +278,9 @@ class TestComputeAuthenticity:
         activity = ActivityPattern(classification="human_schedule")
         identity = IdentitySignals(is_claimed=True, owner_verified=True)
 
-        result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=50)
+        result = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=50
+        )
         assert result.classification == "likely_human"
         assert result.authenticity_score < 0.3
 
@@ -282,7 +290,9 @@ class TestComputeAuthenticity:
         activity = ActivityPattern(classification="always_on")
         identity = IdentitySignals(is_claimed=False)
 
-        result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=50)
+        result = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=50
+        )
         assert result.classification == "high_frequency"
 
     def test_confidence_tiers(self):
@@ -294,13 +304,19 @@ class TestComputeAuthenticity:
         r1 = compute_authenticity(temporal, burst, activity, identity, num_timestamps=3)
         assert r1.confidence == 0.1
 
-        r2 = compute_authenticity(temporal, burst, activity, identity, num_timestamps=10)
+        r2 = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=10
+        )
         assert r2.confidence == 0.5
 
-        r3 = compute_authenticity(temporal, burst, activity, identity, num_timestamps=30)
+        r3 = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=30
+        )
         assert r3.confidence == 0.7
 
-        r4 = compute_authenticity(temporal, burst, activity, identity, num_timestamps=100)
+        r4 = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=100
+        )
         assert r4.confidence == 0.9
 
     def test_indeterminate_classification(self):
@@ -309,7 +325,9 @@ class TestComputeAuthenticity:
         activity = ActivityPattern(classification="mixed")
         identity = IdentitySignals(is_claimed=True)
 
-        result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=20)
+        result = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=20
+        )
         assert result.classification == "indeterminate"
         assert 0.3 <= result.authenticity_score <= 0.7
 
@@ -319,7 +337,9 @@ class TestComputeAuthenticity:
         activity = ActivityPattern(classification="always_on")
         identity = IdentitySignals(is_claimed=False)
 
-        result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=20)
+        result = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=20
+        )
         assert 0.0 <= result.authenticity_score <= 1.0
 
     def test_returns_pydantic_model(self):
@@ -328,7 +348,9 @@ class TestComputeAuthenticity:
         activity = ActivityPattern()
         identity = IdentitySignals()
 
-        result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=5)
+        result = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=5
+        )
         assert isinstance(result, AuthenticityResult)
         dumped = result.model_dump()
         assert "authenticity_score" in dumped
@@ -343,7 +365,9 @@ class TestComputeAuthenticity:
         activity = ActivityPattern(classification="always_on", active_hours=24)
         identity = IdentitySignals(is_claimed=False, owner_verified=False)
 
-        result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=20)
+        result = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=20
+        )
         assert result.temporal.cv_score == 0.8
         assert result.burst.burst_rate == 0.1
         assert result.activity.active_hours == 24
@@ -359,9 +383,13 @@ class TestEndToEnd:
         temporal = analyze_temporal_signature(ts)
         burst = analyze_burst_rate(ts)
         activity = analyze_activity_pattern(ts)
-        identity = analyze_identity_signals({"is_claimed": False, "owner": {"x_verified": False}})
+        identity = analyze_identity_signals(
+            {"is_claimed": False, "owner": {"x_verified": False}}
+        )
 
-        result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=len(ts))
+        result = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=len(ts)
+        )
         assert result.authenticity_score > 0.5
         assert result.confidence == 0.7
         assert 0.0 <= result.authenticity_score <= 1.0
@@ -373,7 +401,9 @@ class TestEndToEnd:
         activity = analyze_activity_pattern(ts)
         identity = analyze_identity_signals({})
 
-        result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=len(ts))
+        result = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=len(ts)
+        )
         assert result.classification == "high_frequency"
 
     def test_empty_timestamps_safe(self):
@@ -382,6 +412,8 @@ class TestEndToEnd:
         activity = analyze_activity_pattern([])
         identity = analyze_identity_signals({})
 
-        result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=0)
+        result = compute_authenticity(
+            temporal, burst, activity, identity, num_timestamps=0
+        )
         assert result.classification == "indeterminate"
         assert result.confidence == 0.1

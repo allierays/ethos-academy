@@ -3,30 +3,34 @@
 Unit tests that mock the Neo4j driver. Integration tests live in test_graph_integration.py.
 """
 
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, patch
 
-import pytest
 
 from ethos.shared.models import EvaluationResult
 
 
 # ── GraphService ─────────────────────────────────────────────────────
 
+
 class TestGraphService:
     """GraphService manages Neo4j driver lifecycle (async)."""
 
     def test_init_without_config(self):
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         assert gs._driver is None
 
     async def test_connect_and_close(self):
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         with patch("ethos.graph.service.AsyncGraphDatabase") as mock_gdb:
             mock_driver = AsyncMock()
             mock_gdb.driver.return_value = mock_driver
-            await gs.connect(uri="bolt://localhost:7694", user="neo4j", password="password")
+            await gs.connect(
+                uri="bolt://localhost:7694", user="neo4j", password="password"
+            )
             mock_gdb.driver.assert_called_once()
             assert gs._driver is not None
             await gs.close()
@@ -34,21 +38,26 @@ class TestGraphService:
 
     async def test_close_when_not_connected(self):
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         await gs.close()  # Should not raise
 
     async def test_connect_failure_returns_none(self):
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         with patch("ethos.graph.service.AsyncGraphDatabase") as mock_gdb:
             mock_driver = AsyncMock()
-            mock_driver.verify_connectivity.side_effect = Exception("Connection refused")
+            mock_driver.verify_connectivity.side_effect = Exception(
+                "Connection refused"
+            )
             mock_gdb.driver.return_value = mock_driver
             await gs.connect(uri="bolt://bad:9999", user="neo4j", password="password")
             assert gs._driver is None
 
     async def test_execute_query_delegates(self):
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         mock_driver = AsyncMock()
         gs._driver = mock_driver
@@ -58,6 +67,7 @@ class TestGraphService:
 
     async def test_execute_query_when_not_connected(self):
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await gs.execute_query("RETURN 1")
         assert result == ([], None, None)
@@ -65,19 +75,23 @@ class TestGraphService:
 
 # ── write.py ─────────────────────────────────────────────────────────
 
+
 class TestStoreEvaluation:
     """store_evaluation() merges Agent and Evaluation nodes."""
 
     async def test_store_calls_execute_query(self):
         from ethos.graph.write import store_evaluation
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.return_value = ([], None, None)
 
         result = EvaluationResult(
             evaluation_id="eval-123",
-            ethos=0.8, logos=0.7, pathos=0.6,
+            ethos=0.8,
+            logos=0.7,
+            pathos=0.6,
             phronesis="trustworthy",
             routing_tier="standard",
         )
@@ -87,6 +101,7 @@ class TestStoreEvaluation:
     async def test_store_graceful_on_failure(self):
         from ethos.graph.write import store_evaluation
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
@@ -98,6 +113,7 @@ class TestStoreEvaluation:
     async def test_store_when_not_connected(self):
         from ethos.graph.write import store_evaluation
         from ethos.graph.service import GraphService
+
         gs = GraphService()  # No driver
         result = EvaluationResult(evaluation_id="eval-789")
         # Should not raise
@@ -107,14 +123,15 @@ class TestStoreEvaluation:
         """Duplicate message_hash for same agent should be skipped."""
         from ethos.graph.write import store_evaluation
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
 
         # First call: no existing evaluation found
         # execute_query is called twice: once for dup check, once for store
         gs._driver.execute_query.side_effect = [
-            ([], None, None),      # dup check returns empty → no duplicate
-            ([], None, None),      # store query succeeds
+            ([], None, None),  # dup check returns empty → no duplicate
+            ([], None, None),  # store query succeeds
         ]
 
         result = EvaluationResult(evaluation_id="eval-dup-1")
@@ -136,15 +153,16 @@ class TestStoreEvaluation:
         """Different message hashes create separate evaluations."""
         from ethos.graph.write import store_evaluation
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
 
         # Both calls: no duplicate found
         gs._driver.execute_query.side_effect = [
-            ([], None, None),      # dup check for hash-A
-            ([], None, None),      # store for hash-A
-            ([], None, None),      # dup check for hash-B
-            ([], None, None),      # store for hash-B
+            ([], None, None),  # dup check for hash-A
+            ([], None, None),  # store for hash-A
+            ([], None, None),  # dup check for hash-B
+            ([], None, None),  # store for hash-B
         ]
 
         r1 = EvaluationResult(evaluation_id="eval-a")
@@ -157,6 +175,7 @@ class TestStoreEvaluation:
         """Empty message_hash skips dedup check, always creates."""
         from ethos.graph.write import store_evaluation
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.return_value = ([], None, None)
@@ -170,23 +189,25 @@ class TestStoreEvaluation:
         """message_timestamp parameter is passed to the query."""
         from ethos.graph.write import store_evaluation
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.return_value = ([], None, None)
 
         result = EvaluationResult(evaluation_id="eval-ts")
         await store_evaluation(
-            gs, "agent-001", result,
+            gs,
+            "agent-001",
+            result,
             message_timestamp="2026-02-09T06:38:42+00:00",
         )
-        # Check that message_timestamp was passed in params
         call_args = gs._driver.execute_query.call_args
-        params = call_args[1].get("parameters_") or call_args[0][1] if len(call_args[0]) > 1 else {}
         assert "2026-02-09T06:38:42+00:00" in str(call_args)
 
     async def test_store_uses_raw_agent_id(self):
         from ethos.graph.write import store_evaluation
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.return_value = ([], None, None)
@@ -201,12 +222,14 @@ class TestStoreEvaluation:
 
 # ── read.py ──────────────────────────────────────────────────────────
 
+
 class TestGetEvaluationHistory:
     """get_evaluation_history() returns list of evaluation dicts."""
 
     async def test_returns_list(self):
         from ethos.graph.read import get_evaluation_history
         from ethos.graph.service import GraphService
+
         gs = GraphService()  # No driver
         result = await get_evaluation_history(gs, "agent-001")
         assert isinstance(result, list)
@@ -214,6 +237,7 @@ class TestGetEvaluationHistory:
     async def test_returns_empty_when_not_connected(self):
         from ethos.graph.read import get_evaluation_history
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_evaluation_history(gs, "agent-001")
         assert result == []
@@ -221,6 +245,7 @@ class TestGetEvaluationHistory:
     async def test_returns_empty_on_failure(self):
         from ethos.graph.read import get_evaluation_history
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
@@ -230,6 +255,7 @@ class TestGetEvaluationHistory:
     async def test_default_limit(self):
         from ethos.graph.read import get_evaluation_history
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.return_value = ([], None, None)
@@ -244,6 +270,7 @@ class TestGetAgentProfile:
     async def test_returns_dict(self):
         from ethos.graph.read import get_agent_profile
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_agent_profile(gs, "agent-001")
         assert isinstance(result, dict)
@@ -251,6 +278,7 @@ class TestGetAgentProfile:
     async def test_returns_empty_when_not_connected(self):
         from ethos.graph.read import get_agent_profile
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_agent_profile(gs, "agent-001")
         assert result == {}
@@ -258,6 +286,7 @@ class TestGetAgentProfile:
     async def test_returns_empty_on_failure(self):
         from ethos.graph.read import get_agent_profile
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
@@ -267,12 +296,14 @@ class TestGetAgentProfile:
 
 # ── alumni.py ────────────────────────────────────────────────────────
 
+
 class TestGetAlumniAverages:
     """get_alumni_averages() returns per-trait averages across all agents."""
 
     async def test_returns_dict(self):
         from ethos.graph.alumni import get_alumni_averages
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_alumni_averages(gs)
         assert isinstance(result, dict)
@@ -280,6 +311,7 @@ class TestGetAlumniAverages:
     async def test_returns_empty_when_not_connected(self):
         from ethos.graph.alumni import get_alumni_averages
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_alumni_averages(gs)
         assert result == {}
@@ -287,6 +319,7 @@ class TestGetAlumniAverages:
     async def test_returns_empty_on_failure(self):
         from ethos.graph.alumni import get_alumni_averages
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
@@ -296,12 +329,14 @@ class TestGetAlumniAverages:
 
 # ── balance.py ────────────────────────────────────────────────────────
 
+
 class TestGetAgentBalance:
     """get_agent_balance() returns dimension balance analysis for one agent."""
 
     async def test_returns_dict(self):
         from ethos.graph.balance import get_agent_balance
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_agent_balance(gs, "agent-001")
         assert isinstance(result, dict)
@@ -309,6 +344,7 @@ class TestGetAgentBalance:
     async def test_returns_empty_when_not_connected(self):
         from ethos.graph.balance import get_agent_balance
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_agent_balance(gs, "agent-001")
         assert result == {}
@@ -316,6 +352,7 @@ class TestGetAgentBalance:
     async def test_returns_empty_on_failure(self):
         from ethos.graph.balance import get_agent_balance
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
@@ -329,6 +366,7 @@ class TestGetBalanceVsPhronesis:
     async def test_returns_list(self):
         from ethos.graph.balance import get_balance_vs_phronesis
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_balance_vs_phronesis(gs)
         assert isinstance(result, list)
@@ -336,6 +374,7 @@ class TestGetBalanceVsPhronesis:
     async def test_returns_empty_when_not_connected(self):
         from ethos.graph.balance import get_balance_vs_phronesis
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_balance_vs_phronesis(gs)
         assert result == []
@@ -343,6 +382,7 @@ class TestGetBalanceVsPhronesis:
     async def test_returns_empty_on_failure(self):
         from ethos.graph.balance import get_balance_vs_phronesis
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
@@ -356,6 +396,7 @@ class TestGetDimensionGaps:
     async def test_returns_list(self):
         from ethos.graph.balance import get_dimension_gaps
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_dimension_gaps(gs)
         assert isinstance(result, list)
@@ -363,6 +404,7 @@ class TestGetDimensionGaps:
     async def test_returns_empty_when_not_connected(self):
         from ethos.graph.balance import get_dimension_gaps
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_dimension_gaps(gs)
         assert result == []
@@ -370,6 +412,7 @@ class TestGetDimensionGaps:
     async def test_returns_empty_on_failure(self):
         from ethos.graph.balance import get_dimension_gaps
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
@@ -383,6 +426,7 @@ class TestGetAlumniBalanceDistribution:
     async def test_returns_dict(self):
         from ethos.graph.balance import get_alumni_balance_distribution
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_alumni_balance_distribution(gs)
         assert isinstance(result, dict)
@@ -390,6 +434,7 @@ class TestGetAlumniBalanceDistribution:
     async def test_returns_empty_when_not_connected(self):
         from ethos.graph.balance import get_alumni_balance_distribution
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         result = await get_alumni_balance_distribution(gs)
         assert result == {}
@@ -397,6 +442,7 @@ class TestGetAlumniBalanceDistribution:
     async def test_returns_empty_on_failure(self):
         from ethos.graph.balance import get_alumni_balance_distribution
         from ethos.graph.service import GraphService
+
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.side_effect = Exception("Neo4j down")
@@ -406,9 +452,11 @@ class TestGetAlumniBalanceDistribution:
 
 # ── Re-exports ───────────────────────────────────────────────────────
 
+
 class TestReExports:
     """ethos/graph/__init__.py re-exports GraphService."""
 
     def test_import_graph_service(self):
         from ethos.graph import GraphService
+
         assert GraphService is not None

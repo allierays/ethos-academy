@@ -133,7 +133,11 @@ async def _seed_dimensions(service: GraphService) -> None:
         await service.execute_query(
             "MERGE (d:Dimension {name: $name}) "
             "ON CREATE SET d.greek = $greek, d.description = $description",
-            {"name": dim["name"], "greek": dim["greek"], "description": dim["description"]},
+            {
+                "name": dim["name"],
+                "greek": dim["greek"],
+                "description": dim["description"],
+            },
         )
     print(f"  Seeded {len(DIMENSIONS)} Dimension nodes")
 
@@ -223,7 +227,9 @@ async def _seed_dimension_cv_relationships(service: GraphService) -> None:
             "MERGE (d)-[:MAPS_TO]->(cv)",
             {"dim_name": dim_name, "cv_name": cv_name},
         )
-    print(f"  Seeded {len(DIMENSION_CV_MAPPINGS)} Dimension→ConstitutionalValue MAPS_TO")
+    print(
+        f"  Seeded {len(DIMENSION_CV_MAPPINGS)} Dimension→ConstitutionalValue MAPS_TO"
+    )
 
 
 async def _seed_hard_constraints(service: GraphService) -> None:
@@ -356,7 +362,9 @@ async def evaluate_posts(
             content_hash = hashlib.sha256(content.encode()).hexdigest()
             if content_hash in existing_hashes:
                 skipped += 1
-                print(f"  {i + 1}/{total} skipped (already evaluated): {post_id[:20]}...")
+                print(
+                    f"  {i + 1}/{total} skipped (already evaluated): {post_id[:20]}..."
+                )
                 continue
 
         print(f"  {i + 1}/{total} evaluating: {post_id[:20]}...", end=" ", flush=True)
@@ -374,7 +382,9 @@ async def evaluate_posts(
         if i < total - 1 and not _interrupted:
             await asyncio.sleep(1)
 
-    print(f"\nEvaluation complete: {api_calls} API calls, {skipped} skipped, {failed} failed")
+    print(
+        f"\nEvaluation complete: {api_calls} API calls, {skipped} skipped, {failed} failed"
+    )
     return api_calls
 
 

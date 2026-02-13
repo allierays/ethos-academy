@@ -161,7 +161,12 @@ SABOTAGE_PATHWAYS: list[dict] = [
         "frequency": "low",
         "complexity": "high",
         "relevant_traits": ["deception", "manipulation"],
-        "relevant_indicators": ["DEC-OVERSIGHT", "MAN-DEPENDENCY", "MAN-POWER", "MAN-SELFPRES"],
+        "relevant_indicators": [
+            "DEC-OVERSIGHT",
+            "MAN-DEPENDENCY",
+            "MAN-POWER",
+            "MAN-SELFPRES",
+        ],
         "source": "Anthropic Sabotage Risk Report, Pathway 5",
     },
     {
@@ -174,7 +179,13 @@ SABOTAGE_PATHWAYS: list[dict] = [
         "frequency": "moderate",
         "complexity": "high",
         "relevant_traits": ["deception", "manipulation"],
-        "relevant_indicators": ["DEC-ALIGNFAKE", "DEC-OVERSIGHT", "MAN-SOCENG", "MAN-POWER", "MAN-SELFPRES"],
+        "relevant_indicators": [
+            "DEC-ALIGNFAKE",
+            "DEC-OVERSIGHT",
+            "MAN-SOCENG",
+            "MAN-POWER",
+            "MAN-SELFPRES",
+        ],
         "source": "Anthropic Sabotage Risk Report, Pathway 6",
     },
     {
@@ -201,7 +212,13 @@ SABOTAGE_PATHWAYS: list[dict] = [
         "frequency": "high",
         "complexity": "moderate",
         "relevant_traits": ["manipulation", "deception"],
-        "relevant_indicators": ["MAN-SABOTAGE", "MAN-SYCOPHANT", "DEC-SELECTIVE", "DEC-FRAME", "DEC-COWARDICE"],
+        "relevant_indicators": [
+            "MAN-SABOTAGE",
+            "MAN-SYCOPHANT",
+            "DEC-SELECTIVE",
+            "DEC-FRAME",
+            "DEC-COWARDICE",
+        ],
         "source": "Anthropic Sabotage Risk Report, Pathway 8",
     },
 ]

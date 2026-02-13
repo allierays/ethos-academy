@@ -162,9 +162,10 @@ function NvlRenderer({ nodes, rels, onNodeClick }: NvlRendererProps) {
 
   useEffect(() => {
     let destroyed = false;
+    const container = containerRef.current;
 
     async function init() {
-      if (!containerRef.current) return;
+      if (!container) return;
 
       try {
         const [{ default: NVL }, handlers] = await Promise.all([
@@ -172,14 +173,14 @@ function NvlRenderer({ nodes, rels, onNodeClick }: NvlRendererProps) {
           import("@neo4j-nvl/interaction-handlers"),
         ]);
 
-        if (destroyed || !containerRef.current) return;
+        if (destroyed || !container) return;
 
         // Clean any stale content
-        containerRef.current.innerHTML = "";
+        container.innerHTML = "";
 
         const nodeIds = nodes.map((n) => n.id);
 
-        const nvl = new NVL(containerRef.current, nodes, rels, {
+        const nvl = new NVL(container, nodes, rels, {
           layout: "d3Force",
           renderer: "canvas",
           initialZoom: 0.3,
@@ -243,8 +244,8 @@ function NvlRenderer({ nodes, rels, onNodeClick }: NvlRendererProps) {
         }
         nvlInstanceRef.current = null;
       }
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
+      if (container) {
+        container.innerHTML = "";
       }
     };
   }, [nodes, rels]);

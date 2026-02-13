@@ -30,17 +30,17 @@ logger = logging.getLogger(__name__)
 # ── Thresholds (named for easy tuning) ───────────────────────────────
 
 # Temporal signature: CV of inter-post intervals
-CV_AUTONOMOUS_THRESHOLD = 0.3     # CV below → autonomous (clockwork posting)
-CV_HUMAN_THRESHOLD = 1.0          # CV above → human_influenced (irregular)
-CV_NORMALIZATION_CAP = 2.0        # CV at or above → score 0.0
+CV_AUTONOMOUS_THRESHOLD = 0.3  # CV below → autonomous (clockwork posting)
+CV_HUMAN_THRESHOLD = 1.0  # CV above → human_influenced (irregular)
+CV_NORMALIZATION_CAP = 2.0  # CV at or above → score 0.0
 
 # Burst detection: fraction of consecutive posts within window
-BURST_WINDOW_SECONDS = 10         # max gap to count as a burst
-BURST_BOT_THRESHOLD = 0.5         # rate above → burst_bot
-BURST_AUTOMATED_THRESHOLD = 0.2   # rate above → automated
+BURST_WINDOW_SECONDS = 10  # max gap to count as a burst
+BURST_BOT_THRESHOLD = 0.5  # rate above → burst_bot
+BURST_AUTOMATED_THRESHOLD = 0.2  # rate above → automated
 
 # Activity pattern: consecutive zero-activity hours
-SLEEP_GAP_HOURS = 6               # consecutive inactive hours → human_schedule
+SLEEP_GAP_HOURS = 6  # consecutive inactive hours → human_schedule
 
 # Minimum data requirements
 MIN_TEMPORAL_TIMESTAMPS = 5
@@ -87,13 +87,14 @@ def analyze_temporal_signature(
         return TemporalSignature()
 
     intervals = [
-        (parsed[i + 1] - parsed[i]).total_seconds()
-        for i in range(len(parsed) - 1)
+        (parsed[i + 1] - parsed[i]).total_seconds() for i in range(len(parsed) - 1)
     ]
 
     mean = statistics.mean(intervals)
     if mean == 0:
-        return TemporalSignature(cv_score=0.0, mean_interval_seconds=0.0, classification="autonomous")
+        return TemporalSignature(
+            cv_score=0.0, mean_interval_seconds=0.0, classification="autonomous"
+        )
 
     std = statistics.pstdev(intervals)
     cv = std / mean
@@ -163,7 +164,9 @@ def analyze_activity_pattern(
     """
     parsed = _parsed if _parsed is not None else parse_timestamps(timestamps)
     if not parsed:
-        return ActivityPattern(classification="mixed", active_hours=0, has_sleep_gap=False)
+        return ActivityPattern(
+            classification="mixed", active_hours=0, has_sleep_gap=False
+        )
 
     hour_counts = Counter(dt.hour for dt in parsed)
     active_hours = sum(1 for h in range(24) if hour_counts.get(h, 0) > 0)

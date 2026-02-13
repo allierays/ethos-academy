@@ -39,7 +39,9 @@ class TestAgentsEndpoint:
             )
         ]
 
-        with patch("api.main.list_agents", new_callable=AsyncMock, return_value=mock_agents):
+        with patch(
+            "api.main.list_agents", new_callable=AsyncMock, return_value=mock_agents
+        ):
             resp = client.get("/agents")
 
         assert resp.status_code == 200
@@ -74,7 +76,9 @@ class TestAgentEndpoint:
             alignment_history=["aligned"],
         )
 
-        with patch("api.main.get_agent", new_callable=AsyncMock, return_value=mock_profile):
+        with patch(
+            "api.main.get_agent", new_callable=AsyncMock, return_value=mock_profile
+        ):
             resp = client.get("/agent/test-agent")
 
         assert resp.status_code == 200
@@ -87,7 +91,9 @@ class TestAgentEndpoint:
 
         mock_profile = AgentProfile(agent_id="unknown", evaluation_count=0)
 
-        with patch("api.main.get_agent", new_callable=AsyncMock, return_value=mock_profile):
+        with patch(
+            "api.main.get_agent", new_callable=AsyncMock, return_value=mock_profile
+        ):
             resp = client.get("/agent/unknown")
 
         assert resp.status_code == 200
@@ -152,7 +158,9 @@ class TestAlumniEndpoint:
             total_evaluations=50,
         )
 
-        with patch("api.main.get_alumni", new_callable=AsyncMock, return_value=mock_alumni):
+        with patch(
+            "api.main.get_alumni", new_callable=AsyncMock, return_value=mock_alumni
+        ):
             resp = client.get("/alumni")
 
         assert resp.status_code == 200
@@ -166,7 +174,9 @@ class TestAlumniEndpoint:
 
         mock_alumni = AlumniResult(trait_averages={}, total_evaluations=0)
 
-        with patch("api.main.get_alumni", new_callable=AsyncMock, return_value=mock_alumni):
+        with patch(
+            "api.main.get_alumni", new_callable=AsyncMock, return_value=mock_alumni
+        ):
             resp = client.get("/alumni")
 
         assert resp.status_code == 200
@@ -187,7 +197,9 @@ class TestCORS:
                 "Access-Control-Request-Method": "GET",
             },
         )
-        assert resp.headers.get("access-control-allow-origin") == "http://localhost:3000"
+        assert (
+            resp.headers.get("access-control-allow-origin") == "http://localhost:3000"
+        )
 
 
 # ── Exception Handlers ──────────────────────────────────────────────
@@ -287,5 +299,7 @@ class TestInputValidation:
         assert resp.status_code == 422
 
     def test_text_too_long_rejected(self):
-        resp = client.post("/evaluate/incoming", json={"text": "x" * 50001, "source": "a"})
+        resp = client.post(
+            "/evaluate/incoming", json={"text": "x" * 50001, "source": "a"}
+        )
         assert resp.status_code == 422

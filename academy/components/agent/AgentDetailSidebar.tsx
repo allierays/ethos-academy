@@ -20,23 +20,23 @@ export default function AgentDetailSidebar({
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
-    getAgent(agentId)
-      .then((data) => {
+    async function fetchAgent() {
+      try {
+        const data = await getAgent(agentId);
         if (!cancelled) setProfile(data);
-      })
-      .catch((err) => {
+      } catch (err) {
         if (!cancelled) {
           setError(
             err instanceof Error ? err.message : "Unable to load agent profile"
           );
         }
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    }
+
+    fetchAgent();
 
     return () => {
       cancelled = true;

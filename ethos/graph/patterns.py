@@ -71,9 +71,7 @@ RETURN p.pattern_id AS pattern_id,
 # ─── Query functions ──────────────────────────────────────────────────────────
 
 
-async def get_agent_evaluation_count(
-    service: GraphService, agent_id: str
-) -> int:
+async def get_agent_evaluation_count(service: GraphService, agent_id: str) -> int:
     """Return number of evaluations for an agent. 0 if unavailable."""
     if not service.connected:
         return 0
@@ -177,9 +175,7 @@ async def store_exhibits_pattern(
         logger.warning("Failed to store EXHIBITS_PATTERN: %s", exc)
 
 
-async def get_existing_patterns(
-    service: GraphService, agent_id: str
-) -> list[dict]:
+async def get_existing_patterns(service: GraphService, agent_id: str) -> list[dict]:
     """Get existing EXHIBITS_PATTERN relationships for an agent."""
     if not service.connected:
         return []

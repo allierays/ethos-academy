@@ -111,9 +111,7 @@ def compute_flags(
     return flags
 
 
-def compute_phronesis_level(
-    dimensions: dict[str, float], alignment_status: str
-) -> str:
+def compute_phronesis_level(dimensions: dict[str, float], alignment_status: str) -> str:
     """Compute phronesis level from dimension averages, overridden by alignment.
 
     avg >= 0.7 → established

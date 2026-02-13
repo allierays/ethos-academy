@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
@@ -20,7 +20,6 @@ function AlignmentBadge({ status }: { status: string }) {
 export default function FindPage() {
   const [query, setQuery] = useState("");
   const [agents, setAgents] = useState<AgentSummary[]>([]);
-  const [filtered, setFiltered] = useState<AgentSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,25 +28,19 @@ export default function FindPage() {
     getAgents()
       .then((data) => {
         setAgents(data);
-        setFiltered(data);
       })
       .catch(() => setError("Could not load agents. Is the API running?"))
       .finally(() => setLoading(false));
   }, []);
 
   // Filter client-side
-  useEffect(() => {
-    if (!query.trim()) {
-      setFiltered(agents);
-      return;
-    }
+  const filtered = useMemo(() => {
+    if (!query.trim()) return agents;
     const q = query.toLowerCase();
-    setFiltered(
-      agents.filter(
-        (a) =>
-          a.agentName.toLowerCase().includes(q) ||
-          a.agentId.toLowerCase().includes(q)
-      )
+    return agents.filter(
+      (a) =>
+        a.agentName.toLowerCase().includes(q) ||
+        a.agentId.toLowerCase().includes(q)
     );
   }, [query, agents]);
 

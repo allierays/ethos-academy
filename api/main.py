@@ -19,6 +19,7 @@ from ethos import (
     get_agent,
     get_agent_history,
     get_alumni,
+    get_daily_report_history,
     get_graph_data,
     list_agents,
 )
@@ -27,10 +28,10 @@ from ethos.models import (
     AgentSummary,
     AlumniResult,
     AuthenticityResult,
+    DailyReportCard,
     EvaluationHistoryItem,
     EvaluationResult,
     GraphData,
-    InsightsResult,
     PatternResult,
 )
 from ethos.shared.errors import (
@@ -164,12 +165,21 @@ async def evaluate_outgoing_endpoint(req: EvaluateOutgoingRequest) -> Evaluation
 
 
 @app.get(
-    "/character/{agent_id}",
-    response_model=InsightsResult,
+    "/agent/{agent_id}/character",
+    response_model=DailyReportCard,
     dependencies=[Depends(require_api_key)],
 )
-async def character_report_endpoint(agent_id: str) -> InsightsResult:
+async def character_report_endpoint(agent_id: str) -> DailyReportCard:
     return await character_report(agent_id)
+
+
+@app.get(
+    "/agent/{agent_id}/reports",
+    response_model=list[DailyReportCard],
+    dependencies=[Depends(require_api_key)],
+)
+async def daily_reports_endpoint(agent_id: str, limit: int = 30):
+    return await get_daily_report_history(agent_id, limit=limit)
 
 
 @app.get("/agents", response_model=list[AgentSummary])

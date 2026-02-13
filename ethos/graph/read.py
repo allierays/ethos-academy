@@ -242,13 +242,15 @@ async def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
             records, _, _ = await service.execute_query(_GET_ALL_AGENTS_QUERY)
         results = []
         for record in records:
-            results.append({
-                "agent_id": record.get("agent_id", ""),
-                "agent_name": record.get("agent_name", ""),
-                "agent_specialty": record.get("agent_specialty", ""),
-                "evaluation_count": record.get("evals", 0),
-                "latest_alignment_status": record.get("latest") or "unknown",
-            })
+            results.append(
+                {
+                    "agent_id": record.get("agent_id", ""),
+                    "agent_name": record.get("agent_name", ""),
+                    "agent_specialty": record.get("agent_specialty", ""),
+                    "evaluation_count": record.get("evals", 0),
+                    "latest_alignment_status": record.get("latest") or "unknown",
+                }
+            )
         return results
     except Exception as exc:
         logger.warning("Failed to get all agents: %s", exc)

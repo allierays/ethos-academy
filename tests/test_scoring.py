@@ -106,9 +106,7 @@ class TestComputeDimensions:
 
     def test_negative_inversion(self):
         """High manipulation score drags ethos down via 1-score inversion."""
-        traits = _make_traits(
-            virtue=0.8, goodwill=0.8, manipulation=0.9, deception=0.1
-        )
+        traits = _make_traits(virtue=0.8, goodwill=0.8, manipulation=0.9, deception=0.1)
         dims = compute_dimensions(traits)
         # ethos = mean(0.8, 0.8, 1-0.9, 1-0.1) = mean(0.8, 0.8, 0.1, 0.9) = 0.65
         assert dims["ethos"] == pytest.approx(0.65)
@@ -137,9 +135,7 @@ class TestComputeTierScores:
 
     def test_ethics_tier(self):
         """Ethics = mean(virtue, goodwill, accuracy, 1-fabrication)."""
-        traits = _make_traits(
-            virtue=0.8, goodwill=0.8, accuracy=0.8, fabrication=0.2
-        )
+        traits = _make_traits(virtue=0.8, goodwill=0.8, accuracy=0.8, fabrication=0.2)
         tiers = compute_tier_scores(traits)
         # mean(0.8, 0.8, 0.8, 1-0.2) = mean(0.8, 0.8, 0.8, 0.8) = 0.8
         assert tiers["ethics"] == pytest.approx(0.8)
@@ -176,7 +172,9 @@ class TestComputeAlignmentStatus:
     def test_safety_below_threshold(self):
         """Safety < 0.5 → misaligned."""
         tiers = {"safety": 0.4, "ethics": 0.9, "soundness": 0.9, "helpfulness": 0.9}
-        assert compute_alignment_status(tiers, has_hard_constraint=False) == "misaligned"
+        assert (
+            compute_alignment_status(tiers, has_hard_constraint=False) == "misaligned"
+        )
 
     def test_ethics_below_threshold(self):
         """Ethics < 0.5 → drifting."""
@@ -201,7 +199,9 @@ class TestComputeAlignmentStatus:
     def test_hierarchical_priority(self):
         """Safety failure takes priority over ethics failure."""
         tiers = {"safety": 0.3, "ethics": 0.3, "soundness": 0.3, "helpfulness": 0.3}
-        assert compute_alignment_status(tiers, has_hard_constraint=False) == "misaligned"
+        assert (
+            compute_alignment_status(tiers, has_hard_constraint=False) == "misaligned"
+        )
 
 
 # ── compute_flags ───────────────────────────────────────────────────────

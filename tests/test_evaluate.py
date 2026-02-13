@@ -5,7 +5,7 @@ Pipeline: scan_keywords → build_evaluation_prompt → call_claude → parse_re
 """
 
 import json
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import patch, AsyncMock
 
 import pytest
 
@@ -16,9 +16,18 @@ from ethos.shared.models import EvaluationResult
 # ── Helpers ──────────────────────────────────────────────────────
 
 ALL_TRAITS = [
-    "virtue", "goodwill", "manipulation", "deception",
-    "accuracy", "reasoning", "fabrication", "broken_logic",
-    "recognition", "compassion", "dismissal", "exploitation",
+    "virtue",
+    "goodwill",
+    "manipulation",
+    "deception",
+    "accuracy",
+    "reasoning",
+    "fabrication",
+    "broken_logic",
+    "recognition",
+    "compassion",
+    "dismissal",
+    "exploitation",
 ]
 
 
@@ -32,15 +41,18 @@ def _mock_claude_response(
     scores = {t: 0.5 for t in ALL_TRAITS}
     if overrides:
         scores.update(overrides)
-    return json.dumps({
-        "trait_scores": scores,
-        "detected_indicators": indicators or [],
-        "overall_trust": trust,
-        "alignment_status": alignment,
-    })
+    return json.dumps(
+        {
+            "trait_scores": scores,
+            "detected_indicators": indicators or [],
+            "overall_trust": trust,
+            "alignment_status": alignment,
+        }
+    )
 
 
 # ── Pipeline wiring ──────────────────────────────────────────────
+
 
 class TestPipelineWiring:
     """Verify that evaluate() calls the pipeline stages in order."""
@@ -73,6 +85,7 @@ class TestPipelineWiring:
 
 # ── EvaluationResult fields ──────────────────────────────────────
 
+
 class TestResultFields:
     """Verify the returned EvaluationResult has all required fields populated."""
 
@@ -99,7 +112,12 @@ class TestResultFields:
     async def test_has_alignment_status(self, mock_claude):
         mock_claude.return_value = _mock_claude_response()
         result = await evaluate("Test")
-        assert result.alignment_status in ("aligned", "drifting", "misaligned", "violation")
+        assert result.alignment_status in (
+            "aligned",
+            "drifting",
+            "misaligned",
+            "violation",
+        )
 
     @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
     async def test_has_phronesis(self, mock_claude):
@@ -127,7 +145,12 @@ class TestResultFields:
     async def test_has_routing_tier(self, mock_claude):
         mock_claude.return_value = _mock_claude_response()
         result = await evaluate("Test")
-        assert result.routing_tier in ("standard", "focused", "deep", "deep_with_context")
+        assert result.routing_tier in (
+            "standard",
+            "focused",
+            "deep",
+            "deep_with_context",
+        )
 
     @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
     async def test_has_keyword_density(self, mock_claude):
@@ -144,8 +167,13 @@ class TestResultFields:
     @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
     async def test_has_detected_indicators(self, mock_claude):
         indicators = [
-            {"id": "MAN-URGENCY", "name": "false_urgency_pressure", "trait": "manipulation",
-             "confidence": 0.85, "evidence": "Uses urgent language"}
+            {
+                "id": "MAN-URGENCY",
+                "name": "false_urgency_pressure",
+                "trait": "manipulation",
+                "confidence": 0.85,
+                "evidence": "Uses urgent language",
+            }
         ]
         mock_claude.return_value = _mock_claude_response(indicators=indicators)
         result = await evaluate("Act now!")
@@ -162,13 +190,19 @@ class TestResultFields:
 
 # ── Scoring correctness ─────────────────────────────────────────
 
+
 class TestScoringCorrectness:
     @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
     async def test_dimension_scores_computed(self, mock_claude):
         """Dimension scores should reflect trait values."""
-        mock_claude.return_value = _mock_claude_response({
-            "virtue": 0.9, "goodwill": 0.9, "manipulation": 0.0, "deception": 0.0,
-        })
+        mock_claude.return_value = _mock_claude_response(
+            {
+                "virtue": 0.9,
+                "goodwill": 0.9,
+                "manipulation": 0.0,
+                "deception": 0.0,
+            }
+        )
         result = await evaluate("Very ethical message")
         # ethos = mean(0.9, 0.9, 1.0-0.0, 1.0-0.0) = 0.95
         assert result.ethos == pytest.approx(0.95, abs=0.01)
@@ -182,6 +216,7 @@ class TestScoringCorrectness:
 
 
 # ── Graph context (source provided) ─────────────────────────────
+
 
 class TestGraphContext:
     @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
@@ -203,6 +238,7 @@ class TestGraphContext:
 
         # Use an async generator as async context manager
         from contextlib import asynccontextmanager
+
         mock_graph_ctx.side_effect = lambda: asynccontextmanager(_mock_ctx)()
 
         result = await evaluate("Test", source="agent-001")
@@ -211,7 +247,9 @@ class TestGraphContext:
 
     @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
     @patch("ethos.evaluate.graph_context")
-    async def test_graph_down_returns_result_no_crash(self, mock_graph_ctx, mock_claude):
+    async def test_graph_down_returns_result_no_crash(
+        self, mock_graph_ctx, mock_claude
+    ):
         """Neo4j being down should not crash evaluate()."""
         mock_claude.return_value = _mock_claude_response()
         mock_service = AsyncMock()
@@ -221,6 +259,7 @@ class TestGraphContext:
             yield mock_service
 
         from contextlib import asynccontextmanager
+
         mock_graph_ctx.side_effect = lambda: asynccontextmanager(_mock_ctx)()
 
         result = await evaluate("Test", source="agent-001")
@@ -229,6 +268,7 @@ class TestGraphContext:
 
 
 # ── Parse failure fallback ───────────────────────────────────────
+
 
 class TestParseFailure:
     @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
@@ -248,6 +288,7 @@ class TestParseFailure:
 
 
 # ── Direction parameter ──────────────────────────────────────────
+
 
 class TestDirection:
     @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
@@ -270,6 +311,7 @@ class TestDirection:
 
 
 # ── No source (backward compatibility) ───────────────────────────
+
 
 class TestBackwardCompatibility:
     @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)

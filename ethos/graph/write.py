@@ -143,11 +143,23 @@ async def store_evaluation(
         balance_score = 0.0
 
     # Compute trait_variance: spread across all 12 trait scores
-    all_trait_scores = [_get_trait_score(result, t) for t in [
-        "virtue", "goodwill", "manipulation", "deception",
-        "accuracy", "reasoning", "fabrication", "broken_logic",
-        "recognition", "compassion", "dismissal", "exploitation",
-    ]]
+    all_trait_scores = [
+        _get_trait_score(result, t)
+        for t in [
+            "virtue",
+            "goodwill",
+            "manipulation",
+            "deception",
+            "accuracy",
+            "reasoning",
+            "fabrication",
+            "broken_logic",
+            "recognition",
+            "compassion",
+            "dismissal",
+            "exploitation",
+        ]
+    ]
     trait_mean = sum(all_trait_scores) / len(all_trait_scores)
     trait_variance = round(
         sum((s - trait_mean) ** 2 for s in all_trait_scores) / len(all_trait_scores),

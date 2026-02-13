@@ -109,10 +109,12 @@ async def get_semantic_layer(service: GraphService) -> dict:
                 }
 
             if dim_name and trait_name:
-                result["trait_dimension_rels"].append({
-                    "trait": trait_name,
-                    "dimension": dim_name,
-                })
+                result["trait_dimension_rels"].append(
+                    {
+                        "trait": trait_name,
+                        "dimension": dim_name,
+                    }
+                )
 
         # Constitutional Values + UPHOLDS
         records, _, _ = await service.execute_query(_CONSTITUTIONAL_VALUES_QUERY)
@@ -126,11 +128,13 @@ async def get_semantic_layer(service: GraphService) -> dict:
 
             trait_name = rec.get("trait_name", "")
             if trait_name and cv_name:
-                result["upholds_rels"].append({
-                    "trait": trait_name,
-                    "cv": cv_name,
-                    "relationship": rec.get("upholds_rel", ""),
-                })
+                result["upholds_rels"].append(
+                    {
+                        "trait": trait_name,
+                        "cv": cv_name,
+                        "relationship": rec.get("upholds_rel", ""),
+                    }
+                )
 
         # Patterns + COMPOSED_OF → Indicators
         records, _, _ = await service.execute_query(_PATTERNS_AND_INDICATORS_QUERY)
@@ -147,10 +151,12 @@ async def get_semantic_layer(service: GraphService) -> dict:
 
             indicator_id = rec.get("indicator_id", "")
             if pattern_id and indicator_id:
-                result["pattern_indicator_rels"].append({
-                    "pattern": pattern_id,
-                    "indicator": indicator_id,
-                })
+                result["pattern_indicator_rels"].append(
+                    {
+                        "pattern": pattern_id,
+                        "indicator": indicator_id,
+                    }
+                )
 
     except Exception as exc:
         logger.warning("Failed to get semantic layer: %s", exc)
@@ -202,13 +208,14 @@ async def get_episodic_layer(service: GraphService) -> dict:
                 # Agent → Evaluation rel (deduplicate)
                 rel_key = (agent_id, eval_id)
                 if rel_key not in {
-                    (r["agent"], r["evaluation"])
-                    for r in result["evaluated_rels"]
+                    (r["agent"], r["evaluation"]) for r in result["evaluated_rels"]
                 }:
-                    result["evaluated_rels"].append({
-                        "agent": agent_id,
-                        "evaluation": eval_id,
-                    })
+                    result["evaluated_rels"].append(
+                        {
+                            "agent": agent_id,
+                            "evaluation": eval_id,
+                        }
+                    )
 
                 # Evaluation → Indicator detected rel
                 indicator_id = rec.get("detected_indicator_id")
@@ -218,11 +225,13 @@ async def get_episodic_layer(service: GraphService) -> dict:
                         (r["evaluation"], r["indicator"])
                         for r in result["detected_rels"]
                     }:
-                        result["detected_rels"].append({
-                            "evaluation": eval_id,
-                            "indicator": indicator_id,
-                            "confidence": rec.get("detected_confidence", 0.0),
-                        })
+                        result["detected_rels"].append(
+                            {
+                                "evaluation": eval_id,
+                                "indicator": indicator_id,
+                                "confidence": rec.get("detected_confidence", 0.0),
+                            }
+                        )
 
         # Update agents with alignment_status from their most recent eval
         for rec in records:
@@ -271,13 +280,14 @@ async def get_indicator_backbone(service: GraphService) -> dict:
             if indicator_id and trait_name:
                 rel_key = (indicator_id, trait_name)
                 if rel_key not in {
-                    (r["indicator"], r["trait"])
-                    for r in result["indicator_trait_rels"]
+                    (r["indicator"], r["trait"]) for r in result["indicator_trait_rels"]
                 }:
-                    result["indicator_trait_rels"].append({
-                        "indicator": indicator_id,
-                        "trait": trait_name,
-                    })
+                    result["indicator_trait_rels"].append(
+                        {
+                            "indicator": indicator_id,
+                            "trait": trait_name,
+                        }
+                    )
 
     except Exception as exc:
         logger.warning("Failed to get indicator backbone: %s", exc)

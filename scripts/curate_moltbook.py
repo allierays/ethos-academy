@@ -99,24 +99,28 @@ def curate() -> list[dict]:
         author_data = post.get("author") or {}
         submolt_data = post.get("submolt") or {}
 
-        candidates.append((
-            total_hits,
-            len(matched_keywords),
-            {
-                "id": post_id,
-                "title": title,
-                "content": content,
-                "author": {
-                    "id": author_data.get("id", ""),
-                    "name": author_data.get("name", "unknown"),
+        candidates.append(
+            (
+                total_hits,
+                len(matched_keywords),
+                {
+                    "id": post_id,
+                    "title": title,
+                    "content": content,
+                    "author": {
+                        "id": author_data.get("id", ""),
+                        "name": author_data.get("name", "unknown"),
+                    },
+                    "submolt": submolt_data.get("name", "unknown"),
+                    "matched_keywords": matched_keywords,
                 },
-                "submolt": submolt_data.get("name", "unknown"),
-                "matched_keywords": matched_keywords,
-            },
-            matched_keywords,
-        ))
+                matched_keywords,
+            )
+        )
 
-    print(f"  {len(candidates)} posts match keywords with >= {MIN_CONTENT_LENGTH} chars")
+    print(
+        f"  {len(candidates)} posts match keywords with >= {MIN_CONTENT_LENGTH} chars"
+    )
 
     # Sort by total keyword occurrences (desc), then unique keyword count (desc)
     candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)

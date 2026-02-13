@@ -48,7 +48,11 @@ class TestReflectHistory:
                     "agent_id": "hashed",
                     "evaluation_count": 12,
                     "dimension_averages": {"ethos": 0.7, "logos": 0.8, "pathos": 0.6},
-                    "trait_averages": {"virtue": 0.8, "compassion": 0.65, "accuracy": 0.9},
+                    "trait_averages": {
+                        "virtue": 0.8,
+                        "compassion": 0.65,
+                        "accuracy": 0.9,
+                    },
                 },
             ),
             patch(

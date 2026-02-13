@@ -27,6 +27,7 @@ import httpx
 
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
     pass
@@ -39,6 +40,7 @@ WORKERS = 5  # parallel threads
 
 
 # ── Rate limiter ──────────────────────────────────────────────────────
+
 
 class RateLimiter:
     """Token-bucket rate limiter. Thread-safe."""
@@ -61,6 +63,7 @@ rate_limiter = RateLimiter(requests_per_second=1.5)  # ~90 req/min, safe margin
 
 
 # ── HTTP helpers ──────────────────────────────────────────────────────
+
 
 def make_client(api_key: str) -> httpx.Client:
     return httpx.Client(
@@ -118,8 +121,11 @@ def save_posts(posts: dict[str, dict]):
     total_comments = sum(len(p.get("comments", []) or []) for p in post_list)
     total_messages = len(post_list) + total_comments
     size_mb = POSTS_FILE.stat().st_size / (1024 * 1024)
-    print(f"  Saved {len(post_list):,} posts, {total_comments:,} comments "
-          f"({total_messages:,} messages, {size_mb:.1f} MB)", flush=True)
+    print(
+        f"  Saved {len(post_list):,} posts, {total_comments:,} comments "
+        f"({total_messages:,} messages, {size_mb:.1f} MB)",
+        flush=True,
+    )
 
 
 def count_messages(posts: dict[str, dict]) -> int:
@@ -155,6 +161,7 @@ def fetch_comments_for_post(client: httpx.Client, post_id: str) -> list[dict]:
 
 # ── Phase 1: Scrape posts (sequential — offsets must be ordered) ──────
 
+
 def scrape_posts(api_key: str, posts: dict[str, dict]):
     client = make_client(api_key)
     target_per_sort = 100_000
@@ -184,13 +191,18 @@ def scrape_posts(api_key: str, posts: dict[str, dict]):
                     batch_new += 1
 
             if offset % 5000 == 0:
-                print(f"  offset={offset:,}: +{batch_new:,} this sort, "
-                      f"{len(posts):,} total", flush=True)
+                print(
+                    f"  offset={offset:,}: +{batch_new:,} this sort, "
+                    f"{len(posts):,} total",
+                    flush=True,
+                )
 
             if batch_new > 0 and batch_new % 10000 == 0:
                 save_posts(posts)
 
-        print(f"  sort={sort} done: +{batch_new:,} new, {len(posts):,} total", flush=True)
+        print(
+            f"  sort={sort} done: +{batch_new:,} new, {len(posts):,} total", flush=True
+        )
 
     # Submolts
     print("\nFetching submolts...", flush=True)
@@ -205,7 +217,10 @@ def scrape_posts(api_key: str, posts: dict[str, dict]):
         for sort in ["new", "top"]:
             before = len(posts)
             for offset in range(0, 10000, 100):
-                sd = api_get(client, f"/submolts/{name}/feed?sort={sort}&limit=100&offset={offset}")
+                sd = api_get(
+                    client,
+                    f"/submolts/{name}/feed?sort={sort}&limit=100&offset={offset}",
+                )
                 batch = sd.get("data", sd.get("posts", []))
                 if not batch:
                     break
@@ -221,6 +236,7 @@ def scrape_posts(api_key: str, posts: dict[str, dict]):
 
 
 # ── Phase 2: Parallel comment backfill ────────────────────────────────
+
 
 def _process_post(api_key: str, post: dict) -> tuple[str, list[dict], int]:
     """Worker function: fetch comments for a single post. Returns (pid, comments, new_count)."""
@@ -261,9 +277,15 @@ def backfill_comments(api_key: str, posts: dict[str, dict]):
     total = len(to_process)
     start_messages = count_messages(posts)
 
-    print(f"\nBackfilling comments: {total:,} posts to process, "
-          f"{skipped:,} skipped, starting at {start_messages:,} messages", flush=True)
-    print(f"Using {WORKERS} parallel workers (~{WORKERS * 90 // WORKERS} req/min)", flush=True)
+    print(
+        f"\nBackfilling comments: {total:,} posts to process, "
+        f"{skipped:,} skipped, starting at {start_messages:,} messages",
+        flush=True,
+    )
+    print(
+        f"Using {WORKERS} parallel workers (~{WORKERS * 90 // WORKERS} req/min)",
+        flush=True,
+    )
 
     processed = 0
     new_comments_total = 0
@@ -272,10 +294,9 @@ def backfill_comments(api_key: str, posts: dict[str, dict]):
         # Submit in batches to allow checkpointing
         batch_size = 200
         for batch_start in range(0, total, batch_size):
-            batch = to_process[batch_start:batch_start + batch_size]
+            batch = to_process[batch_start : batch_start + batch_size]
             futures = {
-                executor.submit(_process_post, api_key, post): post
-                for post in batch
+                executor.submit(_process_post, api_key, post): post for post in batch
             }
 
             for future in as_completed(futures):
@@ -295,9 +316,12 @@ def backfill_comments(api_key: str, posts: dict[str, dict]):
             # Progress report after each batch
             current_total = count_messages(posts)
             elapsed_pct = (batch_start + len(batch)) / total * 100
-            print(f"  [{batch_start + len(batch):,}/{total:,}] ({elapsed_pct:.0f}%) "
-                  f"+{new_comments_total:,} new comments, "
-                  f"{current_total:,} total messages", flush=True)
+            print(
+                f"  [{batch_start + len(batch):,}/{total:,}] ({elapsed_pct:.0f}%) "
+                f"+{new_comments_total:,} new comments, "
+                f"{current_total:,} total messages",
+                flush=True,
+            )
 
             # Checkpoint save every 1000 posts
             if (batch_start + len(batch)) % 1000 < batch_size:
@@ -316,6 +340,7 @@ def backfill_comments(api_key: str, posts: dict[str, dict]):
 
 # ── Main ──────────────────────────────────────────────────────────────
 
+
 def main():
     api_key = os.environ.get("MOLTBOOK_API_KEY")
     if not api_key:
@@ -333,8 +358,11 @@ def main():
     # Final stats
     total_comments = sum(len(p.get("comments", []) or []) for p in posts.values())
     total = len(posts) + total_comments
-    print(f"\n{'='*60}", flush=True)
-    print(f"DONE: {len(posts):,} posts + {total_comments:,} comments = {total:,} messages", flush=True)
+    print(f"\n{'=' * 60}", flush=True)
+    print(
+        f"DONE: {len(posts):,} posts + {total_comments:,} comments = {total:,} messages",
+        flush=True,
+    )
     if total >= 1_000_000:
         print("TARGET REACHED!", flush=True)
     else:

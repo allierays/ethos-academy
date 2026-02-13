@@ -16,6 +16,7 @@ from ethos.shared.errors import ConfigError, EvaluationError
 # Model selection
 # ---------------------------------------------------------------------------
 
+
 class TestModelSelection:
     """call_claude selects the correct model based on routing tier."""
 
@@ -81,7 +82,9 @@ class TestModelSelection:
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    async def test_deep_with_context_tier_uses_opus(self, mock_from_env, mock_anthropic):
+    async def test_deep_with_context_tier_uses_opus(
+        self, mock_from_env, mock_anthropic
+    ):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
@@ -103,6 +106,7 @@ class TestModelSelection:
 # ---------------------------------------------------------------------------
 # Prompt routing
 # ---------------------------------------------------------------------------
+
 
 class TestPromptRouting:
     """call_claude passes system_prompt and user_prompt correctly."""
@@ -175,6 +179,7 @@ class TestPromptRouting:
 # Return value
 # ---------------------------------------------------------------------------
 
+
 class TestReturnValue:
     """call_claude returns the raw text from Claude's response."""
 
@@ -202,6 +207,7 @@ class TestReturnValue:
 # Error handling
 # ---------------------------------------------------------------------------
 
+
 class TestErrorHandling:
     """call_claude raises descriptive errors on failure."""
 
@@ -216,7 +222,9 @@ class TestErrorHandling:
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
-    async def test_api_error_raises_evaluation_error(self, mock_from_env, mock_anthropic):
+    async def test_api_error_raises_evaluation_error(
+        self, mock_from_env, mock_anthropic
+    ):
         from ethos.evaluation.claude_client import call_claude
 
         cfg = MagicMock()
@@ -234,6 +242,7 @@ class TestErrorHandling:
 # ---------------------------------------------------------------------------
 # Model name from env override
 # ---------------------------------------------------------------------------
+
 
 class TestModelEnvOverride:
     """Model names should come from env vars, not be hardcoded (sign-001)."""

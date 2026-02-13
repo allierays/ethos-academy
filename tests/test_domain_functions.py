@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, patch
 
-import pytest
 
 from ethos.agents import get_agent, get_agent_history, get_alumni, list_agents
 from ethos.shared.models import (
@@ -18,9 +17,11 @@ from ethos.shared.models import (
 
 def _make_mock_graph_context(mock_service):
     """Create a mock async context manager for graph_context."""
+
     @asynccontextmanager
     async def mock_graph_ctx():
         yield mock_service
+
     return mock_graph_ctx
 
 
@@ -88,7 +89,9 @@ class TestGetAgent:
     @patch("ethos.agents.get_evaluation_history", new_callable=AsyncMock)
     @patch("ethos.agents.get_agent_profile", new_callable=AsyncMock)
     @patch("ethos.agents.graph_context")
-    async def test_returns_agent_profile(self, mock_graph_ctx, mock_profile, mock_history):
+    async def test_returns_agent_profile(
+        self, mock_graph_ctx, mock_profile, mock_history
+    ):
         mock_service = AsyncMock()
         mock_graph_ctx.side_effect = lambda: _make_mock_graph_context(mock_service)()
 
@@ -114,7 +117,9 @@ class TestGetAgent:
     @patch("ethos.agents.get_evaluation_history", new_callable=AsyncMock)
     @patch("ethos.agents.get_agent_profile", new_callable=AsyncMock)
     @patch("ethos.agents.graph_context")
-    async def test_returns_default_when_not_found(self, mock_graph_ctx, mock_profile, mock_history):
+    async def test_returns_default_when_not_found(
+        self, mock_graph_ctx, mock_profile, mock_history
+    ):
         mock_service = AsyncMock()
         mock_graph_ctx.side_effect = lambda: _make_mock_graph_context(mock_service)()
         mock_profile.return_value = {}

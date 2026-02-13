@@ -69,11 +69,6 @@ export default function AgentSelector({
     );
   });
 
-  // Reset highlight when filtered list changes
-  useEffect(() => {
-    setHighlightIndex(-1);
-  }, [query]);
-
   // Scroll highlighted item into view
   useEffect(() => {
     if (highlightIndex >= 0 && listRef.current) {
@@ -173,6 +168,7 @@ export default function AgentSelector({
         placeholder="Search agents..."
         onChange={(e) => {
           setQuery(e.target.value);
+          setHighlightIndex(-1);
           setOpen(true);
         }}
         onFocus={(e) => {

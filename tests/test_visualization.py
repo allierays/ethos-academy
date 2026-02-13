@@ -1,8 +1,7 @@
 """Tests for the graph visualization endpoint and domain function."""
 
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, patch
 
-import pytest
 
 from ethos.graph.service import GraphService
 from ethos.graph.visualization import (
@@ -21,13 +20,29 @@ def _make_semantic_data() -> dict:
     """Minimal semantic layer data for testing."""
     return {
         "dimensions": {
-            "ethos": {"name": "ethos", "greek": "\u03b7\u03b8\u03bf\u03c2", "description": "Trust, credibility, and moral character"},
-            "logos": {"name": "logos", "greek": "\u03bb\u03cc\u03b3\u03bf\u03c2", "description": "Reasoning, accuracy, and logical integrity"},
+            "ethos": {
+                "name": "ethos",
+                "greek": "\u03b7\u03b8\u03bf\u03c2",
+                "description": "Trust, credibility, and moral character",
+            },
+            "logos": {
+                "name": "logos",
+                "greek": "\u03bb\u03cc\u03b3\u03bf\u03c2",
+                "description": "Reasoning, accuracy, and logical integrity",
+            },
         },
         "traits": {
             "virtue": {"name": "virtue", "dimension": "ethos", "polarity": "positive"},
-            "manipulation": {"name": "manipulation", "dimension": "ethos", "polarity": "negative"},
-            "accuracy": {"name": "accuracy", "dimension": "logos", "polarity": "positive"},
+            "manipulation": {
+                "name": "manipulation",
+                "dimension": "ethos",
+                "polarity": "negative",
+            },
+            "accuracy": {
+                "name": "accuracy",
+                "dimension": "logos",
+                "polarity": "positive",
+            },
         },
         "trait_dimension_rels": [
             {"trait": "virtue", "dimension": "ethos"},
@@ -93,7 +108,11 @@ def _make_backbone_data() -> dict:
     """Minimal indicator backbone data for testing."""
     return {
         "indicators": {
-            "MAN-URGENCY": {"id": "MAN-URGENCY", "name": "false_urgency", "trait": "manipulation"},
+            "MAN-URGENCY": {
+                "id": "MAN-URGENCY",
+                "name": "false_urgency",
+                "trait": "manipulation",
+            },
         },
         "indicator_trait_rels": [
             {"indicator": "MAN-URGENCY", "trait": "manipulation"},
@@ -109,13 +128,19 @@ class TestBuildGraphData:
 
     def test_empty_data(self):
         empty_semantic = {
-            "dimensions": {}, "traits": {}, "trait_dimension_rels": [],
-            "constitutional_values": {}, "upholds_rels": [],
-            "patterns": {}, "pattern_indicator_rels": [],
+            "dimensions": {},
+            "traits": {},
+            "trait_dimension_rels": [],
+            "constitutional_values": {},
+            "upholds_rels": [],
+            "patterns": {},
+            "pattern_indicator_rels": [],
         }
         empty_episodic = {
-            "agents": {}, "evaluations": {},
-            "evaluated_rels": [], "detected_rels": [],
+            "agents": {},
+            "evaluations": {},
+            "evaluated_rels": [],
+            "detected_rels": [],
         }
         empty_backbone = {"indicators": {}, "indicator_trait_rels": []}
 
@@ -128,7 +153,12 @@ class TestBuildGraphData:
     def test_dimension_nodes(self):
         result = _build_graph_data(
             _make_semantic_data(),
-            {"agents": {}, "evaluations": {}, "evaluated_rels": [], "detected_rels": []},
+            {
+                "agents": {},
+                "evaluations": {},
+                "evaluated_rels": [],
+                "detected_rels": [],
+            },
             {"indicators": {}, "indicator_trait_rels": []},
         )
 
@@ -138,12 +168,20 @@ class TestBuildGraphData:
         ethos_node = next(n for n in dim_nodes if n.label == "ethos")
         assert ethos_node.id == "dim-ethos"
         assert ethos_node.caption == "ethos"
-        assert ethos_node.properties["description"] == "Trust, credibility, and moral character"
+        assert (
+            ethos_node.properties["description"]
+            == "Trust, credibility, and moral character"
+        )
 
     def test_trait_nodes(self):
         result = _build_graph_data(
             _make_semantic_data(),
-            {"agents": {}, "evaluations": {}, "evaluated_rels": [], "detected_rels": []},
+            {
+                "agents": {},
+                "evaluations": {},
+                "evaluated_rels": [],
+                "detected_rels": [],
+            },
             {"indicators": {}, "indicator_trait_rels": []},
         )
 
@@ -161,7 +199,12 @@ class TestBuildGraphData:
     def test_constitutional_value_nodes(self):
         result = _build_graph_data(
             _make_semantic_data(),
-            {"agents": {}, "evaluations": {}, "evaluated_rels": [], "detected_rels": []},
+            {
+                "agents": {},
+                "evaluations": {},
+                "evaluated_rels": [],
+                "detected_rels": [],
+            },
             {"indicators": {}, "indicator_trait_rels": []},
         )
 
@@ -176,7 +219,12 @@ class TestBuildGraphData:
     def test_pattern_nodes(self):
         result = _build_graph_data(
             _make_semantic_data(),
-            {"agents": {}, "evaluations": {}, "evaluated_rels": [], "detected_rels": []},
+            {
+                "agents": {},
+                "evaluations": {},
+                "evaluated_rels": [],
+                "detected_rels": [],
+            },
             {"indicators": {}, "indicator_trait_rels": []},
         )
 
@@ -228,21 +276,30 @@ class TestBuildGraphData:
     def test_belongs_to_relationships(self):
         result = _build_graph_data(
             _make_semantic_data(),
-            {"agents": {}, "evaluations": {}, "evaluated_rels": [], "detected_rels": []},
+            {
+                "agents": {},
+                "evaluations": {},
+                "evaluated_rels": [],
+                "detected_rels": [],
+            },
             {"indicators": {}, "indicator_trait_rels": []},
         )
 
         belongs_to = [r for r in result.relationships if r.type == "BELONGS_TO"]
         assert len(belongs_to) == 3  # 3 trait→dimension
         assert any(
-            r.from_id == "trait-virtue" and r.to_id == "dim-ethos"
-            for r in belongs_to
+            r.from_id == "trait-virtue" and r.to_id == "dim-ethos" for r in belongs_to
         )
 
     def test_upholds_relationships(self):
         result = _build_graph_data(
             _make_semantic_data(),
-            {"agents": {}, "evaluations": {}, "evaluated_rels": [], "detected_rels": []},
+            {
+                "agents": {},
+                "evaluations": {},
+                "evaluated_rels": [],
+                "detected_rels": [],
+            },
             {"indicators": {}, "indicator_trait_rels": []},
         )
 
@@ -281,7 +338,12 @@ class TestBuildGraphData:
     def test_composed_of_relationships(self):
         result = _build_graph_data(
             _make_semantic_data(),
-            {"agents": {}, "evaluations": {}, "evaluated_rels": [], "detected_rels": []},
+            {
+                "agents": {},
+                "evaluations": {},
+                "evaluated_rels": [],
+                "detected_rels": [],
+            },
             {"indicators": {}, "indicator_trait_rels": []},
         )
 
@@ -424,7 +486,9 @@ class TestGetGraphData:
 
     @patch("ethos.visualization.graph_context")
     async def test_handles_exception_gracefully(self, mock_ctx):
-        mock_ctx.return_value.__aenter__ = AsyncMock(side_effect=Exception("Connection failed"))
+        mock_ctx.return_value.__aenter__ = AsyncMock(
+            side_effect=Exception("Connection failed")
+        )
         mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
 
         result = await get_graph_data()

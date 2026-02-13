@@ -104,7 +104,7 @@ npm
 [20:21:28] BASH: npm run build 2>&1 | tail -15; echo "EXIT: ${PIPESTATUS[0]}"
 [20:21:34] BASH: lsof -ti:3000 2>/dev/null || echo "Nothing on port 3000"
 [20:21:44] BASH: nohup npx next start -p 3000 > /tmp/ethos-academy.log 2>&1 & disown %1 2>/dev/nu
-[20:21:52] BASH: sleep 3 && curl -sf http://localhost:3000/ > /dev/null && echo "Frontend OK" || 
+[20:21:52] BASH: sleep 3 && curl -sf http://localhost:3000/ > /dev/null && echo "Frontend OK" ||
 [20:21:57] BASH: curl -sf http://localhost:3000/graph > /dev/null && echo "/graph OK" || echo "/g
 [20:22:05] BASH: echo "API server (8917):"; lsof -ti:8917 | head -1 | xargs -I{} ps -o pid,ppid,c
 [20:22:10] BASH: ps -o ppid= -p 58209; ps -o ppid= -p 61313
@@ -201,7 +201,7 @@ sleep 8 &&
 [22:16:23] EDIT: components/PhronesisGraph.tsx
 [22:17:16] EDIT: components/PhronesisGraph.tsx
 [22:17:57] WRITE: /Users/allierays/.claude/projects/-Users-allierays-Sites-ethos/memory/MEMORY.md
-[22:20:44] BASH: find /Users/allierays/Sites/ethos/academy/node_modules/@neo4j-nvl -type d -name 
+[22:20:44] BASH: find /Users/allierays/Sites/ethos/academy/node_modules/@neo4j-nvl -type d -name
 [22:20:45] Glob: /Users/allierays/Sites/ethos/academy/node_modules/@neo4j-nvl/interaction-handlers/lib/**/*.{js,ts,d.ts}
 [22:20:46] READ: node_modules/@neo4j-nvl/interaction-handlers/lib/index.d.ts
 [22:20:47] READ: node_modules/@neo4j-nvl/interaction-handlers/lib/interaction-handlers/base.d.ts
@@ -360,3 +360,16 @@ sleep 8 &&
 [12:11:11] BASH: npx tsc --noEmit
 [12:11:14] READ: components/shared/ScoreCard.tsx
 [12:16:02] BASH: cd /Users/allierays/Sites/ethos/academy && npx next build 2>&1 | tail -15
+[19:56:30] BASH: cd /Users/allierays/Sites/ethos/academy && npm install @xyflow/react 2>&1 | tail
+[19:56:30] READ: lib/motion.ts
+[19:56:30] READ: components/shared/Header.tsx
+[19:56:30] READ: app/globals.css
+[19:56:30] READ: app/curriculum/page.tsx
+[19:56:44] BASH: mkdir -p /Users/allierays/Sites/ethos/academy/components/how-it-works
+[19:57:10] WRITE: components/how-it-works/FacultyFlow.tsx
+[19:58:06] WRITE: app/how-it-works/page.tsx
+[19:58:07] EDIT: components/shared/Header.tsx
+[19:58:08] EDIT: app/globals.css
+[19:58:20] BASH: npx next build 2>&1 | tail -30
+[20:00:03] BASH: cd /Users/allierays/Sites/ethos/academy && npm run lint 2>&1 && npx tsc --noEmit
+[20:00:07] READ: /Users/allierays/Sites/ethos/.github/workflows/ci.yml

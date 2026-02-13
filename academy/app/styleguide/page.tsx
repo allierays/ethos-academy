@@ -3,6 +3,7 @@ export default function StyleguidePage() {
     <div className="space-y-16 pb-20">
       {/* ─── Hero ─── */}
       <section className="relative -mx-6 -mt-8 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/academy-banner.jpeg"
           alt="School of Athens — humans and AI"

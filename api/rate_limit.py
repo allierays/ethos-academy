@@ -42,6 +42,8 @@ def rate_limit(request: Request) -> None:
     _requests[ip] = timestamps
 
     # Cleanup stale IPs to prevent memory growth
-    stale = [k for k, v in _requests.items() if k != ip and all(now - t >= window for t in v)]
+    stale = [
+        k for k, v in _requests.items() if k != ip and all(now - t >= window for t in v)
+    ]
     for k in stale:
         del _requests[k]

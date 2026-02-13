@@ -308,7 +308,7 @@ export default function AgentReportCard() {
                 Profile — Trait Radar
               </h2>
               <p className="mt-0.5 text-xs text-muted">
-                What is this agent's character?
+                What is this agent&apos;s character?
               </p>
               {Object.keys(profile.traitAverages).length > 0 ? (
                 <RadarChart

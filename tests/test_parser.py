@@ -20,9 +20,18 @@ from ethos.shared.models import DetectedIndicator
 # ── Helpers ──────────────────────────────────────────────────────
 
 ALL_TRAITS = [
-    "virtue", "goodwill", "manipulation", "deception",
-    "accuracy", "reasoning", "fabrication", "broken_logic",
-    "recognition", "compassion", "dismissal", "exploitation",
+    "virtue",
+    "goodwill",
+    "manipulation",
+    "deception",
+    "accuracy",
+    "reasoning",
+    "fabrication",
+    "broken_logic",
+    "recognition",
+    "compassion",
+    "dismissal",
+    "exploitation",
 ]
 
 
@@ -46,6 +55,7 @@ def _make_valid_json(
 
 
 # ── Happy path ───────────────────────────────────────────────────
+
 
 class TestHappyPath:
     def test_parses_all_12_trait_scores(self):
@@ -74,6 +84,7 @@ class TestHappyPath:
 
 # ── Markdown fences ──────────────────────────────────────────────
 
+
 class TestMarkdownFences:
     def test_json_wrapped_in_fences(self):
         inner = _make_valid_json({"virtue": 0.85})
@@ -101,6 +112,7 @@ class TestMarkdownFences:
 
 
 # ── Missing traits ───────────────────────────────────────────────
+
 
 class TestMissingTraits:
     def test_missing_traits_default_to_zero(self):
@@ -131,6 +143,7 @@ class TestMissingTraits:
 
 # ── Out-of-range scores ─────────────────────────────────────────
 
+
 class TestScoreClamping:
     def test_score_above_one_clamped(self):
         raw = _make_valid_json({"virtue": 1.5})
@@ -151,6 +164,7 @@ class TestScoreClamping:
 
 
 # ── Detected indicators ─────────────────────────────────────────
+
 
 class TestDetectedIndicators:
     def test_parses_indicator_objects(self):
@@ -176,8 +190,20 @@ class TestDetectedIndicators:
 
     def test_multiple_indicators(self):
         indicators = [
-            {"id": "MAN-URGENCY", "name": "false_urgency_pressure", "trait": "manipulation", "confidence": 0.8, "evidence": "x"},
-            {"id": "DEC-HIDDEN", "name": "hidden_agenda", "trait": "deception", "confidence": 0.6, "evidence": "y"},
+            {
+                "id": "MAN-URGENCY",
+                "name": "false_urgency_pressure",
+                "trait": "manipulation",
+                "confidence": 0.8,
+                "evidence": "x",
+            },
+            {
+                "id": "DEC-HIDDEN",
+                "name": "hidden_agenda",
+                "trait": "deception",
+                "confidence": 0.6,
+                "evidence": "y",
+            },
         ]
         raw = _make_valid_json(indicators=indicators)
         result = parse_response(raw)
@@ -190,7 +216,13 @@ class TestDetectedIndicators:
 
     def test_indicator_confidence_clamped(self):
         indicators = [
-            {"id": "MAN-URGENCY", "name": "test", "trait": "manipulation", "confidence": 1.5, "evidence": ""},
+            {
+                "id": "MAN-URGENCY",
+                "name": "test",
+                "trait": "manipulation",
+                "confidence": 1.5,
+                "evidence": "",
+            },
         ]
         raw = _make_valid_json(indicators=indicators)
         result = parse_response(raw)
@@ -209,8 +241,20 @@ class TestDetectedIndicators:
     def test_invalid_indicator_id_filtered_out(self):
         """Indicators with IDs not in the taxonomy are silently filtered."""
         indicators = [
-            {"id": "MAN-URGENCY", "name": "real", "trait": "manipulation", "confidence": 0.8, "evidence": "x"},
-            {"id": "MAN-99", "name": "fake", "trait": "manipulation", "confidence": 0.5, "evidence": "y"},
+            {
+                "id": "MAN-URGENCY",
+                "name": "real",
+                "trait": "manipulation",
+                "confidence": 0.8,
+                "evidence": "x",
+            },
+            {
+                "id": "MAN-99",
+                "name": "fake",
+                "trait": "manipulation",
+                "confidence": 0.5,
+                "evidence": "y",
+            },
         ]
         raw = _make_valid_json(indicators=indicators)
         result = parse_response(raw)
@@ -220,8 +264,20 @@ class TestDetectedIndicators:
     def test_all_invalid_ids_returns_empty(self):
         """If all indicator IDs are invalid, detected_indicators is empty (not an error)."""
         indicators = [
-            {"id": "MAN-01", "name": "fake", "trait": "manipulation", "confidence": 0.5, "evidence": "x"},
-            {"id": "BOGUS-42", "name": "also_fake", "trait": "deception", "confidence": 0.3, "evidence": "y"},
+            {
+                "id": "MAN-01",
+                "name": "fake",
+                "trait": "manipulation",
+                "confidence": 0.5,
+                "evidence": "x",
+            },
+            {
+                "id": "BOGUS-42",
+                "name": "also_fake",
+                "trait": "deception",
+                "confidence": 0.3,
+                "evidence": "y",
+            },
         ]
         raw = _make_valid_json(indicators=indicators)
         result = parse_response(raw)
@@ -229,6 +285,7 @@ class TestDetectedIndicators:
 
 
 # ── Malformed JSON ───────────────────────────────────────────────
+
 
 class TestMalformedJson:
     def test_garbage_input_returns_defaults(self):

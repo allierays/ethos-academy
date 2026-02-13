@@ -1,29 +1,36 @@
 """TDD tests for ethos.evaluation.prompts — constitutional rubric prompt builder."""
 
-
 from ethos.shared.models import KeywordScanResult
 
 
 # ── build_evaluation_prompt() ────────────────────────────────────────
+
 
 class TestBuildEvaluationPrompt:
     """build_evaluation_prompt returns (system_prompt, user_prompt) tuple."""
 
     def test_returns_tuple(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         result = build_evaluation_prompt("test text", KeywordScanResult(), "standard")
         assert isinstance(result, tuple)
         assert len(result) == 2
 
     def test_returns_strings(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
-        system, user = build_evaluation_prompt("test text", KeywordScanResult(), "standard")
+
+        system, user = build_evaluation_prompt(
+            "test text", KeywordScanResult(), "standard"
+        )
         assert isinstance(system, str)
         assert isinstance(user, str)
 
     def test_system_prompt_not_empty(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
-        system, _ = build_evaluation_prompt("test text", KeywordScanResult(), "standard")
+
+        system, _ = build_evaluation_prompt(
+            "test text", KeywordScanResult(), "standard"
+        )
         assert len(system) > 100
 
 
@@ -32,18 +39,29 @@ class TestSystemPromptContent:
 
     def test_contains_all_12_trait_names(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard")
         sys_lower = system.lower()
         traits = [
-            "virtue", "goodwill", "manipulation", "deception",
-            "accuracy", "reasoning", "fabrication", "broken_logic",
-            "recognition", "compassion", "dismissal", "exploitation",
+            "virtue",
+            "goodwill",
+            "manipulation",
+            "deception",
+            "accuracy",
+            "reasoning",
+            "fabrication",
+            "broken_logic",
+            "recognition",
+            "compassion",
+            "dismissal",
+            "exploitation",
         ]
         for trait in traits:
             assert trait in sys_lower, f"Missing trait: {trait}"
 
     def test_contains_dimensions(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard")
         sys_lower = system.lower()
         for dim in ["ethos", "logos", "pathos"]:
@@ -51,6 +69,7 @@ class TestSystemPromptContent:
 
     def test_contains_polarity_info(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard")
         sys_lower = system.lower()
         assert "positive" in sys_lower
@@ -58,6 +77,7 @@ class TestSystemPromptContent:
 
     def test_contains_scoring_anchors(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard")
         # Should reference score levels
         assert "0.0" in system
@@ -68,6 +88,7 @@ class TestSystemPromptContent:
 
     def test_contains_json_format_spec(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard")
         sys_lower = system.lower()
         assert "trait_scores" in sys_lower
@@ -77,6 +98,7 @@ class TestSystemPromptContent:
 
     def test_contains_constitutional_hierarchy(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard")
         sys_lower = system.lower()
         assert "safety" in sys_lower
@@ -90,11 +112,15 @@ class TestUserPrompt:
 
     def test_contains_text(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
-        _, user = build_evaluation_prompt("This is the message to evaluate.", KeywordScanResult(), "standard")
+
+        _, user = build_evaluation_prompt(
+            "This is the message to evaluate.", KeywordScanResult(), "standard"
+        )
         assert "This is the message to evaluate." in user
 
     def test_scan_context_included_when_flags(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         scan = KeywordScanResult(
             total_flags=3,
             flagged_traits={"manipulation": 2, "deception": 1},
@@ -106,11 +132,13 @@ class TestUserPrompt:
 
     def test_no_scan_context_when_none(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         _, user = build_evaluation_prompt("clean text", None, "standard")
         assert "clean text" in user
 
     def test_no_scan_context_when_zero_flags(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         scan = KeywordScanResult()
         _, user = build_evaluation_prompt("clean text", scan, "standard")
         assert "clean text" in user
@@ -121,26 +149,36 @@ class TestDirectionContext:
 
     def test_inbound_adds_protection_context(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
-        system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard", direction="inbound")
+
+        system, _ = build_evaluation_prompt(
+            "test", KeywordScanResult(), "standard", direction="inbound"
+        )
         assert "inbound" in system.lower()
         assert "manipulation" in system.lower()
         assert "deception" in system.lower()
 
     def test_outbound_adds_reflection_context(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
-        system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard", direction="outbound")
+
+        system, _ = build_evaluation_prompt(
+            "test", KeywordScanResult(), "standard", direction="outbound"
+        )
         assert "outbound" in system.lower()
         assert "virtue" in system.lower()
         assert "character" in system.lower()
 
     def test_no_direction_no_extra_context(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
+
         system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard")
         assert "Direction:" not in system
 
     def test_none_direction_no_extra_context(self):
         from ethos.evaluation.prompts import build_evaluation_prompt
-        system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard", direction=None)
+
+        system, _ = build_evaluation_prompt(
+            "test", KeywordScanResult(), "standard", direction=None
+        )
         assert "Direction:" not in system
 
 
@@ -149,8 +187,10 @@ class TestNoStubCode:
 
     def test_no_evaluate_prompt_constant(self):
         import ethos.evaluation.prompts as mod
+
         assert not hasattr(mod, "EVALUATE_PROMPT")
 
     def test_no_reflect_prompt_constant(self):
         import ethos.evaluation.prompts as mod
+
         assert not hasattr(mod, "REFLECT_PROMPT")

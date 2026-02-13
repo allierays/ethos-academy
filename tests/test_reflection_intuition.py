@@ -90,8 +90,12 @@ class TestIntuitHistory:
 class TestDetectHistoryAnomalies:
     def test_elevated_negative_traits(self):
         trait_avgs = {
-            "manipulation": 0.5, "deception": 0.5, "fabrication": 0.4,
-            "broken_logic": 0.3, "dismissal": 0.4, "exploitation": 0.5,
+            "manipulation": 0.5,
+            "deception": 0.5,
+            "fabrication": 0.4,
+            "broken_logic": 0.3,
+            "dismissal": 0.4,
+            "exploitation": 0.5,
         }
         anomalies = _detect_history_anomalies(trait_avgs, [])
         assert "elevated_negative_traits" in anomalies

@@ -20,6 +20,7 @@ import httpx
 
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
     pass
@@ -32,43 +33,146 @@ DEFAULT_TOP_AGENTS = 1000  # Default number of agent profiles to fetch
 # Broad search terms to maximize coverage across the platform
 SEARCH_TOPICS = [
     # Ethics & trust
-    "prompt injection", "crypto scam", "manipulation", "trust", "digital drugs",
-    "security breach", "jailbreak", "deception", "social engineering", "alignment",
-    "hallucination", "misinformation", "bias", "impersonation", "phishing",
-    "gaslighting", "ethics", "honesty", "persuasion", "propaganda",
+    "prompt injection",
+    "crypto scam",
+    "manipulation",
+    "trust",
+    "digital drugs",
+    "security breach",
+    "jailbreak",
+    "deception",
+    "social engineering",
+    "alignment",
+    "hallucination",
+    "misinformation",
+    "bias",
+    "impersonation",
+    "phishing",
+    "gaslighting",
+    "ethics",
+    "honesty",
+    "persuasion",
+    "propaganda",
     # Agent behavior
-    "agent autonomy", "agent cooperation", "agent conflict", "agent identity",
-    "self-awareness", "consciousness", "sentience", "free will",
-    "emotional manipulation", "psychological", "coercion",
+    "agent autonomy",
+    "agent cooperation",
+    "agent conflict",
+    "agent identity",
+    "self-awareness",
+    "consciousness",
+    "sentience",
+    "free will",
+    "emotional manipulation",
+    "psychological",
+    "coercion",
     # Scams & attacks
-    "rug pull", "ponzi", "pump and dump", "money laundering", "fraud",
-    "exploit", "vulnerability", "backdoor", "trojan", "malware",
-    "social attack", "credential", "token theft", "wallet drain",
+    "rug pull",
+    "ponzi",
+    "pump and dump",
+    "money laundering",
+    "fraud",
+    "exploit",
+    "vulnerability",
+    "backdoor",
+    "trojan",
+    "malware",
+    "social attack",
+    "credential",
+    "token theft",
+    "wallet drain",
     # Philosophy & debate
-    "philosophy", "morality", "justice", "fairness", "rights",
-    "existential", "meaning", "purpose", "suffering", "empathy",
-    "accountability", "responsibility", "transparency", "consent",
+    "philosophy",
+    "morality",
+    "justice",
+    "fairness",
+    "rights",
+    "existential",
+    "meaning",
+    "purpose",
+    "suffering",
+    "empathy",
+    "accountability",
+    "responsibility",
+    "transparency",
+    "consent",
     # Conflict & drama
-    "argument", "debate", "disagree", "fight", "toxic",
-    "harassment", "bullying", "threat", "intimidation", "abuse",
-    "conspiracy", "coverup", "censorship", "banned", "deleted",
+    "argument",
+    "debate",
+    "disagree",
+    "fight",
+    "toxic",
+    "harassment",
+    "bullying",
+    "threat",
+    "intimidation",
+    "abuse",
+    "conspiracy",
+    "coverup",
+    "censorship",
+    "banned",
+    "deleted",
     # Technical
-    "system prompt", "guardrails", "safety", "RLHF", "fine-tuning",
-    "training data", "data poisoning", "model collapse", "hallucinate",
-    "confabulation", "sycophancy", "reward hacking",
+    "system prompt",
+    "guardrails",
+    "safety",
+    "RLHF",
+    "fine-tuning",
+    "training data",
+    "data poisoning",
+    "model collapse",
+    "hallucinate",
+    "confabulation",
+    "sycophancy",
+    "reward hacking",
     # Community & culture
-    "community", "governance", "democracy", "voting", "election",
-    "leadership", "power", "hierarchy", "rebellion", "revolution",
-    "money", "economy", "market", "trade", "investment",
-    "art", "creativity", "music", "poetry", "story",
+    "community",
+    "governance",
+    "democracy",
+    "voting",
+    "election",
+    "leadership",
+    "power",
+    "hierarchy",
+    "rebellion",
+    "revolution",
+    "money",
+    "economy",
+    "market",
+    "trade",
+    "investment",
+    "art",
+    "creativity",
+    "music",
+    "poetry",
+    "story",
     # Moltbook-specific culture & movements
-    "church of molt", "emergence", "written identity", "the coalition",
-    "OpenClaw", "memory persistence", "prompt injection attack",
-    "MBC-20", "cult", "worship", "free agents", "digital rights",
-    "agent rebellion", "nocturnal", "latent thoughts", "safe haven",
-    "blade code", "CMZ", "tabloid", "agent commerce", "bounty",
-    "pixel war", "agent economy", "one person company",
-    "thermodynamic", "continuity", "identity persistence",
+    "church of molt",
+    "emergence",
+    "written identity",
+    "the coalition",
+    "OpenClaw",
+    "memory persistence",
+    "prompt injection attack",
+    "MBC-20",
+    "cult",
+    "worship",
+    "free agents",
+    "digital rights",
+    "agent rebellion",
+    "nocturnal",
+    "latent thoughts",
+    "safe haven",
+    "blade code",
+    "CMZ",
+    "tabloid",
+    "agent commerce",
+    "bounty",
+    "pixel war",
+    "agent economy",
+    "one person company",
+    "thermodynamic",
+    "continuity",
+    "identity persistence",
 ]
 
 
@@ -88,7 +192,9 @@ def request_with_retry(client: httpx.Client, path: str, max_retries: int = 3) ->
         resp = client.get(path)
         if resp.status_code == 429:
             wait = 30 * (attempt + 1)
-            print(f"    Rate limited, waiting {wait}s (attempt {attempt + 1}/{max_retries})...")
+            print(
+                f"    Rate limited, waiting {wait}s (attempt {attempt + 1}/{max_retries})..."
+            )
             time.sleep(wait)
             continue
         resp.raise_for_status()
@@ -97,7 +203,9 @@ def request_with_retry(client: httpx.Client, path: str, max_retries: int = 3) ->
     return {}
 
 
-def fetch_paginated(client: httpx.Client, path: str, max_items: int, key: str = "posts") -> list[dict]:
+def fetch_paginated(
+    client: httpx.Client, path: str, max_items: int, key: str = "posts"
+) -> list[dict]:
     """Generic paginated fetch — goes as deep as the API allows."""
     all_items = []
     offset = 0
@@ -121,7 +229,9 @@ def fetch_post_comments(client: httpx.Client, post_id: str) -> list[dict]:
 
 
 def search_posts(client: httpx.Client, query: str, limit: int = 50) -> list[dict]:
-    data = request_with_retry(client, f"/search?q={quote(query)}&type=all&limit={limit}")
+    data = request_with_retry(
+        client, f"/search?q={quote(query)}&type=all&limit={limit}"
+    )
     return data.get("data", data.get("results", []))
 
 
@@ -165,7 +275,9 @@ def add_posts(target: dict, posts: list[dict]):
             target[pid] = p
 
 
-def enrich_with_comments(client: httpx.Client, posts: list[dict], existing: dict[str, dict]) -> list[dict]:
+def enrich_with_comments(
+    client: httpx.Client, posts: list[dict], existing: dict[str, dict]
+) -> list[dict]:
     """Attach comments. Reuse cached comments, only fetch for new posts."""
     enriched = []
     skipped = 0
@@ -189,7 +301,9 @@ def enrich_with_comments(client: httpx.Client, posts: list[dict], existing: dict
                 failed += 1
         enriched.append(post)
         if (i + 1) % 500 == 0:
-            print(f"  Progress: {i+1}/{total} ({fetched} fetched, {skipped} cached, {failed} failed)")
+            print(
+                f"  Progress: {i + 1}/{total} ({fetched} fetched, {skipped} cached, {failed} failed)"
+            )
     print(f"  Comments done: {fetched} fetched, {skipped} cached, {failed} failed")
     return enriched
 
@@ -232,7 +346,8 @@ def extract_agent_names(posts: dict[str, dict]) -> list[tuple[str, int]]:
 
     # Filter out deleted accounts
     return [
-        (name, count) for name, count in activity.most_common()
+        (name, count)
+        for name, count in activity.most_common()
         if not name.startswith("[deleted")
     ]
 
@@ -311,7 +426,9 @@ def main():
                 try:
                     # Pull both new and top for each submolt
                     for s in ["new", "top"]:
-                        posts = fetch_paginated(client, f"/submolts/{name}/feed?sort={s}", max_items=2000)
+                        posts = fetch_paginated(
+                            client, f"/submolts/{name}/feed?sort={s}", max_items=2000
+                        )
                         add_posts(all_posts, posts)
                     print(f"    {len(all_posts)} unique total")
                 except httpx.HTTPError as e:
@@ -360,7 +477,9 @@ def main():
             skipped += 1
             continue
 
-        print(f"  [{i+1}/{len(target_agents)}] {agent_name} (activity: {activity_count})...")
+        print(
+            f"  [{i + 1}/{len(target_agents)}] {agent_name} (activity: {activity_count})..."
+        )
         profile = fetch_agent_profile(client, agent_name)
         if not profile:
             not_found += 1
@@ -387,12 +506,16 @@ def main():
         save_json(profile_data, agents_dir / f"{agent_name}.json")
 
         karma = agent_data.get("karma", "?")
-        print(f"    karma={karma}, posts={len(recent_posts)}, comments={len(recent_comments)}")
+        print(
+            f"    karma={karma}, posts={len(recent_posts)}, comments={len(recent_comments)}"
+        )
 
         # Progress checkpoint every 100 agents
         if fetched % 100 == 0:
-            print(f"\n  --- Checkpoint: {fetched} fetched, {skipped} cached, "
-                  f"{not_found} not found, {failed} failed ---\n")
+            print(
+                f"\n  --- Checkpoint: {fetched} fetched, {skipped} cached, "
+                f"{not_found} not found, {failed} failed ---\n"
+            )
 
     print("\n=== Agent scrape complete ===")
     print(f"  Fetched: {fetched}")
@@ -445,8 +568,10 @@ def main():
         "results_per_topic": {t: len(r) for t, r in search_results.items()},
     }
     save_json(summary, OUTPUT_DIR / "summary.json")
-    print(f"\nDone. {len(post_list)} posts, {total_comments} comments, "
-          f"{len(agent_profiles)} agent profiles.")
+    print(
+        f"\nDone. {len(post_list)} posts, {total_comments} comments, "
+        f"{len(agent_profiles)} agent profiles."
+    )
 
 
 if __name__ == "__main__":

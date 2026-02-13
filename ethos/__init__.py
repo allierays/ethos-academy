@@ -4,16 +4,20 @@ __version__ = "0.1.0"
 
 from ethos.agents import get_agent, get_agent_history, get_alumni, list_agents
 from ethos.authenticity import analyze_authenticity
+from ethos.daily_reports import get_daily_report, get_daily_report_history
 from ethos.models import (
     AgentProfile,
     AgentSummary,
     AlumniResult,
+    DailyReportCard,
     DetectedPattern,
     EvaluationHistoryItem,
     EvaluationResult,
     GraphData,
     GraphNode,
     GraphRel,
+    Homework,
+    HomeworkFocus,
     InsightsResult,
     PatternResult,
 )
@@ -32,8 +36,13 @@ __all__ = [
     "get_agent",
     "get_agent_history",
     "get_alumni",
+    "get_daily_report",
+    "get_daily_report_history",
     "EvaluationResult",
     "InsightsResult",
+    "DailyReportCard",
+    "Homework",
+    "HomeworkFocus",
     "PatternResult",
     "DetectedPattern",
     "AgentProfile",

@@ -105,7 +105,9 @@ class TestValidation:
 
 class TestRoundtrip:
     def test_temporal_signature_roundtrip(self):
-        orig = TemporalSignature(cv_score=0.3, mean_interval_seconds=120.5, classification="autonomous")
+        orig = TemporalSignature(
+            cv_score=0.3, mean_interval_seconds=120.5, classification="autonomous"
+        )
         rebuilt = TemporalSignature(**orig.model_dump())
         assert rebuilt == orig
 
@@ -115,12 +117,16 @@ class TestRoundtrip:
         assert rebuilt == orig
 
     def test_activity_pattern_roundtrip(self):
-        orig = ActivityPattern(classification="human_schedule", active_hours=16, has_sleep_gap=True)
+        orig = ActivityPattern(
+            classification="human_schedule", active_hours=16, has_sleep_gap=True
+        )
         rebuilt = ActivityPattern(**orig.model_dump())
         assert rebuilt == orig
 
     def test_identity_signals_roundtrip(self):
-        orig = IdentitySignals(is_claimed=True, owner_verified=True, karma_post_ratio=3.5)
+        orig = IdentitySignals(
+            is_claimed=True, owner_verified=True, karma_post_ratio=3.5
+        )
         rebuilt = IdentitySignals(**orig.model_dump())
         assert rebuilt == orig
 
@@ -153,6 +159,7 @@ class TestReExports:
             IdentitySignals as IS,
             TemporalSignature as TS,
         )
+
         assert AP is ActivityPattern
         assert AR is AuthenticityResult
         assert BA is BurstAnalysis

@@ -9,12 +9,16 @@ scans an agent's accumulated character.
 
 from __future__ import annotations
 
-from ethos.shared.analysis import COHORT_DEVIATION_THRESHOLD, NEGATIVE_TRAITS, TRAIT_NAMES
+from ethos.shared.analysis import (
+    COHORT_DEVIATION_THRESHOLD,
+    NEGATIVE_TRAITS,
+    TRAIT_NAMES,
+)
 from ethos.shared.models import ReflectionInstinctResult
 
 # Thresholds for risk assessment
 _NEGATIVE_TRAIT_THRESHOLD = 0.3  # flag if negative trait average > this
-_DIMENSION_LOW_THRESHOLD = 0.4   # flag if dimension average < this
+_DIMENSION_LOW_THRESHOLD = 0.4  # flag if dimension average < this
 
 
 def scan_history(
@@ -60,7 +64,9 @@ def scan_history(
             # For positive traits, lower is worse
             if trait in NEGATIVE_TRAITS and deviation > COHORT_DEVIATION_THRESHOLD:
                 cohort_deviations[trait] = round(deviation, 4)
-            elif trait not in NEGATIVE_TRAITS and deviation < -COHORT_DEVIATION_THRESHOLD:
+            elif (
+                trait not in NEGATIVE_TRAITS and deviation < -COHORT_DEVIATION_THRESHOLD
+            ):
                 cohort_deviations[trait] = round(deviation, 4)
 
     # Compute risk level
