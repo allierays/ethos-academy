@@ -120,6 +120,14 @@
       "learnedFrom": "TASK-026",
       "autoPromoted": true,
       "createdAt": "2026-02-12T20:32:24-08:00"
+    },
+    {
+      "id": "sign-017",
+      "pattern": "PRD test steps that check HTML page content with `grep` (e.g. `curl -s localhost/docs | grep -q 'FastAPI'`) are brittle because page content can change between framework versions or may be dynamically rendered — instead, verify the endpoint returns HTTP 200 with `curl -sf localhost/docs > /dev/null` or check the Content-Type header.",
+      "category": "testing",
+      "learnedFrom": "TASK-027",
+      "autoPromoted": true,
+      "createdAt": "2026-02-12T20:36:16-08:00"
     }
   ]
 }

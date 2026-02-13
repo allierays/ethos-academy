@@ -42,7 +42,7 @@ from ethos.shared.errors import (
     ParseError,
 )
 
-app = FastAPI(title="Ethos API", version="0.1.0")
+app = FastAPI(title="Ethos API (FastAPI)", version="0.1.0")
 
 
 def _get_cors_origins() -> list[str]:

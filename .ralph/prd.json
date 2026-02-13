@@ -2054,7 +2054,7 @@
       "type": "backend",
       "title": "Document MCP server in CLAUDE.md — commands, connection, architecture",
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "batch": 3,
       "dependsOn": [
         "TASK-025"
@@ -2099,7 +2099,8 @@
       "contextFiles": [
         "CLAUDE.md"
       ],
-      "notes": "Dev connection command: claude mcp add ethos-academy --transport stdio --scope project -- uv --directory /Users/allierays/Sites/ethos run ethos-mcp"
+      "notes": "Dev connection command: claude mcp add ethos-academy --transport stdio --scope project -- uv --directory /Users/allierays/Sites/ethos run ethos-mcp",
+      "retryCount": 0
     }
   ]
 }

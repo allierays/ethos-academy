@@ -39,7 +39,8 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 │   ├── config/                 # EthosConfig, priorities
 │   ├── identity/               # Agent identity utilities
 │   ├── evaluation/             # Keyword scanner, prompt builder
-│   └── graph/                  # Neo4j service, read, write, cohort
+│   ├── graph/                  # Neo4j service, read, write, cohort
+│   └── mcp_server.py           # MCP server — wraps domain functions over stdio
 ├── api/                        # FastAPI server — serves ethos/ over HTTP
 ├── sdk/                        # ethos-ai npm package — SDK + CLI
 │   ├── src/                    # TypeScript SDK (client, evaluate, reflect)
@@ -58,6 +59,7 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 ```
 sdk/ ──→ api/ ──→ ethos/
 academy/ ──→ api/ ──→ ethos/
+mcp ──→ ethos/              (stdio, no HTTP)
 tests/ ──→ ethos/
 scripts/ ──→ ethos/
 ```
@@ -77,18 +79,18 @@ scripts/ ──→ ethos/
 ## Dependency Graph
 
 ```
-┌─────────┐  ┌─────────┐
-│   SDK   │  │ Academy │         ← surfaces (consumers)
-└────┬────┘  └────┬────┘
-     │            │
-     └──────┬─────┘
-            ▼
-      ┌──────────┐
-      │   API    │               ← HTTP layer
-      └────┬─────┘
-           │
-  ┌────────┼──────────┐
-  ▼        ▼          ▼
+┌─────────┐  ┌─────────┐  ┌─────────┐
+│   SDK   │  │ Academy │  │   MCP   │  ← surfaces (consumers)
+└────┬────┘  └────┬────┘  └────┬────┘
+     │            │            │ stdio
+     └──────┬─────┘            │
+            ▼                  │
+      ┌──────────┐             │
+      │   API    │  ← HTTP     │
+      └────┬─────┘             │
+           │                   │
+  ┌────────┼──────────┐        │
+  ▼        ▼          ▼        ▼
 ┌────────┐┌────────┐┌────────┐
 │Evaluate││Reflect ││ Config │   ← ethos/ domains
 └───┬────┘└───┬────┘└────────┘
@@ -129,6 +131,12 @@ uv run python -m scripts.seed_graph
 
 # Import check
 uv run python -c "from ethos import evaluate_incoming, evaluate_outgoing, character_report"
+
+# MCP server (stdio transport, no HTTP)
+uv run ethos-mcp
+
+# Connect Claude Code to the MCP server
+claude mcp add ethos-academy -- uv --directory /path/to/ethos run ethos-mcp
 
 # Docker (production ports)
 docker compose build
