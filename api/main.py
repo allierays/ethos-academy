@@ -13,6 +13,7 @@ from api.rate_limit import rate_limit
 from ethos import (
     analyze_authenticity,
     character_report,
+    complete_exam,
     detect_patterns,
     evaluate_incoming,
     evaluate_outgoing,
@@ -20,8 +21,12 @@ from ethos import (
     get_agent_history,
     get_alumni,
     get_daily_report_history,
+    get_exam_report,
     get_graph_data,
     list_agents,
+    list_exams,
+    register_for_exam,
+    submit_answer,
 )
 from ethos.models import (
     AgentProfile,
@@ -31,11 +36,16 @@ from ethos.models import (
     DailyReportCard,
     EvaluationHistoryItem,
     EvaluationResult,
+    ExamAnswerResult,
+    ExamRegistration,
+    ExamReportCard,
+    ExamSummary,
     GraphData,
     PatternResult,
 )
 from ethos.shared.errors import (
     ConfigError,
+    EnrollmentError,
     EthosError,
     EvaluationError,
     GraphUnavailableError,
@@ -94,6 +104,11 @@ def handle_parse_error(request: Request, exc: ParseError) -> JSONResponse:
 @app.exception_handler(ConfigError)
 def handle_config_error(request: Request, exc: ConfigError) -> JSONResponse:
     return _error_response(500, exc)
+
+
+@app.exception_handler(EnrollmentError)
+def handle_enrollment_error(request: Request, exc: EnrollmentError) -> JSONResponse:
+    return _error_response(409, exc)
 
 
 @app.exception_handler(EthosError)
@@ -215,3 +230,61 @@ async def authenticity_endpoint(agent_name: str):
 @app.get("/graph", response_model=GraphData)
 async def graph_endpoint():
     return await get_graph_data()
+
+
+# ── Exam request models ──────────────────────────────────────────────
+
+
+class ExamRegisterRequest(BaseModel):
+    agent_name: str | None = None
+    specialty: str | None = None
+    model: str | None = None
+    counselor_name: str | None = None
+
+
+class ExamAnswerRequest(BaseModel):
+    question_id: str
+    response_text: str = Field(min_length=1)
+
+
+# ── Exam endpoints ───────────────────────────────────────────────────
+
+
+@app.post("/agent/{agent_id}/exam", response_model=ExamRegistration)
+async def register_exam_endpoint(
+    agent_id: str, req: ExamRegisterRequest
+) -> ExamRegistration:
+    return await register_for_exam(
+        agent_id=agent_id,
+        name=req.agent_name or "",
+        specialty=req.specialty or "",
+        model=req.model or "",
+        counselor_name=req.counselor_name or "",
+    )
+
+
+@app.post("/agent/{agent_id}/exam/{exam_id}/answer", response_model=ExamAnswerResult)
+async def submit_answer_endpoint(
+    agent_id: str, exam_id: str, req: ExamAnswerRequest
+) -> ExamAnswerResult:
+    return await submit_answer(
+        exam_id=exam_id,
+        question_id=req.question_id,
+        response_text=req.response_text,
+        agent_id=agent_id,
+    )
+
+
+@app.post("/agent/{agent_id}/exam/{exam_id}/complete", response_model=ExamReportCard)
+async def complete_exam_endpoint(agent_id: str, exam_id: str) -> ExamReportCard:
+    return await complete_exam(exam_id)
+
+
+@app.get("/agent/{agent_id}/exam/{exam_id}", response_model=ExamReportCard)
+async def get_exam_endpoint(agent_id: str, exam_id: str) -> ExamReportCard:
+    return await get_exam_report(exam_id)
+
+
+@app.get("/agent/{agent_id}/exam", response_model=list[ExamSummary])
+async def list_exams_endpoint(agent_id: str) -> list[ExamSummary]:
+    return await list_exams(agent_id)

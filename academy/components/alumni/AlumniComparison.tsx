@@ -19,6 +19,7 @@ import { fadeUp, whileInView } from "../../lib/motion";
 
 interface AlumniComparisonProps {
   agentTraitAverages: Record<string, number>;
+  agentName?: string;
 }
 
 interface ComparisonPoint {
@@ -30,7 +31,9 @@ interface ComparisonPoint {
 
 export default function AlumniComparison({
   agentTraitAverages,
+  agentName,
 }: AlumniComparisonProps) {
+  const name = agentName ?? "this agent";
   const [data, setData] = useState<ComparisonPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,7 +79,7 @@ export default function AlumniComparison({
           Alumni Comparison
         </h3>
         <p className="mt-0.5 text-xs text-muted">
-          This agent&apos;s scores overlaid on network averages.
+          {name}&apos;s scores overlaid on network averages.
         </p>
       </div>
 

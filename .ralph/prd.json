@@ -2516,7 +2516,7 @@
       "type": "backend",
       "title": "Add entrance exam API endpoints",
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "batch": 5,
       "dependsOn": [
         "TASK-032"
@@ -2582,7 +2582,8 @@
       "prerequisites": [
         "API server running: uv run uvicorn api.main:app --reload --port 8000"
       ],
-      "notes": "ExamRegisterRequest: optional fields agent_name, specialty, model, counselor_name. ExamAnswerRequest: required fields question_id (str), response_text (str, min_length=1). All endpoints use response_model= in the decorator matching existing patterns. The GET list endpoint returns list[ExamSummary] (lightweight), not list[ExamReportCard] (heavy). Test with httpx AsyncClient in pytest, curl steps for manual verification."
+      "notes": "ExamRegisterRequest: optional fields agent_name, specialty, model, counselor_name. ExamAnswerRequest: required fields question_id (str), response_text (str, min_length=1). All endpoints use response_model= in the decorator matching existing patterns. The GET list endpoint returns list[ExamSummary] (lightweight), not list[ExamReportCard] (heavy). Test with httpx AsyncClient in pytest, curl steps for manual verification.",
+      "retryCount": 0
     },
     {
       "id": "TASK-035",

@@ -118,6 +118,12 @@ RETURN ex.exam_id AS exam_id,
 ORDER BY ex.created_at DESC
 """
 
+_CHECK_ACTIVE_EXAM = """
+MATCH (a:Agent {agent_id: $agent_id})-[:TOOK_EXAM]->(ex:EntranceExam {completed: false})
+RETURN ex.exam_id AS exam_id
+LIMIT 1
+"""
+
 _CHECK_DUPLICATE_ANSWER = """
 MATCH (ex:EntranceExam {exam_id: $exam_id})-[r:EXAM_RESPONSE {question_id: $question_id}]->(e:Evaluation)
 RETURN r.question_id AS question_id
@@ -322,6 +328,30 @@ async def get_agent_exams(
     except Exception as exc:
         logger.warning("Failed to get agent exams: %s", exc)
         return []
+
+
+async def check_active_exam(
+    service: GraphService,
+    agent_id: str,
+) -> str | None:
+    """Check if an agent has an active (incomplete) entrance exam.
+
+    Returns exam_id if active exam exists, None otherwise.
+    """
+    if not service.connected:
+        return None
+
+    try:
+        records, _, _ = await service.execute_query(
+            _CHECK_ACTIVE_EXAM,
+            {"agent_id": agent_id},
+        )
+        if records:
+            return records[0]["exam_id"]
+        return None
+    except Exception as exc:
+        logger.warning("Failed to check active exam: %s", exc)
+        return None
 
 
 async def check_duplicate_answer(

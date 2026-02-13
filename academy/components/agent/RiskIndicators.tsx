@@ -8,9 +8,11 @@ import { getGlossaryEntry } from "../../lib/glossary";
 
 interface RiskIndicatorsProps {
   report: DailyReportCard;
+  agentName?: string;
 }
 
-export default function RiskIndicators({ report }: RiskIndicatorsProps) {
+export default function RiskIndicators({ report, agentName }: RiskIndicatorsProps) {
+  const name = agentName ?? "this agent";
   const hasFlags =
     report.flaggedTraits.length > 0 ||
     report.flaggedDimensions.length > 0 ||
@@ -31,7 +33,7 @@ export default function RiskIndicators({ report }: RiskIndicatorsProps) {
 
       <div className="mt-3 flex flex-wrap gap-2">
         {!hasFlags && deltas.length === 0 && (
-          <Pill dot="bg-aligned" label="All clear" />
+          <Pill dot="bg-aligned" label={`All clear for ${name}`} />
         )}
 
         {report.flaggedTraits.map((trait) => {

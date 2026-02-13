@@ -27,9 +27,11 @@ interface TimelineDataPoint {
 
 interface TranscriptChartProps {
   timeline: TimelineDataPoint[];
+  agentName?: string;
 }
 
-export default function TranscriptChart({ timeline }: TranscriptChartProps) {
+export default function TranscriptChart({ timeline, agentName }: TranscriptChartProps) {
+  const name = agentName ?? "this agent";
   const flaggedPoints = timeline.filter((d) => d.flags.length > 0);
 
   const first = timeline[0];
@@ -50,12 +52,12 @@ export default function TranscriptChart({ timeline }: TranscriptChartProps) {
         Transcript
       </h2>
       <p className="mt-0.5 text-sm text-foreground/60">
-        Is this agent getting better or worse?
+        Is {name} getting better or worse?
       </p>
 
       {timeline.length === 0 ? (
         <div className="mt-8 flex h-48 items-center justify-center text-sm text-muted">
-          No evaluation history yet.
+          No evaluation history for {name} yet.
         </div>
       ) : (
         <>

@@ -6,6 +6,7 @@ import { DIMENSION_COLORS } from "../../lib/colors";
 
 interface GoldenMeanProps {
   traitAverages: Record<string, number>;
+  agentName?: string;
 }
 
 interface SpectrumDef {
@@ -68,11 +69,12 @@ const SPECTRUMS: SpectrumDef[] = [
   },
 ];
 
-/* The golden mean sits between 0.65 and 0.85 on the normalized scale */
-const MEAN_START = 0.65;
-const MEAN_END = 0.85;
+/* The golden mean is the center: virtue sits between deficiency and excess */
+const MEAN_START = 0.4;
+const MEAN_END = 0.6;
 
-export default function GoldenMean({ traitAverages }: GoldenMeanProps) {
+export default function GoldenMean({ traitAverages, agentName }: GoldenMeanProps) {
+  const name = agentName ?? "this agent";
   if (Object.keys(traitAverages).length === 0) return null;
 
   return (
@@ -85,16 +87,17 @@ export default function GoldenMean({ traitAverages }: GoldenMeanProps) {
         The Golden Mean
       </h2>
       <p className="mt-0.5 text-sm text-foreground/60">
-        Every virtue sits between deficiency and excess. The ideal is balance,
-        not perfection.
+        Where {name} falls between deficiency and excess.
       </p>
 
       <div className="mt-5 space-y-4">
         {SPECTRUMS.map((spec) => {
           const positive = traitAverages[spec.positiveKey] ?? 0.5;
           const negative = traitAverages[spec.negativeKey] ?? 0;
-          // Combine: high positive + low negative = good position
-          const position = (positive + (1 - negative)) / 2;
+          // Map to the spectrum: low positive pulls left (deficiency),
+          // high negative pulls left too. Excessive positive pushes right (excess).
+          // Center (0.5) = balanced virtue.
+          const position = positive * (1 - negative * 0.5);
           const inMean = position >= MEAN_START && position <= MEAN_END;
           const dimColor = DIMENSION_COLORS[spec.dimension] ?? "#64748b";
 
@@ -112,15 +115,15 @@ export default function GoldenMean({ traitAverages }: GoldenMeanProps) {
               </div>
 
               {/* Spectrum bar */}
-              <div className="relative h-6 rounded-full bg-foreground/[0.04]">
+              <div className="relative h-6 rounded-full bg-foreground/[0.08]">
                 {/* Golden mean zone */}
                 <div
-                  className="absolute top-0 h-full rounded-full opacity-60"
+                  className="absolute top-0 h-full rounded-full"
                   style={{
                     left: `${MEAN_START * 100}%`,
                     width: `${(MEAN_END - MEAN_START) * 100}%`,
-                    backgroundColor: `${dimColor}18`,
-                    border: `1px dashed ${dimColor}30`,
+                    backgroundColor: `${dimColor}25`,
+                    border: `1px dashed ${dimColor}50`,
                   }}
                 />
 
@@ -153,13 +156,10 @@ export default function GoldenMean({ traitAverages }: GoldenMeanProps) {
 
               {/* Deficiency / Excess labels */}
               <div className="mt-1 flex justify-between">
-                <span className="text-[10px] text-foreground/40">
+                <span className="text-[10px] font-medium text-foreground/60">
                   {spec.deficiency}
                 </span>
-                <span className="text-[10px] text-foreground/30">
-                  mean
-                </span>
-                <span className="text-[10px] text-foreground/40">
+                <span className="text-[10px] font-medium text-foreground/60">
                   {spec.excess}
                 </span>
               </div>

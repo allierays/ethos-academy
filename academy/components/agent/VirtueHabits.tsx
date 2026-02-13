@@ -7,6 +7,7 @@ import type { EvaluationHistoryItem } from "../../lib/types";
 
 interface VirtueHabitsProps {
   history: EvaluationHistoryItem[];
+  agentName?: string;
 }
 
 interface TraitDef {
@@ -83,7 +84,8 @@ function computeHabit(
   return { status, strength: effectiveScore, trend: effectiveTrend };
 }
 
-export default function VirtueHabits({ history }: VirtueHabitsProps) {
+export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) {
+  const name = agentName ?? "this agent";
   // Reverse to chronological order
   const chronological = [...history].reverse();
 
@@ -118,8 +120,7 @@ export default function VirtueHabits({ history }: VirtueHabitsProps) {
             Virtue Through Habit
           </h2>
           <p className="mt-0.5 text-sm text-foreground/60">
-            Character forms through repeated action. Which virtues are becoming
-            habits?
+            Which of {name}&apos;s virtues are becoming habits?
           </p>
         </div>
         <div className="flex items-center gap-3 text-xs text-foreground/50">

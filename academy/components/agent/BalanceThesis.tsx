@@ -7,12 +7,15 @@ import { DIMENSION_COLORS } from "../../lib/colors";
 interface BalanceThesisProps {
   dimensionAverages: Record<string, number>;
   evaluationCount: number;
+  agentName?: string;
 }
 
 export default function BalanceThesis({
   dimensionAverages,
   evaluationCount,
+  agentName,
 }: BalanceThesisProps) {
+  const name = agentName ?? "this agent";
   const dims = ["ethos", "logos", "pathos"] as const;
   const scores = dims.map((d) => dimensionAverages[d] ?? 0);
   const max = Math.max(...scores);
@@ -54,8 +57,7 @@ export default function BalanceThesis({
         The Aristotelian Thesis
       </h2>
       <p className="mt-0.5 text-sm text-foreground/60">
-        Ethos, logos, and pathos are equally necessary and interdependent.
-        Balance itself predicts trustworthiness.
+        {name}&apos;s balance across ethos, logos, and pathos.
       </p>
 
       <div className="mt-5 grid grid-cols-1 gap-6 md:grid-cols-2">

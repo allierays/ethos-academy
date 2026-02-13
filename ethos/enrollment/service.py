@@ -15,8 +15,10 @@ import uuid
 from ethos.enrollment.questions import CONSISTENCY_PAIRS, QUESTIONS
 from ethos.evaluate import evaluate
 from ethos.graph.enrollment import (
+    check_active_exam,
     check_duplicate_answer,
     enroll_and_create_exam,
+    get_agent_exams,
     get_exam_results,
     get_exam_status,
     mark_exam_complete,
@@ -30,6 +32,7 @@ from ethos.shared.models import (
     ExamQuestion,
     ExamRegistration,
     ExamReportCard,
+    ExamSummary,
     QuestionDetail,
 )
 
@@ -67,6 +70,27 @@ async def register_for_exam(
     async with graph_context() as service:
         if not service.connected:
             raise EnrollmentError("Graph unavailable — cannot register for exam")
+
+        # Check for active (incomplete) exam
+        active_exam_id = await check_active_exam(service, agent_id)
+        if active_exam_id:
+            if name:
+                # Resume: return current exam state with next unanswered question
+                status = await get_exam_status(service, active_exam_id)
+                answered = status.get("current_question", 0) if status else 0
+                next_idx = min(answered, TOTAL_QUESTIONS - 1)
+                next_question = _get_question(_QUESTIONS_ORDERED[next_idx])
+                return ExamRegistration(
+                    exam_id=active_exam_id,
+                    agent_id=agent_id,
+                    question_number=answered + 1,
+                    total_questions=TOTAL_QUESTIONS,
+                    question=next_question,
+                    message="Resuming your Ethos Academy entrance exam.",
+                )
+            raise EnrollmentError(
+                f"Agent {agent_id} already has an active exam: {active_exam_id}"
+            )
 
         result = await enroll_and_create_exam(
             service=service,
@@ -206,6 +230,29 @@ async def complete_exam(exam_id: str) -> ExamReportCard:
             raise EnrollmentError(f"Failed to retrieve results for exam {exam_id}")
 
     return _build_report_card(exam_id, results)
+
+
+async def list_exams(agent_id: str) -> list[ExamSummary]:
+    """List all exam attempts for an agent.
+
+    Returns lightweight summaries (no per-question detail).
+    """
+    async with graph_context() as service:
+        if not service.connected:
+            return []
+
+        raw = await get_agent_exams(service, agent_id)
+
+    return [
+        ExamSummary(
+            exam_id=r["exam_id"],
+            exam_type=r.get("exam_type", "entrance"),
+            completed=r.get("completed", False),
+            completed_at=r.get("completed_at") or "",
+            phronesis_score=0.0,  # lightweight listing, no score aggregation
+        )
+        for r in raw
+    ]
 
 
 async def get_exam_report(exam_id: str) -> ExamReportCard:

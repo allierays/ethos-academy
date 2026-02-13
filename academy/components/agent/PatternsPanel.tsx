@@ -8,9 +8,11 @@ import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
 
 interface PatternsPanelProps {
   agentId: string;
+  agentName?: string;
 }
 
-export default function PatternsPanel({ agentId }: PatternsPanelProps) {
+export default function PatternsPanel({ agentId, agentName }: PatternsPanelProps) {
+  const name = agentName ?? "this agent";
   const [data, setData] = useState<PatternResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export default function PatternsPanel({ agentId }: PatternsPanelProps) {
         Sabotage Pathways
       </h2>
       <p className="mt-0.5 text-sm text-foreground/60">
-        Detected manipulation patterns from behavioral analysis.
+        Manipulation patterns detected in {name}&apos;s behavior.
       </p>
 
       {loading && (
@@ -78,7 +80,7 @@ export default function PatternsPanel({ agentId }: PatternsPanelProps) {
               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          No sabotage pathways detected.
+          No sabotage pathways detected for {name}.
         </div>
       )}
 

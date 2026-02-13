@@ -8,6 +8,7 @@ from ethos.daily_reports import get_daily_report, get_daily_report_history
 from ethos.enrollment.service import (
     complete_exam,
     get_exam_report,
+    list_exams,
     register_for_exam,
     submit_answer,
 )
@@ -48,6 +49,7 @@ __all__ = [
     "submit_answer",
     "complete_exam",
     "get_exam_report",
+    "list_exams",
     "EvaluationResult",
     "InsightsResult",
     "DailyReportCard",

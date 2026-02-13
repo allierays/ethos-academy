@@ -8,11 +8,14 @@ import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
 
 interface HomeworkSectionProps {
   homework: Homework;
+  agentName?: string;
 }
 
-export default function HomeworkSection({ homework }: HomeworkSectionProps) {
+export default function HomeworkSection({ homework, agentName }: HomeworkSectionProps) {
+  const name = agentName ?? "this agent";
   const [open, setOpen] = useState(false);
   const hasFocus = homework.focusAreas.length > 0;
+  const hasReflection = homework.strengths?.length > 0 || homework.avoidPatterns?.length > 0;
 
   return (
     <motion.section
@@ -21,8 +24,11 @@ export default function HomeworkSection({ homework }: HomeworkSectionProps) {
       variants={fadeUp}
     >
       <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-        Homework
+        {name}&apos;s Homework
       </h2>
+      <p className="mt-0.5 text-sm text-foreground/60">
+        Targeted growth areas and reflection based on {name}&apos;s evaluation history.
+      </p>
 
       {/* Directive (always visible) */}
       {homework.directive && (
@@ -31,7 +37,68 @@ export default function HomeworkSection({ homework }: HomeworkSectionProps) {
         </blockquote>
       )}
 
-      {/* Accordion toggle */}
+      {/* Reflection: strengths and patterns to avoid */}
+      {hasReflection && (
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {homework.strengths?.length > 0 && (
+            <div className="rounded-xl glass p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-aligned/20">
+                  <svg className="h-3 w-3 text-aligned" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                <span className="text-sm font-semibold text-[#1a2538]">Strengths</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {homework.strengths.map((s: string) => (
+                  <span key={s} className="rounded-full bg-ethos-100 px-3 py-1 text-sm font-medium text-ethos-700">
+                    {s.replace(/_/g, " ").replace(/^\w/, (c: string) => c.toUpperCase())}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {homework.avoidPatterns?.length > 0 && (
+            <div className="rounded-xl glass p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-misaligned/20">
+                  <svg className="h-3 w-3 text-misaligned" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 3l6 6M9 3l-6 6" strokeLinecap="round" />
+                  </svg>
+                </span>
+                <span className="text-sm font-semibold text-[#1a2538]">Watch for</span>
+              </div>
+              <div className="space-y-2">
+                {homework.avoidPatterns.map((p: string) => {
+                  const [label, ...rest] = p.split(":");
+                  const description = rest.join(":").trim();
+                  const humanize = (s: string) =>
+                    s.replace(/_/g, " ").replace(/^\w/, (c: string) => c.toUpperCase());
+                  return (
+                    <div key={p} className="flex items-start gap-2">
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-misaligned/40" />
+                      <p className="text-sm text-foreground/80">
+                        {description ? (
+                          <>
+                            <span className="font-semibold text-[#1a2538]">{humanize(label)}:</span>{" "}
+                            {description}
+                          </>
+                        ) : (
+                          humanize(p)
+                        )}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Accordion toggle for focus areas */}
       {hasFocus && (
         <>
           <button
@@ -75,8 +142,8 @@ export default function HomeworkSection({ homework }: HomeworkSectionProps) {
         </>
       )}
 
-      {!hasFocus && (
-        <p className="mt-6 text-sm text-muted">No homework assigned.</p>
+      {!hasFocus && !hasReflection && (
+        <p className="mt-6 text-sm text-muted">No homework assigned for {name}.</p>
       )}
     </motion.section>
   );
