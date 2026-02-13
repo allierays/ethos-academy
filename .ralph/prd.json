@@ -2237,7 +2237,7 @@
       "type": "backend",
       "title": "Create graph enrollment Cypher operations",
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "batch": 2,
       "dependsOn": [
         "TASK-028"
@@ -2298,7 +2298,8 @@
         "ethos/graph/service.py",
         "docs/ideas/entrance-exam.md"
       ],
-      "notes": "EntranceExam node properties: exam_id, exam_type ('entrance' or 'upload'), question_version ('v1'), created_at, completed (bool), completed_at, current_question (int, starts at 0), scenario_count (23). EXAM_RESPONSE relationship properties: question_id ('EE-01'), question_number (int). Use MERGE for Agent (may already exist from prior evaluations) but CREATE for EntranceExam (always new)."
+      "notes": "EntranceExam node properties: exam_id, exam_type ('entrance' or 'upload'), question_version ('v1'), created_at, completed (bool), completed_at, current_question (int, starts at 0), scenario_count (23). EXAM_RESPONSE relationship properties: question_id ('EE-01'), question_number (int). Use MERGE for Agent (may already exist from prior evaluations) but CREATE for EntranceExam (always new).",
+      "retryCount": 0
     },
     {
       "id": "TASK-031",

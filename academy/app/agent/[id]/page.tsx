@@ -139,13 +139,9 @@ export default function AgentReportCard() {
     <main className="mx-auto max-w-7xl px-6 py-8">
       {/* Decorative gradient mesh */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-32 -right-32 h-[700px] w-[700px] rounded-full bg-ethos-200/60 blur-[80px]" />
-        <div className="absolute -top-20 left-1/4 h-[400px] w-[400px] rounded-full bg-logos-300/40 blur-[60px]" />
-        <div className="absolute top-1/4 -left-32 h-[600px] w-[600px] rounded-full bg-logos-200/50 blur-[80px]" />
-        <div className="absolute top-1/2 left-1/3 h-[350px] w-[350px] rounded-full bg-ethos-300/30 blur-[60px]" />
-        <div className="absolute bottom-0 -right-20 h-[550px] w-[550px] rounded-full bg-pathos-200/55 blur-[80px]" />
-        <div className="absolute bottom-1/4 left-1/4 h-[400px] w-[400px] rounded-full bg-pathos-300/35 blur-[60px]" />
-        <div className="absolute top-2/3 right-1/3 h-[300px] w-[300px] rounded-full bg-logos-200/30 blur-[50px]" />
+        <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-ethos-200/25 blur-[100px]" />
+        <div className="absolute top-1/4 -left-40 h-[500px] w-[500px] rounded-full bg-logos-200/20 blur-[100px]" />
+        <div className="absolute bottom-0 right-1/4 h-[500px] w-[500px] rounded-full bg-pathos-200/25 blur-[100px]" />
       </div>
 
       <motion.div
