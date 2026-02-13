@@ -30,6 +30,9 @@ node_modules/
 .ralph/.preflight_cache
 .ralph/__pycache__/
 
+# Playwright MCP screenshots and logs
+.playwright-mcp/
+
 # IDE
 .idea/
 .vscode/
