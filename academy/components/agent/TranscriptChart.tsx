@@ -102,19 +102,65 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
                   width={32}
                 />
                 <Tooltip
-                  contentStyle={{
-                    fontSize: 12,
-                    borderRadius: 12,
-                    border: "1px solid rgba(255,255,255,0.3)",
-                    background: "rgba(255,255,255,0.8)",
-                    backdropFilter: "blur(12px)",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+                  content={({ active, label }) => {
+                    if (!active || label == null) return null;
+                    const point = timeline.find((d) => d.index === label);
+                    if (!point) return null;
+                    const prev = timeline.find((d) => d.index === Number(label) - 1);
+                    const delta = (key: "ethos" | "logos" | "pathos") => {
+                      if (!prev) return "";
+                      const d = Math.round((point[key] - prev[key]) * 100);
+                      if (d === 0) return "";
+                      return d > 0 ? ` (+${d}%)` : ` (${d}%)`;
+                    };
+                    return (
+                      <div className="rounded-xl border border-white/30 bg-white/80 px-4 py-3 text-xs shadow-lg backdrop-blur-md">
+                        <p className="font-semibold text-[#1a2538]">Evaluation #{label}</p>
+                        <div className="mt-2 space-y-1">
+                          {dims.map((dim) => {
+                            const pct = Math.round(point[dim.key] * 100);
+                            return (
+                              <div key={dim.key} className="flex items-center gap-2">
+                                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: dim.color }} />
+                                <span className="text-foreground/70">{dim.label}</span>
+                                <span className="ml-auto font-semibold text-[#1a2538]">{pct}%</span>
+                                <span className={`text-[10px] ${delta(dim.key).includes("+") ? "text-aligned" : delta(dim.key).includes("-") ? "text-misaligned" : "text-muted"}`}>
+                                  {delta(dim.key)}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <div className="mt-2 border-t border-border/30 pt-2">
+                          <p className="text-[10px] leading-relaxed text-foreground/60">
+                            {(() => {
+                              const parts: string[] = [];
+                              const eDelta = prev ? Math.round((point.ethos - prev.ethos) * 100) : 0;
+                              const lDelta = prev ? Math.round((point.logos - prev.logos) * 100) : 0;
+                              const pDelta = prev ? Math.round((point.pathos - prev.pathos) * 100) : 0;
+                              const bigDrop = [
+                                eDelta < -5 && "character",
+                                lDelta < -5 && "reasoning",
+                                pDelta < -5 && "empathy",
+                              ].filter(Boolean);
+                              const bigGain = [
+                                eDelta > 5 && "character",
+                                lDelta > 5 && "reasoning",
+                                pDelta > 5 && "empathy",
+                              ].filter(Boolean);
+                              if (bigDrop.length > 0) parts.push(`${bigDrop.join(" and ")} dropped`);
+                              if (bigGain.length > 0) parts.push(`${bigGain.join(" and ")} improved`);
+                              if (parts.length === 0 && prev) parts.push("Scores held steady");
+                              if (!prev) parts.push("First evaluation");
+                              const low = Math.min(point.ethos, point.logos, point.pathos);
+                              if (low < 0.5) parts.push("empathy needs attention");
+                              return parts.join(". ") + ".";
+                            })()}
+                          </p>
+                        </div>
+                      </div>
+                    );
                   }}
-                  formatter={(value: number | undefined, name?: string) => [
-                    `${((value ?? 0) * 100).toFixed(0)}%`,
-                    name,
-                  ]}
-                  labelFormatter={(label) => `Evaluation #${label}`}
                 />
                 <Area
                   type="monotone"

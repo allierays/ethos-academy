@@ -162,7 +162,13 @@ export default function AgentReportCard() {
       {/* Full-width hero banner */}
       <GradeHero profile={profile} report={report} timeline={timeline} />
 
-      <main className="mx-auto max-w-7xl px-6 py-8">
+      <main className="relative mx-auto max-w-7xl px-6 py-8">
+        {/* Decorative blobs for glass-card backdrop texture */}
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+          <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-ethos-200/30 blur-3xl" />
+          <div className="absolute top-1/3 -right-32 h-[400px] w-[400px] rounded-full bg-logos-200/20 blur-3xl" />
+          <div className="absolute bottom-1/4 left-1/4 h-[350px] w-[350px] rounded-full bg-pathos-200/25 blur-3xl" />
+        </div>
         <motion.div
           className="space-y-8"
           variants={staggerContainer}
@@ -187,12 +193,7 @@ export default function AgentReportCard() {
           <GoldenMean traitAverages={profile.traitAverages} agentName={agentName} />
         </motion.section>
 
-        {/* 3. In Their Own Words (evidence backing the scores above) */}
-        <motion.section variants={fadeUp}>
-          <HighlightsPanel agentId={agentId} agentName={agentName} />
-        </motion.section>
-
-        {/* 4. Virtue Through Habit (habit formation) */}
+        {/* 3. Virtue Through Habit (habit formation) */}
         {history.length > 0 && (
           <motion.section variants={fadeUp}>
             <VirtueHabits history={history} agentName={agentName} />
@@ -217,6 +218,11 @@ export default function AgentReportCard() {
             <HomeworkSection homework={report.homework} agentName={agentName} />
           </motion.section>
         )}
+
+        {/* In Their Own Words (evidence for homework and risk indicators above) */}
+        <motion.section variants={fadeUp}>
+          <HighlightsPanel agentId={agentId} agentName={agentName} />
+        </motion.section>
 
         {/* 10. Sabotage Pathways */}
         <motion.section variants={fadeUp}>

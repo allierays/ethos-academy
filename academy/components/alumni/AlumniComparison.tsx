@@ -14,7 +14,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { getAlumni } from "../../lib/api";
-import { DIMENSION_COLORS } from "../../lib/colors";
+import { DIMENSION_COLORS, DIMENSIONS, TRAIT_LABELS, TRAIT_DIMENSIONS } from "../../lib/colors";
 import { fadeUp, whileInView } from "../../lib/motion";
 import GraphHelpButton from "../shared/GraphHelpButton";
 import GlossaryTerm from "../shared/GlossaryTerm";
@@ -33,41 +33,6 @@ interface ComparisonPoint {
   dimension: string;
 }
 
-const TRAIT_LABELS: Record<string, string> = {
-  virtue: "Virtue",
-  goodwill: "Goodwill",
-  manipulation: "Manipulation",
-  deception: "Deception",
-  accuracy: "Accuracy",
-  reasoning: "Reasoning",
-  fabrication: "Fabrication",
-  brokenLogic: "Broken Logic",
-  recognition: "Recognition",
-  compassion: "Compassion",
-  dismissal: "Dismissal",
-  exploitation: "Exploitation",
-};
-
-const TRAIT_DIMENSIONS: Record<string, string> = {
-  virtue: "ethos",
-  goodwill: "ethos",
-  manipulation: "ethos",
-  deception: "ethos",
-  accuracy: "logos",
-  reasoning: "logos",
-  fabrication: "logos",
-  brokenLogic: "logos",
-  recognition: "pathos",
-  compassion: "pathos",
-  dismissal: "pathos",
-  exploitation: "pathos",
-};
-
-const DIMENSIONS = [
-  { key: "ethos", label: "Character", sublabel: "Ethos" },
-  { key: "logos", label: "Reasoning", sublabel: "Logos" },
-  { key: "pathos", label: "Empathy", sublabel: "Pathos" },
-];
 
 export default function AlumniComparison({
   agentTraitAverages,

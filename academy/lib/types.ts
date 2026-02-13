@@ -80,11 +80,14 @@ export interface InsightsResult {
 export interface AgentSummary {
   agentId: string;
   agentName: string;
+  agentModel: string;
   evaluationCount: number;
   latestAlignmentStatus: string;
   enrolled: boolean;
   entranceExamCompleted: boolean;
   agentSpecialty: string;
+  dimensionAverages: Record<string, number>;
+  traitAverages: Record<string, number>;
 }
 
 export interface AgentProfile {

@@ -81,6 +81,40 @@ export const DIMENSION_LABELS: Record<string, string> = {
   pathos: "Empathy",
 };
 
+/* ─── Trait Labels (camelCase keys, for use with transformKeys output) ─── */
+
+export const TRAIT_LABELS: Record<string, string> = {
+  virtue: "Virtue",
+  goodwill: "Goodwill",
+  manipulation: "Manipulation",
+  deception: "Deception",
+  accuracy: "Accuracy",
+  reasoning: "Reasoning",
+  fabrication: "Fabrication",
+  brokenLogic: "Broken Logic",
+  recognition: "Recognition",
+  compassion: "Compassion",
+  dismissal: "Dismissal",
+  exploitation: "Exploitation",
+};
+
+/* ─── Trait → Dimension mapping (camelCase keys) ─── */
+
+export const TRAIT_DIMENSIONS: Record<string, string> = {
+  virtue: "ethos",
+  goodwill: "ethos",
+  manipulation: "ethos",
+  deception: "ethos",
+  accuracy: "logos",
+  reasoning: "logos",
+  fabrication: "logos",
+  brokenLogic: "logos",
+  recognition: "pathos",
+  compassion: "pathos",
+  dismissal: "pathos",
+  exploitation: "pathos",
+};
+
 /* ─── Grade Colors (letter grade rings) ─── */
 
 export const GRADE_COLORS: Record<string, string> = {

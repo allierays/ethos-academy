@@ -195,10 +195,13 @@ class AgentSummary(BaseModel):
     agent_id: str = ""
     agent_name: str = Field(default="", max_length=100)
     agent_specialty: str = ""
+    agent_model: str = ""
     evaluation_count: int = 0
     latest_alignment_status: str = "unknown"
     enrolled: bool = False
     entrance_exam_completed: bool = False
+    dimension_averages: dict[str, float] = Field(default_factory=dict)
+    trait_averages: dict[str, float] = Field(default_factory=dict)
 
 
 class AgentProfile(BaseModel):

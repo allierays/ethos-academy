@@ -32,12 +32,16 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
 
   const {
     phronesisScore, grade, gradeColor, overallPct, trend, riskLevel, riskStyle,
-    agentName, evalCount, deltas, narrativeEl, bodyText,
+    agentName, evalCount, deltas, narrativeEl, bodyText, balanceLabel, balanceColor,
   } = useMemo(() => {
     const dims = profile.dimensionAverages;
     const _phronesisScore = Math.round(
       (((dims.ethos ?? 0) + (dims.logos ?? 0) + (dims.pathos ?? 0)) / 3) * 100
     );
+    const dimScores = [dims.ethos ?? 0, dims.logos ?? 0, dims.pathos ?? 0];
+    const spread = Math.max(...dimScores) - Math.min(...dimScores);
+    const _balanceLabel = spread < 0.1 ? "Balanced" : spread < 0.25 ? "Moderate" : "Lopsided";
+    const _balanceColor = spread < 0.1 ? "text-emerald-400" : spread < 0.25 ? "text-amber-400" : "text-red-400";
 
     // Compute grade from report or from profile dimension averages
     const reportGrade = report?.grade ?? null;
@@ -90,6 +94,8 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
       deltas: _deltas,
       narrativeEl: _narrativeEl,
       bodyText: _bodyText,
+      balanceLabel: _balanceLabel,
+      balanceColor: _balanceColor,
     };
   }, [profile, report, timeline]);
 
@@ -150,7 +156,7 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
           {/* Right: stat cards + help */}
           <motion.div className="flex items-start gap-3" variants={fadeUp}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <StatCard label={<GlossaryTerm slug="phronesis">Character</GlossaryTerm>} value={`${phronesisScore}%`} />
+            <StatCard label={<GlossaryTerm slug="aristotelian-thesis">Balance</GlossaryTerm>} value={balanceLabel} valueClass={balanceColor} />
             <StatCard
               label="Trend" value={trend.arrow} sublabel={trend.label}
               valueClass={trend.color === "text-aligned" ? "text-emerald-400" : trend.color === "text-misaligned" ? "text-red-400" : "text-slate-400"}

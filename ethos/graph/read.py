@@ -12,26 +12,56 @@ from ethos.shared.analysis import TRAIT_NAMES
 
 logger = logging.getLogger(__name__)
 
-_GET_ALL_AGENTS_QUERY = """
+_AGENT_AVG_FIELDS = """,
+     avg(e.ethos) AS avg_ethos, avg(e.logos) AS avg_logos, avg(e.pathos) AS avg_pathos,
+     avg(e.trait_virtue) AS avg_virtue, avg(e.trait_goodwill) AS avg_goodwill,
+     avg(e.trait_manipulation) AS avg_manipulation, avg(e.trait_deception) AS avg_deception,
+     avg(e.trait_accuracy) AS avg_accuracy, avg(e.trait_reasoning) AS avg_reasoning,
+     avg(e.trait_fabrication) AS avg_fabrication, avg(e.trait_broken_logic) AS avg_broken_logic,
+     avg(e.trait_recognition) AS avg_recognition, avg(e.trait_compassion) AS avg_compassion,
+     avg(e.trait_dismissal) AS avg_dismissal, avg(e.trait_exploitation) AS avg_exploitation"""
+
+_AGENT_RETURN_FIELDS = """a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name,
+       coalesce(a.agent_specialty, '') AS agent_specialty, coalesce(a.agent_model, '') AS agent_model,
+       evals, latest, coalesce(a.enrolled, false) AS enrolled,
+       coalesce(a.entrance_exam_completed, false) AS entrance_exam_completed,
+       avg_ethos, avg_logos, avg_pathos,
+       avg_virtue, avg_goodwill, avg_manipulation, avg_deception,
+       avg_accuracy, avg_reasoning, avg_fabrication, avg_broken_logic,
+       avg_recognition, avg_compassion, avg_dismissal, avg_exploitation"""
+
+_GET_ALL_AGENTS_QUERY = (
+    """
 MATCH (a:Agent)
 OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
 WITH a, e
 ORDER BY e.created_at ASC
-WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest
-RETURN a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name, coalesce(a.agent_specialty, '') AS agent_specialty, evals, latest, coalesce(a.enrolled, false) AS enrolled, coalesce(a.entrance_exam_completed, false) AS entrance_exam_completed
+WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest"""
+    + _AGENT_AVG_FIELDS
+    + """
+RETURN """
+    + _AGENT_RETURN_FIELDS
+    + """
 ORDER BY evals DESC
 """
+)
 
-_SEARCH_AGENTS_QUERY = """
+_SEARCH_AGENTS_QUERY = (
+    """
 MATCH (a:Agent)
 WHERE toLower(a.agent_name) CONTAINS toLower($search)
 OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
 WITH a, e
 ORDER BY e.created_at ASC
-WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest
-RETURN a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name, coalesce(a.agent_specialty, '') AS agent_specialty, evals, latest, coalesce(a.enrolled, false) AS enrolled, coalesce(a.entrance_exam_completed, false) AS entrance_exam_completed
+WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest"""
+    + _AGENT_AVG_FIELDS
+    + """
+RETURN """
+    + _AGENT_RETURN_FIELDS
+    + """
 ORDER BY evals DESC
 """
+)
 
 _GET_HISTORY_QUERY = """
 MATCH (a:Agent {agent_id: $agent_id})-[:EVALUATED]->(e:Evaluation)
@@ -316,12 +346,21 @@ async def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
                     "agent_id": record.get("agent_id", ""),
                     "agent_name": record.get("agent_name", ""),
                     "agent_specialty": record.get("agent_specialty", ""),
+                    "agent_model": record.get("agent_model", ""),
                     "evaluation_count": record.get("evals", 0),
                     "latest_alignment_status": record.get("latest") or "unknown",
                     "enrolled": record.get("enrolled", False),
                     "entrance_exam_completed": record.get(
                         "entrance_exam_completed", False
                     ),
+                    "avg_ethos": record.get("avg_ethos"),
+                    "avg_logos": record.get("avg_logos"),
+                    "avg_pathos": record.get("avg_pathos"),
+                    "trait_averages": {
+                        trait: round(float(record.get(f"avg_{trait}")), 4)
+                        for trait in TRAIT_NAMES
+                        if record.get(f"avg_{trait}") is not None
+                    },
                 }
             )
         return results

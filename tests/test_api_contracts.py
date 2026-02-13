@@ -284,10 +284,14 @@ GRAPH_CONTEXT_KEYS = {
 AGENT_SUMMARY_KEYS = {
     "agentId",
     "agentName",
+    "agentSpecialty",
+    "agentModel",
     "evaluationCount",
     "latestAlignmentStatus",
     "enrolled",
     "entranceExamCompleted",
+    "dimensionAverages",
+    "traitAverages",
 }
 
 AGENT_PROFILE_KEYS = {

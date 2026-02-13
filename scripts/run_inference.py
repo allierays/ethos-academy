@@ -63,6 +63,7 @@ SAMPLE_FILE = DATA_DIR / "sample_posts.json"
 CURATED_FILE = DATA_DIR / "curated_posts.json"
 ALL_FILE = DATA_DIR / "all_posts.json"
 AUTHENTICITY_FILE = DATA_DIR / "authenticity_results.json"
+SPECIALTIES_FILE = DATA_DIR / "agent_specialties.json"
 
 # Graceful shutdown
 _interrupted = False
@@ -218,6 +219,18 @@ def load_authenticity_filter() -> dict[str, dict]:
     }
 
 
+def load_specialties() -> dict[str, str]:
+    """Load agent specialties. Returns {agent_name: specialty_label}."""
+    if not SPECIALTIES_FILE.exists():
+        logger.info(
+            "Specialties file not found: %s — using 'general' fallback",
+            SPECIALTIES_FILE,
+        )
+        return {}
+    with open(SPECIALTIES_FILE) as f:
+        return json.load(f)
+
+
 def estimate_cost(messages: list[Message]) -> CostEstimate:
     """Run instinct scan on every message and estimate API cost.
 
@@ -260,6 +273,7 @@ async def run_batch(
     messages: list[Message],
     output_file: Path,
     authenticity: dict[str, dict],
+    specialties: dict[str, str] | None = None,
     skip_existing: bool = False,
 ) -> dict:
     """Evaluate messages sequentially and write JSONL output.
@@ -314,7 +328,7 @@ async def run_batch(
                 msg.content,
                 source=msg.author_name or msg.author_id,
                 source_name=msg.author_name,
-                agent_specialty="openclaw",
+                agent_specialty=(specialties or {}).get(msg.author_name, "general"),
                 message_timestamp=msg.created_at,
             )
 
@@ -577,8 +591,13 @@ async def main() -> None:
     messages = flatten_messages(posts, include_comments)
     print(f"Flattened → {len(messages)} messages")
 
-    # ── Load authenticity filter ────────────────────────────────────
+    # ── Load authenticity filter + specialties ─────────────────────
     authenticity = load_authenticity_filter()
+    specialties = load_specialties()
+    if specialties:
+        print(f"Loaded {len(specialties)} agent specialties")
+    else:
+        print("No specialties file found — using 'general' for all agents")
 
     # Filter out humans pretending to be AI agents
     human_skipped = 0
@@ -645,6 +664,7 @@ async def main() -> None:
         messages,
         output_file,
         authenticity,
+        specialties=specialties,
         skip_existing=args.skip_existing,
     )
 

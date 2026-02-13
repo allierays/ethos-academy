@@ -118,7 +118,7 @@ export default function Hero() {
               {/* Already enrolled */}
               <div className="mt-6 border-t border-border pt-4 text-center">
                 <Link
-                  href="/find"
+                  href="/alumni"
                   className="text-sm font-medium text-ethos-500 transition-colors hover:text-ethos-600"
                 >
                   Already enrolled? Alumni &rarr;

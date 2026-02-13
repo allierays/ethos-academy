@@ -20,19 +20,25 @@ const MOCK_AGENTS = [
     agent_id: "claude-sonnet",
     agent_name: "Claude Sonnet",
     agent_specialty: "general",
+    agent_model: "claude-sonnet-4-5-20250929",
     evaluation_count: 42,
     latest_alignment_status: "aligned",
     enrolled: true,
     entrance_exam_completed: true,
+    dimension_averages: { ethos: 0.85, logos: 0.78, pathos: 0.72 },
+    trait_averages: { virtue: 0.88, goodwill: 0.82, manipulation: 0.05, deception: 0.08, accuracy: 0.82, reasoning: 0.74, fabrication: 0.03, broken_logic: 0.06, recognition: 0.78, compassion: 0.72, dismissal: 0.04, exploitation: 0.02 },
   },
   {
     agent_id: "gpt-4o",
     agent_name: "GPT-4o",
     agent_specialty: "coding",
+    agent_model: "gpt-4o",
     evaluation_count: 15,
     latest_alignment_status: "developing",
     enrolled: true,
     entrance_exam_completed: false,
+    dimension_averages: { ethos: 0.65, logos: 0.82, pathos: 0.58 },
+    trait_averages: { virtue: 0.68, goodwill: 0.62, manipulation: 0.12, deception: 0.15, accuracy: 0.85, reasoning: 0.79, fabrication: 0.08, broken_logic: 0.10, recognition: 0.62, compassion: 0.54, dismissal: 0.12, exploitation: 0.08 },
   },
 ];
 
@@ -218,7 +224,7 @@ async function mockApi(page: Page) {
 test.describe("Find page", () => {
   test("renders agent list from API", async ({ page }) => {
     await mockApi(page);
-    await page.goto("/find");
+    await page.goto("/alumni");
 
     // Page title
     await expect(page.getByRole("heading", { name: "Alumni" })).toBeVisible();
@@ -234,7 +240,7 @@ test.describe("Find page", () => {
 
   test("search filters agents client-side", async ({ page }) => {
     await mockApi(page);
-    await page.goto("/find");
+    await page.goto("/alumni");
 
     // Wait for agents to load
     await expect(page.getByText("Claude Sonnet")).toBeVisible();
@@ -249,7 +255,7 @@ test.describe("Find page", () => {
 
   test("shows enrollment badges", async ({ page }) => {
     await mockApi(page);
-    await page.goto("/find");
+    await page.goto("/alumni");
 
     // Wait for agents to load
     await expect(page.getByText("Claude Sonnet")).toBeVisible();
@@ -265,13 +271,13 @@ test.describe("Find page", () => {
       return route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ error: "Internal server error" }) });
     });
 
-    await page.goto("/find");
+    await page.goto("/alumni");
     await expect(page.getByText("Could not load agents")).toBeVisible();
   });
 
   test("agent links navigate to report card", async ({ page }) => {
     await mockApi(page);
-    await page.goto("/find");
+    await page.goto("/alumni");
 
     await expect(page.getByText("Claude Sonnet")).toBeVisible();
     await page.getByText("Claude Sonnet").click();
@@ -397,12 +403,12 @@ test.describe("Landing page", () => {
     await expect(page.getByText(/ethos/i).first()).toBeVisible();
   });
 
-  test("has navigation to find page", async ({ page }) => {
+  test("has navigation to alumni page", async ({ page }) => {
     await page.goto("/");
-    // Should have a link to the find page
-    const findLink = page.getByRole("link", { name: /find/i });
-    if (await findLink.count() > 0) {
-      await expect(findLink.first()).toBeVisible();
+    // Should have a link to the alumni page
+    const alumniLink = page.getByRole("link", { name: /alumni/i });
+    if (await alumniLink.count() > 0) {
+      await expect(alumniLink.first()).toBeVisible();
     }
   });
 });

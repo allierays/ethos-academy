@@ -231,6 +231,36 @@ RETURN a.agent_name AS matched
 """
 
 
+_UPDATE_SPECIALTY_QUERY = """
+MATCH (a:Agent {agent_id: $agent_id})
+SET a.agent_specialty = $agent_specialty
+RETURN a.agent_id AS updated
+"""
+
+
+async def update_agent_specialty(
+    service: GraphService,
+    agent_id: str,
+    agent_specialty: str,
+) -> bool:
+    """Update the agent_specialty field on an existing Agent node.
+
+    Returns True if the node was found and updated, False otherwise.
+    """
+    if not service.connected:
+        return False
+
+    try:
+        records, _, _ = await service.execute_query(
+            _UPDATE_SPECIALTY_QUERY,
+            {"agent_id": agent_id, "agent_specialty": agent_specialty},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to update specialty for %s: %s", agent_id, exc)
+        return False
+
+
 async def store_authenticity(
     service: GraphService,
     agent_name: str,

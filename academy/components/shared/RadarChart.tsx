@@ -83,6 +83,7 @@ interface RadarChartProps {
   alumni?: Record<string, number>;
   selectedTrait?: string | null;
   onTraitClick?: (traitKey: string) => void;
+  compact?: boolean;
 }
 
 export interface ChartDataPoint {
@@ -101,7 +102,7 @@ export interface ChartDataPoint {
  * Inverts negative traits so 1.0 always means "ideal behavior."
  * A perfect agent forms a full circle. Any dip reveals a character flaw.
  */
-export default function RadarChart({ traits, alumni, selectedTrait, onTraitClick }: RadarChartProps) {
+export default function RadarChart({ traits, alumni, selectedTrait, onTraitClick, compact }: RadarChartProps) {
   const data: ChartDataPoint[] = TRAIT_ORDER.map((key) => {
     const raw = traits[key]?.score ?? 0;
     const isNegative = NEGATIVE_TRAITS.has(key);
@@ -128,9 +129,9 @@ export default function RadarChart({ traits, alumni, selectedTrait, onTraitClick
   });
 
   return (
-    <div className="h-80 w-full" data-testid="radar-chart">
+    <div className={`${compact ? "h-full" : "h-80"} w-full`} data-testid="radar-chart">
       <ResponsiveContainer width="100%" height="100%">
-        <RechartsRadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
+        <RechartsRadarChart data={data} cx="50%" cy="50%" outerRadius={compact ? "60%" : "70%"}>
           <PolarGrid stroke="var(--border)" />
           <PolarAngleAxis
             dataKey="trait"
@@ -139,12 +140,13 @@ export default function RadarChart({ traits, alumni, selectedTrait, onTraitClick
               const dim = point?.dimension ?? "ethos";
               const color = DIM_COLORS[dim] ?? "var(--muted)";
               const isSelected = point?.traitKey === selectedTrait;
+              const baseFontSize = compact ? 8 : 10;
               return (
                 <text
                   x={x}
                   y={y}
                   textAnchor={textAnchor}
-                  fontSize={isSelected ? 11 : 10}
+                  fontSize={isSelected ? baseFontSize + 1 : baseFontSize}
                   fill={color}
                   fontWeight={isSelected ? 700 : 500}
                   className={onTraitClick ? "cursor-pointer" : ""}
@@ -158,7 +160,7 @@ export default function RadarChart({ traits, alumni, selectedTrait, onTraitClick
           <PolarRadiusAxis
             angle={90}
             domain={[0, 1]}
-            tick={{ fontSize: 9, fill: "var(--muted)" }}
+            tick={compact ? false : { fontSize: 9, fill: "var(--muted)" }}
             tickCount={5}
           />
           <Tooltip
@@ -197,7 +199,7 @@ export default function RadarChart({ traits, alumni, selectedTrait, onTraitClick
       </ResponsiveContainer>
 
       {/* Legend */}
-      <div className="mt-1 flex items-center justify-center gap-4 text-[10px] text-muted">
+      <div className={`mt-1 flex items-center justify-center gap-4 text-[10px] text-muted ${compact ? "hidden" : ""}`}>
         <span className="flex items-center gap-1">
           <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#3b8a98" }} /> <GlossaryTerm slug="ethos">Character (Ethos)</GlossaryTerm>
         </span>

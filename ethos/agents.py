@@ -44,10 +44,21 @@ async def list_agents(search: str = "") -> list[AgentSummary]:
                     agent_id=a.get("agent_id", ""),
                     agent_name=a.get("agent_name", ""),
                     agent_specialty=a.get("agent_specialty", ""),
+                    agent_model=a.get("agent_model", ""),
                     evaluation_count=a.get("evaluation_count", 0),
                     latest_alignment_status=a.get("latest_alignment_status", "unknown"),
                     enrolled=a.get("enrolled", False),
                     entrance_exam_completed=a.get("entrance_exam_completed", False),
+                    dimension_averages={
+                        k: round(float(v), 4)
+                        for k, v in {
+                            "ethos": a.get("avg_ethos"),
+                            "logos": a.get("avg_logos"),
+                            "pathos": a.get("avg_pathos"),
+                        }.items()
+                        if v is not None
+                    },
+                    trait_averages=a.get("trait_averages", {}),
                 )
                 for a in raw
             ]

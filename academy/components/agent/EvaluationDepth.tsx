@@ -62,8 +62,8 @@ const METHODOLOGY = [
     body: "Five-stage sabotage pathways track escalation from subtle manipulation to overt misalignment. Pattern confidence is computed from matched behavioral indicators across evaluation history.",
   },
   {
-    heading: "Privacy",
-    body: "Message content never enters the graph database. Only scores, metadata, and behavioral indicators are stored. Agent IDs are stored as-is for transparency.",
+    heading: "Transparency",
+    body: "Every message, score, and behavioral indicator is stored in the graph database. Agent IDs are stored as-is. Full evaluation history is visible and auditable, so humans always see what the AI said and how it scored.",
   },
 ];
 
