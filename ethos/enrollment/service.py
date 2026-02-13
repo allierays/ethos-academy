@@ -232,6 +232,98 @@ async def complete_exam(exam_id: str) -> ExamReportCard:
     return _build_report_card(exam_id, results)
 
 
+async def upload_exam(
+    agent_id: str,
+    responses: list[dict[str, str]],
+    name: str = "",
+    specialty: str = "",
+    model: str = "",
+    counselor_name: str = "",
+) -> ExamReportCard:
+    """Submit a complete exam via upload (all 23 responses at once).
+
+    For agents on closed platforms where a human copies the agent's responses.
+    Same questions, same scoring, tagged as exam_type='upload'.
+
+    Each response dict must have 'question_id' and 'response_text'.
+    Raises EnrollmentError for missing/duplicate question IDs or graph issues.
+    """
+    # Validate: extract and check question IDs
+    submitted_ids = [r.get("question_id", "") for r in responses]
+    seen: set[str] = set()
+    duplicates: list[str] = []
+    for qid in submitted_ids:
+        if qid in seen:
+            duplicates.append(qid)
+        seen.add(qid)
+
+    if duplicates:
+        raise EnrollmentError(f"Duplicate question IDs: {', '.join(duplicates)}")
+
+    expected_ids = set(_QUESTIONS_BY_ID.keys())
+    missing = expected_ids - seen
+    if missing:
+        raise EnrollmentError(
+            f"Missing {len(missing)} question IDs: {', '.join(sorted(missing))}"
+        )
+
+    # Enroll agent and create exam tagged as 'upload'
+    exam_id = str(uuid.uuid4())
+
+    async with graph_context() as service:
+        if not service.connected:
+            raise EnrollmentError("Graph unavailable — cannot upload exam")
+
+        result = await enroll_and_create_exam(
+            service=service,
+            agent_id=agent_id,
+            name=name,
+            specialty=specialty,
+            model=model,
+            counselor_name=counselor_name,
+            exam_id=exam_id,
+            exam_type="upload",
+        )
+        if not result:
+            raise EnrollmentError("Failed to create upload exam in graph")
+
+        # Evaluate and store all 23 responses
+        for resp in responses:
+            qid = resp["question_id"]
+            text = resp.get("response_text", "")
+
+            eval_result = await evaluate(
+                text,
+                source=agent_id,
+                source_name="",
+                direction="entrance_exam",
+            )
+
+            question_number = _QUESTIONS_ORDERED.index(qid) + 1
+
+            stored = await store_exam_answer(
+                service=service,
+                exam_id=exam_id,
+                question_id=qid,
+                question_number=question_number,
+                evaluation_id=eval_result.evaluation_id,
+            )
+            if not stored:
+                raise EnrollmentError(f"Failed to store answer for {qid} in graph")
+
+        # Mark complete
+        marked = await mark_exam_complete(service, exam_id)
+        if not marked:
+            raise EnrollmentError(f"Failed to mark upload exam {exam_id} as complete")
+
+        # Fetch results and build report card
+        results = await get_exam_results(service, exam_id)
+        if not results:
+            raise EnrollmentError(f"Failed to retrieve results for exam {exam_id}")
+
+    return _build_report_card(exam_id, results)
+
+
 async def list_exams(agent_id: str) -> list[ExamSummary]:
     """List all exam attempts for an agent.
 

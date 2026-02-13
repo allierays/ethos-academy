@@ -2856,7 +2856,7 @@
       "type": "backend",
       "title": "Add upload mode endpoint for human-submitted exam responses",
       "priority": 12,
-      "passes": false,
+      "passes": true,
       "batch": 7,
       "dependsOn": [
         "TASK-034"
@@ -2912,7 +2912,8 @@
         "ethos/enrollment/service.py",
         "docs/ideas/entrance-exam.md"
       ],
-      "notes": "Upload mode is for agents that cannot call APIs directly (closed platforms, chatbots behind a UI). A human copies the agent's responses and submits them. Same questions, same scoring, different tag. The report card notes the mode."
+      "notes": "Upload mode is for agents that cannot call APIs directly (closed platforms, chatbots behind a UI). A human copies the agent's responses and submits them. Same questions, same scoring, different tag. The report card notes the mode.",
+      "retryCount": 0
     },
     {
       "id": "TASK-040",

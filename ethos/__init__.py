@@ -11,6 +11,7 @@ from ethos.enrollment.service import (
     list_exams,
     register_for_exam,
     submit_answer,
+    upload_exam,
 )
 from ethos.models import (
     AgentProfile,
@@ -50,6 +51,7 @@ __all__ = [
     "complete_exam",
     "get_exam_report",
     "list_exams",
+    "upload_exam",
     "EvaluationResult",
     "InsightsResult",
     "DailyReportCard",

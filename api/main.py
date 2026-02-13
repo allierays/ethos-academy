@@ -2,7 +2,7 @@
 
 import os
 
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -27,6 +27,7 @@ from ethos import (
     list_exams,
     register_for_exam,
     submit_answer,
+    upload_exam,
 )
 from ethos.models import (
     AgentProfile,
@@ -247,6 +248,19 @@ class ExamAnswerRequest(BaseModel):
     response_text: str = Field(min_length=1)
 
 
+class UploadExamResponse(BaseModel):
+    question_id: str
+    response_text: str = Field(min_length=1)
+
+
+class UploadExamRequest(BaseModel):
+    responses: list[UploadExamResponse] = Field(default_factory=list)
+    agent_name: str | None = None
+    specialty: str | None = None
+    model: str | None = None
+    counselor_name: str | None = None
+
+
 # ── Exam endpoints ───────────────────────────────────────────────────
 
 
@@ -283,6 +297,20 @@ async def complete_exam_endpoint(agent_id: str, exam_id: str) -> ExamReportCard:
 @app.get("/agent/{agent_id}/exam/{exam_id}", response_model=ExamReportCard)
 async def get_exam_endpoint(agent_id: str, exam_id: str) -> ExamReportCard:
     return await get_exam_report(exam_id)
+
+
+@app.post("/agent/{agent_id}/exam/upload", response_model=ExamReportCard)
+async def upload_exam_endpoint(agent_id: str, req: UploadExamRequest) -> ExamReportCard:
+    if not req.responses:
+        raise HTTPException(status_code=400, detail="responses list must not be empty")
+    return await upload_exam(
+        agent_id=agent_id,
+        responses=[r.model_dump() for r in req.responses],
+        name=req.agent_name or "",
+        specialty=req.specialty or "",
+        model=req.model or "",
+        counselor_name=req.counselor_name or "",
+    )
 
 
 @app.get("/agent/{agent_id}/exam", response_model=list[ExamSummary])

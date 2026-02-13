@@ -62,26 +62,27 @@ function computeHabit(
     return { status: "insufficient", strength: s, trend: 0, scores };
   }
 
-  const latest = scores[scores.length - 1];
-  const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-  const variance =
-    scores.reduce((sum, s) => sum + (s - avg) ** 2, 0) / scores.length;
   const trend = scores[scores.length - 1] - scores[0];
-  const isConsistent = variance < 0.03;
+
+  // Status derives from the squares: how many are solid (>= 0.7)?
+  const solidCount = scores.filter((s) => s >= 0.7).length;
+  const allSolid = solidCount === scores.length;
 
   let status: HabitStatus;
-  if (latest > 0.7 && isConsistent) {
+  if (allSolid) {
     status = "established";
   } else if (trend > 0.03) {
     status = "forming";
-  } else if (latest > 0.5) {
+  } else if (solidCount > 0) {
     status = "emerging";
   } else {
     status = "needs_work";
   }
 
-  return { status, strength: latest, trend, scores };
+  return { status, strength: scores[scores.length - 1], trend, scores };
 }
+
+const MAX_SQUARES = 10;
 
 export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) {
   const name = agentName ?? "this agent";
@@ -117,10 +118,19 @@ export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) 
             Virtue Through Habit
           </h2>
           <p className="mt-0.5 text-sm text-foreground/60">
-            Which of {name}&apos;s virtues are becoming habits?
+            Which of {name}&apos;s virtues are becoming habits? Each square is one evaluation.
           </p>
         </div>
         <div className="flex items-center gap-3 text-xs text-foreground/50">
+          <span className="flex items-center gap-1">
+            <span className="text-foreground/40">Less</span>
+            <span className="inline-block h-[10px] w-[10px] rounded-[2px] bg-foreground/10" />
+            <span className="inline-block h-[10px] w-[10px] rounded-[2px] bg-foreground/25" />
+            <span className="inline-block h-[10px] w-[10px] rounded-[2px] bg-foreground/50" />
+            <span className="inline-block h-[10px] w-[10px] rounded-[2px] bg-foreground/80" />
+            <span className="text-foreground/40">More</span>
+          </span>
+          <span className="text-foreground/20">|</span>
           <span className="flex items-center gap-1">
             <span className="inline-block h-2 w-2 rounded-full bg-aligned" />
             {established} established
@@ -175,23 +185,25 @@ export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) 
                         </span>
                       </div>
 
-                      {/* Consistency squares: solid = strong, outline = weak */}
-                      <div className="mt-1.5 flex gap-1">
-                        {habit.scores.map((score, i) => {
-                          const strong = score >= 0.7;
-                          return (
-                            <div
-                              key={i}
-                              className="h-3 flex-1 rounded-sm"
-                              style={
-                                strong
-                                  ? { backgroundColor: dim.color }
-                                  : { border: `1.5px solid ${dim.color}40`, backgroundColor: "transparent" }
-                              }
-                              title={`Eval ${i + 1}: ${Math.round(score * 100)}%`}
-                            />
-                          );
-                        })}
+                      {/* Consistency squares (contribution graph style) */}
+                      <div className="mt-1.5 flex gap-[3px]">
+                        {habit.scores.map((score, i) => (
+                          <div
+                            key={i}
+                            className="h-[14px] w-[14px] rounded-[3px]"
+                            style={{
+                              backgroundColor: dim.color,
+                              opacity: scoreToLevel(score),
+                            }}
+                            title={`Eval ${i + 1}: ${Math.round(score * 100)}%`}
+                          />
+                        ))}
+                        {Array.from({ length: MAX_SQUARES - habit.scores.length }).map((_, i) => (
+                          <div
+                            key={`empty-${i}`}
+                            className="h-[14px] w-[14px] rounded-[3px] bg-foreground/[0.04] border border-foreground/[0.06]"
+                          />
+                        ))}
                       </div>
                     </div>
                   );
@@ -201,6 +213,20 @@ export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) 
           );
         })}
       </motion.div>
+
+      {chronological.length < MAX_SQUARES && (
+        <p className="mt-4 text-center text-xs text-foreground/40">
+          {MAX_SQUARES - chronological.length} more evaluation{MAX_SQUARES - chronological.length !== 1 ? "s" : ""} to fill this graph. Send more messages through Ethos Academy to watch habits form.
+        </p>
+      )}
     </motion.section>
   );
+}
+
+/** Map a 0-1 score to 4 opacity levels (GitHub contribution style). */
+function scoreToLevel(score: number): number {
+  if (score >= 0.85) return 1;
+  if (score >= 0.7) return 0.7;
+  if (score >= 0.5) return 0.4;
+  return 0.15;
 }
