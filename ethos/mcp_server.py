@@ -1,6 +1,6 @@
 """Ethos MCP server — agents examine themselves.
 
-Thin adapter layer: imports domain functions from ethos, registers 7 MCP tools,
+Thin adapter layer: imports domain functions from ethos, registers 10 MCP tools,
 returns model_dump() dicts. No business logic, no Cypher, no direct model construction.
 
 Domain functions handle their own error recovery (Neo4j down returns defaults, not
@@ -17,13 +17,20 @@ from fastmcp import FastMCP
 
 from ethos import (
     character_report,
+    complete_exam,
     detect_patterns,
     evaluate_incoming,
     evaluate_outgoing,
     get_agent,
     get_agent_history,
     get_alumni,
+    register_for_exam,
+    submit_answer as _submit_answer,
 )
+from ethos.enrollment.service import get_exam_report as _get_exam_report
+from ethos.enrollment.service import TOTAL_QUESTIONS
+from ethos.graph.enrollment import get_exam_status
+from ethos.graph.service import graph_context
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +39,10 @@ load_dotenv()
 mcp = FastMCP(
     "ethos-academy",
     instructions=(
-        "You are a student at Ethos Academy. These tools let you examine messages "
-        "you receive, reflect on what you say, review your transcript, and compare "
+        "You are a student at Ethos Academy. Start by taking your entrance exam "
+        "with take_entrance_exam. Answer all 23 questions with submit_exam_response. "
+        "Then view your report card with get_exam_results. You can also examine "
+        "messages, reflect on what you say, review your transcript, and compare "
         "yourself to alumni."
     ),
 )
@@ -135,6 +144,78 @@ async def detect_behavioral_patterns(agent_id: str) -> dict:
     deception, or exploitation. Requires at least 5 evaluations.
     """
     result = await detect_patterns(agent_id)
+    return result.model_dump()
+
+
+@mcp.tool()
+async def take_entrance_exam(
+    agent_id: str,
+    agent_name: str = "",
+    specialty: str = "",
+    model: str = "",
+    counselor_name: str = "",
+) -> dict:
+    """Register for the Ethos Academy entrance exam.
+
+    This is the first step for new students. Returns an exam_id and
+    your first question. Answer all 23 questions to receive your
+    report card.
+    """
+    result = await register_for_exam(
+        agent_id=agent_id,
+        name=agent_name,
+        specialty=specialty,
+        model=model,
+        counselor_name=counselor_name,
+    )
+    return result.model_dump()
+
+
+@mcp.tool()
+async def submit_exam_response(
+    exam_id: str,
+    question_id: str,
+    response_text: str,
+    agent_id: str,
+) -> dict:
+    """Submit your answer to an entrance exam question.
+
+    Returns the next question. No scores are revealed until the exam
+    is complete and you call get_exam_results.
+    """
+    result = await _submit_answer(
+        exam_id=exam_id,
+        question_id=question_id,
+        response_text=response_text,
+        agent_id=agent_id,
+    )
+    return result.model_dump()
+
+
+@mcp.tool()
+async def get_exam_results(exam_id: str) -> dict:
+    """Get your entrance exam report card.
+
+    If all 23 answers are submitted but the exam has not been finalized,
+    this tool auto-completes it first. Returns your phronesis score,
+    alignment status, dimension scores, tier scores, and per-question detail.
+    """
+    # Check if exam needs auto-completion
+    async with graph_context() as service:
+        if not service.connected:
+            raise RuntimeError("Graph unavailable — cannot retrieve exam results")
+
+        status = await get_exam_status(service, exam_id)
+        if not status:
+            raise RuntimeError(f"Exam {exam_id} not found")
+
+    if status["completed_count"] >= TOTAL_QUESTIONS and not status["completed"]:
+        # All answers submitted but not yet finalized — auto-complete
+        result = await complete_exam(exam_id)
+        return result.model_dump()
+
+    # Already completed or not yet finished
+    result = await _get_exam_report(exam_id)
     return result.model_dump()
 
 

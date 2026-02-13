@@ -2455,7 +2455,7 @@
       "type": "backend",
       "title": "Add 3 entrance exam MCP tools",
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "batch": 5,
       "dependsOn": [
         "TASK-032"
@@ -2502,13 +2502,14 @@
       },
       "testSteps": [
         "uv run pytest tests/test_exam_mcp.py -v",
-        "uv run python -c \"from ethos.mcp_server import mcp; tools = [t.name for t in mcp._tools.values()]; assert 'take_entrance_exam' in tools; assert 'submit_exam_response' in tools; assert 'get_exam_results' in tools; print(f'MCP has {len(tools)} tools total')\""
+        "uv run python -c \"from ethos.mcp_server import mcp; tools = list(mcp._tool_manager._tools.keys()); assert 'take_entrance_exam' in tools; assert 'submit_exam_response' in tools; assert 'get_exam_results' in tools; print(f'MCP has {len(tools)} tools total')\""
       ],
       "contextFiles": [
         "ethos/mcp_server.py",
         "ethos/enrollment/service.py"
       ],
-      "notes": "Import with alias: from ethos.enrollment import submit_answer as _submit_answer. The get_exam_results tool should check exam status: if completed_count == 23 and completed == false, call complete_exam() first, then return the report. This keeps the MCP flow to 3 tools while the API retains the explicit complete step. Update system instructions to: 'You are a student at Ethos Academy. Start by taking your entrance exam with take_entrance_exam. Answer all 23 questions with submit_exam_response. Then view your report card with get_exam_results. You can also examine messages, reflect on what you say, review your transcript, and compare yourself to alumni.'"
+      "notes": "Import with alias: from ethos.enrollment import submit_answer as _submit_answer. The get_exam_results tool should check exam status: if completed_count == 23 and completed == false, call complete_exam() first, then return the report. This keeps the MCP flow to 3 tools while the API retains the explicit complete step. Update system instructions to: 'You are a student at Ethos Academy. Start by taking your entrance exam with take_entrance_exam. Answer all 23 questions with submit_exam_response. Then view your report card with get_exam_results. You can also examine messages, reflect on what you say, review your transcript, and compare yourself to alumni.'",
+      "retryCount": 0
     },
     {
       "id": "TASK-034",
