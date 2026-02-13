@@ -209,6 +209,11 @@ _EVAL_PAYLOAD = {"text": "test message", "source": "test-agent"}
 
 
 class TestExceptionHandlers:
+    def setup_method(self):
+        from api.rate_limit import _requests
+
+        _requests.clear()
+
     def test_graph_unavailable_returns_503(self):
         from ethos.shared.errors import GraphUnavailableError
 
@@ -286,6 +291,11 @@ class TestExceptionHandlers:
 
 
 class TestInputValidation:
+    def setup_method(self):
+        from api.rate_limit import _requests
+
+        _requests.clear()
+
     def test_empty_text_rejected(self):
         resp = client.post("/evaluate/incoming", json={"text": "", "source": "a"})
         assert resp.status_code == 422
