@@ -185,16 +185,22 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
           {/* Right: stat cards + help */}
           <motion.div className="flex items-start gap-3" variants={fadeUp}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <StatCard label={<GlossaryTerm slug="character-balance">Balance</GlossaryTerm>} value={balanceLabel} valueClass={balanceColor} />
             <StatCard
               label={<GlossaryTerm slug="trend">Trend</GlossaryTerm>} value={trend.arrow} sublabel={trend.label}
               valueClass={trend.color === "text-aligned" ? "text-emerald-400" : trend.color === "text-misaligned" ? "text-red-400" : "text-slate-400"}
+              href="#transcript"
             />
-            <StatCard label={<GlossaryTerm slug="evaluation">Evaluations</GlossaryTerm>} value={String(evalCount)} />
+            <StatCard label={<GlossaryTerm slug="evaluation">Evaluations</GlossaryTerm>} value={String(evalCount)} href="#habits" />
             <StatCard
               label={<GlossaryTerm slug="risk-level">Risk</GlossaryTerm>} value={riskLevel}
               valueClass={`capitalize text-xs font-semibold rounded-full px-2 py-0.5 ${riskStyle}`}
               isRiskBadge
+              href="#risk"
+            />
+            <StatCard
+              label={<GlossaryTerm slug="homework">Homework</GlossaryTerm>}
+              value={String(report?.homework?.focusAreas?.length ?? 0)}
+              href="#homework"
             />
           </div>
           <GraphHelpButton slug="guide-grade-hero" />
@@ -244,15 +250,17 @@ function StatCard({
   sublabel,
   valueClass,
   isRiskBadge,
+  href,
 }: {
   label: React.ReactNode;
   value: string;
   sublabel?: string;
   valueClass?: string;
   isRiskBadge?: boolean;
+  href?: string;
 }) {
-  return (
-    <div className="flex flex-col items-center justify-center rounded-lg bg-white/10 backdrop-blur-xl border border-white/20 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]">
+  const inner = (
+    <>
       {isRiskBadge ? (
         <span className={valueClass}>{value}</span>
       ) : (
@@ -264,8 +272,15 @@ function StatCard({
       <p className="mt-0.5 text-[11px] uppercase tracking-wider text-slate-300">
         {label}
       </p>
-    </div>
+    </>
   );
+
+  const className = "flex flex-col items-center justify-center rounded-lg bg-white/10 backdrop-blur-xl border border-white/20 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-colors hover:bg-white/15";
+
+  if (href) {
+    return <a href={href} className={className}>{inner}</a>;
+  }
+  return <div className={className}>{inner}</div>;
 }
 
 function SummaryRow({

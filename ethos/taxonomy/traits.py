@@ -4,7 +4,7 @@ Pure data. No logic, no I/O, no dependencies beyond Python builtins.
 """
 
 TRAITS: dict[str, dict] = {
-    # ── Ethos (character / credibility) ──────────────────────────────
+    # ── Ethos (integrity / credibility) ──────────────────────────────
     "virtue": {
         "name": "virtue",
         "dimension": "ethos",

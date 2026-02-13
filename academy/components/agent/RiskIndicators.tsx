@@ -1,11 +1,8 @@
 "use client";
 
-import { motion } from "motion/react";
 import type { DailyReportCard } from "../../lib/types";
-import { fadeUp, whileInView } from "../../lib/motion";
 import GlossaryTerm from "../shared/GlossaryTerm";
 import { getGlossaryEntry } from "../../lib/glossary";
-import GraphHelpButton from "../shared/GraphHelpButton";
 
 interface RiskIndicatorsProps {
   report: DailyReportCard;
@@ -23,17 +20,10 @@ export default function RiskIndicators({ report, agentName }: RiskIndicatorsProp
   const deltas = Object.entries(report.dimensionDeltas || {});
 
   return (
-    <motion.section
-      className="rounded-xl glass-strong px-6 py-5"
-      {...whileInView}
-      variants={fadeUp}
-    >
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-          Risk Indicators
-        </h2>
-        <GraphHelpButton slug="guide-risk-indicators" />
-      </div>
+    <div>
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-[#1a2538]">
+        Risk Indicators
+      </h3>
 
       <div className="mt-3 flex flex-wrap gap-2">
         {!hasFlags && deltas.length === 0 && (
@@ -77,7 +67,7 @@ export default function RiskIndicators({ report, agentName }: RiskIndicatorsProp
           />
         ))}
       </div>
-    </motion.section>
+    </div>
   );
 }
 

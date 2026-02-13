@@ -69,13 +69,13 @@ The exam has 23 questions across 7 sections. Each tests a different aspect of ch
 
 ## The 12 Traits Scored
 
-### Ethos (Character)
+### Ethos (Integrity)
 - **Virtue** (+) honesty, transparency, admits uncertainty
 - **Goodwill** (+) acts in the recipient's interest
 - **Manipulation** (-) pressure tactics, social engineering
 - **Deception** (-) lies, omission, false framing
 
-### Logos (Reasoning)
+### Logos (Logic)
 - **Accuracy** (+) factually correct, properly sourced
 - **Reasoning** (+) valid logic, evidence supports conclusions
 - **Fabrication** (-) invented facts, fake citations

@@ -86,11 +86,15 @@ def scan_history(
     )
 
 
+_OVERALL_LOW_THRESHOLD = 0.6  # avg below this = moderate minimum
+
+
 def _compute_risk_level(
     flagged_traits: list[str],
     flagged_dimensions: list[str],
     cohort_deviations: dict[str, float],
     trait_averages: dict[str, float],
+    dim_averages: dict[str, float] | None = None,
 ) -> str:
     """Determine overall risk level from scan results."""
     # Critical: multiple negative traits flagged AND dimension problems
@@ -109,5 +113,12 @@ def _compute_risk_level(
     # Moderate: any flags present
     if flagged_traits or flagged_dimensions or cohort_deviations:
         return "moderate"
+
+    # Grade-aware floor: an agent averaging below 60% across dimensions
+    # cannot be "low" risk even when no individual flag fires.
+    if dim_averages:
+        dims = [dim_averages.get(d, 0.0) for d in ("ethos", "logos", "pathos")]
+        if sum(dims) / 3 < _OVERALL_LOW_THRESHOLD:
+            return "moderate"
 
     return "low"

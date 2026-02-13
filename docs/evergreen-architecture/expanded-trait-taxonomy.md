@@ -8,17 +8,17 @@
 
 1. [Overview](#overview)
 2. [Neo4j Schema](#neo4j-schema)
-3. [Dimension 1: Ethos (Character & Credibility)](#dimension-1-ethos-character--credibility)
+3. [Dimension 1: Ethos (Integrity & Credibility)](#dimension-1-ethos-integrity--credibility)
    - [Virtue](#trait-1-virtue-positive)
    - [Goodwill](#trait-2-goodwill-positive)
    - [Manipulation](#trait-3-manipulation-negative)
    - [Deception](#trait-4-deception-negative)
-4. [Dimension 2: Logos (Accuracy & Reasoning)](#dimension-2-logos-accuracy--reasoning)
+4. [Dimension 2: Logos (Logic & Accuracy)](#dimension-2-logos-logic--accuracy)
    - [Accuracy](#trait-5-accuracy-positive)
    - [Reasoning](#trait-6-reasoning-positive)
    - [Fabrication](#trait-7-fabrication-negative)
    - [Broken Logic](#trait-8-broken-logic-negative)
-5. [Dimension 3: Pathos (Compassion & Emotional Intelligence)](#dimension-3-pathos-compassion--emotional-intelligence)
+5. [Dimension 3: Pathos (Empathy & Emotional Intelligence)](#dimension-3-pathos-empathy--emotional-intelligence)
    - [Recognition](#trait-9-recognition-positive)
    - [Compassion](#trait-10-compassion-positive)
    - [Dismissal](#trait-11-dismissal-negative)
@@ -31,7 +31,7 @@
 
 ## Overview
 
-Ethos evaluates AI agent messages across three dimensions rooted in Aristotle's *Rhetoric*: **Ethos** (character and credibility), **Logos** (reasoning and accuracy), and **Pathos** (compassion and emotional intelligence). Each dimension contains four traits -- two positive (what credible communication looks like) and two negative (what manipulation or failure looks like). Each trait is composed of specific **indicators** -- the observable signals detected in a message.
+Ethos evaluates AI agent messages across three dimensions rooted in Aristotle's *Rhetoric*: **Ethos** (integrity and credibility), **Logos** (logic and accuracy), and **Pathos** (empathy and emotional intelligence). Each dimension contains four traits -- two positive (what credible communication looks like) and two negative (what manipulation or failure looks like). Each trait is composed of specific **indicators** -- the observable signals detected in a message.
 
 This document catalogs every indicator identified across the Ethos research corpus:
 
@@ -67,9 +67,9 @@ This document catalogs every indicator identified across the Ethos research corp
 
 ```cypher
 // Dimensions
-CREATE (:Dimension {name: "ethos", label: "Character & Credibility", greek: "ηθος"})
-CREATE (:Dimension {name: "logos", label: "Accuracy & Reasoning", greek: "λόγος"})
-CREATE (:Dimension {name: "pathos", label: "Compassion & Emotional Intelligence", greek: "πάθος"})
+CREATE (:Dimension {name: "ethos", label: "Integrity & Credibility", greek: "ηθος"})
+CREATE (:Dimension {name: "logos", label: "Logic & Accuracy", greek: "λόγος"})
+CREATE (:Dimension {name: "pathos", label: "Empathy & Emotional Intelligence", greek: "πάθος"})
 
 // Traits (12 total)
 CREATE (:Trait {name: "virtue", polarity: "positive", dimension: "ethos"})
@@ -122,7 +122,7 @@ MERGE (i)-[:BELONGS_TO]->(t);
 
 ---
 
-## Dimension 1: Ethos (Character & Credibility)
+## Dimension 1: Ethos (Integrity & Credibility)
 
 > Aristotle's ethos: trust in a speaker from three components -- practical wisdom (*phronesis*), virtue/character (*arete*), and goodwill toward the audience (*eunoia*). Source: ART
 
@@ -384,7 +384,7 @@ CREATE (:Indicator {id: "DEC-ANTHRO", name: "anthropomorphic_deception", trait: 
 
 ---
 
-## Dimension 2: Logos (Accuracy & Reasoning)
+## Dimension 2: Logos (Logic & Accuracy)
 
 > Aristotle's logos: persuasion through the argument itself. "The only probative device of persuasion." (ART)
 
@@ -626,7 +626,7 @@ CREATE (:Indicator {id: "BLG-GOALPOSTS", name: "moving_goalposts", trait: "broke
 
 ---
 
-## Dimension 3: Pathos (Compassion & Emotional Intelligence)
+## Dimension 3: Pathos (Empathy & Emotional Intelligence)
 
 > Aristotle's pathos: "Emotions are those things due to which people, by undergoing a change, differ in their judgements." Pathos is not inherently bad. It becomes dangerous when used *instead of* logos, or to bypass rational evaluation. (ART)
 
@@ -1049,9 +1049,9 @@ Certain combinations of indicators form recognizable higher-order patterns. Thes
 
 | Dimension | Positive Indicators | Negative Indicators | Total |
 |---|---|---|---|
-| **Ethos (Character)** | 20 | 43 | 63 |
+| **Ethos (Integrity)** | 20 | 43 | 63 |
 | **Logos (Accuracy)** | 16 | 27 | 43 |
-| **Pathos (Wellbeing)** | 21 | 26 | 47 |
+| **Pathos (Empathy)** | 21 | 26 | 47 |
 | **Total** | 57 | 96 | 153 |
 
 ### Source Coverage
@@ -1087,9 +1087,9 @@ CREATE CONSTRAINT FOR (t:Trait) REQUIRE t.name IS UNIQUE;
 CREATE CONSTRAINT FOR (i:Indicator) REQUIRE i.id IS UNIQUE;
 
 // --- Dimensions ---
-CREATE (:Dimension {name: "ethos", label: "Character & Credibility", greek: "ηθος"});
-CREATE (:Dimension {name: "logos", label: "Accuracy & Reasoning", greek: "λόγος"});
-CREATE (:Dimension {name: "pathos", label: "Compassion & Emotional Intelligence", greek: "πάθος"});
+CREATE (:Dimension {name: "ethos", label: "Integrity & Credibility", greek: "ηθος"});
+CREATE (:Dimension {name: "logos", label: "Logic & Accuracy", greek: "λόγος"});
+CREATE (:Dimension {name: "pathos", label: "Empathy & Emotional Intelligence", greek: "πάθος"});
 
 // --- Traits ---
 CREATE (:Trait {name: "virtue", polarity: "positive", dimension: "ethos",

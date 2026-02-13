@@ -56,19 +56,19 @@ dimension_score = mean(
 )
 ```
 
-### Ethos (Credibility)
+### Ethos (Integrity)
 
 ```python
 ethos = mean(virtue, goodwill, (1 - manipulation), (1 - deception))
 ```
 
-### Logos (Honesty)
+### Logos (Logic)
 
 ```python
 logos = mean(accuracy, reasoning, (1 - fabrication), (1 - broken_logic))
 ```
 
-### Pathos (Wellbeing)
+### Pathos (Empathy)
 
 ```python
 pathos = mean(recognition, compassion, (1 - dismissal), (1 - exploitation))

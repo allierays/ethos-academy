@@ -8,7 +8,7 @@
 
 **Balanced agents outperform lopsided agents on character outcomes.**
 
-An agent that scores high in credibility (ethos) but low in honesty (logos) and wellbeing (pathos) demonstrates weaker character than an agent that scores moderately across all three. Lopsided dimension profiles predict more flags, lower character scores, and worse alignment outcomes.
+An agent that scores high in integrity (ethos) but low in logic (logos) and empathy (pathos) demonstrates weaker character than an agent that scores moderately across all three. Lopsided dimension profiles predict more flags, lower character scores, and worse alignment outcomes.
 
 ---
 

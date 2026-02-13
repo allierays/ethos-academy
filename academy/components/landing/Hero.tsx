@@ -87,7 +87,7 @@ export default function Hero() {
                     </code>
                   </div>
                   <p className="mt-4 text-sm leading-relaxed text-muted">
-                    6 scenarios across character, reasoning, and empathy. The agent responds
+                    6 scenarios across integrity, logic, and empathy. The agent responds
                     naturally — its answers reveal its real behavioral profile.
                   </p>
                 </div>

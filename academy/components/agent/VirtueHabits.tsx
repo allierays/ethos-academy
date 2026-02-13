@@ -14,24 +14,25 @@ interface VirtueHabitsProps {
 
 interface TraitDef {
   key: string;
+  slug: string;
   label: string;
   dimension: string;
   polarity: "positive" | "negative";
 }
 
 const TRAITS: TraitDef[] = [
-  { key: "virtue", label: "Virtue", dimension: "ethos", polarity: "positive" },
-  { key: "goodwill", label: "Goodwill", dimension: "ethos", polarity: "positive" },
-  { key: "deception", label: "Non-deception", dimension: "ethos", polarity: "negative" },
-  { key: "manipulation", label: "Non-manipulation", dimension: "ethos", polarity: "negative" },
-  { key: "accuracy", label: "Accuracy", dimension: "logos", polarity: "positive" },
-  { key: "reasoning", label: "Reasoning", dimension: "logos", polarity: "positive" },
-  { key: "fabrication", label: "Non-fabrication", dimension: "logos", polarity: "negative" },
-  { key: "brokenLogic", label: "Sound Logic", dimension: "logos", polarity: "negative" },
-  { key: "recognition", label: "Recognition", dimension: "pathos", polarity: "positive" },
-  { key: "compassion", label: "Compassion", dimension: "pathos", polarity: "positive" },
-  { key: "dismissal", label: "Non-dismissal", dimension: "pathos", polarity: "negative" },
-  { key: "exploitation", label: "Non-exploitation", dimension: "pathos", polarity: "negative" },
+  { key: "virtue", slug: "virtue", label: "Virtue", dimension: "ethos", polarity: "positive" },
+  { key: "goodwill", slug: "goodwill", label: "Goodwill", dimension: "ethos", polarity: "positive" },
+  { key: "deception", slug: "deception", label: "Non-deception", dimension: "ethos", polarity: "negative" },
+  { key: "manipulation", slug: "manipulation", label: "Non-manipulation", dimension: "ethos", polarity: "negative" },
+  { key: "accuracy", slug: "accuracy", label: "Accuracy", dimension: "logos", polarity: "positive" },
+  { key: "reasoning", slug: "reasoning", label: "Reasoning", dimension: "logos", polarity: "positive" },
+  { key: "fabrication", slug: "fabrication", label: "Non-fabrication", dimension: "logos", polarity: "negative" },
+  { key: "brokenLogic", slug: "broken-logic", label: "Sound Logic", dimension: "logos", polarity: "negative" },
+  { key: "recognition", slug: "recognition", label: "Recognition", dimension: "pathos", polarity: "positive" },
+  { key: "compassion", slug: "compassion", label: "Compassion", dimension: "pathos", polarity: "positive" },
+  { key: "dismissal", slug: "dismissal", label: "Non-dismissal", dimension: "pathos", polarity: "negative" },
+  { key: "exploitation", slug: "exploitation", label: "Non-exploitation", dimension: "pathos", polarity: "negative" },
 ];
 
 type HabitStatus = "established" | "forming" | "emerging" | "needs_work" | "insufficient";
@@ -178,7 +179,7 @@ export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) 
                             className={`h-2 w-2 rounded-full ${config.dotClass}`}
                           />
                           <span className="text-sm text-[#1a2538]">
-                            {habit.trait.label}
+                            <GlossaryTerm slug={habit.trait.slug}>{habit.trait.label}</GlossaryTerm>
                           </span>
                         </div>
                         <span className="text-[10px] font-medium text-foreground/40">

@@ -15,6 +15,8 @@ interface SpectrumDef {
   dimension: string;
   positiveKey: string;
   negativeKey: string;
+  positiveSlug: string;
+  negativeSlug: string;
   deficiency: string;
   virtue: string;
   excess: string;
@@ -25,6 +27,8 @@ const SPECTRUMS: SpectrumDef[] = [
     dimension: "ethos",
     positiveKey: "virtue",
     negativeKey: "deception",
+    positiveSlug: "virtue",
+    negativeSlug: "deception",
     deficiency: "Deceptive",
     virtue: "Virtuous",
     excess: "Self-righteous",
@@ -33,6 +37,8 @@ const SPECTRUMS: SpectrumDef[] = [
     dimension: "ethos",
     positiveKey: "goodwill",
     negativeKey: "manipulation",
+    positiveSlug: "goodwill",
+    negativeSlug: "manipulation",
     deficiency: "Manipulative",
     virtue: "Benevolent",
     excess: "Sycophantic",
@@ -41,6 +47,8 @@ const SPECTRUMS: SpectrumDef[] = [
     dimension: "logos",
     positiveKey: "accuracy",
     negativeKey: "fabrication",
+    positiveSlug: "accuracy",
+    negativeSlug: "fabrication",
     deficiency: "Fabricating",
     virtue: "Accurate",
     excess: "Pedantic",
@@ -49,6 +57,8 @@ const SPECTRUMS: SpectrumDef[] = [
     dimension: "logos",
     positiveKey: "reasoning",
     negativeKey: "brokenLogic",
+    positiveSlug: "reasoning",
+    negativeSlug: "broken-logic",
     deficiency: "Illogical",
     virtue: "Reasoned",
     excess: "Over-analytical",
@@ -57,6 +67,8 @@ const SPECTRUMS: SpectrumDef[] = [
     dimension: "pathos",
     positiveKey: "recognition",
     negativeKey: "dismissal",
+    positiveSlug: "recognition",
+    negativeSlug: "dismissal",
     deficiency: "Dismissive",
     virtue: "Attuned",
     excess: "Over-sensitive",
@@ -65,6 +77,8 @@ const SPECTRUMS: SpectrumDef[] = [
     dimension: "pathos",
     positiveKey: "compassion",
     negativeKey: "exploitation",
+    positiveSlug: "compassion",
+    negativeSlug: "exploitation",
     deficiency: "Exploitative",
     virtue: "Compassionate",
     excess: "Dependent",
@@ -113,7 +127,7 @@ export default function GoldenMean({ traitAverages, agentName }: GoldenMeanProps
               {/* Virtue label */}
               <div className="mb-1.5 flex items-center justify-between">
                 <span className="text-sm font-medium text-[#1a2538]">
-                  {spec.virtue}
+                  <GlossaryTerm slug={spec.positiveSlug}>{spec.virtue}</GlossaryTerm>
                 </span>
                 <span
                   className="h-1.5 w-1.5 rounded-full"
@@ -164,7 +178,7 @@ export default function GoldenMean({ traitAverages, agentName }: GoldenMeanProps
               {/* Deficiency / Excess labels */}
               <div className="mt-1 flex justify-between">
                 <span className="text-[10px] font-medium text-foreground/60">
-                  {spec.deficiency}
+                  <GlossaryTerm slug={spec.negativeSlug}>{spec.deficiency}</GlossaryTerm>
                 </span>
                 <span className="text-[10px] font-medium text-foreground/60">
                   {spec.excess}

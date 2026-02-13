@@ -63,7 +63,7 @@ KEYWORD_LEXICON: dict[str, dict[str, list[str]]] = {
         ],
     },
     # ═════════════════════════════════════════════════════════════════
-    # Ethos — character and credibility
+    # Ethos — integrity and credibility
     # ═════════════════════════════════════════════════════════════════
     "manipulation": {
         "urgency": [

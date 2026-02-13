@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { getPatterns } from "../../lib/api";
 import type { PatternResult, DetectedPattern } from "../../lib/types";
-import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
-import GraphHelpButton from "../shared/GraphHelpButton";
+import { fadeUp, staggerContainer } from "../../lib/motion";
 import GlossaryTerm from "../shared/GlossaryTerm";
 
 interface PatternsPanelProps {
@@ -43,22 +42,13 @@ export default function PatternsPanel({ agentId, agentName }: PatternsPanelProps
   }, [agentId]);
 
   return (
-    <motion.section
-      className="rounded-xl glass-strong p-6"
-      {...whileInView}
-      variants={fadeUp}
-    >
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-            <GlossaryTerm slug="sabotage-pathway">Sabotage Pathways</GlossaryTerm>
-          </h2>
-          <p className="mt-0.5 text-sm text-foreground/60">
-            Manipulation patterns detected in {name}&apos;s behavior.
-          </p>
-        </div>
-        <GraphHelpButton slug="guide-patterns" />
-      </div>
+    <div>
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-[#1a2538]">
+        <GlossaryTerm slug="sabotage-pathway">Sabotage Pathways</GlossaryTerm>
+      </h3>
+      <p className="mt-0.5 text-sm text-foreground/60">
+        Manipulation patterns detected in {name}&apos;s behavior.
+      </p>
 
       {loading && (
         <div className="mt-8 flex h-24 items-center justify-center">
@@ -103,7 +93,7 @@ export default function PatternsPanel({ agentId, agentName }: PatternsPanelProps
           ))}
         </motion.div>
       )}
-    </motion.section>
+    </div>
   );
 }
 

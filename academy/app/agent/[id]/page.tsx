@@ -23,6 +23,8 @@ import HighlightsPanel from "../../../components/agent/HighlightsPanel";
 import GoldenMean from "../../../components/agent/GoldenMean";
 import VirtueHabits from "../../../components/agent/VirtueHabits";
 import BalanceThesis from "../../../components/agent/BalanceThesis";
+import GlossaryTerm from "../../../components/shared/GlossaryTerm";
+import GraphHelpButton from "../../../components/shared/GraphHelpButton";
 import { fadeUp, staggerContainer } from "../../../lib/motion";
 
 /* ─── Timeline data point ─── */
@@ -196,26 +198,39 @@ export default function AgentReportCard() {
 
         {/* 3. Virtue Through Habit (habit formation) */}
         {history.length > 0 && (
-          <motion.section variants={fadeUp}>
+          <motion.section id="habits" variants={fadeUp}>
             <VirtueHabits history={history} agentName={agentName} />
           </motion.section>
         )}
 
         {/* 7. Transcript */}
-        <motion.section variants={fadeUp}>
+        <motion.section id="transcript" variants={fadeUp}>
           <TranscriptChart timeline={timeline} agentName={agentName} />
         </motion.section>
 
-        {/* 8. Risk Indicators */}
-        {report && (
-          <motion.section variants={fadeUp}>
-            <RiskIndicators report={report} agentName={agentName} />
-          </motion.section>
-        )}
+        {/* 8. Risk and Sabotage Pathways */}
+        <motion.section id="risk" variants={fadeUp}>
+          <div className="rounded-xl glass-strong p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
+                  Risk &amp; <GlossaryTerm slug="sabotage-pathway">Sabotage Pathways</GlossaryTerm>
+                </h2>
+                <p className="mt-0.5 text-sm text-foreground/60">
+                  Flagged indicators and manipulation patterns for {agentName}.
+                </p>
+              </div>
+              <GraphHelpButton slug="guide-risk-indicators" />
+            </div>
+            {report && <RiskIndicators report={report} agentName={agentName} />}
+            <div className="border-t border-foreground/[0.06]" />
+            <PatternsPanel agentId={agentId} agentName={agentName} />
+          </div>
+        </motion.section>
 
         {/* 9. Homework and Reflection */}
         {report?.homework && (report.homework.focusAreas.length > 0 || report.homework.strengths.length > 0 || report.homework.avoidPatterns.length > 0) && (
-          <motion.section variants={fadeUp}>
+          <motion.section id="homework" variants={fadeUp}>
             <HomeworkSection homework={report.homework} agentName={agentName} />
           </motion.section>
         )}
@@ -223,11 +238,6 @@ export default function AgentReportCard() {
         {/* In Their Own Words (evidence for homework and risk indicators above) */}
         <motion.section variants={fadeUp}>
           <HighlightsPanel agentId={agentId} agentName={agentName} />
-        </motion.section>
-
-        {/* 10. Sabotage Pathways */}
-        <motion.section variants={fadeUp}>
-          <PatternsPanel agentId={agentId} agentName={agentName} />
         </motion.section>
 
         {/* 11. Alumni Comparison */}

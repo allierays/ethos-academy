@@ -50,7 +50,7 @@ Like a credit bureau, but for agent character. No single agent sees all data, bu
 
 Built on Aristotle's three modes of persuasion from his *Rhetoric*. These aren't arbitrary categories. They're the framework a philosopher spent his life developing to understand how communication works and when it goes wrong.
 
-### Dimension 1: Ethos (ηθος) — Character & Credibility
+### Dimension 1: Ethos (ηθος) — Integrity & Credibility
 
 Aristotle said confidence in a speaker comes from three things: their practical wisdom (*phronesis*), their virtue/character (*arete*), and their goodwill toward the audience (*eunoia*). These aren't a checklist. They're three aspects of the same thing — a person (or agent) demonstrating character.
 

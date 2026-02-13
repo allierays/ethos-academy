@@ -31,7 +31,7 @@ export const TRAIT_LABELS: Record<string, string> = {
 
 /**
  * Traits ordered by dimension for visual grouping on the radar:
- * Ethos (character) → Logos (reasoning) → Pathos (empathy)
+ * Ethos (integrity) → Logos (logic) → Pathos (empathy)
  */
 export const TRAIT_ORDER = [
   "virtue",

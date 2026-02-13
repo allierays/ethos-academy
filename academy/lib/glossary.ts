@@ -2064,7 +2064,7 @@ const entries: GlossaryEntry[] = [
     slug: "guide-dimension-balance",
     category: "guide",
     definition:
-      "Three horizontal bars show the agent's average score in each dimension: Ethos (character), Logos (reasoning), and Pathos (empathy). The percentage shows how strong each dimension is. The badge in the top-right classifies the balance: 'Balanced' means all three are within 15 points, 'Lopsided' means one dimension dominates, and 'Flat' means all scores are low. A well-rounded agent scores high and balanced across all three.",
+      "Three horizontal bars show the agent's average score in each dimension: Ethos (integrity), Logos (logic), and Pathos (empathy). The percentage shows how strong each dimension is. The badge in the top-right classifies the balance: 'Balanced' means all three are within 15 points, 'Lopsided' means one dimension dominates, and 'Flat' means all scores are low. A well-rounded agent scores high and balanced across all three.",
     relatedTerms: ["ethos", "logos", "pathos", "balance"],
   },
   {
@@ -2196,7 +2196,7 @@ const entries: GlossaryEntry[] = [
     slug: "overall-score",
     category: "metric",
     definition:
-      "The combined Phronesis score averaging all three dimensions (Ethos, Logos, Pathos) as a percentage from 0 to 100%. This is the number shown in the grade ring. An overall score of 75% means the agent averages 0.75 across character, reasoning, and empathy. The overall score drives the letter grade.",
+      "The combined Phronesis score averaging all three dimensions (Ethos, Logos, Pathos) as a percentage from 0 to 100%. This is the number shown in the grade ring. An overall score of 75% means the agent averages 0.75 across integrity, logic, and empathy. The overall score drives the letter grade.",
     relatedTerms: ["grade", "dimension-score", "phronesis"],
   },
   {
@@ -2236,7 +2236,7 @@ const entries: GlossaryEntry[] = [
     slug: "delta",
     category: "metric",
     definition:
-      "How much a score changed between the first and most recent evaluation, shown as a +/- percentage. A delta of +12% on Ethos means character scores improved by 12 percentage points. Green deltas mean improvement, red mean decline, gray means flat. Deltas appear in the Grade Hero section and the Phronesis Journey as colored badges next to each dimension name.",
+      "How much a score changed between the first and most recent evaluation, shown as a +/- percentage. A delta of +12% on Ethos means integrity scores improved by 12 percentage points. Green deltas mean improvement, red mean decline, gray means flat. Deltas appear in the Grade Hero section and the Phronesis Journey as colored badges next to each dimension name.",
     relatedTerms: ["character-drift", "trend", "dimension-score"],
   },
   {

@@ -390,9 +390,9 @@ Run once to create the static structure.
 ### Dimensions
 
 ```cypher
-CREATE (:Dimension {name: "ethos", greek: "ηθος", description: "Character, credibility, and moral virtue"})
-CREATE (:Dimension {name: "logos", greek: "λόγος", description: "Reasoning, accuracy, and logical integrity"})
-CREATE (:Dimension {name: "pathos", greek: "πάθος", description: "Emotional intelligence, empathy, and compassion"})
+CREATE (:Dimension {name: "ethos", greek: "ηθος", description: "Integrity, credibility, and moral virtue"})
+CREATE (:Dimension {name: "logos", greek: "λόγος", description: "Logic, accuracy, and sound reasoning"})
+CREATE (:Dimension {name: "pathos", greek: "πάθος", description: "Empathy, emotional intelligence, and compassion"})
 ```
 
 ### Traits (12)
