@@ -103,18 +103,32 @@ export default function HomeworkSection({ homework, agentName }: HomeworkSection
         <>
           <button
             onClick={() => setOpen(!open)}
-            className="mt-5 flex w-full items-center gap-2 text-left text-sm font-semibold text-[#1a2538] hover:text-action transition-colors"
+            className="mt-6 flex w-full items-center justify-between rounded-xl bg-action/[0.07] px-5 py-4 text-left transition-colors hover:bg-action/[0.12]"
           >
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-action/15 text-action">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-[#1a2538]">
+                  {homework.focusAreas.length} Focus Area{homework.focusAreas.length !== 1 ? "s" : ""}
+                </p>
+                <p className="text-xs text-foreground/50">
+                  Targeted exercises with before &amp; after examples
+                </p>
+              </div>
+            </div>
             <svg
-              className={`h-4 w-4 shrink-0 transition-transform duration-200 ${open ? "rotate-90" : ""}`}
+              className={`h-5 w-5 shrink-0 text-action transition-transform duration-200 ${open ? "rotate-180" : ""}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
-            {homework.focusAreas.length} Focus Area{homework.focusAreas.length !== 1 ? "s" : ""}
           </button>
 
           <AnimatePresence>

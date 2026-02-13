@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
+import GraphHelpButton from "../shared/GraphHelpButton";
 
 const LAYERS = [
   {
@@ -67,13 +68,16 @@ export default function EvaluationDepth() {
       {...whileInView}
       variants={fadeUp}
     >
-      <div className="flex items-center gap-2">
-        <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-          Appendix
-        </h2>
-        <span className="rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[10px] font-medium text-foreground/40">
-          How this report works
-        </span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
+            Appendix
+          </h2>
+          <span className="rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[10px] font-medium text-foreground/40">
+            How this report works
+          </span>
+        </div>
+        <GraphHelpButton slug="guide-evaluation-depth" />
       </div>
       <p className="mt-0.5 text-sm text-foreground/60">
         Every score on this page passes through three evaluation layers before it reaches you.

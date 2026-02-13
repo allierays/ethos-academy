@@ -136,6 +136,14 @@
       "learnedFrom": "TASK-033",
       "autoPromoted": true,
       "createdAt": "2026-02-12T22:08:55-08:00"
+    },
+    {
+      "id": "sign-019",
+      "pattern": "Next.js dynamic route pages (e.g. `[id]/exam/[examId]/page.tsx`) must export a default component and return valid JSX for all param combinations — verify by curling the route with test params (`curl localhost:3000/agent/test/exam/test`) during smoke tests, since `tsc --noEmit` passing does not guarantee the page renders at runtime.",
+      "category": "frontend",
+      "learnedFrom": "TASK-037",
+      "autoPromoted": true,
+      "createdAt": "2026-02-12T22:36:45-08:00"
     }
   ]
 }

@@ -5,6 +5,7 @@ import type { DailyReportCard } from "../../lib/types";
 import { fadeUp, whileInView } from "../../lib/motion";
 import GlossaryTerm from "../shared/GlossaryTerm";
 import { getGlossaryEntry } from "../../lib/glossary";
+import GraphHelpButton from "../shared/GraphHelpButton";
 
 interface RiskIndicatorsProps {
   report: DailyReportCard;
@@ -27,9 +28,12 @@ export default function RiskIndicators({ report, agentName }: RiskIndicatorsProp
       {...whileInView}
       variants={fadeUp}
     >
-      <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-        Risk Indicators
-      </h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
+          Risk Indicators
+        </h2>
+        <GraphHelpButton slug="guide-risk-indicators" />
+      </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
         {!hasFlags && deltas.length === 0 && (

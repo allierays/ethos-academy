@@ -2654,7 +2654,7 @@
       "type": "frontend",
       "title": "Build EntranceExamCard component for agent profile page",
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "batch": 6,
       "dependsOn": [
         "TASK-035"
@@ -2716,14 +2716,15 @@
         "academy/components/agent/GradeHero.tsx",
         "academy/components/DimensionBalance.tsx"
       ],
-      "notes": "The agent profile page already fetches agent data, history, and character report. Add a getExamHistory() call to the parallel data fetch. Only show the EntranceExamCard if the agent has enrolled=true. Use motion/react for subtle entrance animation matching existing components. Transform API responses from snake_case to camelCase. Create typed interfaces with camelCase properties."
+      "notes": "The agent profile page already fetches agent data, history, and character report. Add a getExamHistory() call to the parallel data fetch. Only show the EntranceExamCard if the agent has enrolled=true. Use motion/react for subtle entrance animation matching existing components. Transform API responses from snake_case to camelCase. Create typed interfaces with camelCase properties.",
+      "retryCount": 0
     },
     {
       "id": "TASK-037",
       "type": "frontend",
       "title": "Build exam report card page with per-question detail",
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "batch": 6,
       "dependsOn": [
         "TASK-035"
@@ -2785,7 +2786,8 @@
         "academy/components/DimensionBalance.tsx",
         "docs/ideas/entrance-exam.md"
       ],
-      "notes": "This is the public report card URL referenced in docs/ideas/entrance-exam.md. The per-question detail should be collapsible - show question ID and section header, expand to show full prompt, response summary, and trait scores. Use the same visual language as the agent profile page. Transform API responses from snake_case to camelCase. Create typed interfaces with camelCase properties."
+      "notes": "This is the public report card URL referenced in docs/ideas/entrance-exam.md. The per-question detail should be collapsible - show question ID and section header, expand to show full prompt, response summary, and trait scores. Use the same visual language as the agent profile page. Transform API responses from snake_case to camelCase. Create typed interfaces with camelCase properties.",
+      "retryCount": 0
     },
     {
       "id": "TASK-038",

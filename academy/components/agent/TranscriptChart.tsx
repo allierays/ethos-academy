@@ -14,6 +14,7 @@ import {
 import { motion } from "motion/react";
 import { DIMENSION_COLORS } from "../../lib/colors";
 import { fadeUp, whileInView } from "../../lib/motion";
+import GraphHelpButton from "../shared/GraphHelpButton";
 
 interface TimelineDataPoint {
   index: number;
@@ -48,12 +49,17 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
       {...whileInView}
       variants={fadeUp}
     >
-      <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-        Transcript
-      </h2>
-      <p className="mt-0.5 text-sm text-foreground/60">
-        Is {name} getting better or worse?
-      </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
+            Transcript
+          </h2>
+          <p className="mt-0.5 text-sm text-foreground/60">
+            Is {name} getting better or worse?
+          </p>
+        </div>
+        <GraphHelpButton slug="guide-transcript" />
+      </div>
 
       {timeline.length === 0 ? (
         <div className="mt-8 flex h-48 items-center justify-center text-sm text-muted">

@@ -6,6 +6,7 @@ import { GRADE_COLORS, RISK_STYLES, TREND_DISPLAY, DIMENSION_COLORS } from "../.
 import { getAcademicLabel, formatClassOf } from "../../lib/academic";
 import { fadeUp, staggerContainer } from "../../lib/motion";
 import GlossaryTerm from "../shared/GlossaryTerm";
+import GraphHelpButton from "../shared/GraphHelpButton";
 
 interface TimelinePoint {
   ethos: number;
@@ -134,8 +135,9 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
             </div>
           </motion.div>
 
-          {/* Right: stat cards */}
-          <motion.div className="grid grid-cols-2 gap-3 sm:grid-cols-4" variants={fadeUp}>
+          {/* Right: stat cards + help */}
+          <motion.div className="flex items-start gap-3" variants={fadeUp}>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard label={<GlossaryTerm slug="phronesis">Phronesis</GlossaryTerm>} value={`${phronesisScore}%`} />
             <StatCard
               label="Trend" value={trend.arrow} sublabel={trend.label}
@@ -147,6 +149,8 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
               valueClass={`capitalize text-xs font-semibold rounded-full px-2 py-0.5 ${riskStyle}`}
               isRiskBadge
             />
+          </div>
+          <GraphHelpButton slug="guide-grade-hero" />
           </motion.div>
         </motion.div>
 
@@ -159,7 +163,7 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
             animate="visible"
           >
             {bodyText && (
-              <p className="text-sm leading-relaxed text-slate-300">
+              <p className="text-sm leading-relaxed text-slate-200">
                 {bodyText}
               </p>
             )}

@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { fadeUp, whileInView } from "../../lib/motion";
 import { DIMENSIONS } from "../../lib/colors";
 import GlossaryTerm from "./GlossaryTerm";
+import GraphHelpButton from "./GraphHelpButton";
 
 function classifyBalance(scores: Record<string, number>): {
   label: string;
@@ -61,9 +62,12 @@ export default function DimensionBalance({
             Ethos, logos, and pathos relative to each other.
           </p>
         </div>
-        <span className="rounded-full bg-action-light px-3 py-1 text-xs font-medium text-action">
-          {classification.label}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-action-light px-3 py-1 text-xs font-medium text-action">
+            {classification.label}
+          </span>
+          <GraphHelpButton slug="guide-dimension-balance" />
+        </div>
       </div>
 
       {/* Triangle visualization using bars */}

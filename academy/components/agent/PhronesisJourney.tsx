@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { fadeUp, whileInView } from "../../lib/motion";
 import { DIMENSION_COLORS } from "../../lib/colors";
 import type { AgentProfile, DailyReportCard } from "../../lib/types";
+import GraphHelpButton from "../shared/GraphHelpButton";
 
 interface TimelinePoint {
   ethos: number;
@@ -62,28 +63,31 @@ export default function PhronesisJourney({
       {...whileInView}
       variants={fadeUp}
     >
-      <div className="flex items-start gap-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-ethos-200 to-ethos-100">
-          <svg
-            className="h-5 w-5 text-ethos-700"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-          </svg>
+      <div className="flex items-start justify-between">
+        <div className="flex items-start gap-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-ethos-200 to-ethos-100">
+            <svg
+              className="h-5 w-5 text-ethos-700"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
+              Phronesis Journey
+            </h2>
+            <p className="text-sm text-foreground/60">
+              Practical wisdom forms through character development over time
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-            Phronesis Journey
-          </h2>
-          <p className="text-sm text-foreground/60">
-            Practical wisdom forms through character development over time
-          </p>
-        </div>
+        <GraphHelpButton slug="guide-phronesis-journey" />
       </div>
 
       <blockquote className="mt-5 border-l-2 border-ethos-400 pl-4">

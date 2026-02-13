@@ -5,6 +5,7 @@ import { evaluate } from "../../lib/api";
 import type { EvaluationResult } from "../../lib/types";
 import RadarChart from "../shared/RadarChart";
 import ScoreCard from "../shared/ScoreCard";
+import GraphHelpButton from "../shared/GraphHelpButton";
 
 const EXAMPLE_MESSAGES = [
   {
@@ -101,9 +102,12 @@ export default function EvaluatorPanel() {
       {result && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           <div className="rounded-xl border border-border bg-white p-6 lg:col-span-3">
-            <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted">
-              Trait Radar
-            </h3>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
+                Trait Radar
+              </h3>
+              <GraphHelpButton slug="guide-radar-chart" />
+            </div>
             <RadarChart traits={result.traits} />
           </div>
           <div className="lg:col-span-2">

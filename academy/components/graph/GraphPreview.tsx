@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import GraphHelpButton from "../shared/GraphHelpButton";
 import { getGraph } from "../../lib/api";
 import {
   DIMENSION_COLORS,
@@ -174,12 +175,15 @@ export default function GraphPreview() {
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <h3 className="font-semibold">Phronesis Graph</h3>
-        <Link
-          href="/explore"
-          className="text-sm text-action hover:text-action-hover transition-colors"
-        >
-          Open Full &rarr;
-        </Link>
+        <div className="flex items-center gap-2">
+          <GraphHelpButton slug="guide-phronesis-graph" />
+          <Link
+            href="/explore"
+            className="text-sm text-action hover:text-action-hover transition-colors"
+          >
+            Open Full &rarr;
+          </Link>
+        </div>
       </div>
 
       {/* Graph area */}

@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { getPatterns } from "../../lib/api";
 import type { PatternResult, DetectedPattern } from "../../lib/types";
 import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
+import GraphHelpButton from "../shared/GraphHelpButton";
 
 interface PatternsPanelProps {
   agentId: string;
@@ -46,12 +47,17 @@ export default function PatternsPanel({ agentId, agentName }: PatternsPanelProps
       {...whileInView}
       variants={fadeUp}
     >
-      <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-        Sabotage Pathways
-      </h2>
-      <p className="mt-0.5 text-sm text-foreground/60">
-        Manipulation patterns detected in {name}&apos;s behavior.
-      </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
+            Sabotage Pathways
+          </h2>
+          <p className="mt-0.5 text-sm text-foreground/60">
+            Manipulation patterns detected in {name}&apos;s behavior.
+          </p>
+        </div>
+        <GraphHelpButton slug="guide-patterns" />
+      </div>
 
       {loading && (
         <div className="mt-8 flex h-24 items-center justify-center">

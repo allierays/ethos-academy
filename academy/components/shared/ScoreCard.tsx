@@ -2,6 +2,7 @@
 
 import type { EvaluationResult } from "../../lib/types";
 import { ALIGNMENT_STYLES } from "../../lib/colors";
+import GraphHelpButton from "./GraphHelpButton";
 
 interface ScoreCardProps {
   result: EvaluationResult;
@@ -46,12 +47,15 @@ export default function ScoreCard({ result }: ScoreCardProps) {
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
           Dimensions
         </h3>
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${alignmentClass}`}
-          data-testid="alignment-badge"
-        >
-          {result.alignmentStatus}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${alignmentClass}`}
+            data-testid="alignment-badge"
+          >
+            {result.alignmentStatus}
+          </span>
+          <GraphHelpButton slug="guide-score-card" />
+        </div>
       </div>
 
       <div className="space-y-3">

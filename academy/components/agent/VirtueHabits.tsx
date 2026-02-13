@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
 import { DIMENSION_COLORS } from "../../lib/colors";
 import type { EvaluationHistoryItem } from "../../lib/types";
+import GraphHelpButton from "../shared/GraphHelpButton";
 
 interface VirtueHabitsProps {
   history: EvaluationHistoryItem[];
@@ -37,13 +38,13 @@ type HabitStatus = "established" | "forming" | "emerging" | "needs_work" | "insu
 interface HabitData {
   trait: TraitDef;
   status: HabitStatus;
-  strength: number; // 0-1 effective strength
-  trend: number; // positive = improving
+  strength: number;
+  trend: number;
 }
 
 const STATUS_CONFIG: Record<HabitStatus, { label: string; dotClass: string }> = {
   established: { label: "Established", dotClass: "bg-aligned" },
-  forming: { label: "Forming", dotClass: "bg-ethos-400 animate-pulse" },
+  forming: { label: "Forming", dotClass: "bg-ethos-400" },
   emerging: { label: "Emerging", dotClass: "bg-drifting" },
   needs_work: { label: "Needs work", dotClass: "bg-misaligned/60" },
   insufficient: { label: "Building...", dotClass: "bg-foreground/20" },
@@ -65,7 +66,6 @@ function computeHabit(
     scores.reduce((sum, s) => sum + (s - avg) ** 2, 0) / scores.length;
   const trend = scores[scores.length - 1] - scores[0];
 
-  // For negative traits, invert: low score = good
   const effectiveScore = polarity === "negative" ? 1 - latest : latest;
   const effectiveTrend = polarity === "negative" ? -trend : trend;
   const isConsistent = variance < 0.03;
@@ -86,7 +86,6 @@ function computeHabit(
 
 export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) {
   const name = agentName ?? "this agent";
-  // Reverse to chronological order
   const chronological = [...history].reverse();
 
   const habits: HabitData[] = TRAITS.map((trait) => {
@@ -98,7 +97,6 @@ export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) 
     return { trait, status, strength, trend };
   });
 
-  // Group by dimension
   const dimensions = [
     { key: "ethos", label: "Character", color: DIMENSION_COLORS.ethos },
     { key: "logos", label: "Reasoning", color: DIMENSION_COLORS.logos },
@@ -128,10 +126,13 @@ export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) 
             <span className="inline-block h-2 w-2 rounded-full bg-aligned" />
             {established} established
           </span>
-          <span className="flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-ethos-400" />
-            {forming} forming
-          </span>
+          {forming > 0 && (
+            <span className="flex items-center gap-1">
+              <span className="inline-block h-2 w-2 rounded-full bg-ethos-400" />
+              {forming} forming
+            </span>
+          )}
+          <GraphHelpButton slug="guide-virtue-habits" />
         </div>
       </div>
 
@@ -175,7 +176,6 @@ export default function VirtueHabits({ history, agentName }: VirtueHabitsProps) 
                         </span>
                       </div>
 
-                      {/* Habit strength bar */}
                       <div className="mt-1 h-1.5 w-full rounded-full bg-foreground/[0.06]">
                         <motion.div
                           className="h-1.5 rounded-full"

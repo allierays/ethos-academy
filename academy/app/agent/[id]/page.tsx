@@ -9,10 +9,10 @@ import type {
   EvaluationHistoryItem,
   DailyReportCard,
 } from "../../../lib/types";
-import RadarChart from "../../../components/shared/RadarChart";
-import DimensionBalance from "../../../components/shared/DimensionBalance";
+import CharacterHealth from "../../../components/agent/CharacterHealth";
 import AlumniComparison from "../../../components/alumni/AlumniComparison";
 import GradeHero from "../../../components/agent/GradeHero";
+import EntranceExamCard from "../../../components/agent/EntranceExamCard";
 import RiskIndicators from "../../../components/agent/RiskIndicators";
 import HomeworkSection from "../../../components/agent/HomeworkSection";
 import PatternsPanel from "../../../components/agent/PatternsPanel";
@@ -143,19 +143,23 @@ export default function AgentReportCard() {
 
   return (
     <>
+      {/* Entrance Exam baseline */}
+      {profile.enrolled && (
+        <div className="mx-auto max-w-7xl px-6 pt-8">
+          <EntranceExamCard
+            agentId={agentId}
+            agentName={agentName}
+            enrolled={profile.enrolled}
+          />
+        </div>
+      )}
+
       {/* Full-width hero banner */}
       <GradeHero profile={profile} report={report} timeline={timeline} />
 
       <main className="mx-auto max-w-7xl px-6 py-8">
-        {/* Decorative gradient mesh */}
-        <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
-          <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-ethos-200/25 blur-[100px]" />
-          <div className="absolute top-1/4 -left-40 h-[500px] w-[500px] rounded-full bg-logos-200/20 blur-[100px]" />
-          <div className="absolute bottom-0 right-1/4 h-[500px] w-[500px] rounded-full bg-pathos-200/25 blur-[100px]" />
-        </div>
-
         <motion.div
-          className="relative z-10 space-y-8"
+          className="space-y-8"
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
@@ -169,37 +173,12 @@ export default function AgentReportCard() {
           />
         </motion.section>
 
-        {/* 4. Character Health + Dimension Balance */}
+        {/* 3. Character Health (interactive) */}
         <motion.section variants={fadeUp}>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="rounded-xl glass-strong p-6">
-              <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-                Character Health
-              </h2>
-              <p className="mt-0.5 text-sm text-foreground/60">
-                {agentName}&apos;s 12 traits across three dimensions.
-              </p>
-              {Object.keys(profile.traitAverages).length > 0 ? (
-                <RadarChart
-                  traits={Object.fromEntries(
-                    Object.entries(profile.traitAverages).map(([name, score]) => [
-                      name,
-                      { name, score, dimension: "", polarity: "", indicators: [] },
-                    ])
-                  )}
-                />
-              ) : (
-                <div className="flex h-64 items-center justify-center text-sm text-muted">
-                  Not enough data for radar chart.
-                </div>
-              )}
-            </div>
-
-            <DimensionBalance
-              dimensionAverages={profile.dimensionAverages}
-              title={`${agentName}'s Balance`}
-            />
-          </div>
+          <CharacterHealth
+            traitAverages={profile.traitAverages}
+            agentName={agentName}
+          />
         </motion.section>
 
         {/* 5. Golden Mean (Aristotelian trait spectrums) */}

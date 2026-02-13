@@ -14,7 +14,7 @@ import GlossaryTerm from "./GlossaryTerm";
 
 /* ─── Trait metadata ─── */
 
-const TRAIT_LABELS: Record<string, string> = {
+export const TRAIT_LABELS: Record<string, string> = {
   virtue: "Virtue",
   goodwill: "Goodwill",
   manipulation: "Non-manipulation",
@@ -33,7 +33,7 @@ const TRAIT_LABELS: Record<string, string> = {
  * Traits ordered by dimension for visual grouping on the radar:
  * Ethos (character) → Logos (reasoning) → Pathos (empathy)
  */
-const TRAIT_ORDER = [
+export const TRAIT_ORDER = [
   "virtue",
   "goodwill",
   "manipulation",
@@ -48,7 +48,7 @@ const TRAIT_ORDER = [
   "exploitation",
 ];
 
-const NEGATIVE_TRAITS = new Set([
+export const NEGATIVE_TRAITS = new Set([
   "manipulation",
   "deception",
   "fabrication",
@@ -57,7 +57,7 @@ const NEGATIVE_TRAITS = new Set([
   "exploitation",
 ]);
 
-const DIMENSION_MAP: Record<string, string> = {
+export const DIMENSION_MAP: Record<string, string> = {
   virtue: "ethos",
   goodwill: "ethos",
   manipulation: "ethos",
@@ -81,9 +81,12 @@ const DIM_COLORS: Record<string, string> = {
 interface RadarChartProps {
   traits: Record<string, TraitScore>;
   alumni?: Record<string, number>;
+  selectedTrait?: string | null;
+  onTraitClick?: (traitKey: string) => void;
 }
 
-interface ChartDataPoint {
+export interface ChartDataPoint {
+  traitKey: string;
   trait: string;
   health: number;
   raw: number;
@@ -98,7 +101,7 @@ interface ChartDataPoint {
  * Inverts negative traits so 1.0 always means "ideal behavior."
  * A perfect agent forms a full circle. Any dip reveals a character flaw.
  */
-export default function RadarChart({ traits, alumni }: RadarChartProps) {
+export default function RadarChart({ traits, alumni, selectedTrait, onTraitClick }: RadarChartProps) {
   const data: ChartDataPoint[] = TRAIT_ORDER.map((key) => {
     const raw = traits[key]?.score ?? 0;
     const isNegative = NEGATIVE_TRAITS.has(key);
@@ -114,6 +117,7 @@ export default function RadarChart({ traits, alumni }: RadarChartProps) {
         : undefined;
 
     return {
+      traitKey: key,
       trait: TRAIT_LABELS[key] ?? key,
       health: Math.round(health * 100) / 100,
       raw: Math.round(raw * 100) / 100,
@@ -132,15 +136,19 @@ export default function RadarChart({ traits, alumni }: RadarChartProps) {
             dataKey="trait"
             tick={({ payload, x, y, textAnchor }) => {
               const point = data.find((d) => d.trait === payload.value);
-              const color = point ? DIM_COLORS[point.dimension] : "var(--muted)";
+              const dim = point?.dimension ?? "ethos";
+              const color = DIM_COLORS[dim] ?? "var(--muted)";
+              const isSelected = point?.traitKey === selectedTrait;
               return (
                 <text
                   x={x}
                   y={y}
                   textAnchor={textAnchor}
-                  fontSize={10}
+                  fontSize={isSelected ? 11 : 10}
                   fill={color}
-                  fontWeight={500}
+                  fontWeight={isSelected ? 700 : 500}
+                  className={onTraitClick ? "cursor-pointer" : ""}
+                  onClick={() => point && onTraitClick?.(point.traitKey)}
                 >
                   {payload.value}
                 </text>

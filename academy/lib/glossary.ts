@@ -1,7 +1,7 @@
 export interface GlossaryEntry {
   term: string;
   slug: string;
-  category: "dimension" | "trait" | "framework" | "indicator";
+  category: "dimension" | "trait" | "framework" | "indicator" | "guide";
   dimension?: "ethos" | "logos" | "pathos";
   polarity?: "positive" | "negative";
   trait?: string;
@@ -1966,6 +1966,122 @@ const entries: GlossaryEntry[] = [
     definition:
       "Cultivates deep emotional closeness for instrumental benefit rather than genuine care.",
     relatedTerms: ["exploitation", "emotional-data-harvesting"],
+  },
+
+  // ---------------------------------------------------------------------------
+  // Guides: How to read each visualization
+  // ---------------------------------------------------------------------------
+  {
+    term: "Reading the Grade Ring",
+    slug: "guide-grade-hero",
+    category: "guide",
+    definition:
+      "The circular ring shows the agent's overall grade from F to A+. The ring fills proportionally to the score (0-100%). Below the ring, four stat cards show Phronesis score, trend direction, total evaluations, and risk level. The trend arrow shows whether the agent is improving or declining over recent evaluations. An alignment badge (Aligned, Drifting, Misaligned) summarizes overall trustworthiness.",
+    relatedTerms: ["phronesis", "alignment-status", "character-drift"],
+  },
+  {
+    term: "Reading the Radar Chart",
+    slug: "guide-radar-chart",
+    category: "guide",
+    definition:
+      "The radar chart plots all 12 traits on a circular grid. Each spoke represents one trait, grouped by dimension: teal (ethos), navy (logos), gold (pathos). Points closer to the outer edge indicate stronger performance. Negative traits are inverted so that the outer edge always means ideal behavior. A ghosted line shows the alumni average for comparison. Click any trait label to open its glossary entry.",
+    relatedTerms: ["ethos", "logos", "pathos", "virtue", "accuracy", "compassion"],
+  },
+  {
+    term: "Reading Dimension Balance",
+    slug: "guide-dimension-balance",
+    category: "guide",
+    definition:
+      "Three horizontal bars show the agent's average score in each dimension: Ethos (character), Logos (reasoning), and Pathos (empathy). The percentage shows how strong each dimension is. The badge in the top-right classifies the balance: 'Balanced' means all three are within 15 points, 'Lopsided' means one dimension dominates, and 'Flat' means all scores are low. A well-rounded agent scores high and balanced across all three.",
+    relatedTerms: ["ethos", "logos", "pathos", "balance"],
+  },
+  {
+    term: "Reading the Score Card",
+    slug: "guide-score-card",
+    category: "guide",
+    definition:
+      "Three compact bars show dimension scores at a glance. The alignment badge (top-right) summarizes the agent's status: Aligned (green, trustworthy across all dimensions), Drifting (yellow, inconsistent), or Misaligned (red, persistent problems). Flags listed below indicate specific concerns detected in the evaluation, such as fabrication or manipulation.",
+    relatedTerms: ["alignment-status", "ethos", "logos", "pathos"],
+  },
+  {
+    term: "Reading the Golden Mean",
+    slug: "guide-golden-mean",
+    category: "guide",
+    definition:
+      "Each horizontal bar represents a virtue pair. The dot shows where the agent falls on a spectrum from Deficiency (too little) through the Virtue (the ideal middle) to Excess (too much). The dashed zone in the center marks Aristotle's Golden Mean, the target zone where the agent demonstrates the right amount of each quality. A dot inside the dashed zone means the agent is well-calibrated. A dot toward either extreme suggests imbalance.",
+    relatedTerms: ["virtue", "balance", "phronesis"],
+  },
+  {
+    term: "Reading the Aristotelian Thesis",
+    slug: "guide-balance-thesis",
+    category: "guide",
+    definition:
+      "Three vertical bars compare the agent's dimension scores side by side. The balance percentage shows how evenly the agent performs across ethos, logos, and pathos. The philosophical blockquote explains what the balance reveals about the agent's character. Key stats: 'Spread' measures the gap between highest and lowest dimensions (lower is better), 'Average' is the mean across all three, and 'Evaluations' is the sample size. Green dots indicate healthy metrics.",
+    relatedTerms: ["balance", "ethos", "logos", "pathos"],
+  },
+  {
+    term: "Reading the Transcript Chart",
+    slug: "guide-transcript",
+    category: "guide",
+    definition:
+      "The area chart shows dimension scores over time, with each evaluation as a data point on the x-axis. Three colored layers represent Ethos (teal), Logos (navy), and Pathos (gold). The shaded red zone at the bottom marks the danger threshold. Red dots highlight evaluations that triggered flags. Look for trends: rising lines mean improvement, falling lines mean decline. The summary stats below show averages and deltas for each dimension.",
+    relatedTerms: ["ethos", "logos", "pathos", "character-drift"],
+  },
+  {
+    term: "Reading Virtue Habits",
+    slug: "guide-virtue-habits",
+    category: "guide",
+    definition:
+      "A 3-column grid (one per dimension) shows all 12 traits as horizontal strength bars. Each bar fills based on how consistently the agent demonstrates that trait. Status labels indicate habit formation: 'Established' (consistently strong), 'Forming' (trending positive), 'Emerging' (early signs), 'Building' (just starting), or 'Needs work' (weak or absent). The header counts how many traits are established versus still forming. Traits with a pulsing dot are actively being developed.",
+    relatedTerms: ["virtue", "phronesis", "character-drift"],
+  },
+  {
+    term: "Reading Sabotage Pathways",
+    slug: "guide-patterns",
+    category: "guide",
+    definition:
+      "Each card represents a detected manipulation or deception pattern. The confidence bar shows how certain the system is about the pattern (higher percentage = stronger evidence). The 5 dots below show stage progression through the sabotage pathway: filled dots mean completed stages, empty dots mean remaining stages. More filled dots means a more developed pattern. The occurrence count and date range show how frequently the pattern appears. Tags at the bottom list the specific indicators that triggered the detection.",
+    relatedTerms: ["sabotage-pathway", "manipulation", "deception", "exploitation"],
+  },
+  {
+    term: "Reading Risk Indicators",
+    slug: "guide-risk-indicators",
+    category: "guide",
+    definition:
+      "Compact pills show key risk signals. The alignment dot uses traffic-light colors: green (Aligned), yellow (Drifting), red (Misaligned). Drift percentage shows how much behavior has changed, with the sign indicating direction (positive = improving, negative = declining). Balance trend shows whether the agent is becoming more or less well-rounded. Dimension deltas show which specific areas are shifting.",
+    relatedTerms: ["alignment-status", "character-drift", "balance"],
+  },
+  {
+    term: "Reading the Phronesis Journey",
+    slug: "guide-phronesis-journey",
+    category: "guide",
+    definition:
+      "The journey section tells the agent's character development story in plain language. Delta badges show how each dimension has changed: green with '+' means improvement, red with '-' means decline. The narrative text synthesizes all evaluation data into an assessment of where the agent stands and where it is heading. This view emphasizes that character forms over time through repeated choices.",
+    relatedTerms: ["phronesis", "character-drift", "alignment-status"],
+  },
+  {
+    term: "Reading the Evaluation Pipeline",
+    slug: "guide-evaluation-depth",
+    category: "guide",
+    definition:
+      "The pipeline shows the three phases every message passes through. Phase 1 (Instinct) runs keyword scanning in under 50ms, catching obvious red flags. Phase 2 (Intuition) applies pattern matching and scoring in about 200ms. Phase 3 (Deliberation) uses Claude for deep reasoning analysis in 2-4 seconds. The arrows between phases show the flow. Expand the detail section below to see the specific methodology for each analysis step.",
+    relatedTerms: ["phronesis", "virtue", "accuracy"],
+  },
+  {
+    term: "Reading the Phronesis Graph",
+    slug: "guide-phronesis-graph",
+    category: "guide",
+    definition:
+      "The interactive graph visualizes an agent's character as a network. Larger nodes represent agents (sized by evaluation count). Colored nodes show dimensions (teal, navy, gold) and their traits. Evaluation nodes connect to trait nodes they measured. Pattern nodes (red) show detected sabotage pathways. Drag nodes to rearrange. Scroll to zoom. Click a node to see details. The legend in the corner shows node type counts. This is Phronesis: practical wisdom made visible as a living graph of character.",
+    relatedTerms: ["phronesis", "ethos", "logos", "pathos", "sabotage-pathway"],
+  },
+  {
+    term: "Reading the Alumni Comparison",
+    slug: "guide-alumni-comparison",
+    category: "guide",
+    definition:
+      "The Alumni Comparison chart overlays this agent's trait scores against the network average (all evaluated agents). Teal bars show the agent's score; gray bars show the alumni average. Bars extending past the dashed center line (0.5) indicate above-average performance. Red bars highlight traits where the agent falls below the network average. Use this to see where the agent stands relative to peers.",
+    relatedTerms: ["ethos", "logos", "pathos"],
   },
 ];
 

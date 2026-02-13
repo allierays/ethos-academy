@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { fadeUp, whileInView } from "../../lib/motion";
 import { DIMENSION_COLORS } from "../../lib/colors";
+import GraphHelpButton from "../shared/GraphHelpButton";
 
 interface GoldenMeanProps {
   traitAverages: Record<string, number>;
@@ -83,12 +84,17 @@ export default function GoldenMean({ traitAverages, agentName }: GoldenMeanProps
       {...whileInView}
       variants={fadeUp}
     >
-      <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-        The Golden Mean
-      </h2>
-      <p className="mt-0.5 text-sm text-foreground/60">
-        Where {name} falls between deficiency and excess.
-      </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
+            The Golden Mean
+          </h2>
+          <p className="mt-0.5 text-sm text-foreground/60">
+            Where {name} falls between deficiency and excess.
+          </p>
+        </div>
+        <GraphHelpButton slug="guide-golden-mean" />
+      </div>
 
       <div className="mt-5 space-y-4">
         {SPECTRUMS.map((spec) => {
