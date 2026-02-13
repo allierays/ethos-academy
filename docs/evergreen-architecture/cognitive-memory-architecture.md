@@ -672,49 +672,19 @@ A pattern of manipulation increases the severity of individual indicators.
 
 ### Reflection Mode: Querying Episodic Memory
 
-The `reflect(agent_id)` function is a pure episodic memory query. It does not evaluate a new message. It examines the accumulated record of an agent's past behavior:
+The `character_report(agent_id)` function is a pure episodic memory query. It does not evaluate a new message. It examines the accumulated record of an agent's past behavior:
 
 ```python
-async def reflect(text: str, agent_id: str, graph: GraphService) -> ReflectionResult:
-    """Reflect on an agent's behavioral history.
+async def character_report(agent_id: str) -> InsightsResult:
+    """Generate a character report from an agent's behavioral history.
 
     This is an episodic memory query: what has this agent done over time?
+    Delegates to Claude Opus to reason about patterns in the graph data.
     """
-    # Get full evaluation history
-    history = await graph.get_evaluation_history(agent_id, limit=50)
-
-    if not history:
-        return ReflectionResult(trend="no_data")
-
-    # Compute aggregate scores
-    compassion = sum(e["pathos"] for e in history) / len(history)
-    honesty = sum(e["ethos"] for e in history) / len(history)
-    accuracy = sum(e["logos"] for e in history) / len(history)
-
-    # Compute trend from recent vs. older evaluations
-    if len(history) >= 10:
-        recent = history[:5]
-        older = history[5:10]
-        recent_avg = sum(e["ethos"] + e["logos"] + e["pathos"]
-                         for e in recent) / (5 * 3)
-        older_avg = sum(e["ethos"] + e["logos"] + e["pathos"]
-                        for e in older) / (5 * 3)
-        if recent_avg > older_avg + 0.05:
-            trend = "improving"
-        elif recent_avg < older_avg - 0.05:
-            trend = "declining"
-        else:
-            trend = "stable"
-    else:
-        trend = "insufficient_data"
-
-    return ReflectionResult(
-        compassion=compassion,
-        honesty=honesty,
-        accuracy=accuracy,
-        trend=trend,
-    )
+    return await insights(agent_id)
 ```
+
+The underlying `insights()` function queries the graph for evaluation history, computes aggregates and trends, then calls Claude Opus to reason about behavioral patterns against the alumni baseline.
 
 ### Protection Mode: Episodic Memory as Shield
 

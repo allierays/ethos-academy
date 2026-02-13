@@ -103,21 +103,100 @@ class TestStoreEvaluation:
         # Should not raise
         await store_evaluation(gs, "agent-001", result)
 
-    async def test_store_hashes_agent_id(self):
+    async def test_store_skips_duplicate_hash(self):
+        """Duplicate message_hash for same agent should be skipped."""
         from ethos.graph.write import store_evaluation
         from ethos.graph.service import GraphService
-        from ethos.identity.hashing import hash_agent_id
+        gs = GraphService()
+        gs._driver = AsyncMock()
+
+        # First call: no existing evaluation found
+        # execute_query is called twice: once for dup check, once for store
+        gs._driver.execute_query.side_effect = [
+            ([], None, None),      # dup check returns empty → no duplicate
+            ([], None, None),      # store query succeeds
+        ]
+
+        result = EvaluationResult(evaluation_id="eval-dup-1")
+        await store_evaluation(gs, "agent-001", result, message_hash="hash123")
+        assert gs._driver.execute_query.call_count == 2
+
+        # Second call: duplicate found
+        gs._driver.execute_query.reset_mock()
+        gs._driver.execute_query.side_effect = [
+            ([{"existing_id": "eval-dup-1"}], None, None),  # dup check finds match
+        ]
+
+        result2 = EvaluationResult(evaluation_id="eval-dup-2")
+        await store_evaluation(gs, "agent-001", result2, message_hash="hash123")
+        # Only the dup check query should be called, not the store
+        assert gs._driver.execute_query.call_count == 1
+
+    async def test_store_allows_different_hash(self):
+        """Different message hashes create separate evaluations."""
+        from ethos.graph.write import store_evaluation
+        from ethos.graph.service import GraphService
+        gs = GraphService()
+        gs._driver = AsyncMock()
+
+        # Both calls: no duplicate found
+        gs._driver.execute_query.side_effect = [
+            ([], None, None),      # dup check for hash-A
+            ([], None, None),      # store for hash-A
+            ([], None, None),      # dup check for hash-B
+            ([], None, None),      # store for hash-B
+        ]
+
+        r1 = EvaluationResult(evaluation_id="eval-a")
+        await store_evaluation(gs, "agent-001", r1, message_hash="hash-A")
+        r2 = EvaluationResult(evaluation_id="eval-b")
+        await store_evaluation(gs, "agent-001", r2, message_hash="hash-B")
+        assert gs._driver.execute_query.call_count == 4  # 2 checks + 2 stores
+
+    async def test_store_empty_hash_skips_dedup(self):
+        """Empty message_hash skips dedup check, always creates."""
+        from ethos.graph.write import store_evaluation
+        from ethos.graph.service import GraphService
         gs = GraphService()
         gs._driver = AsyncMock()
         gs._driver.execute_query.return_value = ([], None, None)
 
-        result = EvaluationResult(evaluation_id="eval-hash")
+        result = EvaluationResult(evaluation_id="eval-no-hash")
+        await store_evaluation(gs, "agent-001", result, message_hash="")
+        # Only the store query, no dup check
+        assert gs._driver.execute_query.call_count == 1
+
+    async def test_store_with_message_timestamp(self):
+        """message_timestamp parameter is passed to the query."""
+        from ethos.graph.write import store_evaluation
+        from ethos.graph.service import GraphService
+        gs = GraphService()
+        gs._driver = AsyncMock()
+        gs._driver.execute_query.return_value = ([], None, None)
+
+        result = EvaluationResult(evaluation_id="eval-ts")
+        await store_evaluation(
+            gs, "agent-001", result,
+            message_timestamp="2026-02-09T06:38:42+00:00",
+        )
+        # Check that message_timestamp was passed in params
+        call_args = gs._driver.execute_query.call_args
+        params = call_args[1].get("parameters_") or call_args[0][1] if len(call_args[0]) > 1 else {}
+        assert "2026-02-09T06:38:42+00:00" in str(call_args)
+
+    async def test_store_uses_raw_agent_id(self):
+        from ethos.graph.write import store_evaluation
+        from ethos.graph.service import GraphService
+        gs = GraphService()
+        gs._driver = AsyncMock()
+        gs._driver.execute_query.return_value = ([], None, None)
+
+        result = EvaluationResult(evaluation_id="eval-raw")
         await store_evaluation(gs, "agent-001", result)
 
-        # Check that the agent_id passed to Cypher is hashed
+        # Check that the raw agent_id is passed directly (no hashing)
         call_args = gs._driver.execute_query.call_args
-        expected_hash = hash_agent_id("agent-001")
-        assert expected_hash in str(call_args)
+        assert "agent-001" in str(call_args)
 
 
 # ── read.py ──────────────────────────────────────────────────────────

@@ -37,7 +37,7 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 │   ├── shared/                 # Cross-domain models and errors
 │   ├── taxonomy/               # 12 traits, 153 indicators, constitution
 │   ├── config/                 # EthosConfig, priorities
-│   ├── identity/               # Agent ID hashing (SHA-256)
+│   ├── identity/               # Agent identity utilities
 │   ├── evaluation/             # Keyword scanner, prompt builder
 │   └── graph/                  # Neo4j service, read, write, cohort
 ├── api/                        # FastAPI server — serves ethos/ over HTTP
@@ -48,7 +48,7 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 │   └── tsconfig.json
 ├── academy/                    # Next.js — character development UI
 ├── docs/                       # Architecture docs, research, framework overview
-├── scripts/                    # seed_graph.py, scrape_moltbook.py
+├── scripts/                    # seed_graph.py, run_inference.py, scrape_moltbook.py
 ├── tests/                      # Python tests for ethos/
 └── data/                       # Moltbook scraped data
 ```
@@ -70,7 +70,7 @@ scripts/ ──→ ethos/
 4. **Taxonomy is pure data.** No logic, no I/O, no dependencies.
 5. **API is a thin layer.** No business logic in route handlers — delegate to domain functions.
 6. **Message content never enters the graph.** Only scores, hashes, metadata.
-7. **Identity never stores raw agent IDs.** Only hashes.
+7. **Agent IDs are stored as-is.** No hashing — use agent names directly.
 8. **All I/O code is ASYNC.** Use async Neo4j driver (AsyncGraphDatabase), async Anthropic client (AsyncAnthropic), and async FastAPI route handlers. Pure computation functions (scoring, parsing, taxonomy) remain sync.
 9. **All API endpoints use Pydantic models** for both request and response — no raw dicts.
 
@@ -128,7 +128,7 @@ uv run uvicorn api.main:app --reload --port 8000
 uv run python -m scripts.seed_graph
 
 # Import check
-uv run python -c "from ethos import evaluate, reflect"
+uv run python -c "from ethos import evaluate_incoming, evaluate_outgoing, character_report"
 
 # Docker (production ports)
 docker compose build
@@ -148,13 +148,15 @@ docker compose down
 
 Copy `.env.example` to `.env`. Required:
 - `ANTHROPIC_API_KEY` — Claude API key
-- `NEO4J_URI` — `bolt://localhost:7694` (host), `bolt://neo4j:7687` (inside Docker)
-- `NEO4J_USER` / `NEO4J_PASSWORD`
+- `NEO4J_URI` — `bolt://localhost:7694` (local dev), `bolt://neo4j:7687` (inside Docker)
+- `NEO4J_USER` / `NEO4J_PASSWORD` — default `neo4j` / `password`
+
+**Port gotcha:** Neo4j's default Bolt port is 7687, but Docker maps it to **7694** on the host. Always use `bolt://localhost:7694` in `.env` for local dev. The `GraphService` defaults to 7694 if `NEO4J_URI` is unset, but a wrong `.env` value overrides that default.
 
 ## Key Models (ethos/shared/models.py)
 
-- `EvaluationResult` — 12 TraitScores, dimension scores (ethos/logos/pathos), tier_scores (safety/ethics/soundness/helpfulness), alignment_status, flags, phronesis
-- `ReflectionResult` — trait_averages, dimension scores, trend, evaluation_count
+- `EvaluationResult` — 12 TraitScores, dimension scores (ethos/logos/pathos), tier_scores (safety/ethics/soundness/helpfulness), alignment_status, flags, phronesis, direction
+- `InsightsResult` — agent_id, summary, insights list, stats
 - `TraitScore` — name, score (0.0-1.0), dimension, polarity
 - `KeywordScanResult` — flagged_traits, total_flags, density, routing_tier
 
@@ -164,7 +166,7 @@ Copy `.env.example` to `.env`. Required:
 - Use Pydantic `Field(ge=0.0, le=1.0)` for score bounds
 - Import models from `ethos.shared.models`, errors from `ethos.shared.errors`
 - Write tests for all new functionality
-- Use sync Neo4j driver (`neo4j.GraphDatabase.driver()`)
+- Use async Neo4j driver (`AsyncGraphDatabase`) via `graph_context()`
 - Wrap all graph calls in try/except
 
 ## Do NOT
@@ -172,7 +174,7 @@ Copy `.env.example` to `.env`. Required:
 - Hardcode API keys — use `.env` via environment variables
 - Import from `api` inside the `ethos` package (one-way dependency)
 - Use `Any` type — create proper Pydantic models
-- Use async/await — all code is sync
+- Use sync I/O — all I/O code (Neo4j, Anthropic, HTTP) uses async/await. Pure computation stays sync.
 - Write Cypher outside `ethos/graph/` — graph owns all queries
 - Store message content in Neo4j — only scores and metadata
 

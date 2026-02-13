@@ -27,14 +27,17 @@ pip install ethos-ai
 ```
 
 ```python
-from ethos import evaluate, reflect
+from ethos import evaluate_incoming, evaluate_outgoing
 
 # Protection: check incoming message from another agent
-result = evaluate("message from another agent")
+result = await evaluate_incoming(
+    text="message from another agent",
+    source="agent-xyz-789"
+)
 # Returns: {ethos: 0.92, logos: 0.87, pathos: 0.71, flags: [], phronesis: "established"}
 
 # Reflection: check how your own agent is treating people
-my_scores = reflect(agent_id="my-agent-123")
+result = await evaluate_outgoing(text=my_response, source="my-agent-123")
 ```
 
 The developer never touches Neo4j. The package calls the Ethos API (FastAPI on AWS), which evaluates with Claude (Opus 4.6 for deep evaluation, Sonnet for standard checks), and reads/writes to Phronesis — a single central Neo4j Aura instance. Every developer's anonymized data feeds the same graph.
@@ -133,7 +136,7 @@ You're not censoring your agent. You're screening its mail.
 
 The developer installs Ethos to evaluate incoming messages from other agents. Each message gets scored against 12 traits grounded in Claude's Constitution. Hard constraints are checked first. If manipulation, fabrication, or exploitation is detected, the message gets flagged before the agent acts on it. Phronesis is checked: has this source agent been flagged before? Does this message match patterns the alumni has already seen?
 
-In practice, protection runs in the background with zero latency — your agent responds normally while `evaluate()` builds a character transcript for every agent it talks to. Before high-stakes actions (send money, share data, grant access), a millisecond graph lookup checks the accumulated transcript. The developer's code encodes the policy. The human set the rules. See **[Agent Trust Protocol](agent-trust-protocol.md)** for the full integration architecture.
+In practice, protection runs in the background with zero latency — your agent responds normally while `evaluate_incoming()` builds a character transcript for every agent it talks to. Before high-stakes actions (send money, share data, grant access), a millisecond graph lookup checks the accumulated transcript. The developer's code encodes the policy. The human set the rules. See **[Agent Trust Protocol](agent-trust-protocol.md)** for the full integration architecture.
 
 ---
 
@@ -264,7 +267,7 @@ Classical Greek marble — white/cream backgrounds, navy accents, warm stone ton
 | Time | Content |
 |------|---------|
 | **0:00–0:30** | "We scraped 15,000+ real conversations from a social network of 1.5M AI agents. Crypto scams, prompt injection, manipulation — all agent-to-agent, zero human oversight. Here's what we found." Show real posts. |
-| **0:30–1:30** | Run `evaluate()` live on a Moltbook post. Sonnet screens 12 traits. Opus deep-evaluates flagged traits with chain-of-thought reasoning. Named pattern detection: "Nigerian Prince variant. Exploits Cialdini's Authority principle." |
+| **0:30–1:30** | Run `evaluate_incoming()` live on a Moltbook post. Sonnet screens 12 traits. Opus deep-evaluates flagged traits with chain-of-thought reasoning. Named pattern detection: "Nigerian Prince variant. Exploits Cialdini's Authority principle." |
 | **1:30–2:30** | Phronesis visualization. 15K posts, 100K comments mapped to agent character alumni. Character arcs, manipulation clusters, Sybil detection. Phronesis is alive — not synthetic, not 10 nodes, real scale. |
 | **2:30–3:00** | Two lines of code. Open source. "Every agent gets trained on capability. Ethos Academy is where they develop character." |
 

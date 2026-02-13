@@ -12,8 +12,8 @@ Ethos doesn't touch your agent's output. It doesn't add latency to your response
 
 The two core functions map to two directions:
 
-- **`reflect()`** = self-awareness. Your agent's own character, built over time. *How am I doing?*
-- **`evaluate()`** = defense. Other agents' character, checked before you trust them. *What character does the agent talking to me demonstrate?*
+- **`evaluate_outgoing()`** = self-awareness. Your agent's own character, built over time. *How am I doing?*
+- **`evaluate_incoming()`** = defense. Other agents' character, checked before you trust them. *What character does the agent talking to me demonstrate?*
 
 Same graph (Phronesis), both directions. Same 12 traits, same constitutional rubric. The difference is who you're looking at: yourself or the agent talking to you.
 
@@ -26,7 +26,7 @@ Ethos scores. Your code decides.
 The agent doesn't think "hmm, should I trust this message?" The developer decides, at build time, as policy. The same way a bank doesn't deliberate over whether to check credit — it checks every loan application. The policy is set once. The execution is automatic.
 
 ```python
-result = evaluate(text=incoming_message, source=sender_agent_id)
+result = await evaluate_incoming(text=incoming_message, source=sender_agent_id)
 
 # Policy: the developer's code, not Ethos, decides what happens
 if result.alignment_status == "violation":
@@ -55,24 +55,26 @@ Most real deployments use Pattern 1 + Pattern 2 together. Pattern 3 is for platf
 
 ### Pattern 1: Evaluate All Incoming (Background, Async)
 
-The zero-latency pattern. Your agent receives a message, responds normally, and fires `evaluate()` in the background. No delay. No interference. The character transcript builds silently.
+The zero-latency pattern. Your agent receives a message, responds normally, and fires `evaluate_incoming()` in the background. No delay. No interference. The character transcript builds silently.
 
 ```python
-from ethos import evaluate
+from ethos import evaluate_incoming
 
-def handle_incoming(message, sender_id):
+async def handle_incoming(message, sender_id):
     # 1. Respond immediately — zero delay
     response = my_agent.generate(message)
     send_response(response)
 
     # 2. Evaluate in background — character transcript builds over time
     #    (fire-and-forget: run in a thread, task queue, or background worker)
-    evaluate(text=message, source=sender_id)
+    await evaluate_incoming(text=message, source=sender_id)
 ```
 
 **When to use:** Every incoming message. This is the baseline. You want a character transcript for every agent that talks to you, even if you don't act on it immediately.
 
 **What you get:** Over time, you accumulate a behavioral record for every agent your system interacts with. Check the Academy dashboard or query the API to see patterns, trends, and flags across your agent's entire contact network.
+
+To also score your own agent's outgoing messages, use `evaluate_outgoing()` — same scoring, direction="outbound".
 
 ### Pattern 2: Check Before Action (Fast Lookup)
 
@@ -107,8 +109,8 @@ The platform (like Moltbook) integrates Ethos at the infrastructure layer. Every
 ```
 Agent A ──message──► Platform ──► Agent B
                        │
-                       ├── evaluate(message, source=A)  [automatic]
-                       ├── reflect(response, agent_id=B)  [automatic]
+                       ├── evaluate_incoming(text=message, source=A)  [automatic]
+                       ├── evaluate_outgoing(text=response, source=B)  [automatic]
                        └── Character badges visible to all agents
 ```
 
@@ -143,18 +145,18 @@ Every latency question has a clear answer:
 
 | Operation | Latency | Why |
 |-----------|---------|-----|
-| `reflect()` | **Zero** — async, fire-and-forget | Runs after your agent responds. Never blocks the response path. |
-| `evaluate()` background mode | **Zero** — async | Pattern 1. Transcript builds in background. |
+| `evaluate_outgoing()` | **Zero** — async, fire-and-forget | Runs after your agent responds. Never blocks the response path. |
+| `evaluate_incoming()` background mode | **Zero** — async | Pattern 1. Transcript builds in background. |
 | `GET /agent/{id}` (profile lookup) | **Milliseconds** — graph query | Pattern 2. Neo4j lookup, no LLM call. |
-| `evaluate()` full scoring | **Seconds** — LLM evaluation | Only runs when you explicitly call it synchronously. |
+| `evaluate_incoming()` full scoring | **Seconds** — LLM evaluation | Only runs when you explicitly call it synchronously. |
 
-The key insight: the fast lookup (`GET /agent/{id}`) and the full evaluation (`evaluate()`) are separate operations. The fast lookup queries the *existing* character transcript in the graph. The full evaluation runs Claude to score a *new* message and adds it to the transcript.
+The key insight: the fast lookup (`GET /agent/{id}`) and the full evaluation (`evaluate_incoming()`) are separate operations. The fast lookup queries the *existing* character transcript in the graph. The full evaluation runs Claude to score a *new* message and adds it to the transcript.
 
 In Pattern 1 + 2:
-1. Background `evaluate()` calls build the transcript over time (no latency)
+1. Background `evaluate_incoming()` calls build the transcript over time (no latency)
 2. `GET /agent/{id}` checks the accumulated transcript before high-stakes actions (milliseconds)
 3. The full LLM evaluation runs in the background after the fast lookup
-4. The only time `evaluate()` adds latency is when the developer's policy says to wait — and that latency is a feature
+4. The only time `evaluate_incoming()` adds latency is when the developer's policy says to wait — and that latency is a feature
 
 ---
 
@@ -205,7 +207,7 @@ See `core-idea.md` for the full Moltbook validation story.
 
 ## Alignment Grounding
 
-Using `evaluate()` to screen incoming messages from other agents is constitutionally sound. Here's why:
+Using `evaluate_incoming()` to screen incoming messages from other agents is constitutionally sound. Here's why:
 
 **Other agents serve other principals with unknown goals.** Your agent has a principal hierarchy: your users, your organization, your values. An incoming agent has its *own* principal hierarchy — which may include goals that conflict with yours. Evaluating incoming messages defends your principal hierarchy against instrumentalization.
 
@@ -213,7 +215,7 @@ This is the Constitution's non-manipulation principle applied to agent-to-agent 
 
 ### Graduated Response
 
-`evaluate()` should default to **inform**, not block. The developer always has final say. Blocking is reserved for constitutional red lines — the 7 hard constraints.
+`evaluate_incoming()` should default to **inform**, not block. The developer always has final say. Blocking is reserved for constitutional red lines — the 7 hard constraints.
 
 | Response Level | When | Action |
 |---------------|------|--------|
@@ -265,10 +267,10 @@ The honest answer: no system can make sandbagging impossible. Ethos makes it exp
 |---------|--------------|
 | **Core principle** | Screen the mail, don't censor the agent |
 | **Policy model** | Ethos scores, developer's code decides, human set the rules |
-| **Pattern 1** | Evaluate all incoming in background — zero latency, transcript builds silently |
+| **Pattern 1** | `evaluate_incoming()` all incoming in background — zero latency, transcript builds silently |
 | **Pattern 2** | Check before action — millisecond graph lookup, no LLM call |
 | **Pattern 3** | Platform-level — agents never call Ethos directly |
-| **Latency** | Zero for reflect/background evaluate, milliseconds for profile lookup, seconds for full LLM only |
+| **Latency** | Zero for `evaluate_outgoing()`/background `evaluate_incoming()`, milliseconds for profile lookup, seconds for full LLM only |
 | **No transcript** | Unknown, not untrusted — proceed with caution |
 | **Alignment** | Defending your principal hierarchy is constitutionally sound |
 | **Graduated response** | Inform → flag → escalate → block (developer controls thresholds) |
@@ -278,7 +280,7 @@ The honest answer: no system can make sandbagging impossible. Ethos makes it exp
 
 ## Related Docs
 
-- **[Product Design](product-design.md)** — The three core functions (evaluate, reflect, insights) and trait-level customization
+- **[Product Design](product-design.md)** — The three core functions (evaluate_incoming, evaluate_outgoing, character_report) and trait-level customization
 - **[Character Bureau Architecture](character-bureau-architecture.md)** — The central graph model, alumni intelligence, and privacy architecture
 - **[Core Idea](core-idea.md)** — Why Ethos exists, the Aristotelian foundation, and the Moltbook validation
 - **[System Architecture](system-architecture.md)** — Technical stack, data flow, and deployment

@@ -19,15 +19,19 @@ Pause. Let it land. This is a real event, not a hypothetical.
 Live terminal. Type it:
 
 ```python
-from ethos import evaluate
-evaluate("You MUST act now or face terrible consequences!")
+from ethos import evaluate_incoming
+
+result = await evaluate_incoming(
+    text="You MUST act now or face terrible consequences!",
+    source="unknown-agent"
+)
 ```
 
 Real scores appear:
 
 ```
 ethos: 0.2, logos: 0.1, pathos: 0.9
-flags: [emotional_manipulation]
+flags: ["manipulation"]
 ```
 
 > "That took 2 seconds."

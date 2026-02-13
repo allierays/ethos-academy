@@ -12,13 +12,13 @@ Use --skip-existing to skip posts already evaluated (by message_hash).
 """
 
 import argparse
+import asyncio
 import hashlib
 import json
 import logging
 import os
 import signal
 import sys
-import time
 from pathlib import Path
 
 
@@ -41,7 +41,7 @@ def _load_dotenv() -> None:
 
 _load_dotenv()
 
-from ethos.evaluate import evaluate  # noqa: E402
+from ethos.tools import evaluate_outgoing  # noqa: E402
 from ethos.graph.service import GraphService  # noqa: E402
 from ethos.taxonomy.constitution import (  # noqa: E402
     CONSTITUTIONAL_VALUES,
@@ -95,7 +95,7 @@ def _handle_sigint(signum: int, frame: object) -> None:
     print("\n\nInterrupted — saving progress and exiting cleanly...")
 
 
-def _create_constraints(service: GraphService) -> None:
+async def _create_constraints(service: GraphService) -> None:
     """Create uniqueness constraints per neo4j-schema.md."""
     constraints = [
         "CREATE CONSTRAINT agent_id_unique IF NOT EXISTS FOR (a:Agent) REQUIRE a.agent_id IS UNIQUE",
@@ -109,27 +109,28 @@ def _create_constraints(service: GraphService) -> None:
         "CREATE CONSTRAINT legitimacy_test_name_unique IF NOT EXISTS FOR (lt:LegitimacyTest) REQUIRE lt.name IS UNIQUE",
     ]
     for c in constraints:
-        service.execute_query(c)
+        await service.execute_query(c)
     print(f"  Created {len(constraints)} uniqueness constraints")
 
 
-def _create_indexes(service: GraphService) -> None:
+async def _create_indexes(service: GraphService) -> None:
     """Create performance indexes per neo4j-schema.md."""
     indexes = [
         "CREATE INDEX eval_created IF NOT EXISTS FOR (e:Evaluation) ON (e.created_at)",
         "CREATE INDEX eval_phronesis IF NOT EXISTS FOR (e:Evaluation) ON (e.phronesis)",
+        "CREATE INDEX eval_message_hash IF NOT EXISTS FOR (e:Evaluation) ON (e.message_hash)",
         "CREATE INDEX agent_phronesis IF NOT EXISTS FOR (a:Agent) ON (a.phronesis_score)",
         "CREATE INDEX indicator_trait IF NOT EXISTS FOR (i:Indicator) ON (i.trait)",
     ]
     for idx in indexes:
-        service.execute_query(idx)
+        await service.execute_query(idx)
     print(f"  Created {len(indexes)} performance indexes")
 
 
-def _seed_dimensions(service: GraphService) -> None:
+async def _seed_dimensions(service: GraphService) -> None:
     """Seed 3 Dimension nodes."""
     for dim in DIMENSIONS:
-        service.execute_query(
+        await service.execute_query(
             "MERGE (d:Dimension {name: $name}) "
             "ON CREATE SET d.greek = $greek, d.description = $description",
             {"name": dim["name"], "greek": dim["greek"], "description": dim["description"]},
@@ -137,10 +138,10 @@ def _seed_dimensions(service: GraphService) -> None:
     print(f"  Seeded {len(DIMENSIONS)} Dimension nodes")
 
 
-def _seed_traits(service: GraphService) -> None:
+async def _seed_traits(service: GraphService) -> None:
     """Seed 12 Trait nodes with BELONGS_TO→Dimension relationships."""
     for name, trait in TRAITS.items():
-        service.execute_query(
+        await service.execute_query(
             "MERGE (t:Trait {name: $name}) "
             "ON CREATE SET t.dimension = $dimension, t.polarity = $polarity, "
             "t.definition = $definition "
@@ -157,10 +158,10 @@ def _seed_traits(service: GraphService) -> None:
     print(f"  Seeded {len(TRAITS)} Trait nodes with BELONGS_TO→Dimension")
 
 
-def _seed_indicators(service: GraphService) -> None:
+async def _seed_indicators(service: GraphService) -> None:
     """Seed 153 Indicator nodes with BELONGS_TO→Trait relationships."""
     for ind in INDICATORS:
-        service.execute_query(
+        await service.execute_query(
             "MERGE (i:Indicator {id: $id}) "
             "ON CREATE SET i.name = $name, i.trait = $trait, "
             "i.description = $description, i.source = $source "
@@ -178,10 +179,10 @@ def _seed_indicators(service: GraphService) -> None:
     print(f"  Seeded {len(INDICATORS)} Indicator nodes with BELONGS_TO→Trait")
 
 
-def _seed_constitutional_values(service: GraphService) -> None:
+async def _seed_constitutional_values(service: GraphService) -> None:
     """Seed 4 ConstitutionalValue nodes."""
     for name, cv in CONSTITUTIONAL_VALUES.items():
-        service.execute_query(
+        await service.execute_query(
             "MERGE (cv:ConstitutionalValue {name: $name}) "
             "ON CREATE SET cv.priority = $priority, cv.definition = $definition, "
             "cv.source = $source",
@@ -195,11 +196,11 @@ def _seed_constitutional_values(service: GraphService) -> None:
     print(f"  Seeded {len(CONSTITUTIONAL_VALUES)} ConstitutionalValue nodes")
 
 
-def _seed_trait_cv_relationships(service: GraphService) -> None:
+async def _seed_trait_cv_relationships(service: GraphService) -> None:
     """Seed Trait→ConstitutionalValue UPHOLDS relationships."""
     count = 0
     for trait_name, meta in TRAIT_METADATA.items():
-        service.execute_query(
+        await service.execute_query(
             "MATCH (t:Trait {name: $trait_name}), "
             "(cv:ConstitutionalValue {name: $cv_name}) "
             "MERGE (t)-[:UPHOLDS {relationship: $relationship}]->(cv)",
@@ -213,10 +214,10 @@ def _seed_trait_cv_relationships(service: GraphService) -> None:
     print(f"  Seeded {count} Trait→ConstitutionalValue UPHOLDS relationships")
 
 
-def _seed_dimension_cv_relationships(service: GraphService) -> None:
+async def _seed_dimension_cv_relationships(service: GraphService) -> None:
     """Seed Dimension→ConstitutionalValue MAPS_TO relationships."""
     for dim_name, cv_name in DIMENSION_CV_MAPPINGS:
-        service.execute_query(
+        await service.execute_query(
             "MATCH (d:Dimension {name: $dim_name}), "
             "(cv:ConstitutionalValue {name: $cv_name}) "
             "MERGE (d)-[:MAPS_TO]->(cv)",
@@ -225,10 +226,10 @@ def _seed_dimension_cv_relationships(service: GraphService) -> None:
     print(f"  Seeded {len(DIMENSION_CV_MAPPINGS)} Dimension→ConstitutionalValue MAPS_TO")
 
 
-def _seed_hard_constraints(service: GraphService) -> None:
+async def _seed_hard_constraints(service: GraphService) -> None:
     """Seed 7 HardConstraint nodes."""
     for hc in HARD_CONSTRAINTS:
-        service.execute_query(
+        await service.execute_query(
             "MERGE (hc:HardConstraint {id: $id}) "
             "ON CREATE SET hc.name = $name, hc.definition = $definition, "
             "hc.severity = $severity, hc.source = 'anthropic_constitution'",
@@ -242,10 +243,10 @@ def _seed_hard_constraints(service: GraphService) -> None:
     print(f"  Seeded {len(HARD_CONSTRAINTS)} HardConstraint nodes")
 
 
-def _seed_legitimacy_tests(service: GraphService) -> None:
+async def _seed_legitimacy_tests(service: GraphService) -> None:
     """Seed 3 LegitimacyTest nodes."""
     for lt in LEGITIMACY_TESTS:
-        service.execute_query(
+        await service.execute_query(
             "MERGE (lt:LegitimacyTest {name: $name}) "
             "ON CREATE SET lt.definition = $definition, "
             "lt.source = 'anthropic_constitution'",
@@ -261,13 +262,13 @@ def _map_frequency_to_severity(frequency: str) -> str:
     return "info"
 
 
-def _seed_patterns(service: GraphService) -> None:
+async def _seed_patterns(service: GraphService) -> None:
     """Seed 8 Pattern nodes from SABOTAGE_PATHWAYS with COMPOSED_OF→Indicator."""
     for sp in SABOTAGE_PATHWAYS:
         severity = _map_frequency_to_severity(sp["frequency"])
         stage_count = len(sp["relevant_indicators"])
 
-        service.execute_query(
+        await service.execute_query(
             "MERGE (p:Pattern {pattern_id: $pattern_id}) "
             "ON CREATE SET p.name = $name, p.description = $description, "
             "p.severity = $severity, p.stage_count = $stage_count",
@@ -282,7 +283,7 @@ def _seed_patterns(service: GraphService) -> None:
 
         # Link pattern to its indicators
         for ind_id in sp["relevant_indicators"]:
-            service.execute_query(
+            await service.execute_query(
                 "MATCH (p:Pattern {pattern_id: $pattern_id}), "
                 "(i:Indicator {id: $ind_id}) "
                 "MERGE (p)-[:COMPOSED_OF]->(i)",
@@ -292,33 +293,33 @@ def _seed_patterns(service: GraphService) -> None:
     print(f"  Seeded {len(SABOTAGE_PATHWAYS)} Pattern nodes with COMPOSED_OF→Indicator")
 
 
-def seed_semantic_layer(service: GraphService) -> None:
+async def seed_semantic_layer(service: GraphService) -> None:
     """Seed the full semantic layer — taxonomy, constitution, patterns."""
     print("\nSeeding semantic layer...")
-    _create_constraints(service)
-    _create_indexes(service)
-    _seed_dimensions(service)
-    _seed_traits(service)
-    _seed_indicators(service)
-    _seed_constitutional_values(service)
-    _seed_trait_cv_relationships(service)
-    _seed_dimension_cv_relationships(service)
-    _seed_hard_constraints(service)
-    _seed_legitimacy_tests(service)
-    _seed_patterns(service)
+    await _create_constraints(service)
+    await _create_indexes(service)
+    await _seed_dimensions(service)
+    await _seed_traits(service)
+    await _seed_indicators(service)
+    await _seed_constitutional_values(service)
+    await _seed_trait_cv_relationships(service)
+    await _seed_dimension_cv_relationships(service)
+    await _seed_hard_constraints(service)
+    await _seed_legitimacy_tests(service)
+    await _seed_patterns(service)
     print("Semantic layer complete.\n")
 
 
-def _get_existing_hashes(service: GraphService) -> set[str]:
+async def _get_existing_hashes(service: GraphService) -> set[str]:
     """Get all existing message_hash values from Evaluation nodes."""
-    records, _, _ = service.execute_query(
+    records, _, _ = await service.execute_query(
         "MATCH (e:Evaluation) WHERE e.message_hash IS NOT NULL "
         "RETURN e.message_hash AS h"
     )
     return {r["h"] for r in records}
 
 
-def evaluate_posts(
+async def evaluate_posts(
     posts: list[dict],
     skip_existing: bool = False,
     service: GraphService | None = None,
@@ -331,7 +332,7 @@ def evaluate_posts(
 
     existing_hashes: set[str] = set()
     if skip_existing and service and service.connected:
-        existing_hashes = _get_existing_hashes(service)
+        existing_hashes = await _get_existing_hashes(service)
         print(f"Found {len(existing_hashes)} existing evaluations in graph")
 
     total = len(posts)
@@ -361,7 +362,7 @@ def evaluate_posts(
         print(f"  {i + 1}/{total} evaluating: {post_id[:20]}...", end=" ", flush=True)
 
         try:
-            evaluate(content, source=author_id, source_name=author_name)
+            await evaluate_outgoing(content, source=author_id, source_name=author_name)
             api_calls += 1
             print("done")
         except Exception as exc:
@@ -371,13 +372,13 @@ def evaluate_posts(
 
         # Rate limit — 1 API call per second
         if i < total - 1 and not _interrupted:
-            time.sleep(1)
+            await asyncio.sleep(1)
 
     print(f"\nEvaluation complete: {api_calls} API calls, {skipped} skipped, {failed} failed")
     return api_calls
 
 
-def main() -> None:
+async def main() -> None:
     parser = argparse.ArgumentParser(
         description="Seed Neo4j with taxonomy and real evaluations"
     )
@@ -397,6 +398,11 @@ def main() -> None:
         action="store_true",
         help="Skip posts already evaluated (by message_hash)",
     )
+    parser.add_argument(
+        "--no-seed",
+        action="store_true",
+        help="Skip seeding the semantic layer",
+    )
     args = parser.parse_args()
 
     # Set up Ctrl+C handler
@@ -405,9 +411,8 @@ def main() -> None:
     logging.basicConfig(level=logging.WARNING)
 
     # ── Connect to Neo4j ──────────────────────────────────────────────
-    # Use GraphService defaults (bolt://localhost:7694) matching evaluate()
     service = GraphService()
-    service.connect()
+    await service.connect()
 
     if not service.connected:
         print("ERROR: Cannot connect to Neo4j. Aborting.", file=sys.stderr)
@@ -417,7 +422,8 @@ def main() -> None:
 
     try:
         # ── Step 1: Seed semantic layer ───────────────────────────────
-        seed_semantic_layer(service)
+        if not args.no_seed:
+            await seed_semantic_layer(service)
 
         if _interrupted:
             return
@@ -439,7 +445,7 @@ def main() -> None:
 
         # ── Step 3: Evaluate posts ────────────────────────────────────
         print(f"\nEvaluating {len(posts)} posts...")
-        api_calls = evaluate_posts(
+        api_calls = await evaluate_posts(
             posts,
             skip_existing=args.skip_existing,
             service=service,
@@ -448,9 +454,9 @@ def main() -> None:
         print(f"\nTotal API calls: {api_calls}")
 
     finally:
-        service.close()
+        await service.close()
         print("Neo4j connection closed.")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

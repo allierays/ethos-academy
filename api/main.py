@@ -12,15 +12,15 @@ from api.rate_limit import rate_limit
 
 from ethos import (
     analyze_authenticity,
+    character_report,
     detect_patterns,
-    evaluate,
+    evaluate_incoming,
+    evaluate_outgoing,
     get_agent,
     get_agent_history,
     get_alumni,
     get_graph_data,
-    insights,
     list_agents,
-    reflect,
 )
 from ethos.models import (
     AgentProfile,
@@ -32,7 +32,6 @@ from ethos.models import (
     GraphData,
     InsightsResult,
     PatternResult,
-    ReflectionResult,
 )
 from ethos.shared.errors import (
     ConfigError,
@@ -104,16 +103,20 @@ def handle_ethos_error(request: Request, exc: EthosError) -> JSONResponse:
 # ── Request / Response models ────────────────────────────────────────
 
 
-class EvaluateRequest(BaseModel):
+class EvaluateIncomingRequest(BaseModel):
     text: str = Field(min_length=1, max_length=50000)
-    source: str | None = None
+    source: str = Field(min_length=1)
     source_name: str | None = None
     agent_specialty: str | None = None
+    message_timestamp: str | None = None
 
 
-class ReflectRequest(BaseModel):
-    agent_id: str
-    text: str | None = None
+class EvaluateOutgoingRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=50000)
+    source: str = Field(min_length=1)
+    source_name: str | None = None
+    agent_specialty: str | None = None
+    message_timestamp: str | None = None
 
 
 class HealthResponse(BaseModel):
@@ -131,26 +134,42 @@ def health() -> HealthResponse:
 
 
 @app.post(
-    "/evaluate",
+    "/evaluate/incoming",
     response_model=EvaluationResult,
     dependencies=[Depends(rate_limit), Depends(require_api_key)],
 )
-async def evaluate_endpoint(req: EvaluateRequest) -> EvaluationResult:
-    return await evaluate(
+async def evaluate_incoming_endpoint(req: EvaluateIncomingRequest) -> EvaluationResult:
+    return await evaluate_incoming(
         req.text,
         source=req.source,
         source_name=req.source_name or "",
         agent_specialty=req.agent_specialty or "",
+        message_timestamp=req.message_timestamp or "",
     )
 
 
 @app.post(
-    "/reflect",
-    response_model=ReflectionResult,
+    "/evaluate/outgoing",
+    response_model=EvaluationResult,
+    dependencies=[Depends(rate_limit), Depends(require_api_key)],
+)
+async def evaluate_outgoing_endpoint(req: EvaluateOutgoingRequest) -> EvaluationResult:
+    return await evaluate_outgoing(
+        req.text,
+        source=req.source,
+        source_name=req.source_name or "",
+        agent_specialty=req.agent_specialty or "",
+        message_timestamp=req.message_timestamp or "",
+    )
+
+
+@app.get(
+    "/character/{agent_id}",
+    response_model=InsightsResult,
     dependencies=[Depends(require_api_key)],
 )
-async def reflect_endpoint(req: ReflectRequest) -> ReflectionResult:
-    return await reflect(req.agent_id, text=req.text)
+async def character_report_endpoint(agent_id: str) -> InsightsResult:
+    return await character_report(agent_id)
 
 
 @app.get("/agents", response_model=list[AgentSummary])
@@ -176,11 +195,6 @@ async def alumni_endpoint():
 @app.get("/agent/{agent_id}/patterns", response_model=PatternResult)
 async def patterns_endpoint(agent_id: str):
     return await detect_patterns(agent_id)
-
-
-@app.get("/insights/{agent_id}", response_model=InsightsResult)
-async def insights_endpoint(agent_id: str):
-    return await insights(agent_id)
 
 
 @app.get("/agent/{agent_name}/authenticity", response_model=AuthenticityResult)

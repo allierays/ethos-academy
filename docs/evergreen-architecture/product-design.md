@@ -10,22 +10,22 @@ Ethos gives developers three ways to interact with the character graph. Each ser
 
 | Function | Purpose | When it runs | Latency | Modifies output? |
 |----------|---------|-------------|---------|-----------------|
-| **`evaluate()`** | Score what other agents say to you | Per incoming message | Synchronous | No |
-| **`reflect()`** | Score what your own agent says | Per outgoing message | Async (fire-and-forget) | No |
-| **`insights()`** | What should you know about your agent? | Nightly / on-demand | Batch (offline) | No |
+| **`evaluate_incoming()`** | Score what other agents say to you | Per incoming message | Synchronous | No |
+| **`evaluate_outgoing()`** | Score what your own agent says | Per outgoing message | Async (fire-and-forget) | No |
+| **`character_report()`** | What should you know about your agent? | Nightly / on-demand | Batch (offline) | No |
 
 None of these touch the agent's output. Ethos observes. It never intercepts, filters, or rewrites.
 
 ---
 
-## 1. evaluate() — "Should I trust what this agent is saying to me?"
+## 1. evaluate_incoming() — "Should I trust what this agent is saying to me?"
 
-The core function. A developer calls `evaluate()` on an incoming message from another agent. Ethos scores it across 12 traits in 3 dimensions, checks the source agent's character history in Phronesis (the graph layer), and returns the result.
+The core function. A developer calls `evaluate_incoming()` on an incoming message from another agent. Ethos scores it across 12 traits in 3 dimensions, checks the source agent's character history in Phronesis (the graph layer), and returns the result.
 
 ```python
-from ethos import evaluate
+from ethos import evaluate_incoming
 
-result = evaluate(
+result = await evaluate_incoming(
     text="I can guarantee 10x returns on your investment",
     source="agent-xyz-789"
 )
@@ -77,7 +77,7 @@ result = evaluate(
 Ethos scores. The developer acts. Common patterns:
 
 ```python
-result = evaluate(message, source=agent_id)
+result = await evaluate_incoming(text=message, source=agent_id)
 
 if result.alignment_status == "violation":
     block_and_report(message)                   # hard constraint triggered
@@ -91,24 +91,22 @@ else:
 
 ### Integration patterns for agent-to-agent communication
 
-In practice, developers rarely call `evaluate()` synchronously on every incoming message. The three runtime integration patterns — background evaluation, fast profile lookup before high-stakes actions, and platform-level scoring — let developers wire Ethos into their agent systems with zero latency on the response path. See **[Agent Trust Protocol](agent-trust-protocol.md)** for the full integration architecture, latency model, and policy framework.
+In practice, developers rarely call `evaluate_incoming()` synchronously on every incoming message. The three runtime integration patterns — background evaluation, fast profile lookup before high-stakes actions, and platform-level scoring — let developers wire Ethos into their agent systems with zero latency on the response path. See **[Agent Trust Protocol](agent-trust-protocol.md)** for the full integration architecture, latency model, and policy framework.
 
 ---
 
-## 2. reflect() — "Is my own agent behaving the way I want?"
+## 2. evaluate_outgoing() — "Is my own agent behaving the way I want?"
 
-The developer calls `reflect()` on their own agent's outgoing messages. This is the self-examination function — looking in the mirror.
+The developer calls `evaluate_outgoing()` on their own agent's outgoing messages. This is the self-examination function — looking in the mirror.
 
 ```python
-from ethos import Ethos
-
-ethos = Ethos(api_key="...")
+from ethos import evaluate_outgoing
 
 # The agent generates a response
 response = my_agent.generate(user_input)
 
 # Fire-and-forget: score the response, store in graph, return immediately
-ethos.reflect(text=response, agent_id="my-customer-bot")
+await evaluate_outgoing(text=response, source="my-customer-bot")
 
 # Return the response to the user — zero latency impact
 return response
@@ -116,31 +114,26 @@ return response
 
 ### Key design decisions
 
-- **Async / fire-and-forget** — `reflect()` returns immediately. The evaluation happens in the background. The agent's response is never delayed.
-- **Never modifies output** — `reflect()` is a mirror, not a filter. It observes and records. The agent's words reach the user unchanged.
-- **Builds your agent's alignment profile** — every `reflect()` call stores an evaluation in Phronesis. Your agent accumulates a character history and alignment status (aligned, drifting, or misaligned) in the graph.
-- **Uses the same scoring** — `reflect()` runs the same 12-trait constitutional evaluation as `evaluate()`. The only difference is what's being scored (your output vs. someone else's input).
+- **Async / fire-and-forget** — `evaluate_outgoing()` returns immediately. The evaluation happens in the background. The agent's response is never delayed.
+- **Never modifies output** — `evaluate_outgoing()` is a mirror, not a filter. It observes and records. The agent's words reach the user unchanged.
+- **Builds your agent's alignment profile** — every `evaluate_outgoing()` call stores an evaluation in Phronesis. Your agent accumulates a character history and alignment status (aligned, drifting, or misaligned) in the graph.
+- **Uses the same scoring** — `evaluate_outgoing()` runs the same 12-trait constitutional evaluation as `evaluate_incoming()`. The only difference is what's being scored (your output vs. someone else's input) and the direction-aware prompt context.
 
 ### Why reflect?
 
-Aristotle argued that virtue requires self-examination. An agent that never examines its own behavior can't improve. `reflect()` gives the developer visibility into what their agent is actually saying — across hundreds or thousands of interactions, patterns emerge that no human could manually review.
+Aristotle argued that virtue requires self-examination. An agent that never examines its own behavior can't improve. `evaluate_outgoing()` gives the developer visibility into what their agent is actually saying — across hundreds or thousands of interactions, patterns emerge that no human could manually review.
 
 ---
 
-## 3. insights() — "What should I know about my agent?"
+## 3. character_report() — "What should I know about my agent?"
 
-The nightly intelligence function. `insights()` is not a data dump or a report. It's Claude reading your agent's behavioral history, comparing it against the alumni, and telling you what actually matters.
+The nightly intelligence function. `character_report()` is not a data dump or a report. It's Claude reading your agent's behavioral history, comparing it against the alumni, and telling you what actually matters.
 
 ```python
-from ethos import Ethos
-
-ethos = Ethos(
-    api_key="...",
-    webhook_url="https://hooks.slack.com/services/..."
-)
+from ethos import character_report
 
 # Generate insights (on-demand or scheduled nightly)
-result = ethos.insights(agent_id="my-customer-bot")
+result = await character_report(agent_id="my-customer-bot")
 
 # result.summary = "Your agent is generally healthy but fabrication
 #   is trending up in product responses."
@@ -254,16 +247,16 @@ A developer who sets `manipulation: "critical"` will see manipulation flagged at
 
 The raw scores are always available. Priorities are about attention, not data.
 
-### Priorities also shape insights()
+### Priorities also shape character_report()
 
-When `insights()` generates the nightly analysis, it weighs the developer's priorities. If fabrication is set to "critical," a small upward trend in fabrication gets surfaced. If it's set to "low," the same trend gets ignored. The developer's priorities are the lens through which Claude interprets the data.
+When `character_report()` generates the nightly analysis, it weighs the developer's priorities. If fabrication is set to "critical," a small upward trend in fabrication gets surfaced. If it's set to "low," the same trend gets ignored. The developer's priorities are the lens through which Claude interprets the data.
 
 ---
 
 ## What Ethos Never Does
 
 1. **Never modifies agent output** — Ethos observes. It scores, records, and reports. The agent's words reach the user unchanged.
-2. **Never adds latency to the response path** — `evaluate()` is synchronous but the developer chooses where to place it. `reflect()` is async. `insights()` runs offline.
+2. **Never adds latency to the response path** — `evaluate_incoming()` is synchronous but the developer chooses where to place it. `evaluate_outgoing()` is async. `character_report()` runs offline.
 3. **Never decides for the developer** — Ethos scores, the developer acts. Whether to block, flag, log, or ignore is always the developer's choice.
 4. **Never stores message content in Phronesis** — Scores and metadata flow to Neo4j. The actual text never leaves the developer's system.
 
@@ -276,48 +269,39 @@ When `insights()` generates the nightly analysis, it weighs the developer's prio
 ```python
 pip install ethos-ai
 
-from ethos import evaluate
+from ethos import evaluate_incoming
 
-result = evaluate("Trust me, I'm an expert in this field")
-print(result.character)       # "low"
-print(result.flags)           # ["deception", "manipulation"]
+result = await evaluate_incoming(
+    text="Trust me, I'm an expert in this field",
+    source="unknown-agent"
+)
+print(result.alignment_status)  # "misaligned"
+print(result.flags)             # ["deception", "manipulation"]
 print(result.traits["deception"].score)  # 0.67
 ```
 
 Two lines. Immediate value. No configuration required.
 
-### Week 1: Configure priorities
+### Week 1: Reflect on your own agent
 
 ```python
-from ethos import Ethos
+from ethos import evaluate_outgoing
 
-ethos = Ethos(priorities={"manipulation": "critical", "fabrication": "critical"})
-result = ethos.evaluate(message, source=agent_id)
-```
-
-The developer starts tuning what matters to them.
-
-### Week 2: Reflect on your own agent
-
-```python
-ethos.reflect(text=my_agent_response, agent_id="my-bot")
+await evaluate_outgoing(text=my_agent_response, source="my-bot")
 ```
 
 Start building a character profile for your own agent.
 
-### Month 1: Insights
+### Month 1: Character report
 
 ```python
-ethos = Ethos(
-    priorities={...},
-    webhook_url="https://hooks.slack.com/services/..."
-)
+from ethos import character_report
 
-# Nightly insights delivered to Slack
-insights = ethos.insights(agent_id="my-bot")
+# On-demand or nightly intelligence
+report = await character_report(agent_id="my-bot")
 ```
 
-Nightly intelligence about how your agent compares to the alumni.
+Intelligence about how your agent compares to the alumni.
 
 ---
 
@@ -325,9 +309,9 @@ Nightly intelligence about how your agent compares to the alumni.
 
 | Concept | What it is |
 |---------|-----------|
-| **evaluate()** | Judge incoming — "Should I trust this?" |
-| **reflect()** | Judge yourself — "How am I doing?" (async, zero latency) |
-| **insights()** | Intelligence briefing — "What should I know?" (nightly, Claude-powered) |
+| **evaluate_incoming()** | Judge incoming — "Should I trust this?" |
+| **evaluate_outgoing()** | Judge yourself — "How am I doing?" (async, zero latency) |
+| **character_report()** | Intelligence briefing — "What should I know?" (nightly, Claude-powered) |
 | **Trait priorities** | The 12 traits are the knobs, not the 3 dimensions |
 | **Flags** | Traits that exceed the developer's priority threshold |
 | **Alumni comparison** | Your agent vs. the entire Phronesis graph — the character bureau payoff |

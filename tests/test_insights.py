@@ -385,7 +385,7 @@ class TestInsightsEndpoint:
 
         with patch("ethos.reflection.insights.graph_context", mock_ctx):
             client = TestClient(app)
-            resp = client.get("/insights/test-agent")
+            resp = client.get("/character/test-agent")
 
         assert resp.status_code == 200
         data = resp.json()

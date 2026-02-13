@@ -1,21 +1,19 @@
-import type { EthosConfig, EvaluateOptions, EvaluationResult, ReflectOptions, ReflectionResult } from './types'
+import type { CharacterReportResult, EthosConfig, EvaluateIncomingOptions, EvaluateOutgoingOptions, EvaluationResult } from './types'
 
 const DEFAULT_API_URL = 'http://localhost:8917'
 
-/** Ethos client — configurable SDK for evaluating agent messages. */
+/** Ethos client — three tool calls for AI agents. */
 export class Ethos {
   private apiUrl: string
   private apiKey?: string
-  private priorities?: Record<string, string>
 
   constructor(config: EthosConfig = {}) {
     this.apiUrl = config.apiUrl ?? DEFAULT_API_URL
     this.apiKey = config.apiKey
-    this.priorities = config.priorities
   }
 
-  async evaluate(options: EvaluateOptions): Promise<EvaluationResult> {
-    const res = await fetch(`${this.apiUrl}/evaluate`, {
+  async evaluateIncoming(options: EvaluateIncomingOptions): Promise<EvaluationResult> {
+    const res = await fetch(`${this.apiUrl}/evaluate/incoming`, {
       method: 'POST',
       headers: this.headers(),
       body: JSON.stringify(options),
@@ -24,11 +22,19 @@ export class Ethos {
     return res.json()
   }
 
-  async reflect(options: ReflectOptions): Promise<ReflectionResult> {
-    const res = await fetch(`${this.apiUrl}/reflect`, {
+  async evaluateOutgoing(options: EvaluateOutgoingOptions): Promise<EvaluationResult> {
+    const res = await fetch(`${this.apiUrl}/evaluate/outgoing`, {
       method: 'POST',
       headers: this.headers(),
       body: JSON.stringify(options),
+    })
+    if (!res.ok) throw new Error(`Ethos API error: ${res.status}`)
+    return res.json()
+  }
+
+  async characterReport(agentId: string): Promise<CharacterReportResult> {
+    const res = await fetch(`${this.apiUrl}/character/${encodeURIComponent(agentId)}`, {
+      headers: this.headers(),
     })
     if (!res.ok) throw new Error(`Ethos API error: ${res.status}`)
     return res.json()

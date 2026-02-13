@@ -164,8 +164,8 @@ export default function AgentReportCard() {
             )}
           </div>
           <div className="mt-1 flex items-center gap-3">
-            <p className="font-mono text-sm text-muted" title={profile.agentId}>
-              {profile.agentId}
+            <p className="text-lg font-medium">
+              {profile.agentName || profile.agentId}
             </p>
             {classOf && (
               <span className="text-xs text-muted">{classOf}</span>

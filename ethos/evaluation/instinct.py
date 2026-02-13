@@ -337,6 +337,12 @@ def scan(text: str) -> InstinctResult:
     else:
         routing_tier = "standard"
 
+    # Density-aware cap: long analytical text with scattered keywords
+    # shouldn't escalate to expensive deep tier (Opus).
+    # Threshold 0.02 = less than 2% of words are keyword matches.
+    if routing_tier == "deep" and not has_hard_constraint and density < 0.02:
+        routing_tier = "focused"
+
     return InstinctResult(
         total_flags=total_flags,
         flagged_traits=flagged_traits,

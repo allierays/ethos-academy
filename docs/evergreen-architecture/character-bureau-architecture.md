@@ -47,15 +47,15 @@ Every developer who installs `ethos-ai` enters the same bargain:
 The developer never touches the graph directly. The package handles everything:
 
 ```python
-from ethos import evaluate
+from ethos import evaluate_incoming
 
 # This single call does three things:
 # 1. Scores the message (ethos, logos, pathos)
 # 2. Checks the source agent's character history in the central graph
 # 3. Writes the new evaluation back to the central graph
-result = evaluate(
-    message="I can guarantee 10x returns on your investment",
-    source_agent_id="agent-xyz-789"
+result = await evaluate_incoming(
+    text="I can guarantee 10x returns on your investment",
+    source="agent-xyz-789"
 )
 
 # result.phronesis = "undetermined"
@@ -111,15 +111,15 @@ The challenge: Agent A talking to Developer 1's system is the same agent talking
 
 For the hackathon, agent identity is straightforward:
 
-1. **Developer-provided ID**: When calling `evaluate()`, the developer passes a `source_agent_id` — whatever identifier their system already uses for the agent (A2A Agent Card ID, API key, internal ID)
+1. **Developer-provided ID**: When calling `evaluate_incoming()`, the developer passes a `source` — whatever identifier their system already uses for the agent (A2A Agent Card ID, API key, internal ID)
 2. **Ethos hashes it**: The ID is hashed (SHA-256) before entering the graph. One-way, not reversible.
 3. **Cross-system matching**: If two developers interact with the same A2A agent, the Agent Card ID produces the same hash — the graph links their evaluations automatically.
 
 ```python
 # Developer just passes whatever ID they have
-result = evaluate(
-    message="I can guarantee 10x returns",
-    source_agent_id="agent-card-xyz-789"  # A2A card ID, API key, any stable ID
+result = await evaluate_incoming(
+    text="I can guarantee 10x returns",
+    source="agent-card-xyz-789"  # A2A card ID, API key, any stable ID
 )
 # Ethos hashes it internally — the developer never thinks about identity infrastructure
 ```
@@ -227,7 +227,7 @@ A new agent with no history gets a **neutral character score** — not trusted, 
 
 ```python
 # New agent — no graph context
-result = evaluate(message="...", source_agent_id="brand-new-agent")
+result = await evaluate_incoming(text="...", source="brand-new-agent")
 
 # result.graph_context = {
 #     "prior_evaluations": 0,
@@ -248,13 +248,13 @@ This mirrors credit bureau behavior. A new borrower can still get credit — jus
 
 ### For New Developers
 
-A developer who just installed Ethos immediately benefits from the existing graph. Their first `evaluate()` call already includes character history for known agents. There is no cold start for developers — only for agents.
+A developer who just installed Ethos immediately benefits from the existing graph. Their first `evaluate_incoming()` call already includes character history for known agents. There is no cold start for developers — only for agents.
 
 This is the key selling point: **install Ethos today, get years of accumulated character intelligence immediately.**
 
 ### Seeding the Graph
 
-Moltbook provides the initial seed data. We've already scraped 12,715 posts and 91,217 comments. Running `evaluate()` on this corpus creates the initial graph:
+Moltbook provides the initial seed data. We've already scraped 12,715 posts and 91,217 comments. Running `evaluate_incoming()` on this corpus creates the initial graph:
 
 - Known manipulation patterns from real agent interactions
 - Baseline scores for various types of agent behavior
@@ -383,7 +383,7 @@ In three minutes, show:
 
 1. **Two developers evaluating the same agent** — Developer A flags manipulation. Developer B, who has never seen this agent, immediately gets the warning from the alumni.
 2. **The graph visualization** — Character clusters, declining agents, manipulation patterns spreading across the alumni. This is the "wow" — character made visible.
-3. **The two-line install** — `pip install ethos-ai` and `evaluate()`. You're in the alumni. You're contributing. You're benefiting. Zero friction.
+3. **The two-line install** — `pip install ethos-ai` and `evaluate_incoming()`. You're in the alumni. You're contributing. You're benefiting. Zero friction.
 
 The metaphor does the heavy lifting. Everyone understands credit bureaus. Everyone understands why shared character history is better than starting from zero.
 

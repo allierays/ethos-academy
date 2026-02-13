@@ -7,7 +7,10 @@ from fastapi.testclient import TestClient
 
 from api.main import app
 from api import rate_limit as rate_limit_module
-from ethos.shared.models import EvaluationResult, ReflectionResult
+from ethos.shared.models import EvaluationResult
+
+
+_EVAL_PAYLOAD = {"text": "hello", "source": "test-agent"}
 
 
 @pytest.fixture()
@@ -25,10 +28,7 @@ def _clean_state(monkeypatch):
 @pytest.fixture(autouse=True)
 def _mock_domain():
     """Mock domain functions so tests don't need Claude."""
-    with (
-        patch("api.main.evaluate", return_value=EvaluationResult()),
-        patch("api.main.reflect", return_value=ReflectionResult()),
-    ):
+    with patch("api.main.evaluate_incoming", return_value=EvaluationResult()):
         yield
 
 
@@ -36,13 +36,13 @@ class TestUnderLimit:
     """Requests under the limit pass through."""
 
     def test_single_request(self, client):
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 200
 
     def test_multiple_under_limit(self, client, monkeypatch):
         monkeypatch.setenv("ETHOS_RATE_LIMIT", "5")
         for _ in range(5):
-            resp = client.post("/evaluate", json={"text": "hello"})
+            resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
             assert resp.status_code == 200
 
 
@@ -52,18 +52,18 @@ class TestOverLimit:
     def test_exceeds_limit(self, client, monkeypatch):
         monkeypatch.setenv("ETHOS_RATE_LIMIT", "3")
         for _ in range(3):
-            resp = client.post("/evaluate", json={"text": "hello"})
+            resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
             assert resp.status_code == 200
 
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 429
         assert "Rate limit exceeded" in resp.json()["detail"]
         assert "Retry-After" in resp.headers
 
     def test_retry_after_is_positive_integer(self, client, monkeypatch):
         monkeypatch.setenv("ETHOS_RATE_LIMIT", "1")
-        client.post("/evaluate", json={"text": "hello"})
-        resp = client.post("/evaluate", json={"text": "hello"})
+        client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 429
         retry_after = int(resp.headers["Retry-After"])
         assert 1 <= retry_after <= 61
@@ -77,10 +77,10 @@ class TestWindowExpiry:
 
         # Fill the window
         for _ in range(2):
-            client.post("/evaluate", json={"text": "hello"})
+            client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
 
         # Blocked
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 429
 
         # Simulate window expiry by backdating timestamps
@@ -88,18 +88,8 @@ class TestWindowExpiry:
             rate_limit_module._requests[ip] = [t - 61 for t in timestamps]
 
         # Allowed again
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 200
-
-
-class TestReflectNotRateLimited:
-    """POST /reflect has auth but no rate limit."""
-
-    def test_reflect_not_rate_limited(self, client, monkeypatch):
-        monkeypatch.setenv("ETHOS_RATE_LIMIT", "2")
-        for _ in range(5):
-            resp = client.post("/reflect", json={"agent_id": "test"})
-            assert resp.status_code == 200
 
 
 class TestInvalidConfig:
@@ -107,15 +97,15 @@ class TestInvalidConfig:
 
     def test_non_numeric_limit(self, client, monkeypatch):
         monkeypatch.setenv("ETHOS_RATE_LIMIT", "abc")
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 200  # Falls back to 10, not crash
 
     def test_zero_limit_floors_to_one(self, client, monkeypatch):
         monkeypatch.setenv("ETHOS_RATE_LIMIT", "0")
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 200  # Floors to 1, allows first request
 
     def test_negative_limit_floors_to_one(self, client, monkeypatch):
         monkeypatch.setenv("ETHOS_RATE_LIMIT", "-5")
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 200  # Floors to 1, allows first request

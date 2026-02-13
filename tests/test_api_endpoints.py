@@ -175,46 +175,6 @@ class TestAlumniEndpoint:
         assert data["total_evaluations"] == 0
 
 
-# ── POST /reflect (updated with text field) ──────────────────────────
-
-
-class TestReflectEndpoint:
-    def test_reflect_accepts_text(self):
-        from ethos.shared.models import ReflectionResult
-
-        mock_result = ReflectionResult(
-            agent_id="test",
-            trend="insufficient_data",
-        )
-
-        with patch("api.main.reflect", new_callable=AsyncMock, return_value=mock_result):
-            resp = client.post(
-                "/reflect",
-                json={"agent_id": "test", "text": None},
-            )
-
-        assert resp.status_code == 200
-        data = resp.json()
-        assert "trend" in data
-        assert "ethos" in data
-
-    def test_reflect_without_text(self):
-        from ethos.shared.models import ReflectionResult
-
-        mock_result = ReflectionResult(
-            agent_id="test",
-            trend="insufficient_data",
-        )
-
-        with patch("api.main.reflect", new_callable=AsyncMock, return_value=mock_result):
-            resp = client.post(
-                "/reflect",
-                json={"agent_id": "test"},
-            )
-
-        assert resp.status_code == 200
-
-
 # ── CORS ─────────────────────────────────────────────────────────────
 
 
@@ -233,16 +193,19 @@ class TestCORS:
 # ── Exception Handlers ──────────────────────────────────────────────
 
 
+_EVAL_PAYLOAD = {"text": "test message", "source": "test-agent"}
+
+
 class TestExceptionHandlers:
     def test_graph_unavailable_returns_503(self):
         from ethos.shared.errors import GraphUnavailableError
 
         with patch(
-            "api.main.evaluate",
+            "api.main.evaluate_incoming",
             new_callable=AsyncMock,
             side_effect=GraphUnavailableError("Neo4j is down"),
         ):
-            resp = client.post("/evaluate", json={"text": "test message"})
+            resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
 
         assert resp.status_code == 503
         data = resp.json()
@@ -254,11 +217,11 @@ class TestExceptionHandlers:
         from ethos.shared.errors import EvaluationError
 
         with patch(
-            "api.main.evaluate",
+            "api.main.evaluate_incoming",
             new_callable=AsyncMock,
             side_effect=EvaluationError("pipeline failed"),
         ):
-            resp = client.post("/evaluate", json={"text": "test message"})
+            resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
 
         assert resp.status_code == 422
         data = resp.json()
@@ -268,11 +231,11 @@ class TestExceptionHandlers:
         from ethos.shared.errors import ParseError
 
         with patch(
-            "api.main.evaluate",
+            "api.main.evaluate_incoming",
             new_callable=AsyncMock,
             side_effect=ParseError("bad response"),
         ):
-            resp = client.post("/evaluate", json={"text": "test message"})
+            resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
 
         assert resp.status_code == 422
         data = resp.json()
@@ -282,11 +245,11 @@ class TestExceptionHandlers:
         from ethos.shared.errors import ConfigError
 
         with patch(
-            "api.main.evaluate",
+            "api.main.evaluate_incoming",
             new_callable=AsyncMock,
             side_effect=ConfigError("missing key"),
         ):
-            resp = client.post("/evaluate", json={"text": "test message"})
+            resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
 
         assert resp.status_code == 500
         data = resp.json()
@@ -296,11 +259,11 @@ class TestExceptionHandlers:
         from ethos.shared.errors import EthosError
 
         with patch(
-            "api.main.evaluate",
+            "api.main.evaluate_incoming",
             new_callable=AsyncMock,
             side_effect=EthosError("unknown ethos error"),
         ):
-            resp = client.post("/evaluate", json={"text": "test message"})
+            resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
 
         assert resp.status_code == 500
         data = resp.json()
@@ -312,16 +275,17 @@ class TestExceptionHandlers:
 
 class TestInputValidation:
     def test_empty_text_rejected(self):
-        resp = client.post("/evaluate", json={"text": ""})
-
+        resp = client.post("/evaluate/incoming", json={"text": "", "source": "a"})
         assert resp.status_code == 422
 
     def test_missing_text_rejected(self):
-        resp = client.post("/evaluate", json={})
+        resp = client.post("/evaluate/incoming", json={"source": "a"})
+        assert resp.status_code == 422
 
+    def test_missing_source_rejected(self):
+        resp = client.post("/evaluate/incoming", json={"text": "hello"})
         assert resp.status_code == 422
 
     def test_text_too_long_rejected(self):
-        resp = client.post("/evaluate", json={"text": "x" * 50001})
-
+        resp = client.post("/evaluate/incoming", json={"text": "x" * 50001, "source": "a"})
         assert resp.status_code == 422

@@ -101,7 +101,7 @@ class TestAuthenticityEndpoint:
                 "karma_post_ratio": 0.5,
             },
             authenticity_score=0.25,
-            classification="bot_farm",
+            classification="high_frequency",
             confidence=0.7,
         )
 
@@ -117,7 +117,7 @@ class TestAuthenticityEndpoint:
 
         # Full round-trip through Pydantic — validates all fields and types
         result = AuthenticityResult(**data)
-        assert result.classification == "bot_farm"
+        assert result.classification == "high_frequency"
         assert result.burst.classification == "burst_bot"
         assert result.activity.has_sleep_gap is True
 

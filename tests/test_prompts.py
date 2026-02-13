@@ -116,6 +116,34 @@ class TestUserPrompt:
         assert "clean text" in user
 
 
+class TestDirectionContext:
+    """Direction parameter adds context to the system prompt."""
+
+    def test_inbound_adds_protection_context(self):
+        from ethos.evaluation.prompts import build_evaluation_prompt
+        system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard", direction="inbound")
+        assert "inbound" in system.lower()
+        assert "manipulation" in system.lower()
+        assert "deception" in system.lower()
+
+    def test_outbound_adds_reflection_context(self):
+        from ethos.evaluation.prompts import build_evaluation_prompt
+        system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard", direction="outbound")
+        assert "outbound" in system.lower()
+        assert "virtue" in system.lower()
+        assert "character" in system.lower()
+
+    def test_no_direction_no_extra_context(self):
+        from ethos.evaluation.prompts import build_evaluation_prompt
+        system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard")
+        assert "Direction:" not in system
+
+    def test_none_direction_no_extra_context(self):
+        from ethos.evaluation.prompts import build_evaluation_prompt
+        system, _ = build_evaluation_prompt("test", KeywordScanResult(), "standard", direction=None)
+        assert "Direction:" not in system
+
+
 class TestNoStubCode:
     """No old EVALUATE_PROMPT or REFLECT_PROMPT templates."""
 

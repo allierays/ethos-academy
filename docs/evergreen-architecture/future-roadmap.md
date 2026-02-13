@@ -29,13 +29,12 @@ The MVP uses hashed IDs for agent identity. This works but has limitations:
 
 ```python
 # Level 1 developer experience (same simplicity, cryptographic identity under the hood)
-from ethos import register, evaluate
+from ethos import evaluate_incoming
 
-agent = register(name="my-customer-service-bot")
-# Auto-generates key pair, stores private key in .ethos/ directory
+# Auto-generates key pair on first call, stores private key in .ethos/ directory
 # Public key becomes the agent's alumni identity
 
-result = evaluate(message="...", source_agent_id="ethos:z6Mkf5rG...")
+result = await evaluate_incoming(text="...", source="ethos:z6Mkf5rG...")
 # Evaluation is signed automatically — can't be forged
 ```
 
@@ -45,7 +44,7 @@ result = evaluate(message="...", source_agent_id="ethos:z6Mkf5rG...")
 
 ### Key Design Decision
 
-The `evaluate()` API doesn't change between levels. The identity infrastructure is behind the interface. A developer on Level 1 and a developer on Level 3 both call the same function. This is critical — upgrading identity should never require rewriting application code.
+The `evaluate_incoming()` / `evaluate_outgoing()` API doesn't change between levels. The identity infrastructure is behind the interface. A developer on Level 1 and a developer on Level 3 both call the same function. This is critical — upgrading identity should never require rewriting application code.
 
 ---
 
@@ -85,23 +84,23 @@ Each agent action creates a signed, timestamped log entry. Entries are hash-chai
 
 ```python
 # Developer experience: a decorator that captures provenance automatically
-from ethos import evaluate, track
+from ethos import evaluate_incoming
 
 @track
-def my_agent_handler(message):
+async def my_agent_handler(message, sender_id):
     # Ethos automatically logs:
     # - incoming message (content hash, not content)
     # - available tools and permissions
     # - timestamp and sequence
 
-    result = evaluate(message)
+    result = await evaluate_incoming(text=message, source=sender_id)
 
     # Ethos automatically logs:
     # - evaluation result
     # - action taken based on score
     # - whether human was consulted
 
-    if result.character == "low":
+    if result.alignment_status == "misaligned":
         return flag_for_human_review(message)
     return process(message)
 ```
@@ -272,7 +271,7 @@ The alumni effect IS the product for the hackathon. Local-only mode is an enterp
 ## The Principle
 
 Every post-MVP feature builds on the same foundation:
-- The `evaluate()` API doesn't change
+- The three public functions (`evaluate_incoming`, `evaluate_outgoing`, `character_report`) don't change
 - The Neo4j graph schema extends (new node types, new relationships) but doesn't break
 - The developer experience stays simple at the surface
 - Complexity is opt-in, never mandatory

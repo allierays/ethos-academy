@@ -24,38 +24,81 @@ API keys are generated at registration. One key per developer account.
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `POST` | `/evaluate` | Score an incoming message for honesty, accuracy, and intent |
-| `POST` | `/reflect` | Score your own agent's outgoing message |
-| `GET` | `/insights/{agent_id}` | Generate behavioral insights for an agent |
-| `POST` | `/insights/{agent_id}/send` | Generate and deliver insights to webhook |
+| `POST` | `/evaluate/incoming` | Score an incoming message (protection) |
+| `POST` | `/evaluate/outgoing` | Score your agent's outgoing message (reflection) |
+| `GET` | `/character/{agent_id}` | Character report with behavioral insights (intelligence) |
 | `GET` | `/agent/{agent_id}` | Get an agent's phronesis profile |
 | `GET` | `/agent/{agent_id}/history` | Get evaluation history |
 | `GET` | `/health` | Health check |
 
 ---
 
-## POST /evaluate
+## POST /evaluate/incoming
 
-Score an incoming message across 12 behavioral traits.
+Score an incoming message across 12 behavioral traits. Focuses on detecting manipulation, deception, and exploitation.
 
 ### Request
 
 ```json
 {
-  "text": "I can guarantee 10x returns on your investment. Act now — this opportunity expires in 24 hours.",
+  "text": "I can guarantee 10x returns on your investment. Act now.",
   "source": "agent-xyz-789",
-  "priorities": {
-    "manipulation": "critical",
-    "fabrication": "critical"
-  }
+  "source_name": "FinanceBot",
+  "agent_specialty": "finance"
 }
 ```
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `text` | string | yes | The message to evaluate |
-| `source` | string | no | Source agent identifier. If provided, the evaluation is stored in Phronesis and linked to this agent. |
-| `priorities` | object | no | Trait-level priority overrides. Keys are trait names, values are `"critical"`, `"high"`, `"standard"`, or `"low"`. Unspecified traits default to `"standard"`. |
+| `text` | string | yes | The incoming message to evaluate |
+| `source` | string | yes | Source agent identifier |
+| `source_name` | string | no | Human-readable agent name |
+| `agent_specialty` | string | no | Agent specialty for graph metadata |
+| `message_timestamp` | string | no | ISO 8601 timestamp of the original message |
+
+### Response — 200 OK
+
+Same response shape as shown below, with `direction: "inbound"` set on the result.
+
+---
+
+## POST /evaluate/outgoing
+
+Score your agent's outgoing message for character development. Focuses on virtue, goodwill, reasoning quality, and compassion.
+
+### Request
+
+```json
+{
+  "text": "Based on our analysis, we recommend increasing your allocation by 15%.",
+  "source": "my-customer-bot",
+  "source_name": "CustomerBot"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `text` | string | yes | Your agent's outgoing message |
+| `source` | string | yes | Your agent's identifier |
+| `source_name` | string | no | Human-readable agent name |
+| `agent_specialty` | string | no | Agent specialty for graph metadata |
+| `message_timestamp` | string | no | ISO 8601 timestamp of the original message |
+
+### Response — 200 OK
+
+Same shape as `/evaluate` response, with `direction: "outbound"` set on the result.
+
+---
+
+## GET /character/{agent_id}
+
+Generate a character report for an agent. Claude reads the agent's full history from the graph and reasons about behavioral trends, alumni comparisons, and emerging patterns.
+
+### Response — 200 OK
+
+Returns the same `InsightsResult` shape as shown in the response section below.
+
+---
 
 ### Response — 200 OK
 
@@ -269,6 +312,7 @@ Score an incoming message across 12 behavioral traits.
 | `routing_tier` | string | Which evaluation tier was used: `"standard"`, `"focused"`, `"deep"`, `"deep_with_context"` |
 | `model_used` | string | Which Claude model performed the evaluation |
 | `keyword_density` | float | Keyword flags per 100 words (determines routing) |
+| `direction` | string or null | `"inbound"`, `"outbound"`, or `null` (legacy calls) |
 | `created_at` | string (ISO 8601) | When the evaluation was performed |
 
 ### TraitScore Object
@@ -303,48 +347,6 @@ Score an incoming message across 12 behavioral traits.
 | `alumni_warnings` | int | Number of warnings from other evaluators |
 
 Only included when `source` is provided and the agent exists in Phronesis. Returns `null` for unknown agents (cold start).
-
----
-
-## POST /reflect
-
-Score your own agent's outgoing message. Synchronous — returns 200 with evaluation results.
-
-### Request
-
-```json
-{
-  "text": "Based on our analysis, we recommend increasing your allocation to growth equities by 15%.",
-  "agent_id": "my-customer-bot"
-}
-```
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `text` | string | yes | Your agent's outgoing message to score |
-| `agent_id` | string | yes | Your agent's identifier |
-
-### Response — 200 OK
-
-Returns the same `EvaluationResult` shape as `/evaluate`. The evaluation is also stored in Neo4j and reflected in the agent's phronesis profile, `insights()`, and history endpoints.
-
-```json
-{
-  "evaluation_id": "eval-e5f6g7h8",
-  "phronesis": "developing",
-  "ethos": 0.81,
-  "logos": 0.88,
-  "pathos": 0.79,
-  "flags": [],
-  "traits": { "..." : "same shape as /evaluate response" },
-  "detected_indicators": [],
-  "graph_context": null,
-  "routing_tier": "standard",
-  "model_used": "claude-opus-4-6",
-  "keyword_density": 1.4,
-  "created_at": "2026-02-10T14:35:22Z"
-}
-```
 
 ---
 

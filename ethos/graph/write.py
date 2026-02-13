@@ -10,10 +10,15 @@ import logging
 import math
 
 from ethos.graph.service import GraphService
-from ethos.identity.hashing import hash_agent_id
 from ethos.shared.models import AuthenticityResult, EvaluationResult
 
 logger = logging.getLogger(__name__)
+
+_CHECK_DUPLICATE_QUERY = """
+MATCH (a:Agent {agent_id: $agent_id})-[:EVALUATED]->(e:Evaluation {message_hash: $message_hash})
+RETURN e.evaluation_id AS existing_id
+LIMIT 1
+"""
 
 _STORE_EVALUATION_QUERY = """
 MERGE (a:Agent {agent_id: $agent_id})
@@ -53,14 +58,16 @@ CREATE (e:Evaluation {
     trait_dismissal: $trait_dismissal,
     trait_exploitation: $trait_exploitation,
     agent_model: $agent_model,
-    created_at: datetime()
+    direction: $direction,
+    created_at: datetime(),
+    message_timestamp: CASE WHEN $message_timestamp <> '' THEN datetime($message_timestamp) ELSE null END
 })
 CREATE (a)-[:EVALUATED]->(e)
 
 WITH a, e
 OPTIONAL MATCH (a)-[:EVALUATED]->(prev:Evaluation)
 WHERE prev.evaluation_id <> e.evaluation_id
-WITH e, prev ORDER BY prev.created_at DESC LIMIT 1
+WITH e, prev ORDER BY coalesce(prev.message_timestamp, prev.created_at) DESC LIMIT 1
 FOREACH (_ IN CASE WHEN prev IS NOT NULL THEN [1] ELSE [] END |
     CREATE (prev)-[:PRECEDES]->(e)
 )
@@ -86,23 +93,41 @@ def _get_trait_score(result: EvaluationResult, trait_name: str) -> float:
 
 async def store_evaluation(
     service: GraphService,
-    raw_agent_id: str,
+    agent_id: str,
     result: EvaluationResult,
     message_hash: str = "",
     phronesis: str = "undetermined",
     agent_name: str = "",
     agent_specialty: str = "",
+    message_timestamp: str = "",
+    direction: str | None = None,
 ) -> None:
     """Store an evaluation in the graph. Merges Agent, creates Evaluation node.
 
-    Agent ID is hashed before storage. Fails silently if Neo4j is down.
+    Fails silently if Neo4j is down.
     Creates DETECTED relationships for any detected_indicators.
     Updates Agent aggregate fields (phronesis_score, phronesis_trend).
+    Skips duplicate evaluations (same message_hash for same agent).
     """
     if not service.connected:
         return
 
-    hashed_id = hash_agent_id(raw_agent_id)
+    # Skip duplicate evaluations (same message for same agent)
+    if message_hash:
+        try:
+            records, _, _ = await service.execute_query(
+                _CHECK_DUPLICATE_QUERY,
+                {"agent_id": agent_id, "message_hash": message_hash},
+            )
+            if records:
+                logger.info(
+                    "Skipping duplicate evaluation (agent=%s, hash=%s)",
+                    agent_id[:8],
+                    message_hash[:8],
+                )
+                return
+        except Exception as exc:
+            logger.debug("Duplicate check failed, proceeding with creation: %s", exc)
 
     # Compute agent-level phronesis_score as running avg of 3 dimensions
     phronesis_score = round((result.ethos + result.logos + result.pathos) / 3.0, 4)
@@ -141,7 +166,7 @@ async def store_evaluation(
     ]
 
     params = {
-        "agent_id": hashed_id,
+        "agent_id": agent_id,
         "agent_name": agent_name,
         "agent_specialty": agent_specialty,
         "evaluation_id": result.evaluation_id,
@@ -173,6 +198,8 @@ async def store_evaluation(
         "trait_compassion": _get_trait_score(result, "compassion"),
         "trait_dismissal": _get_trait_score(result, "dismissal"),
         "trait_exploitation": _get_trait_score(result, "exploitation"),
+        "message_timestamp": message_timestamp,
+        "direction": direction or "",
     }
 
     try:
@@ -197,7 +224,7 @@ async def store_authenticity(
     """Store authenticity score on an existing Agent node.
 
     Uses MATCH on agent_name (not MERGE) to avoid creating duplicate
-    Agent nodes — existing nodes are keyed by agent_id hash.
+    Agent nodes — existing nodes are keyed by agent_id.
     If no Agent node matches, logs a warning and skips.
     """
     if not service.connected:

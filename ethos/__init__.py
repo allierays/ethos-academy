@@ -4,8 +4,6 @@ __version__ = "0.1.0"
 
 from ethos.agents import get_agent, get_agent_history, get_alumni, list_agents
 from ethos.authenticity import analyze_authenticity
-from ethos.evaluate import evaluate
-from ethos.insights import insights
 from ethos.models import (
     AgentProfile,
     AgentSummary,
@@ -18,19 +16,16 @@ from ethos.models import (
     GraphRel,
     InsightsResult,
     PatternResult,
-    ReflectionResult,
 )
 from ethos.patterns import detect_patterns
-from ethos.reflect import reflect
-from ethos.reflection.history import reflect_history
+from ethos.tools import character_report, evaluate_incoming, evaluate_outgoing
 from ethos.visualization import get_graph_data
 
 __all__ = [
     "analyze_authenticity",
-    "evaluate",
-    "reflect",
-    "reflect_history",
-    "insights",
+    "evaluate_incoming",
+    "evaluate_outgoing",
+    "character_report",
     "detect_patterns",
     "get_graph_data",
     "list_agents",
@@ -38,7 +33,6 @@ __all__ = [
     "get_agent_history",
     "get_alumni",
     "EvaluationResult",
-    "ReflectionResult",
     "InsightsResult",
     "PatternResult",
     "DetectedPattern",

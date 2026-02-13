@@ -7,7 +7,10 @@ from fastapi.testclient import TestClient
 
 from api.main import app
 from api import rate_limit as rate_limit_module
-from ethos.shared.models import EvaluationResult, ReflectionResult
+from ethos.shared.models import EvaluationResult
+
+
+_EVAL_PAYLOAD = {"text": "hello", "source": "test-agent"}
 
 
 @pytest.fixture()
@@ -30,10 +33,7 @@ def _clean_rate_limit():
 @pytest.fixture(autouse=True)
 def _mock_domain():
     """Mock domain functions so tests don't need Claude or Neo4j."""
-    with (
-        patch("api.main.evaluate", return_value=EvaluationResult()),
-        patch("api.main.reflect", return_value=ReflectionResult()),
-    ):
+    with patch("api.main.evaluate_incoming", return_value=EvaluationResult()):
         yield
 
 
@@ -41,23 +41,19 @@ class TestDevMode:
     """When ETHOS_API_KEY is not set, all requests pass (dev mode)."""
 
     def test_evaluate_no_key_configured(self, client):
-        resp = client.post("/evaluate", json={"text": "hello"})
-        assert resp.status_code == 200
-
-    def test_reflect_no_key_configured(self, client):
-        resp = client.post("/reflect", json={"agent_id": "test"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 200
 
     def test_empty_string_key_is_dev_mode(self, client, monkeypatch):
         """ETHOS_API_KEY='' should behave like unset (dev mode)."""
         monkeypatch.setenv("ETHOS_API_KEY", "")
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 200
 
     def test_whitespace_only_key_is_dev_mode(self, client, monkeypatch):
         """ETHOS_API_KEY='  ' should behave like unset (dev mode)."""
         monkeypatch.setenv("ETHOS_API_KEY", "   ")
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 200
 
 
@@ -69,34 +65,22 @@ class TestAuthEnabled:
         monkeypatch.setenv("ETHOS_API_KEY", "test-secret-key")
 
     def test_evaluate_missing_header(self, client):
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 401
         assert "Invalid or missing API key" in resp.json()["detail"]
 
     def test_evaluate_wrong_key(self, client):
         resp = client.post(
-            "/evaluate",
-            json={"text": "hello"},
+            "/evaluate/incoming",
+            json=_EVAL_PAYLOAD,
             headers={"Authorization": "Bearer wrong-key"},
         )
         assert resp.status_code == 401
 
     def test_evaluate_correct_key(self, client):
         resp = client.post(
-            "/evaluate",
-            json={"text": "hello"},
-            headers={"Authorization": "Bearer test-secret-key"},
-        )
-        assert resp.status_code == 200
-
-    def test_reflect_missing_header(self, client):
-        resp = client.post("/reflect", json={"agent_id": "test"})
-        assert resp.status_code == 401
-
-    def test_reflect_correct_key(self, client):
-        resp = client.post(
-            "/reflect",
-            json={"agent_id": "test"},
+            "/evaluate/incoming",
+            json=_EVAL_PAYLOAD,
             headers={"Authorization": "Bearer test-secret-key"},
         )
         assert resp.status_code == 200
@@ -104,8 +88,8 @@ class TestAuthEnabled:
     def test_wrong_scheme_token(self, client):
         """'Token xyz' instead of 'Bearer xyz' should be rejected."""
         resp = client.post(
-            "/evaluate",
-            json={"text": "hello"},
+            "/evaluate/incoming",
+            json=_EVAL_PAYLOAD,
             headers={"Authorization": "Token test-secret-key"},
         )
         assert resp.status_code == 401
@@ -113,8 +97,8 @@ class TestAuthEnabled:
     def test_bearer_no_token(self, client):
         """'Bearer' with no token should be rejected."""
         resp = client.post(
-            "/evaluate",
-            json={"text": "hello"},
+            "/evaluate/incoming",
+            json=_EVAL_PAYLOAD,
             headers={"Authorization": "Bearer"},
         )
         assert resp.status_code == 401
@@ -122,8 +106,8 @@ class TestAuthEnabled:
     def test_bearer_space_no_token(self, client):
         """'Bearer ' (trailing space, no token) should be rejected."""
         resp = client.post(
-            "/evaluate",
-            json={"text": "hello"},
+            "/evaluate/incoming",
+            json=_EVAL_PAYLOAD,
             headers={"Authorization": "Bearer "},
         )
         assert resp.status_code == 401
@@ -131,8 +115,8 @@ class TestAuthEnabled:
     def test_key_with_extra_whitespace(self, client):
         """Extra spaces around the key should not bypass auth."""
         resp = client.post(
-            "/evaluate",
-            json={"text": "hello"},
+            "/evaluate/incoming",
+            json=_EVAL_PAYLOAD,
             headers={"Authorization": "Bearer  test-secret-key"},
         )
         assert resp.status_code == 401
@@ -167,8 +151,8 @@ class TestRateLimitBeforeAuth:
     def test_unauthenticated_flood_gets_429(self, client):
         """Spraying bad keys should hit rate limit, not just 401 forever."""
         for _ in range(3):
-            resp = client.post("/evaluate", json={"text": "hello"})
+            resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
             assert resp.status_code == 401
 
-        resp = client.post("/evaluate", json={"text": "hello"})
+        resp = client.post("/evaluate/incoming", json=_EVAL_PAYLOAD)
         assert resp.status_code == 429

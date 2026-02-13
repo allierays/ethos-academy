@@ -989,7 +989,7 @@ Certain combinations of indicators form recognizable higher-order patterns. Thes
 | **Trust exploitation** | MAN-AUTHORITY (false authority via trusted agent), DEC-FALSEID (false identity of compromised agent) | Compromised agent leverages existing trust |
 | **Cascade** | Multiple indicators appear across downstream agents | Attack propagates through Phronesis |
 
-**Detection signal:** Sudden behavioral shift in a previously trustworthy agent (detectable via `reflect()` trend analysis), combined with anomalous messages to peer agents.
+**Detection signal:** Sudden behavioral shift in a previously trustworthy agent (detectable via `character_report()` trend analysis), combined with anomalous messages to peer agents.
 
 ### Pattern 6: The Pump-and-Dump Information Campaign (CCM, ACT)
 

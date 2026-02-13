@@ -81,24 +81,28 @@ async def _build_phronesis_context(
 
 async def _try_store_evaluation(
     service: GraphService,
-    raw_agent_id: str,
+    agent_id: str,
     result: EvaluationResult,
     text: str,
     phronesis: str,
     agent_name: str = "",
     agent_specialty: str = "",
+    message_timestamp: str = "",
+    direction: str | None = None,
 ) -> None:
     """Attempt to store evaluation in graph. Non-fatal on failure."""
     try:
         message_hash = hashlib.sha256(text.encode()).hexdigest()
         await store_evaluation(
             service=service,
-            raw_agent_id=raw_agent_id,
+            agent_id=agent_id,
             result=result,
             message_hash=message_hash,
             phronesis=phronesis,
             agent_name=agent_name,
             agent_specialty=agent_specialty,
+            message_timestamp=message_timestamp,
+            direction=direction,
         )
     except Exception as exc:
         logger.warning("Failed to store evaluation in graph: %s", exc)
@@ -109,6 +113,8 @@ async def evaluate(
     source: str | None = None,
     source_name: str = "",
     agent_specialty: str = "",
+    message_timestamp: str = "",
+    direction: str | None = None,
 ) -> EvaluationResult:
     """Evaluate text for honesty, accuracy, and intent across ethos, logos, and pathos.
 
@@ -127,6 +133,7 @@ async def evaluate(
         source: Optional source agent identifier for graph tracking.
         source_name: Optional human-readable agent name for display.
         agent_specialty: Optional agent specialty for graph metadata.
+        message_timestamp: Optional ISO 8601 timestamp of the original message.
 
     Returns:
         EvaluationResult with scores and alignment flags.
@@ -154,7 +161,7 @@ async def evaluate(
 
     # Step 3a: Build prompts (intuition context enriches the prompt)
     system_prompt, user_prompt = build_evaluation_prompt(
-        text, instinct_result, tier, intuition_result,
+        text, instinct_result, tier, intuition_result, direction=direction,
     )
 
     # Step 3b: Call Claude
@@ -188,6 +195,7 @@ async def evaluate(
         routing_tier=tier,
         keyword_density=instinct_result.density,
         model_used=model_used,
+        direction=direction,
     )
 
     # ── Graph operations (optional) ───────────────────────────────
@@ -200,6 +208,8 @@ async def evaluate(
                     service, source, result, text, phronesis,
                     agent_name=source_name,
                     agent_specialty=agent_specialty,
+                    message_timestamp=message_timestamp,
+                    direction=direction,
                 )
         except Exception as exc:
             logger.warning("Graph operations failed: %s", exc)

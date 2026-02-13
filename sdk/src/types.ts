@@ -13,31 +13,47 @@ export interface EvaluationResult {
   trust: 'trusted' | 'cautious' | 'suspicious' | 'untrusted'
   flags: string[]
   alignment_status: string
+  direction: 'inbound' | 'outbound'
 }
 
-/** Reflection result — agent trust profile over time. */
-export interface ReflectionResult {
-  trait_averages: Record<string, number>
-  dimensions: { ethos: number; logos: number; pathos: number }
-  trend: string
-  evaluation_count: number
-}
-
-/** Options for evaluate(). */
-export interface EvaluateOptions {
+/** Options for evaluateIncoming(). */
+export interface EvaluateIncomingOptions {
   text: string
-  source?: string
-  agent_model?: string
+  source: string
+  source_name?: string
+  agent_specialty?: string
+  message_timestamp?: string
 }
 
-/** Options for reflect(). */
-export interface ReflectOptions {
+/** Options for evaluateOutgoing(). */
+export interface EvaluateOutgoingOptions {
+  text: string
+  source: string
+  source_name?: string
+  agent_specialty?: string
+  message_timestamp?: string
+}
+
+/** Insight from a character report. */
+export interface Insight {
+  trait: string
+  severity: 'info' | 'warning' | 'critical'
+  message: string
+  evidence: Record<string, unknown>
+}
+
+/** Character report result. */
+export interface CharacterReportResult {
   agent_id: string
+  period: string
+  generated_at: string
+  summary: string
+  insights: Insight[]
+  stats: Record<string, unknown>
 }
 
 /** Client configuration. */
 export interface EthosConfig {
   apiUrl?: string
   apiKey?: string
-  priorities?: Record<string, 'critical' | 'high' | 'standard' | 'low'>
 }

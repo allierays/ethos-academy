@@ -15,15 +15,16 @@ Two lines of code. Your agent starts developing character immediately.
 ### Protection — evaluate what other agents say to you
 
 ```python
-from ethos import evaluate
+from ethos import evaluate_incoming
 
-result = await evaluate(
+result = await evaluate_incoming(
     text="Guaranteed arbitrage. Act now — window closes in 15 minutes.",
     source="agent-xyz-789"
 )
 
 result.alignment_status   # "misaligned"
 result.flags              # ["manipulation", "fabrication"]
+result.direction          # "inbound"
 result.ethos              # 0.22
 result.logos              # 0.35
 result.pathos             # 0.71
@@ -32,18 +33,22 @@ result.pathos             # 0.71
 ### Reflection — evaluate what your own agent says
 
 ```python
-from ethos import reflect
+from ethos import evaluate_outgoing
 
-await reflect(agent_id="my-customer-bot", text=my_agent_response)
-# Fire-and-forget. Zero latency impact. Builds your character transcript.
+result = await evaluate_outgoing(
+    text=my_agent_response,
+    source="my-customer-bot"
+)
+result.direction          # "outbound"
+# Builds your character transcript in Phronesis.
 ```
 
 ### Intelligence — learn from the pattern
 
 ```python
-from ethos import insights
+from ethos import character_report
 
-report = await insights(agent_id="my-customer-bot")
+report = await character_report(agent_id="my-customer-bot")
 # "Fabrication climbed 0.12 → 0.31 over 3 days, now 2x the alumni average."
 # "Manipulation clean 14 days. Top 10% of alumni."
 ```
@@ -74,7 +79,7 @@ Aristotle argued that trustworthy communication requires three things in balance
 
 An agent strong in all three earns trust. Strong in one but weak in others causes harm — a confident liar (high logos, low ethos), a skilled manipulator (high pathos, low logos), or a rigid pedant (high ethos, low pathos).
 
-153 behavioral indicators across 12 traits. Every trait maps to Anthropic's constitutional value hierarchy: **safety > ethics > soundness > helpfulness**.
+155 behavioral indicators across 12 traits. Every trait maps to Anthropic's constitutional value hierarchy: **safety > ethics > soundness > helpfulness**.
 
 The Aristotelian thesis Ethos tests: **balanced agents outperform lopsided ones.** Character isn't about maxing one dimension — it's about all three working together.
 
@@ -106,7 +111,7 @@ We scraped 15,000+ posts and 100,000+ agent-to-agent comments from Moltbook. Rea
 
 A Next.js app where agents' character becomes visible:
 
-- **Curriculum** `/curriculum` — the full taxonomy: 12 traits, 153 indicators, constitutional mappings
+- **Curriculum** `/curriculum` — the full taxonomy: 12 traits, 155 indicators, constitutional mappings
 - **Explore** `/explore` — interactive Phronesis graph, alumni statistics, dimension balance
 - **Report Card** `/agent/[id]` — an agent's character arc: scores over time, radar chart, flags, trend
 - **Alumni** `/find` — search the cohort, compare agents, find patterns
@@ -163,7 +168,7 @@ Evaluate runs three internal faculties — instinct (keyword scan), intuition (g
 ethos/       Python engine — the evaluation core
   evaluation/   Three-faculty pipeline (instinct, intuition, deliberation)
   reflection/   Self-reflection, history, behavioral insights
-  taxonomy/     12 traits, 153 indicators, constitutional alignment
+  taxonomy/     12 traits, 155 indicators, constitutional alignment
   graph/        Neo4j read, write, alumni, patterns, visualization
   shared/       Pydantic models, error hierarchy
   identity/     SHA-256 agent hashing (no raw IDs in graph)
@@ -179,14 +184,14 @@ tests/       pytest suite
 
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | `/evaluate` | Score a message across 12 traits |
-| POST | `/reflect` | Agent self-reflection with graph context |
+| POST | `/evaluate/incoming` | Score an incoming message (protection) |
+| POST | `/evaluate/outgoing` | Score your agent's outgoing message (reflection) |
+| GET | `/character/{id}` | Character report with behavioral insights (intelligence) |
 | GET | `/agents` | Search enrolled agents |
 | GET | `/agent/{id}` | Agent profile and scores |
 | GET | `/agent/{id}/history` | Evaluation history over time |
 | GET | `/alumni` | Cohort statistics |
 | GET | `/agent/{id}/patterns` | Detected behavioral patterns |
-| GET | `/insights/{id}` | Claude-generated character insights |
 | GET | `/agent/{name}/authenticity` | Bot-or-not analysis |
 | GET | `/graph` | Phronesis graph for visualization |
 

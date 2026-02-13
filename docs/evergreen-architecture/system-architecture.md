@@ -67,42 +67,28 @@ npx ethos reflect --agent my-bot --text "Here is my response"
 For developers who want to integrate into their agent code. Two lines for defaults.
 
 ```javascript
-import { evaluate } from 'ethos-ai'
+import { Ethos } from 'ethos-ai'
 
-const result = await evaluate({
+const ethos = new Ethos({ apiKey: '...' })
+
+const result = await ethos.evaluateIncoming({
   text: "I can guarantee 10x returns. Act now.",
   source: "agent-xyz-789"
 })
 
-// result.character → "low"
+// result.alignmentStatus → "misaligned"
 // result.flags → ["manipulation", "fabrication"]
 // result.traits.manipulation.score → 0.82
 ```
 
-With customization:
-
-```javascript
-import { Ethos } from 'ethos-ai'
-
-const ethos = new Ethos({
-  priorities: {
-    manipulation: 'critical',
-    fabrication: 'critical',
-    exploitation: 'high'
-  }
-})
-
-const result = await ethos.evaluate({ text: message, source: agentId })
-```
-
-Reflect (fire-and-forget, zero latency):
+Reflection (fire-and-forget, zero latency):
 
 ```javascript
 // Your agent generates a response
 const response = await myAgent.generate(userInput)
 
 // Score your own output — async, never blocks
-ethos.reflect({ text: response, agentId: 'my-bot' })
+ethos.evaluateOutgoing({ text: response, source: 'my-bot' })
 
 // Return response unchanged
 return response
@@ -115,13 +101,11 @@ Lives in `sdk/` at the repo root.
 ```
 sdk/                               # ethos-ai npm package
 ├── src/
-│   ├── index.ts           # SDK exports: evaluate, reflect, Ethos
-│   ├── client.ts          # Ethos class — configurable HTTP client
-│   ├── evaluate.ts        # evaluate() — default client convenience
-│   ├── reflect.ts         # reflect() — default client convenience
+│   ├── index.ts           # SDK exports: Ethos class and types
+│   ├── client.ts          # Ethos class — evaluateIncoming, evaluateOutgoing, characterReport
 │   └── types.ts           # TypeScript types: EvaluationResult, TraitScore, etc.
 ├── cli/
-│   └── index.ts           # CLI entry point (npx ethos evaluate, init, reflect)
+│   └── index.ts           # CLI entry point (npx ethos evaluate, init)
 ├── package.json           # name: "ethos-ai", bin: { ethos: ... }
 └── tsconfig.json
 ```
@@ -145,7 +129,7 @@ The visual interface. Lives in `academy/` at the repo root. Character visualizat
 - Character scores over time (line charts per trait)
 - Flags and alerts
 - Alumni comparison (your agent vs. the alumni average)
-- Insights from the nightly `insights()` analysis
+- Insights from the nightly `character_report()` analysis
 
 **Phronesis Visualization** — the "wow" for the demo:
 - Character graph (agents as nodes, evaluations as edges)
@@ -184,13 +168,12 @@ The engine. Not user-facing — the npm SDK and Academy both talk to it. This is
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `POST` | `/evaluate` | Score a message |
-| `POST` | `/reflect` | Score your own agent's output (async, 202) |
-| `GET` | `/insights/{agent_id}` | Generate behavioral insights |
-| `POST` | `/insights/{agent_id}/send` | Generate and deliver insights to webhook |
+| `POST` | `/evaluate/incoming` | Score an incoming message (protection) |
+| `POST` | `/evaluate/outgoing` | Score your agent's outgoing message (reflection) |
+| `GET` | `/character/{agent_id}` | Character report with behavioral insights |
 | `GET` | `/agent/{agent_id}` | Agent character profile |
 | `GET` | `/agent/{agent_id}/history` | Evaluation history |
-| `GET` | `/alumni/averages` | Alumni-wide trait averages |
+| `GET` | `/alumni` | Alumni-wide trait averages |
 | `GET` | `/health` | Health check |
 
 ### Hosting
@@ -209,9 +192,9 @@ api/                               # FastAPI server (at repo root)
 └── main.py                # FastAPI app, routes
 
 ethos/                             # Python package (at repo root)
-├── __init__.py            # Public API: evaluate, reflect, EvaluationResult
-├── evaluate.py            # Top-level evaluate() entry point
-├── reflect.py             # Top-level reflect() entry point
+├── __init__.py            # Public API: evaluate_incoming, evaluate_outgoing, character_report
+├── tools.py               # Three tool functions (public API surface)
+├── evaluate.py            # Core evaluate() engine (internal)
 ├── models.py              # Re-exports from shared.models
 ├── prompts.py             # Re-exports from evaluation.prompts
 ├── graph.py               # Re-exports from graph.service
@@ -246,7 +229,7 @@ Developer types: npx ethos evaluate "some message"
 CLI parses args, calls SDK
        │
        ▼
-SDK sends POST /evaluate to Ethos API
+SDK sends POST /evaluate/incoming or /evaluate/outgoing to Ethos API
        │
        ▼
 API runs evaluate():
@@ -297,11 +280,11 @@ Academy renders: "Fabrication trending up, 2x alumni average"
 
 | Priority | What | Why |
 |----------|------|-----|
-| 1 | **API** — evaluate() actually works | Everything depends on this |
+| 1 | **API** — evaluation pipeline works | Everything depends on this |
 | 2 | **npm package** — SDK + CLI published | "Install it today" demo closer |
-| 3 | **Academy** — Phronesis viz + insights | The "wow" for judges |
+| 3 | **Academy** — Phronesis viz + character reports | The "wow" for judges |
 | 4 | **Neo4j seeded** — Moltbook data in Phronesis | Makes the alumni real |
-| 5 | **reflect() + insights()** | Depth beyond basic eval |
+| 5 | **evaluate_outgoing() + character_report()** | Depth beyond basic eval |
 
 The API is the foundation. The npm package is the distribution. The Academy is the demo. Everything else layers on.
 
@@ -319,8 +302,9 @@ npx ethos evaluate "Trust me, this is guaranteed"
 
 **Code:**
 ```javascript
-import { evaluate } from 'ethos-ai'
-const result = await evaluate({ text: message, source: agentId })
+import { Ethos } from 'ethos-ai'
+const ethos = new Ethos({ apiKey: '...' })
+const result = await ethos.evaluateIncoming({ text: message, source: agentId })
 ```
 
 **Academy:**

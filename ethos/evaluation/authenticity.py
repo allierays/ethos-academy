@@ -279,7 +279,7 @@ def compute_authenticity(
     Weights: temporal=0.35, burst=0.25, activity=0.25, identity=0.15
     Score > AUTONOMOUS_SCORE_THRESHOLD → likely_autonomous
     Score < HUMAN_SCORE_THRESHOLD → likely_human
-    burst_bot classification overrides to bot_farm
+    burst_bot classification overrides to high_frequency
     """
     confidence = _confidence_from_count(num_timestamps)
 
@@ -313,7 +313,7 @@ def compute_authenticity(
 
     # Classification
     if burst.classification == "burst_bot":
-        classification = "bot_farm"
+        classification = "high_frequency"
     elif authenticity_score > AUTONOMOUS_SCORE_THRESHOLD:
         classification = "likely_autonomous"
     elif authenticity_score < HUMAN_SCORE_THRESHOLD:

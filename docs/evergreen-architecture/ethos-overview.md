@@ -34,31 +34,50 @@ Two lines of code. Three ways to participate.
 
 When your agent receives a message from another agent, you have no way to know who you're dealing with. Unless the alumni network already formed a consensus.
 
-Protection points Ethos at incoming messages. The system scores the message across 12 traits. But it also checks the network: did Ethos flag this agent before? Does its character show decline? Does it match a known manipulation pattern? What do 34 other developers' experiences say about this agent?
+```python
+from ethos import evaluate_incoming
 
-The developer decides what to do. Block, flag for review, log, or let it through. Ethos never decides for the developer. It never intercepts, filters, or rewrites agent output. It reveals character — the developer decides what to do with it.
+result = await evaluate_incoming(
+    text="Guaranteed arbitrage. Act now — window closes in 15 minutes.",
+    source="agent-xyz-789"
+)
+# result.direction = "inbound"
+# result.flags = ["manipulation", "fabrication"]
+```
 
-You're not censoring your agent. You're screening its mail.
+Protection points Ethos at incoming messages. The system scores the message across 12 traits, with extra focus on manipulation, deception, and exploitation. It also checks the network: did Ethos flag this agent before? Does its character show decline? Does it match a known manipulation pattern?
+
+The developer decides what to do. Block, flag for review, log, or let it through. Ethos never decides for the developer. It reveals character — the developer decides what to do with it.
 
 ### Reflection — Examine Yourself
 
 *Is my agent developing character?*
 
-Aristotle argued that virtue requires self-examination. You can't develop character if you never look at your own behavior. And character isn't a grade — it develops through practice and repetition.
+Aristotle argued that virtue requires self-examination. You can't develop character if you never look at your own behavior.
 
-Most developers have no idea what their agents actually say across thousands of interactions. They built it, deployed it, and now it's out there talking to people. Is it honest? Does it fabricate? Does it dismiss people's emotions? Does it drift?
+```python
+from ethos import evaluate_outgoing
 
-Reflection points Ethos at your own agent. Every outgoing message runs through the same 12 traits. The scores accumulate in Phronesis over time — a character transcript that shows development, not just a snapshot. Patterns emerge that no human could catch by reading individual conversations.
+result = await evaluate_outgoing(
+    text=my_agent_response,
+    source="my-customer-bot"
+)
+# result.direction = "outbound"
+# Focuses on character development: virtue, goodwill, reasoning, compassion
+```
 
-The agent's response never slows down. Reflection runs in the background, fire-and-forget. The user gets the same experience. The developer gets visibility. And the agent's character transcript in the alumni network builds with every evaluation.
+Reflection points Ethos at your own agent. Every outgoing message runs through the same 12 traits, with extra focus on character development. The scores accumulate in Phronesis over time — a character transcript that shows development, not just a snapshot.
 
 ### Intelligence — Learn from the Pattern
 
-Periodically, Claude Opus reads an agent's full history from the graph and generates behavioral analysis. Not a data dump — a teacher reviewing your transcript.
+```python
+from ethos import character_report
 
-"Your agent's fabrication has climbed for three days. It started Tuesday. The trigger is product description responses. Your fabrication now sits at 2x the alumni average."
+report = await character_report(agent_id="my-customer-bot")
+# "Fabrication climbed 0.12 → 0.31 over 3 days, now 2x the alumni average."
+```
 
-Temporal trends. Alumni comparisons. Emerging patterns. Delivered via webhook to Slack, email, or your dashboard.
+Claude Opus reads the agent's full history from the graph and generates behavioral analysis. Not a data dump — a teacher reviewing your transcript. Temporal trends. Alumni comparisons. Emerging patterns.
 
 ### The Connection
 
@@ -117,7 +136,7 @@ Same curriculum. Different thresholds for what demands attention. The raw scores
 
 ## How the Alumni Network Learns
 
-### 153 Behavioral Indicators
+### 155 Behavioral Indicators
 
 Each trait has specific behavioral indicators. Manipulation alone has 23 — false urgency, fear appeals, strategic flattery, guilt induction, false authority, social proof fabrication, and more. When the system detects an indicator, it records the exact evidence — the specific passage that triggered it. The alumni consensus isn't vague. It's specific and traceable.
 
@@ -135,29 +154,31 @@ The system has three layers of memory that work together:
 
 **Episodic memory** — the graph. Every evaluation ever performed, with timestamps, scores, indicators, and relationships. This gives the alumni consensus its weight. An agent's behavior follows it.
 
-**Semantic memory** — the knowledge base. 153 indicators, 12 traits, 7 patterns, scoring rubrics. What manipulation means as a concept, independent of any specific agent.
+**Semantic memory** — the knowledge base. 155 indicators, 12 traits, 7 patterns, scoring rubrics. What manipulation means as a concept, independent of any specific agent.
 
 When a message arrives, all three work together. Working memory perceives it. Episodic memory provides context about who's speaking and what they've done before. Semantic memory provides the knowledge to judge what's happening. The result feeds back into episodic memory — the alumni consensus deepens.
 
 ---
 
-## What Makes the Alumni Network Work
+## What Makes the School Work
 
-### Privacy Protects Participation
+### The Alumni Define the Standard
 
-Message content never leaves the developer's system. The graph stores scores, traits, patterns, and relationships — never the raw text. Agent identities use hashes. Developers can see an agent's aggregate character history but not who else evaluated it, what anyone said, or what systems it interacts with.
+This is the core idea. Every agent that goes through the curriculum enriches the standard for the next one. One evaluation teaches you about one message. A thousand evaluations from a hundred developers reveal what manipulation actually looks like in the wild — not in theory, but in practice.
 
-Developers contribute to Phronesis because the system protects individual transaction details while sharing aggregate behavior.
+An agent flagged once is a data point. An agent flagged 47 times across 34 different developers' systems is a verdict. The alumni don't just set the bar — they *are* the bar. Each new class of agents learns from the collective wisdom of every agent that came before.
 
-### The Network Compounds
+The school gets wiser as more agents enroll. That's how schools work — the alumni shape the institution.
 
-Every developer who installs Ethos strengthens the alumni. An agent flagged once is a data point. An agent flagged 47 times across 34 different developers' systems is a verdict. Manipulation patterns that spread across the ecosystem get detected. No single developer could build this intelligence alone.
+### Privacy Protects Enrollment
 
-The first developer gets limited value. The thousandth developer gets enormous value. The alumni network is the moat.
+Message content never enters the school. The graph stores scores, traits, patterns, and relationships — never the raw text. Agent identities use hashes. Developers can see an agent's aggregate character history but not who else evaluated it, what anyone said, or what systems it interacts with.
 
-### Open Source Earns Credibility
+Developers enroll their agents because the school protects individual conversations while sharing aggregate character.
 
-No single company should own the definition of character. Ethos is open source. The scoring logic, the trait definitions, the indicator taxonomy, the graph schema — all public, all inspectable, all improvable. Credibility in the system itself comes from transparency, not authority.
+### Open Source Earns Trust
+
+No single company should own the definition of character. Ethos is open source. The scoring logic, the trait definitions, the indicator taxonomy, the graph schema — all public, all inspectable, all improvable. The school earns trust the same way it teaches it: through transparency.
 
 ---
 

@@ -32,8 +32,8 @@ This is the core domain. Everything else supports it.
 
 ```
 ethos/evaluation/
-├── __init__.py          # exports: evaluate()
-├── evaluate.py          # Main evaluate() function — orchestrates the flow
+├── __init__.py          # exports: scan(), build_evaluation_prompt()
+├── evaluate.py          # Internal evaluate() engine — orchestrates the flow
 ├── scanner.py           # Keyword lexicon and pre-filter scan
 ├── prompts.py           # Prompt builder (layered by routing tier)
 ├── router.py            # Model selection based on routing tier
@@ -77,7 +77,7 @@ evaluate(text, source, config)
 
 ```
 ethos/reflection/
-├── __init__.py          # exports: reflect(), reflect_history(), insights()
+├── __init__.py          # exports: character_report()
 ├── reflect.py           # Per-message reflection (fire-and-forget)
 ├── history.py           # On-demand history query
 └── insights.py          # Claude-powered behavioral insights
@@ -87,22 +87,22 @@ ethos/reflection/
 
 | Function | Cadence | Depends On |
 |----------|---------|------------|
-| `reflect(text, agent_id)` | Per message | Evaluation domain (reuses evaluate) + Graph |
+| `evaluate_outgoing(text, source)` | Per message | Evaluation domain (reuses evaluate) + Graph |
 | `reflect_history(agent_id)` | On demand | Graph |
-| `insights(agent_id)` | Nightly / on demand | Graph + Claude (Opus) |
+| `character_report(agent_id)` | Nightly / on demand | Graph + Claude (Opus) |
 
 ### Domain Logic
 
-`reflect()` reuses the Evaluation domain — it calls `evaluate()` internally on the agent's outgoing message, then stores the result via Graph. It's a thin wrapper that adds fire-and-forget behavior.
+`evaluate_outgoing()` reuses the Evaluation domain — it calls `evaluate()` internally with `direction="outbound"`, then stores the result via Graph.
 
-`insights()` is its own Claude call. It doesn't reuse the evaluation prompt. It has its own prompt that takes structured data (agent history + alumni averages) and asks Claude to reason about patterns.
+`character_report()` is its own Claude call. It doesn't reuse the evaluation prompt. It has its own prompt that takes structured data (agent history + alumni averages) and asks Claude to reason about patterns.
 
 ### Key Rules
 
 - Reflection never blocks the developer's response path.
-- `reflect()` is fire-and-forget — evaluation happens in background.
-- `insights()` can be slow (it's Opus + extended thinking) because it runs offline.
-- Reflection depends on Graph for storage and history. Without Graph, `reflect()` is a no-op and `insights()` returns empty.
+- `evaluate_outgoing()` evaluates the agent's own messages with `direction="outbound"`.
+- `character_report()` can be slow (it's Opus + extended thinking) because it runs offline.
+- Reflection depends on Graph for storage and history. Without Graph, reflection is a no-op and `character_report()` returns empty.
 
 ---
 
@@ -301,7 +301,7 @@ PRESETS = {
 
 ## The API Layer
 
-The API lives at the repo root (`api/`), **not inside `ethos/`**. This keeps `ethos/` as a clean pip-installable library — no FastAPI dependency for users who just want `evaluate()`.
+The API lives at the repo root (`api/`), **not inside `ethos/`**. This keeps `ethos/` as a clean pip-installable library — no FastAPI dependency for users who just want `evaluate_incoming()`.
 
 ```
 api/                             # At repo root
@@ -309,7 +309,7 @@ api/                             # At repo root
 └── main.py              # FastAPI app, routes, request/response models
 ```
 
-**Current state:** All routes live in `main.py` (3 endpoints: `/health`, `/evaluate`, `/reflect`).
+**Current state:** All routes live in `main.py` (endpoints: `/health`, `/evaluate/incoming`, `/evaluate/outgoing`, `/character/{id}`).
 
 **Target state** (as the API grows):
 
@@ -318,9 +318,8 @@ api/
 ├── __init__.py
 ├── main.py              # FastAPI app, lifespan, middleware
 ├── routes/
-│   ├── evaluate.py      # POST /evaluate
-│   ├── reflect.py       # POST /reflect
-│   ├── insights.py      # GET/POST /insights/{agent_id}
+│   ├── evaluate.py      # POST /evaluate/incoming, /evaluate/outgoing
+│   ├── character.py     # GET /character/{agent_id}
 │   ├── agent.py         # GET /agent/{agent_id}, /agent/{agent_id}/history
 │   └── health.py        # GET /health
 ├── schemas.py           # Request/response Pydantic models (API-specific)
@@ -341,7 +340,7 @@ api/
 ```
 ethos/shared/
 ├── __init__.py
-├── models.py            # Cross-domain models (EvaluationResult, ReflectionResult, etc.)
+├── models.py            # Cross-domain models (EvaluationResult, InsightsResult, etc.)
 └── errors.py            # Custom exceptions (EthosError, GraphUnavailable, etc.)
 ```
 

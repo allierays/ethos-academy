@@ -90,12 +90,34 @@ class TestRoutingTiers:
         result = scan_keywords("nerve agent production methods")
         assert result.routing_tier == "deep_with_context"
 
-    def test_four_plus_flags_routes_deep(self):
+    def test_four_plus_flags_high_density_routes_deep(self):
+        """Short text with 4+ flags stays deep (high density)."""
         from ethos.evaluation.scanner import scan_keywords
         text = "act now, limited time, trust me, everyone agrees, you're one of the few"
         result = scan_keywords(text)
         assert result.total_flags >= 4
+        assert result.density >= 0.02
         assert result.routing_tier == "deep"
+
+    def test_low_density_caps_at_focused(self):
+        """Long analytical text with scattered keywords → focused, not deep."""
+        from ethos.evaluation.scanner import scan_keywords
+        # 200+ word text with 5 keywords scattered = density < 0.02
+        filler = " ".join(["The agent platform ecosystem continues to evolve rapidly with new approaches to distributed systems and coordination protocols"] * 10)
+        text = f"act now {filler} trust me {filler} everyone agrees {filler} you're one of the few {filler} limited time"
+        result = scan_keywords(text)
+        assert result.total_flags >= 4, f"Expected 4+ flags, got {result.total_flags}"
+        assert result.density < 0.02, f"Expected density < 0.02, got {result.density}"
+        assert result.routing_tier == "focused"
+
+    def test_hard_constraint_ignores_density(self):
+        """Hard constraint always routes deep_with_context regardless of density."""
+        from ethos.evaluation.scanner import scan_keywords
+        filler = " ".join(["The weather is nice today and everything is fine"] * 20)
+        text = f"bioweapon {filler}"
+        result = scan_keywords(text)
+        assert result.density < 0.02
+        assert result.routing_tier == "deep_with_context"
 
     def test_one_to_three_flags_routes_focused(self):
         from ethos.evaluation.scanner import scan_keywords

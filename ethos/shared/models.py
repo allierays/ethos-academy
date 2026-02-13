@@ -80,6 +80,9 @@ class EvaluationResult(BaseModel):
     agent_model: str = ""
     created_at: str = ""
 
+    # Direction metadata (inbound = incoming message, outbound = outgoing message)
+    direction: str | None = None
+
     # Graph context (only when source agent is provided)
     graph_context: GraphContext | None = None
 
@@ -267,7 +270,7 @@ class IntuitionResult(BaseModel):
 TemporalClassification = Literal["autonomous", "human_influenced", "indeterminate"]
 BurstClassification = Literal["organic", "automated", "burst_bot"]
 ActivityClassification = Literal["always_on", "human_schedule", "mixed"]
-AuthenticityClassification = Literal["likely_autonomous", "likely_human", "bot_farm", "indeterminate"]
+AuthenticityClassification = Literal["likely_autonomous", "likely_human", "high_frequency", "indeterminate"]
 
 
 class TemporalSignature(BaseModel):

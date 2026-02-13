@@ -8,7 +8,7 @@ Covers all 5 functions with required cases:
 (e) 24-hour coverage → always_on
 (f) 8-hour gap → human_schedule
 (g) profile with is_claimed=True → IdentitySignals.is_claimed=True
-(h) compute_authenticity with burst_bot override → classification='bot_farm'
+(h) compute_authenticity with burst_bot override → classification='high_frequency'
 """
 
 from datetime import datetime, timedelta, timezone
@@ -283,7 +283,7 @@ class TestComputeAuthenticity:
         identity = IdentitySignals(is_claimed=False)
 
         result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=50)
-        assert result.classification == "bot_farm"
+        assert result.classification == "high_frequency"
 
     def test_confidence_tiers(self):
         temporal = TemporalSignature()
@@ -374,7 +374,7 @@ class TestEndToEnd:
         identity = analyze_identity_signals({})
 
         result = compute_authenticity(temporal, burst, activity, identity, num_timestamps=len(ts))
-        assert result.classification == "bot_farm"
+        assert result.classification == "high_frequency"
 
     def test_empty_timestamps_safe(self):
         temporal = analyze_temporal_signature([])

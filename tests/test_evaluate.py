@@ -9,7 +9,7 @@ from unittest.mock import patch, MagicMock, AsyncMock
 
 import pytest
 
-from ethos import evaluate
+from ethos.evaluate import evaluate
 from ethos.shared.models import EvaluationResult
 
 
@@ -245,6 +245,28 @@ class TestParseFailure:
         result = await evaluate("Test")
         assert isinstance(result, EvaluationResult)
         assert result.phronesis == "unknown"
+
+
+# ── Direction parameter ──────────────────────────────────────────
+
+class TestDirection:
+    @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
+    async def test_direction_flows_to_result(self, mock_claude):
+        mock_claude.return_value = _mock_claude_response()
+        result = await evaluate("Test", direction="inbound")
+        assert result.direction == "inbound"
+
+    @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
+    async def test_outbound_direction_flows_to_result(self, mock_claude):
+        mock_claude.return_value = _mock_claude_response()
+        result = await evaluate("Test", direction="outbound")
+        assert result.direction == "outbound"
+
+    @patch("ethos.evaluate.call_claude", new_callable=AsyncMock)
+    async def test_no_direction_defaults_to_none(self, mock_claude):
+        mock_claude.return_value = _mock_claude_response()
+        result = await evaluate("Test")
+        assert result.direction is None
 
 
 # ── No source (backward compatibility) ───────────────────────────

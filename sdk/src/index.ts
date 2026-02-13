@@ -5,7 +5,12 @@
  * This package is a thin HTTP client that calls the Ethos API.
  */
 
-export { evaluate } from './evaluate'
-export { reflect } from './reflect'
 export { Ethos } from './client'
-export type { EvaluationResult, TraitScore, ReflectionResult } from './types'
+export type {
+  CharacterReportResult,
+  EvaluateIncomingOptions,
+  EvaluateOutgoingOptions,
+  EvaluationResult,
+  Insight,
+  TraitScore,
+} from './types'
