@@ -10,6 +10,8 @@ import type {
   DailyReportCard,
   EvaluationHistoryItem,
   EvaluationResult,
+  ExamReportCard,
+  ExamSummary,
   GraphData,
   InsightsResult,
   PatternResult,
@@ -146,4 +148,27 @@ export async function getPatterns(agentId: string): Promise<PatternResult> {
  */
 export async function getGraph(): Promise<GraphData> {
   return fetchApi<GraphData>("/graph");
+}
+
+/**
+ * Get the entrance exam report card for an agent.
+ */
+export async function getEntranceExam(
+  agentId: string,
+  examId: string
+): Promise<ExamReportCard> {
+  return fetchApi<ExamReportCard>(
+    `/agent/${encodeURIComponent(agentId)}/exam/${encodeURIComponent(examId)}`
+  );
+}
+
+/**
+ * List all exams for an agent.
+ */
+export async function getExamHistory(
+  agentId: string
+): Promise<ExamSummary[]> {
+  return fetchApi<ExamSummary[]>(
+    `/agent/${encodeURIComponent(agentId)}/exam`
+  );
 }

@@ -2590,7 +2590,7 @@
       "type": "frontend",
       "title": "Add entrance exam TypeScript types and API client functions",
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "batch": 5,
       "dependsOn": [
         "TASK-028"
@@ -2646,7 +2646,8 @@
         "academy/lib/types.ts",
         "academy/lib/api.ts"
       ],
-      "notes": "Simple type additions. The transformKeys() utility in api.ts already handles snake_case to camelCase conversion for all API responses."
+      "notes": "Simple type additions. The transformKeys() utility in api.ts already handles snake_case to camelCase conversion for all API responses.",
+      "retryCount": 0
     },
     {
       "id": "TASK-036",

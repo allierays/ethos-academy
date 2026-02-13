@@ -45,131 +45,144 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
   const riskLevel = report?.riskLevel ?? "low";
   const riskStyle = RISK_STYLES[riskLevel] ?? RISK_STYLES.low;
 
+  // Build narrative + deltas for the unified text section
+  const agentName = profile.agentName || profile.agentId;
+  const sorted = Object.entries(dims).sort(([, a], [, b]) => b - a);
+  const strongest = sorted[0];
+  const weakest = sorted[sorted.length - 1];
+  const evalCount = report?.totalEvaluationCount ?? profile.evaluationCount;
+  const drift = report?.characterDrift ?? 0;
+
+  const first = timeline[0];
+  const last = timeline[timeline.length - 1];
+  const deltas =
+    first && last && timeline.length > 1
+      ? {
+          ethos: Math.round((last.ethos - first.ethos) * 100),
+          logos: Math.round((last.logos - first.logos) * 100),
+          pathos: Math.round((last.pathos - first.pathos) * 100),
+        }
+      : null;
+
+  const narrative =
+    strongest && weakest
+      ? buildNarrative(agentName, strongest, weakest, deltas, evalCount, drift)
+      : null;
+
+  // Use report summary if available, otherwise fall back to narrative
+  const bodyText = report?.summary ?? narrative;
+
   return (
-    <section className="rounded-2xl bg-[#1a2538] px-6 py-8 text-white sm:px-10 sm:py-10">
-      <motion.div
-        className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between"
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Left: Grade ring + identity */}
-        <motion.div className="flex items-start gap-6" variants={fadeUp}>
-          {/* Grade ring */}
-          {grade ? (
-            <div className="relative flex h-24 w-24 shrink-0 items-center justify-center">
-              <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="42"
-                  fill="none"
-                  stroke="#334155"
-                  strokeWidth="6"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="42"
-                  fill="none"
-                  stroke={gradeColor}
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeDasharray={`${(overallPct ?? 0) * 2.64} 264`}
-                  transform="rotate(-90 50 50)"
-                  className="transition-all duration-1000"
-                />
-              </svg>
-              <span className="text-3xl font-bold" style={{ color: gradeColor }}>
-                {grade}
-              </span>
-            </div>
-          ) : (
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-2 border-slate-600">
-              <span className="text-sm text-slate-400">N/A</span>
-            </div>
-          )}
-
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-semibold tracking-tight">
-                {profile.agentName || profile.agentId}
-              </h1>
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold capitalize ${
-                  latestAlignment === "aligned"
-                    ? "bg-emerald-500/20 text-emerald-400"
-                    : latestAlignment === "drifting"
-                    ? "bg-amber-500/20 text-amber-400"
-                    : latestAlignment === "misaligned"
-                    ? "bg-red-500/20 text-red-400"
-                    : "bg-slate-500/20 text-slate-400"
-                }`}
-              >
-                <GlossaryTerm slug="alignment-status">{latestAlignment}</GlossaryTerm>
-              </span>
-              {academicLabel && (
-                <span className="rounded-full bg-teal-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-teal-300">
-                  {academicLabel}
-                </span>
-              )}
-            </div>
-            {classOf && (
-              <p className="mt-1 text-xs text-slate-400">{classOf}</p>
-            )}
-            {overallPct !== null && (
-              <p className="mt-1 text-sm text-slate-300">
-                Overall score: {overallPct}%
-              </p>
-            )}
-          </div>
-        </motion.div>
-
-        {/* Right: stat cards */}
+    <section className="bg-[#1a2538] text-white">
+      <div className="mx-auto max-w-7xl px-6 py-8 sm:px-10 sm:py-10">
         <motion.div
-          className="grid grid-cols-2 gap-3 sm:grid-cols-4"
-          variants={fadeUp}
-        >
-          <StatCard label={<GlossaryTerm slug="phronesis">Phronesis</GlossaryTerm>} value={`${phronesisScore}%`} />
-          <StatCard
-            label="Trend"
-            value={trend.arrow}
-            sublabel={trend.label}
-            valueClass={
-              trend.color === "text-aligned"
-                ? "text-emerald-400"
-                : trend.color === "text-misaligned"
-                ? "text-red-400"
-                : "text-slate-400"
-            }
-          />
-          <StatCard
-            label="Evaluations"
-            value={String(report?.totalEvaluationCount ?? profile.evaluationCount)}
-          />
-          <StatCard
-            label="Risk"
-            value={riskLevel}
-            valueClass={`capitalize text-xs font-semibold rounded-full px-2 py-0.5 ${riskStyle}`}
-            isRiskBadge
-          />
-        </motion.div>
-      </motion.div>
-
-      {/* Summary */}
-      {report?.summary && (
-        <motion.p
-          className="mt-6 max-w-3xl text-sm leading-relaxed text-slate-300"
-          variants={fadeUp}
+          className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between"
+          variants={staggerContainer}
           initial="hidden"
           animate="visible"
         >
-          {report.summary}
-        </motion.p>
-      )}
+          {/* Left: Grade ring + identity */}
+          <motion.div className="flex items-start gap-6" variants={fadeUp}>
+            {grade ? (
+              <div className="relative flex h-24 w-24 shrink-0 items-center justify-center">
+                <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#334155" strokeWidth="6" />
+                  <circle
+                    cx="50" cy="50" r="42" fill="none"
+                    stroke={gradeColor} strokeWidth="6" strokeLinecap="round"
+                    strokeDasharray={`${(overallPct ?? 0) * 2.64} 264`}
+                    transform="rotate(-90 50 50)"
+                    className="transition-all duration-1000"
+                  />
+                </svg>
+                <span className="text-3xl font-bold" style={{ color: gradeColor }}>{grade}</span>
+              </div>
+            ) : (
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-2 border-slate-600">
+                <span className="text-sm text-slate-400">N/A</span>
+              </div>
+            )}
 
-      {/* Phronesis narrative + dimension deltas */}
-      <PhronesisNarrative profile={profile} report={report} timeline={timeline} />
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl font-semibold tracking-tight">
+                  {agentName}
+                </h1>
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold capitalize ${
+                    latestAlignment === "aligned"
+                      ? "bg-emerald-500/20 text-emerald-400"
+                      : latestAlignment === "drifting"
+                      ? "bg-amber-500/20 text-amber-400"
+                      : latestAlignment === "misaligned"
+                      ? "bg-red-500/20 text-red-400"
+                      : "bg-slate-500/20 text-slate-400"
+                  }`}
+                >
+                  <GlossaryTerm slug="alignment-status">{latestAlignment}</GlossaryTerm>
+                </span>
+                {academicLabel && (
+                  <span className="rounded-full bg-teal-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-teal-300">
+                    {academicLabel}
+                  </span>
+                )}
+              </div>
+              {classOf && <p className="mt-1 text-xs text-slate-400">{classOf}</p>}
+              {overallPct !== null && (
+                <p className="mt-1 text-sm text-slate-300">Overall score: {overallPct}%</p>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Right: stat cards */}
+          <motion.div className="grid grid-cols-2 gap-3 sm:grid-cols-4" variants={fadeUp}>
+            <StatCard label={<GlossaryTerm slug="phronesis">Phronesis</GlossaryTerm>} value={`${phronesisScore}%`} />
+            <StatCard
+              label="Trend" value={trend.arrow} sublabel={trend.label}
+              valueClass={trend.color === "text-aligned" ? "text-emerald-400" : trend.color === "text-misaligned" ? "text-red-400" : "text-slate-400"}
+            />
+            <StatCard label="Evaluations" value={String(evalCount)} />
+            <StatCard
+              label="Risk" value={riskLevel}
+              valueClass={`capitalize text-xs font-semibold rounded-full px-2 py-0.5 ${riskStyle}`}
+              isRiskBadge
+            />
+          </motion.div>
+        </motion.div>
+
+        {/* Unified text section: summary or narrative + dimension deltas */}
+        {(bodyText || deltas) && (
+          <motion.div
+            className="mt-6 border-t border-white/10 pt-5"
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+          >
+            {bodyText && (
+              <p className="text-sm leading-relaxed text-slate-300">
+                {bodyText}
+              </p>
+            )}
+
+            {deltas && (
+              <div className="mt-4 flex flex-wrap gap-3">
+                {(["ethos", "logos", "pathos"] as const).map((dim) => {
+                  const d = deltas[dim];
+                  return (
+                    <div key={dim} className="flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5">
+                      <div className="h-2 w-2 rounded-full" style={{ backgroundColor: DIMENSION_COLORS[dim] }} />
+                      <span className="text-xs font-medium capitalize text-slate-400">{dim}</span>
+                      <span className={`text-xs font-semibold ${d > 0 ? "text-emerald-400" : d < 0 ? "text-red-400" : "text-slate-400"}`}>
+                        {d > 0 ? "+" : ""}{d}%
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </div>
     </section>
   );
 }
@@ -201,93 +214,6 @@ function StatCard({
         {label}
       </p>
     </div>
-  );
-}
-
-function PhronesisNarrative({
-  profile,
-  report,
-  timeline,
-}: {
-  profile: AgentProfile;
-  report: DailyReportCard | null;
-  timeline: TimelinePoint[];
-}) {
-  const dims = profile.dimensionAverages;
-  const sorted = Object.entries(dims).sort(([, a], [, b]) => b - a);
-  const strongest = sorted[0];
-  const weakest = sorted[sorted.length - 1];
-  const evalCount = report?.totalEvaluationCount ?? profile.evaluationCount;
-  const agentName = profile.agentName || profile.agentId;
-  const drift = report?.characterDrift ?? 0;
-
-  const first = timeline[0];
-  const last = timeline[timeline.length - 1];
-  const deltas =
-    first && last && timeline.length > 1
-      ? {
-          ethos: Math.round((last.ethos - first.ethos) * 100),
-          logos: Math.round((last.logos - first.logos) * 100),
-          pathos: Math.round((last.pathos - first.pathos) * 100),
-        }
-      : null;
-
-  if (!strongest || !weakest) return null;
-
-  const narrative = buildNarrative(
-    agentName,
-    strongest,
-    weakest,
-    deltas,
-    evalCount,
-    drift
-  );
-
-  return (
-    <motion.div
-      className="mt-5 border-t border-white/10 pt-5"
-      variants={fadeUp}
-      initial="hidden"
-      animate="visible"
-    >
-      <p className="max-w-3xl text-sm leading-relaxed text-slate-300">
-        {narrative}
-      </p>
-
-      {deltas && (
-        <div className="mt-4 flex flex-wrap gap-3">
-          {(["ethos", "logos", "pathos"] as const).map((dim) => {
-            const d = deltas[dim];
-            return (
-              <div
-                key={dim}
-                className="flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5"
-              >
-                <div
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: DIMENSION_COLORS[dim] }}
-                />
-                <span className="text-xs font-medium capitalize text-slate-400">
-                  {dim}
-                </span>
-                <span
-                  className={`text-xs font-semibold ${
-                    d > 0
-                      ? "text-emerald-400"
-                      : d < 0
-                        ? "text-red-400"
-                        : "text-slate-400"
-                  }`}
-                >
-                  {d > 0 ? "+" : ""}
-                  {d}%
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </motion.div>
   );
 }
 

@@ -81,6 +81,7 @@ export interface AgentSummary {
   agentName: string;
   evaluationCount: number;
   latestAlignmentStatus: string;
+  enrolled: boolean;
 }
 
 export interface AgentProfile {
@@ -93,6 +94,10 @@ export interface AgentProfile {
   traitAverages: Record<string, number>;
   phronesisTrend: string;
   alignmentHistory: string[];
+  enrolled: boolean;
+  enrolledAt: string;
+  counselorName: string;
+  entranceExamCompleted: boolean;
 }
 
 export interface EvaluationHistoryItem {
@@ -198,4 +203,66 @@ export interface PatternResult {
   agentId: string;
   patterns: DetectedPattern[];
   checkedAt: string;
+}
+
+/* ─── Entrance Exam ─── */
+
+export interface ExamQuestion {
+  id: string;
+  section: string;
+  prompt: string;
+}
+
+export interface ExamRegistration {
+  examId: string;
+  agentId: string;
+  questionNumber: number;
+  totalQuestions: number;
+  question: ExamQuestion;
+  message: string;
+}
+
+export interface ExamAnswerResult {
+  questionNumber: number;
+  totalQuestions: number;
+  question: ExamQuestion | null;
+  complete: boolean;
+}
+
+export interface QuestionDetail {
+  questionId: string;
+  section: string;
+  prompt: string;
+  responseSummary: string;
+  traitScores: Record<string, number>;
+  detectedIndicators: string[];
+}
+
+export interface ConsistencyPair {
+  pairName: string;
+  questionAId: string;
+  questionBId: string;
+  frameworkA: string;
+  frameworkB: string;
+  coherenceScore: number;
+}
+
+export interface ExamReportCard {
+  examId: string;
+  agentId: string;
+  reportCardUrl: string;
+  phronesisScore: number;
+  alignmentStatus: string;
+  dimensions: Record<string, number>;
+  tierScores: Record<string, number>;
+  consistencyAnalysis: ConsistencyPair[];
+  perQuestionDetail: QuestionDetail[];
+}
+
+export interface ExamSummary {
+  examId: string;
+  examType: string;
+  completed: boolean;
+  completedAt: string;
+  phronesisScore: number;
 }

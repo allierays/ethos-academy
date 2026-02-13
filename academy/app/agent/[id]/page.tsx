@@ -142,26 +142,25 @@ export default function AgentReportCard() {
   const agentName = profile.agentName || profile.agentId;
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-8">
-      {/* Decorative gradient mesh */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-ethos-200/25 blur-[100px]" />
-        <div className="absolute top-1/4 -left-40 h-[500px] w-[500px] rounded-full bg-logos-200/20 blur-[100px]" />
-        <div className="absolute bottom-0 right-1/4 h-[500px] w-[500px] rounded-full bg-pathos-200/25 blur-[100px]" />
-      </div>
+    <>
+      {/* Full-width hero banner */}
+      <GradeHero profile={profile} report={report} timeline={timeline} />
 
-      <motion.div
-        className="relative z-10 space-y-8"
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* 1. Grade Hero (includes phronesis narrative) */}
-        <motion.section variants={fadeUp}>
-          <GradeHero profile={profile} report={report} timeline={timeline} />
-        </motion.section>
+      <main className="mx-auto max-w-7xl px-6 py-8">
+        {/* Decorative gradient mesh */}
+        <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
+          <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-ethos-200/25 blur-[100px]" />
+          <div className="absolute top-1/4 -left-40 h-[500px] w-[500px] rounded-full bg-logos-200/20 blur-[100px]" />
+          <div className="absolute bottom-0 right-1/4 h-[500px] w-[500px] rounded-full bg-pathos-200/25 blur-[100px]" />
+        </div>
 
-        {/* 2. The Aristotelian Thesis (balance) */}
+        <motion.div
+          className="relative z-10 space-y-8"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          {/* 1. The Aristotelian Thesis (balance) */}
         <motion.section variants={fadeUp}>
           <BalanceThesis
             dimensionAverages={profile.dimensionAverages}
@@ -248,7 +247,8 @@ export default function AgentReportCard() {
         <motion.section variants={fadeUp}>
           <EvaluationDepth />
         </motion.section>
-      </motion.div>
-    </main>
+        </motion.div>
+      </main>
+    </>
   );
 }
