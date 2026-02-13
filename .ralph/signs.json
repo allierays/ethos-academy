@@ -104,6 +104,14 @@
       "learnedFrom": "TASK-020",
       "autoPromoted": true,
       "createdAt": "2026-02-12T13:03:19-08:00"
+    },
+    {
+      "id": "sign-015",
+      "pattern": "PRD test steps that curl a local service (e.g. `curl localhost:8917/health`) must ensure the service is running first — either start it in the background with a health-check loop (`until curl -s http://localhost:<port>/health > /dev/null; do sleep 1; done`) or skip the step when the service isn't expected to be running during CI/unit testing.",
+      "category": "testing",
+      "learnedFrom": "TASK-024",
+      "autoPromoted": true,
+      "createdAt": "2026-02-12T20:23:47-08:00"
     }
   ]
 }

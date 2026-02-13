@@ -373,3 +373,43 @@ sleep 8 &&
 [19:58:20] BASH: npx next build 2>&1 | tail -30
 [20:00:03] BASH: cd /Users/allierays/Sites/ethos/academy && npm run lint 2>&1 && npx tsc --noEmit
 [20:00:07] READ: /Users/allierays/Sites/ethos/.github/workflows/ci.yml
+[20:07:20] EDIT: app/how-it-works/page.tsx
+[20:07:20] EDIT: app/how-it-works/page.tsx
+[20:12:20] READ: app/how-it-works/page.tsx
+[20:13:32] WRITE: app/how-it-works/page.tsx
+[20:16:16] READ: /Users/allierays/Sites/ethos/CLAUDE.md
+[20:16:19] Grep: ### Voice
+[20:16:22] EDIT: /Users/allierays/Sites/ethos/CLAUDE.md
+[20:16:47] EDIT: /Users/allierays/Sites/ethos/CLAUDE.md
+[20:16:50] Grep: &mdash;|—
+[20:16:53] EDIT: app/how-it-works/page.tsx
+[20:16:55] EDIT: app/how-it-works/page.tsx
+[20:16:56] EDIT: app/how-it-works/page.tsx
+[20:21:42] READ: /Users/allierays/Sites/ethos/docs/evergreen-architecture/ethos-framework-overview.md
+[20:21:50] READ: app/page.tsx
+[20:21:50] READ: app/explore/page.tsx
+[20:21:50] READ: app/find/page.tsx
+[20:21:51] Glob: academy/components/**/*report*
+[20:21:51] Glob: academy/components/**/*card*
+[20:21:52] Glob: academy/components/**/*score*
+[20:21:52] Glob: academy/components/**/*evaluation*
+[20:21:52] BASH: find /Users/allierays/Sites/ethos/academy/app/agent -type f -name "*.tsx" 2>/dev
+[20:21:52] Glob: academy/components/**/*result*
+[20:21:54] READ: app/agent/[id]/page.tsx
+[20:21:55] Glob: academy/components/**/*.tsx
+[20:21:56] BASH: find /Users/allierays/Sites/ethos/academy/components -type f -name "*.tsx" | hea
+[20:21:58] READ: components/shared/ScoreCard.tsx
+[20:21:58] READ: components/shared/DimensionBalance.tsx
+[20:21:58] READ: components/shared/RadarChart.tsx
+[20:21:58] READ: components/alumni/AlumniPanel.tsx
+[20:22:02] READ: components/landing/WhatIsPhronesis.tsx
+[20:22:02] READ: components/landing/Pillars.tsx
+[20:22:02] READ: components/how-it-works/FacultyFlow.tsx
+[20:22:04] BASH: find /Users/allierays/Sites/ethos/academy/app -name "*how*" -o -name "*works*" 2
+[20:22:06] READ: components/alumni/AlumniComparison.tsx
+[20:22:06] READ: components/agent/InsightsPanel.tsx
+[20:22:07] BASH: ls -la /Users/allierays/Sites/ethos/academy/app/how-it-works/ 2>/dev/null | head
+[20:22:09] READ: app/how-it-works/page.tsx
+[20:22:09] READ: components/landing/Hero.tsx
+[20:22:11] BASH: find /Users/allierays/Sites/ethos/academy/app -name "page.tsx" | head -20
+[20:22:37] TASK: Explore existing Academy pages

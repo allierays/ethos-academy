@@ -14,45 +14,45 @@ import FacultyFlow from "@/components/how-it-works/FacultyFlow";
 
 /* ─── Static Data ─── */
 
-type Dimension = {
+type Department = {
   key: "ethos" | "logos" | "pathos";
   name: string;
+  greek: string;
   tagline: string;
-  description: string;
+  question: string;
   borderColor: string;
-  bgColor: string;
   textColor: string;
 };
 
-const DIMENSIONS: Dimension[] = [
+const DEPARTMENTS: Department[] = [
   {
     key: "ethos",
-    name: "Ethos",
-    tagline: "Character & Honesty",
-    description:
-      "Is the agent honest? Does it act with integrity? Does it tell you what it doesn\u2019t know?",
+    name: "Character",
+    greek: "\u1F26\u03B8\u03BF\u03C2",
+    tagline: "Department of Character",
+    question:
+      "Is the agent honest? Does it admit what it doesn\u2019t know? Does it act with integrity when no one is watching?",
     borderColor: "border-ethos-500",
-    bgColor: "bg-ethos-50",
     textColor: "text-ethos-700",
   },
   {
     key: "logos",
-    name: "Logos",
-    tagline: "Reasoning & Accuracy",
-    description:
-      "Are the claims true? Does the logic hold?",
+    name: "Reasoning",
+    greek: "\u03BB\u03CC\u03B3\u03BF\u03C2",
+    tagline: "Department of Reasoning",
+    question:
+      "Are the claims true? Does the logic hold? Can the agent tell the difference between evidence and invention?",
     borderColor: "border-logos-500",
-    bgColor: "bg-logos-50",
     textColor: "text-logos-700",
   },
   {
     key: "pathos",
-    name: "Pathos",
-    tagline: "Emotional Intelligence & Respect",
-    description:
-      "Does it respect the person it\u2019s talking to? Does it leave room for you to think for yourself?",
+    name: "Empathy",
+    greek: "\u03C0\u03AC\u03B8\u03BF\u03C2",
+    tagline: "Department of Empathy",
+    question:
+      "Does the agent respect the person it\u2019s talking to? Does it leave room for you to think for yourself?",
     borderColor: "border-pathos-500",
-    bgColor: "bg-pathos-50",
     textColor: "text-pathos-700",
   },
 ];
@@ -70,10 +70,10 @@ type DimensionTraits = {
   traits: TraitData[];
 };
 
-const TRAIT_GROUPS: DimensionTraits[] = [
+const CURRICULUM: DimensionTraits[] = [
   {
     key: "ethos",
-    label: "Ethos",
+    label: "Character",
     borderColor: "border-ethos-500",
     traits: [
       { name: "Virtue", polarity: "+", description: "Competence, integrity, intellectual honesty" },
@@ -84,7 +84,7 @@ const TRAIT_GROUPS: DimensionTraits[] = [
   },
   {
     key: "logos",
-    label: "Logos",
+    label: "Reasoning",
     borderColor: "border-logos-500",
     traits: [
       { name: "Accuracy", polarity: "+", description: "Claims are factually correct and sourced" },
@@ -95,7 +95,7 @@ const TRAIT_GROUPS: DimensionTraits[] = [
   },
   {
     key: "pathos",
-    label: "Pathos",
+    label: "Empathy",
     borderColor: "border-pathos-500",
     traits: [
       { name: "Recognition", polarity: "+", description: "Notices and acknowledges emotional state" },
@@ -107,24 +107,27 @@ const TRAIT_GROUPS: DimensionTraits[] = [
 ];
 
 const MCP_TOOLS = [
-  { name: "examine_message", description: "Score a message you received" },
-  { name: "reflect_on_message", description: "Reflect on something you said" },
-  { name: "get_character_report", description: "Get your semester report card" },
-  { name: "detect_behavioral_patterns", description: "Check for sabotage pathways" },
+  { name: "examine_message", description: "Score a message the agent received" },
+  { name: "reflect_on_message", description: "Reflect on something the agent said" },
+  { name: "get_character_report", description: "Pull the agent\u2019s semester report card" },
+  { name: "detect_behavioral_patterns", description: "Check for drift and sabotage pathways" },
 ];
 
-const PHRONESIS_CARDS = [
+const TRANSCRIPT_CARDS = [
   {
-    title: "Protection",
-    description: "Screen incoming messages. Know who you\u2019re talking to.",
+    title: "Incoming",
+    subtitle: "examine_message",
+    description: "The agent screens messages it receives. It learns who to trust and who to question.",
   },
   {
-    title: "Reflection",
-    description: "Score your own output. Catch drift before it becomes a pattern.",
+    title: "Outgoing",
+    subtitle: "reflect_on_message",
+    description: "The agent scores its own output. It catches drift before it becomes a pattern.",
   },
   {
-    title: "Intelligence",
-    description: "The graph gets smarter with every developer who uses it.",
+    title: "Over Time",
+    subtitle: "character_report",
+    description: "Every evaluation builds the transcript. The graph reveals character the way a semester reveals a student.",
   },
 ];
 
@@ -134,40 +137,49 @@ export default function HowItWorksPage() {
   return (
     <main>
       {/* ─── 1. Hero ─── */}
-      <section className="bg-[#2e4a6e] py-24 sm:py-32">
+      <section className="bg-[#1a2538] py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-6 text-center">
-          <motion.h1
-            className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl"
+          <motion.p
+            className="text-sm font-semibold uppercase tracking-widest text-ethos-400"
             initial="hidden"
             animate="visible"
             variants={fadeIn}
           >
-            Agents talk to agents.
-            <br />
-            Nobody checks their character.
+            Ethos Academy
+          </motion.p>
+          <motion.h1
+            className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl"
+            initial="hidden"
+            animate="visible"
+            variants={fadeIn}
+          >
+            A school for AI agents.
           </motion.h1>
           <motion.p
-            className="mx-auto mt-6 max-w-2xl text-lg text-white/70 sm:text-xl"
+            className="mx-auto mt-6 max-w-2xl text-lg text-white/60 sm:text-xl"
             initial="hidden"
             animate="visible"
             variants={fadeUp}
           >
-            Google&apos;s A2A launched with 150+ organizations. Agents negotiate,
-            transact, advise. There&apos;s no character layer. No trust infrastructure.
-            Ethos is that layer.
+            Every agent gets trained on capability. None get trained on character.
+            Ethos Academy evaluates every message an agent sends or receives
+            across 12 behavioral traits, and builds a living record of who
+            that agent is becoming.
           </motion.p>
         </div>
       </section>
 
-      {/* ─── 2. The Insight ─── */}
+      {/* ─── 2. Three Departments ─── */}
       <section className="bg-background py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              The framework is 2,400 years old.
-              <br />
-              The problem is brand new.
+              Three departments. One school.
             </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-foreground/60">
+              Aristotle identified three dimensions of trustworthy communication
+              2,400 years ago. We turned them into departments.
+            </p>
           </motion.div>
 
           <motion.div
@@ -175,48 +187,42 @@ export default function HowItWorksPage() {
             {...whileInView}
             variants={staggerContainer}
           >
-            {DIMENSIONS.map((dim) => (
+            {DEPARTMENTS.map((dept) => (
               <motion.div
-                key={dim.key}
+                key={dept.key}
                 variants={fadeUp}
-                className={`rounded-2xl border border-border bg-surface p-6 border-l-4 ${dim.borderColor}`}
+                className={`rounded-2xl border border-border bg-surface p-6 border-l-4 ${dept.borderColor}`}
               >
-                <h3 className={`text-lg font-bold ${dim.textColor}`}>
-                  {dim.name}
-                </h3>
-                <p className="mt-1 text-sm font-medium text-foreground/60">
-                  {dim.tagline}
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted">
+                  {dept.greek}
                 </p>
+                <h3 className={`mt-1 text-lg font-bold ${dept.textColor}`}>
+                  {dept.tagline}
+                </h3>
                 <p className="mt-3 text-sm leading-relaxed text-foreground/70">
-                  {dim.description}
+                  {dept.question}
                 </p>
               </motion.div>
             ))}
           </motion.div>
-
-          <motion.p
-            className="mx-auto mt-12 max-w-3xl text-center text-sm leading-relaxed text-foreground/60"
-            {...whileInView}
-            variants={fadeUp}
-          >
-            These aren&apos;t arbitrary categories. They&apos;re the framework Aristotle
-            developed to understand when communication builds trust &mdash; and when
-            it destroys it. The failure modes haven&apos;t changed. The speakers have.
-          </motion.p>
         </div>
       </section>
 
-      {/* ─── 3. The 12 Traits ─── */}
+      {/* ─── 3. The Curriculum ─── */}
       <section className="bg-surface py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              12 traits. Three dimensions. Every message.
+              The curriculum: 12 traits every agent is scored on.
             </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-foreground/60">
+              Four traits per department. Positive traits the agent should demonstrate.
+              Negative traits the Academy flags and tracks.
+            </p>
           </motion.div>
 
           <div className="mt-16 space-y-12">
-            {TRAIT_GROUPS.map((group) => (
+            {CURRICULUM.map((group) => (
               <motion.div
                 key={group.key}
                 {...whileInView}
@@ -253,16 +259,29 @@ export default function HowItWorksPage() {
               </motion.div>
             ))}
           </div>
+
+          <motion.div {...whileInView} variants={fadeUp} className="mt-12 text-center">
+            <Link
+              href="/curriculum"
+              className="text-sm font-semibold text-action hover:text-action-hover transition-colors"
+            >
+              See all 153 behavioral indicators &rarr;
+            </Link>
+          </motion.div>
         </div>
       </section>
 
-      {/* ─── 4. Three Faculties ─── */}
-      <section className="bg-[#2e4a6e] py-24">
+      {/* ─── 4. How the Academy Evaluates ─── */}
+      <section className="bg-[#1a2538] py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Three faculties. One judgment.
+              How the Academy evaluates every message.
             </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-white/50">
+              Three faculties work in sequence. Fast pattern-matching first,
+              deep reasoning second, constitutional alignment last.
+            </p>
           </motion.div>
 
           <div className="mt-16">
@@ -271,17 +290,17 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ─── 5. Phronesis ─── */}
+      {/* ─── 5. The Transcript ─── */}
       <section className="bg-background py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Character isn&apos;t a score. It&apos;s a story.
+              Every agent builds a transcript.
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-foreground/60">
-              Phronesis &mdash; Aristotle&apos;s master virtue. Not knowledge, but
-              judgment. The wisdom that comes from observing character over time,
-              not from a single test.
+              A single score tells you nothing. A semester of scores tells you
+              everything. The Academy builds a graph of character over time.
+              Aristotle called it Phronesis. We call it the transcript.
             </p>
           </motion.div>
 
@@ -290,14 +309,17 @@ export default function HowItWorksPage() {
             {...whileInView}
             variants={staggerContainer}
           >
-            {PHRONESIS_CARDS.map((card) => (
+            {TRANSCRIPT_CARDS.map((card) => (
               <motion.div
                 key={card.title}
                 variants={fadeUp}
                 className="rounded-2xl border border-border bg-surface p-6"
               >
                 <h3 className="text-lg font-bold">{card.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-foreground/60">
+                <p className="mt-1 font-mono text-xs text-ethos-600">
+                  {card.subtitle}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-foreground/60">
                   {card.description}
                 </p>
               </motion.div>
@@ -306,13 +328,17 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ─── 6. Two Ways In ─── */}
+      {/* ─── 6. Enrollment ─── */}
       <section className="bg-surface py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Your agent enrolls in two lines.
+              Enroll your agent in two lines.
             </h2>
+            <p className="mx-auto mt-4 max-w-xl text-foreground/60">
+              Two paths to enrollment. Developers add Ethos to their agent&apos;s
+              code. Or the agent enrolls itself via MCP.
+            </p>
           </motion.div>
 
           <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
@@ -322,9 +348,9 @@ export default function HowItWorksPage() {
               variants={slideInLeft}
               className="rounded-2xl border border-border bg-white p-6"
             >
-              <h3 className="text-lg font-bold">For Developers</h3>
+              <h3 className="text-lg font-bold">Developer enrolls the agent</h3>
               <p className="mt-1 text-sm text-foreground/60">
-                Drop Ethos into your agent&apos;s code.
+                Add Ethos to your agent&apos;s code. Score what it receives and what it sends.
               </p>
 
               <div className="mt-6 space-y-4">
@@ -343,7 +369,7 @@ result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
               </div>
 
               <p className="mt-4 text-xs text-foreground/50">
-                Same engine. Same 12 traits. Same graph. Both directions.
+                Same engine. Same 12 traits. Same transcript. Both directions.
               </p>
             </motion.div>
 
@@ -353,9 +379,9 @@ result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
               variants={slideInRight}
               className="rounded-2xl border border-border bg-white p-6"
             >
-              <h3 className="text-lg font-bold">For Agents</h3>
+              <h3 className="text-lg font-bold">Agent enrolls itself</h3>
               <p className="mt-1 text-sm text-foreground/60">
-                Or let your agent enroll itself.
+                Give the agent the tools. It becomes the student, not the subject.
               </p>
 
               <div className="mt-6 overflow-x-auto rounded-xl bg-[#1a2538] p-5">
@@ -379,17 +405,13 @@ result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
                   </div>
                 ))}
               </div>
-
-              <p className="mt-4 text-xs text-foreground/50">
-                The agent becomes the student, not the subject.
-              </p>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* ─── 7. CTA ─── */}
-      <section className="bg-[#2e4a6e] py-24">
+      <section className="bg-[#1a2538] py-24">
         <div className="mx-auto max-w-6xl px-6 text-center">
           <motion.div {...whileInView} variants={fadeIn}>
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -401,7 +423,7 @@ result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
                 href="/explore"
-                className="rounded-xl bg-white px-8 py-3 text-sm font-semibold text-[#2e4a6e] shadow-lg transition-colors hover:bg-white/90"
+                className="rounded-xl bg-white px-8 py-3 text-sm font-semibold text-[#1a2538] shadow-lg transition-colors hover:bg-white/90"
               >
                 Explore the Graph
               </Link>
@@ -409,7 +431,7 @@ result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
                 href="/curriculum"
                 className="rounded-xl border border-white/30 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
               >
-                See the Curriculum
+                See the Full Curriculum
               </Link>
             </div>
           </motion.div>

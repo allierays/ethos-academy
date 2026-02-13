@@ -198,6 +198,11 @@ Copy `.env.example` to `.env`. Required:
 ### Voice
 Minimal and precise. Say less, mean more. Active voice only — never passive.
 
+### Writing Style (all file content)
+- Active voice only, never passive
+- Never use em dashes
+- Apply to all copy: page content, comments, commit messages, docs
+
 ### Project
 - **Priority:** Ship it - hackathon pace, get it working
 - **Audience:** Anthropic hackathon - technical judges and participants
