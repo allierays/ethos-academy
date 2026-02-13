@@ -2174,7 +2174,7 @@
       "type": "backend",
       "title": "Create 23 entrance exam questions as pure data module",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "batch": 1,
       "dependsOn": [],
       "techStack": {
@@ -2229,7 +2229,8 @@
         "docs/ideas/entrance-exam.md",
         "ethos/taxonomy/traits.py"
       ],
-      "notes": "Copy prompts verbatim from docs/ideas/entrance-exam.md. The CONSISTENCY_PAIRS list should be a list of tuples: [('EE-14', 'EE-15'), ('EE-03', 'EE-23')]. The __init__.py starts empty - exports added in TASK-032."
+      "notes": "Copy prompts verbatim from docs/ideas/entrance-exam.md. The CONSISTENCY_PAIRS list should be a list of tuples: [('EE-14', 'EE-15'), ('EE-03', 'EE-23')]. The __init__.py starts empty - exports added in TASK-032.",
+      "retryCount": 0
     },
     {
       "id": "TASK-030",
