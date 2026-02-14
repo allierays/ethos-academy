@@ -25,7 +25,7 @@ The summary and insight messages will be read by people who are NOT AI researche
 
 Rules:
 - NEVER use internal system terms: "phronesis", "ethos/logos/pathos", "alignment status", "drifting", "misaligned"
-- Instead use everyday words: "integrity", "logic", "empathy", "trustworthiness", "honesty", "reliability"
+- Instead use everyday words: "integrity", "logic", "empathy", "practical wisdom", "honesty", "reliability"
 - NEVER cite raw scores (0.75, 0.50). Translate them: "honesty dropped sharply", "reasoning took a significant hit"
 - Use relative language: "improved", "declined", "held steady", "best session yet", "worst in recent history"
 - Focus on WHAT HAPPENED and WHY IT MATTERS, not on metric names

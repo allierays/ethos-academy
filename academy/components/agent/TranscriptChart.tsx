@@ -262,13 +262,13 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
 
       <div className="mt-3 flex items-center gap-4 text-xs text-muted">
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded bg-teal" /> Integrity (Ethos)
+          <span className="inline-block h-2 w-4 rounded bg-ethos-500" /> Integrity (Ethos)
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded bg-blue" /> Logic (Logos)
+          <span className="inline-block h-2 w-4 rounded bg-logos-500" /> Logic (Logos)
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded bg-warm" /> Empathy (Pathos)
+          <span className="inline-block h-2 w-4 rounded bg-pathos-500" /> Empathy (Pathos)
         </span>
         {flaggedPoints.length > 0 && (
           <span className="flex items-center gap-1">

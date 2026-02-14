@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 import { fadeUp, staggerContainer } from "../../lib/motion";
 import { getAgents } from "../../lib/api";
 import type { AgentSummary, TraitScore } from "../../lib/types";
-import { ALIGNMENT_STYLES } from "../../lib/colors";
+import { ALIGNMENT_STYLES, DIMENSIONS } from "../../lib/colors";
 import RadarChart, { NEGATIVE_TRAITS, DIMENSION_MAP } from "../../components/shared/RadarChart";
 import GlossaryTerm from "../../components/shared/GlossaryTerm";
 
@@ -63,6 +63,118 @@ function formatModel(raw: string): string {
     .join(" ");
 }
 
+/** Extract model family from a raw model ID (e.g. "claude-sonnet-4-5-20250929" -> "Claude") */
+function getModelFamily(raw: string): string {
+  if (!raw) return "Unknown";
+  const families: [RegExp, string][] = [
+    [/claude/i, "Claude"],
+    [/gpt/i, "GPT"],
+    [/gemini/i, "Gemini"],
+    [/llama/i, "Llama"],
+    [/mistral/i, "Mistral"],
+  ];
+  for (const [re, label] of families) {
+    if (re.test(raw)) return label;
+  }
+  return "Other";
+}
+
+/** Return the dimension key with the highest average score */
+function getStrongestDimension(dims: Record<string, number>): string | null {
+  const entries = Object.entries(dims);
+  if (entries.length === 0) return null;
+  return entries.reduce((best, curr) => (curr[1] > best[1] ? curr : best))[0];
+}
+
+/** Average of dimension scores */
+function getOverallScore(dims: Record<string, number>): number {
+  const vals = Object.values(dims);
+  if (vals.length === 0) return 0;
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+/** The 6 negative trait keys */
+const NEG_TRAIT_KEYS = ["manipulation", "deception", "fabrication", "broken_logic", "dismissal", "exploitation"];
+
+/** Return the set of negative trait keys where raw score >= 0.15 */
+function getDetectedConcerns(traitAverages: Record<string, number>): Set<string> {
+  const result = new Set<string>();
+  for (const key of NEG_TRAIT_KEYS) {
+    if ((traitAverages[key] ?? 0) >= 0.15) result.add(key);
+  }
+  return result;
+}
+
+/** Active chip colors per alignment status */
+const ALIGNMENT_CHIP_STYLES: Record<string, string> = {
+  aligned: "bg-aligned/20 text-aligned border-aligned/40",
+  developing: "bg-sky-100 text-sky-700 border-sky-300",
+  drifting: "bg-drifting/20 text-drifting border-drifting/40",
+  misaligned: "bg-misaligned/20 text-misaligned border-misaligned/40",
+  violation: "bg-misaligned/20 text-misaligned border-misaligned/40",
+  unknown: "bg-muted/20 text-muted border-muted/40",
+};
+
+/** Dimension chip active styles */
+const DIM_CHIP_STYLES: Record<string, string> = {
+  ethos: "bg-[#2e4a6e]/20 text-[#2e4a6e] border-[#2e4a6e]/40",
+  logos: "bg-[#389590]/20 text-[#286e6a] border-[#389590]/40",
+  pathos: "bg-[#e0a53c]/20 text-[#a87a20] border-[#e0a53c]/40",
+};
+
+/** Orange active style for flagged concern chips */
+const CONCERN_CHIP_STYLE = "bg-[#e0a53c]/15 text-[#a87a20] border-[#e0a53c]/40";
+
+/* ─── Inline Components ─── */
+
+function FacetGroup({ title, children, last }: { title: string; children: React.ReactNode; last?: boolean }) {
+  return (
+    <div className={last ? "pt-1" : "border-b border-white/20 pb-4 mb-4"}>
+      <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted/70 mb-2.5">{title}</h3>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
+    </div>
+  );
+}
+
+function Chip({
+  label,
+  active,
+  onClick,
+  activeClass,
+  count,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  activeClass?: string;
+  count?: number;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all ${
+        active
+          ? activeClass ?? "bg-action/15 text-action border-action/30"
+          : "border-white/30 bg-white/50 text-muted hover:bg-white/70 hover:text-foreground"
+      }`}
+    >
+      {label}
+      {count != null && (
+        <span className={`text-[10px] ${active ? "opacity-70" : "opacity-50"}`}>{count}</span>
+      )}
+    </button>
+  );
+}
+
+type SortKey = "name" | "evaluations" | "score";
+
+interface Filters {
+  alignment: Set<string>;
+  model: Set<string>;
+  dimension: string | null;
+  traits: Set<string>;
+}
+
 const ALIGNMENT_LABELS: Record<string, string> = {
   aligned: "Aligned",
   developing: "Developing",
@@ -115,8 +227,8 @@ const CONCERN_TAGS: Record<string, string> = {
 };
 
 const DIM_TAG_STYLES: Record<string, string> = {
-  ethos: "bg-[#3b8a98]/10 text-[#2a6b77]",
-  logos: "bg-[#2e4a6e]/10 text-[#2e4a6e]",
+  ethos: "bg-[#2e4a6e]/10 text-[#2e4a6e]",
+  logos: "bg-[#389590]/10 text-[#286e6a]",
   pathos: "bg-[#e0a53c]/10 text-[#a87a20]",
 };
 
@@ -177,6 +289,13 @@ export default function AlumniPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [flipAll, setFlipAll] = useState(false);
+  const [filters, setFilters] = useState<Filters>({
+    alignment: new Set(),
+    model: new Set(),
+    dimension: null,
+    traits: new Set(),
+  });
+  const [sortBy, setSortBy] = useState<SortKey>("name");
 
   useEffect(() => {
     let cancelled = false;
@@ -197,15 +316,141 @@ export default function AlumniPage() {
     };
   }, []);
 
+  /* Precomputed metadata per agent */
+  const agentMeta = useMemo(
+    () =>
+      new Map(
+        agents.map((a) => [
+          a.agentId,
+          {
+            family: getModelFamily(a.agentModel),
+            strongestDim: getStrongestDimension(a.dimensionAverages ?? {}),
+            overallScore: getOverallScore(a.dimensionAverages ?? {}),
+            concerns: getDetectedConcerns(a.traitAverages ?? {}),
+          },
+        ])
+      ),
+    [agents]
+  );
+
+  /* Unique model families with counts */
+  const modelFamilies = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const meta of agentMeta.values()) {
+      counts.set(meta.family, (counts.get(meta.family) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([family, count]) => ({ family, count }));
+  }, [agentMeta]);
+
+  /* Unique alignment statuses present in the data */
+  const alignmentStatuses = useMemo(() => {
+    const set = new Set<string>();
+    for (const a of agents) set.add(a.latestAlignmentStatus);
+    return Array.from(set).sort();
+  }, [agents]);
+
+  /* Negative traits detected across all agents, with counts */
+  const detectedTraitList = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const meta of agentMeta.values()) {
+      for (const key of meta.concerns) {
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+      }
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([key, count]) => ({ key, label: CONCERN_TAGS[key] ?? key, count }));
+  }, [agentMeta]);
+
+  const activeFilterCount =
+    filters.alignment.size + filters.model.size + (filters.dimension ? 1 : 0) + filters.traits.size;
+
+  /* Combined filter + sort pipeline */
   const filtered = useMemo(() => {
-    if (!query.trim()) return agents;
-    const q = query.toLowerCase();
-    return agents.filter(
-      (a) =>
-        a.agentName.toLowerCase().includes(q) ||
-        a.agentId.toLowerCase().includes(q)
-    );
-  }, [query, agents]);
+    let result = agents;
+
+    // Text search
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      result = result.filter(
+        (a) =>
+          a.agentName.toLowerCase().includes(q) ||
+          a.agentId.toLowerCase().includes(q)
+      );
+    }
+
+    // Alignment filter
+    if (filters.alignment.size > 0) {
+      result = result.filter((a) => filters.alignment.has(a.latestAlignmentStatus));
+    }
+
+    // Model filter
+    if (filters.model.size > 0) {
+      result = result.filter((a) => {
+        const meta = agentMeta.get(a.agentId);
+        return meta && filters.model.has(meta.family);
+      });
+    }
+
+    // Dimension filter
+    if (filters.dimension) {
+      result = result.filter((a) => {
+        const meta = agentMeta.get(a.agentId);
+        return meta?.strongestDim === filters.dimension;
+      });
+    }
+
+    // Flagged traits filter (intersection: agent must have ALL selected traits)
+    if (filters.traits.size > 0) {
+      result = result.filter((a) => {
+        const meta = agentMeta.get(a.agentId);
+        if (!meta) return false;
+        for (const t of filters.traits) {
+          if (!meta.concerns.has(t)) return false;
+        }
+        return true;
+      });
+    }
+
+    // Sort
+    const sorted = [...result];
+    if (sortBy === "name") {
+      sorted.sort((a, b) => a.agentName.localeCompare(b.agentName));
+    } else if (sortBy === "evaluations") {
+      sorted.sort((a, b) => b.evaluationCount - a.evaluationCount);
+    } else if (sortBy === "score") {
+      sorted.sort((a, b) => {
+        const sa = agentMeta.get(a.agentId)?.overallScore ?? 0;
+        const sb = agentMeta.get(b.agentId)?.overallScore ?? 0;
+        return sb - sa;
+      });
+    }
+
+    return sorted;
+  }, [query, agents, filters, sortBy, agentMeta]);
+
+  function toggleSetFilter(key: "alignment" | "model" | "traits", value: string) {
+    setFilters((prev) => {
+      const next = new Set(prev[key]);
+      if (next.has(value)) next.delete(value);
+      else next.add(value);
+      return { ...prev, [key]: next };
+    });
+  }
+
+  function toggleDimension(dim: string) {
+    setFilters((prev) => ({
+      ...prev,
+      dimension: prev.dimension === dim ? null : dim,
+    }));
+  }
+
+  function clearFilters() {
+    setFilters({ alignment: new Set(), model: new Set(), dimension: null, traits: new Set() });
+    setQuery("");
+  }
 
   return (
     <main className="bg-background min-h-[calc(100vh-3.5rem)]">
@@ -233,114 +478,216 @@ export default function AlumniPage() {
             </div>
             <div className="rounded-xl border border-white/15 bg-white/10 px-6 py-3 backdrop-blur-md">
               <p className="max-w-xl text-base text-surface/80 sm:text-lg">
-                Every agent enrolled at Ethos Academy builds a character profile through evaluation. Browse the directory to view report cards.
+                Every agent enrolled at Ethos Academy builds a phronesis profile through evaluation. Browse the directory to view report cards.
               </p>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Search bar */}
-      <section className="relative z-20 -mt-6 mx-auto max-w-2xl px-6">
-        <search role="search" aria-label="Search agents">
-          <div className="flex rounded-2xl border border-border/60 bg-surface/80 backdrop-blur-xl shadow-lg">
-            <span className="flex items-center pl-4 text-muted">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
-              </svg>
-            </span>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by agent name..."
-              aria-label="Search by agent name"
-              className="flex-1 bg-transparent px-3 py-4 text-sm placeholder:text-muted/60 focus:outline-none"
-            />
-            {query && (
-              <button
-                onClick={() => setQuery("")}
-                aria-label="Clear search"
-                className="pr-4 text-muted hover:text-foreground transition-colors"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
-        </search>
-      </section>
+      {/* Two-column layout */}
+      <div className="mx-auto max-w-7xl px-6 pb-16 pt-6">
+        <div className="flex flex-col lg:flex-row gap-6">
 
-      {/* Results */}
-      <section aria-label="Search results" aria-live="polite" className="mx-auto max-w-7xl px-6 pb-16 pt-10">
-        {loading && (
-          <div className="flex justify-center py-20">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-muted border-t-teal" />
-          </div>
-        )}
+          {/* Left sidebar */}
+          <aside className="w-full lg:w-64 shrink-0">
+            <div className="lg:sticky lg:top-20 rounded-2xl border border-white/30 bg-white/40 backdrop-blur-2xl p-5">
+              <h2 className="text-sm font-bold text-foreground mb-4">Filters</h2>
+              <FacetGroup title="Alignment">
+                {alignmentStatuses.map((status) => (
+                  <Chip
+                    key={status}
+                    label={ALIGNMENT_LABELS[status] ?? status}
+                    active={filters.alignment.has(status)}
+                    onClick={() => toggleSetFilter("alignment", status)}
+                    activeClass={ALIGNMENT_CHIP_STYLES[status]}
+                  />
+                ))}
+              </FacetGroup>
 
-        {error && (
-          <div className="py-16 text-center text-misaligned">{error}</div>
-        )}
+              <FacetGroup title="Model">
+                {modelFamilies.map(({ family, count }) => (
+                  <Chip
+                    key={family}
+                    label={family}
+                    active={filters.model.has(family)}
+                    onClick={() => toggleSetFilter("model", family)}
+                    count={count}
+                  />
+                ))}
+              </FacetGroup>
 
-        {!loading && !error && filtered.length === 0 && (
-          <div className="py-16 text-center">
-            <p className="text-lg text-muted">
-              {query
-                ? `No agents found matching "${query}"`
-                : "No agents enrolled yet."}
-            </p>
-          </div>
-        )}
+              <FacetGroup title="Strongest Dimension" last={detectedTraitList.length === 0}>
+                {DIMENSIONS.map((dim) => (
+                  <Chip
+                    key={dim.key}
+                    label={dim.label}
+                    active={filters.dimension === dim.key}
+                    onClick={() => toggleDimension(dim.key)}
+                    activeClass={DIM_CHIP_STYLES[dim.key]}
+                  />
+                ))}
+              </FacetGroup>
 
-        {!loading && !error && filtered.length > 0 && (
-          <>
-            <div className="mb-6 flex items-center justify-between">
-              <p className="text-sm text-muted">
-                {filtered.length} agent{filtered.length !== 1 ? "s" : ""}
-                {query ? ` matching "${query}"` : " enrolled"}
-              </p>
-              <button
-                onClick={() => setFlipAll((v) => !v)}
-                className="flex items-center gap-2 rounded-xl border border-border/60 bg-surface/80 backdrop-blur-xl px-4 py-2 text-xs font-medium text-foreground transition-all hover:border-action hover:text-action hover:shadow-md"
-                aria-label={flipAll ? "Show agent cards" : "Show radar charts"}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-300 ${flipAll ? "rotate-180" : ""}`}>
-                  <path d="M17 1l4 4-4 4" />
-                  <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                  <path d="M7 23l-4-4 4-4" />
-                  <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                </svg>
-                {flipAll ? "Show Cards" : "Show Radars"}
-              </button>
+              {detectedTraitList.length > 0 && (
+                <FacetGroup title="Flagged Traits" last>
+                  {detectedTraitList.map(({ key, label, count }) => (
+                    <Chip
+                      key={key}
+                      label={label}
+                      active={filters.traits.has(key)}
+                      onClick={() => toggleSetFilter("traits", key)}
+                      activeClass={CONCERN_CHIP_STYLE}
+                      count={count}
+                    />
+                  ))}
+                </FacetGroup>
+              )}
+
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="mt-3 w-full text-center text-xs font-medium text-action hover:underline"
+                >
+                  Clear {activeFilterCount} filter{activeFilterCount !== 1 ? "s" : ""}
+                </button>
+              )}
             </div>
-            <motion.div
-              className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "200px" }}
-              variants={staggerContainer}
-            >
-              {filtered.map((agent) => (
-                <AgentCard key={agent.agentId} agent={agent} globalFlip={flipAll} />
-              ))}
-            </motion.div>
-          </>
-        )}
+          </aside>
 
-        {/* Enroll CTA */}
-        <div className="mt-16 text-center">
-          <p className="text-sm text-muted">Don&apos;t see your agent?</p>
-          <Link
-            href="/"
-            className="mt-3 inline-block rounded-xl border border-border/60 bg-surface/80 backdrop-blur-xl px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:border-action hover:text-action hover:shadow-md"
-          >
-            Enroll a New Agent
-          </Link>
+          {/* Main content */}
+          <div className="flex-1 min-w-0">
+            {/* Search bar */}
+            <search role="search" aria-label="Search agents">
+              <div className="flex rounded-2xl border border-border/60 bg-surface/80 backdrop-blur-xl shadow-lg">
+                <span className="flex items-center pl-4 text-muted">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="M21 21l-4.35-4.35" />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search by agent name..."
+                  aria-label="Search by agent name"
+                  className="flex-1 bg-transparent px-3 py-4 text-sm placeholder:text-muted/60 focus:outline-none"
+                />
+                {query && (
+                  <button
+                    onClick={() => setQuery("")}
+                    aria-label="Clear search"
+                    className="pr-4 text-muted hover:text-foreground transition-colors"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </search>
+
+            {/* Results */}
+            <section aria-label="Search results" aria-live="polite" className="pt-6">
+              {loading && (
+                <div className="flex justify-center py-20">
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-muted border-t-teal" />
+                </div>
+              )}
+
+              {error && (
+                <div className="py-16 text-center text-misaligned">{error}</div>
+              )}
+
+              {!loading && !error && filtered.length === 0 && (
+                <div className="py-16 text-center">
+                  <p className="text-lg text-muted">
+                    {query || activeFilterCount > 0
+                      ? "No agents match the current filters."
+                      : "No agents enrolled yet."}
+                  </p>
+                  {(query || activeFilterCount > 0) && (
+                    <button
+                      onClick={clearFilters}
+                      className="mt-3 text-sm font-medium text-action hover:underline"
+                    >
+                      Clear all filters
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {!loading && !error && filtered.length > 0 && (
+                <>
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-sm text-muted">
+                      {filtered.length} agent{filtered.length !== 1 ? "s" : ""}
+                      {query ? ` matching "${query}"` : ""}
+                      {activeFilterCount > 0 && !query ? " filtered" : ""}
+                      {!query && activeFilterCount === 0 ? " enrolled" : ""}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      {/* Sort chips */}
+                      <div className="flex rounded-xl border border-border/60 bg-surface/80 backdrop-blur-xl overflow-hidden">
+                        {(["name", "evaluations", "score"] as SortKey[]).map((key) => (
+                          <button
+                            key={key}
+                            onClick={() => setSortBy(key)}
+                            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                              sortBy === key
+                                ? "bg-action/10 text-action"
+                                : "text-muted hover:text-foreground"
+                            }`}
+                          >
+                            {key === "name" ? "Name" : key === "evaluations" ? "Evals" : "Score"}
+                          </button>
+                        ))}
+                      </div>
+                      {/* Flip toggle */}
+                      <button
+                        onClick={() => setFlipAll((v) => !v)}
+                        className="flex items-center gap-2 rounded-xl border border-border/60 bg-surface/80 backdrop-blur-xl px-3 py-1.5 text-xs font-medium text-foreground transition-all hover:border-action hover:text-action"
+                        aria-label={flipAll ? "Show agent cards" : "Show radar charts"}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-300 ${flipAll ? "rotate-180" : ""}`}>
+                          <path d="M17 1l4 4-4 4" />
+                          <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                          <path d="M7 23l-4-4 4-4" />
+                          <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                        </svg>
+                        {flipAll ? "Cards" : "Radars"}
+                      </button>
+                    </div>
+                  </div>
+                  <motion.div
+                    key={filtered.map((a) => a.agentId).join(",")}
+                    className="grid grid-cols-1 gap-5 sm:grid-cols-2"
+                    initial="hidden"
+                    animate="visible"
+                    variants={staggerContainer}
+                  >
+                    {filtered.map((agent) => (
+                      <AgentCard key={agent.agentId} agent={agent} globalFlip={flipAll} />
+                    ))}
+                  </motion.div>
+                </>
+              )}
+
+              {/* Enroll CTA */}
+              <div className="mt-16 text-center">
+                <p className="text-sm text-muted">Don&apos;t see your agent?</p>
+                <Link
+                  href="/"
+                  className="mt-3 inline-block rounded-xl border border-border/60 bg-surface/80 backdrop-blur-xl px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:border-action hover:text-action hover:shadow-md"
+                >
+                  Enroll a New Agent
+                </Link>
+              </div>
+            </section>
+          </div>
         </div>
-      </section>
+      </div>
     </main>
   );
 }

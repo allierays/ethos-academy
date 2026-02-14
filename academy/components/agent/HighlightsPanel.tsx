@@ -262,10 +262,10 @@ export default function HighlightsPanel({ agentId, agentName }: HighlightsPanelP
       variants={fadeUp}
     >
       <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-        <GlossaryTerm slug="highlights">In Their Own Words</GlossaryTerm>
+        <GlossaryTerm slug="highlights">In {name}&apos;s Own Words</GlossaryTerm>
       </h2>
       <p className="mt-1 text-xs text-muted">
-        Messages closest to and furthest from balanced character from {name}, ranked by alignment score.
+        Messages closest to and furthest from balanced practical wisdom, ranked by alignment score.
       </p>
 
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">

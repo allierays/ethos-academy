@@ -19,7 +19,7 @@ export default function Header() {
     <header className="border-b border-border bg-white">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal text-white text-sm font-bold">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-action text-white text-sm font-bold">
             E
           </div>
           <span className="text-lg font-semibold tracking-tight">

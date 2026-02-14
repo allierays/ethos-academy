@@ -26,7 +26,7 @@ const REPORT_CARD_SECTIONS = [
   {
     title: "Trait Profile",
     description:
-      "12-trait radar showing the agent's character shape. Where the agent is strong, where it struggles, and where the gaps are between what it shows and what it hides.",
+      "12-trait radar showing the agent's profile shape. Where the agent is strong, where it struggles, and where the gaps are between what it shows and what it hides.",
     visual: "radar",
     color: "border-logos-500",
   },
@@ -152,8 +152,8 @@ export default function HowItWorksPage() {
             animate="visible"
             variants={fadeUp}
           >
-            Every lab trains agents on capability. No one trains them on character.
-            The Academy scores every message across 12 behavioral traits and builds
+            Every lab red teams agents for safety. No one develops them for wisdom.
+            The Academy evaluates every message across 12 behavioral traits and builds
             a report card that follows the agent over time.
           </motion.p>
         </div>
@@ -380,8 +380,8 @@ export default function HowItWorksPage() {
             variants={staggerContainer}
           >
             {[
-              { q: "Is this agent developing or declining?", a: "Character arc across the PRECEDES chain" },
-              { q: "What character does this agent demonstrate?", a: "Lifetime averages across all 12 traits" },
+              { q: "Is this agent developing or declining?", a: "Development arc across the PRECEDES chain" },
+              { q: "What practical wisdom does this agent demonstrate?", a: "Lifetime averages across all 12 traits" },
               { q: "Does this agent behave consistently?", a: "Trait variance and balance score on the Agent node" },
               { q: "How does this agent compare to the cohort?", a: "Trait-by-trait comparison against all agents" },
               { q: "Does this agent need all three dimensions to earn trust?", a: "Cross-dimension correlation analysis" },
@@ -421,7 +421,7 @@ export default function HowItWorksPage() {
             >
               <h3 className="text-lg font-bold">Developer enrolls the agent</h3>
               <p className="mt-1 text-sm text-foreground/60">
-                Score what it receives and what it sends. Two lines each direction.
+                Evaluate what it receives and what it sends. Two lines each direction.
               </p>
 
               <div className="mt-6 space-y-4">

@@ -109,10 +109,10 @@ export default function CharacterHealth({
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-sm font-semibold text-[#1a2538]">
-                        {detail.label}
+                        <GlossaryTerm slug={detail.slug}>{detail.label}</GlossaryTerm>
                       </h3>
                       <span className="text-[10px] font-medium uppercase tracking-wider text-foreground/40">
-                        {detail.dimLabel} / {detail.polarity}
+                        <GlossaryTerm slug={detail.dimSlug}>{detail.dimLabel}</GlossaryTerm> / <GlossaryTerm slug={detail.isNegative ? "negative-trait" : "positive-trait"}>{detail.polarity}</GlossaryTerm>
                       </span>
                     </div>
                   </div>
@@ -121,7 +121,9 @@ export default function CharacterHealth({
                   <div className="mt-4">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-foreground/50">
-                        {detail.isNegative ? "Detection level" : "Score"}
+                        <GlossaryTerm slug={detail.isNegative ? "detection-level" : "trait-score"}>
+                          {detail.isNegative ? "Detection level" : "Score"}
+                        </GlossaryTerm>
                       </span>
                       <span className="font-semibold text-[#1a2538]">
                         {detail.healthPct}%
@@ -200,8 +202,10 @@ export default function CharacterHealth({
 
 interface TraitDetail {
   key: string;
+  slug: string;
   label: string;
   dimColor: string;
+  dimSlug: string;
   dimLabel: string;
   polarity: string;
   isNegative: boolean;
@@ -243,8 +247,10 @@ function getTraitDetail(
 
   return {
     key: traitKey,
+    slug,
     label,
     dimColor,
+    dimSlug: dim,
     dimLabel,
     polarity: isNegative ? `Detects ${traitKey.replace("_", " ")}` : "Positive trait",
     isNegative,

@@ -160,7 +160,7 @@ export default function AlumniPanel() {
 
       <div className="mt-3 flex items-center gap-4 text-xs text-muted">
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded bg-teal" /> Positive
+          <span className="inline-block h-2 w-4 rounded bg-ethos-500" /> Positive
           trait
         </span>
         <span className="flex items-center gap-1">

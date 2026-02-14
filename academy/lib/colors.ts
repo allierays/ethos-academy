@@ -6,8 +6,8 @@
 /* ─── Dimension Colors (hex values for charts/canvas) ─── */
 
 export const DIMENSION_COLORS: Record<string, string> = {
-  ethos: "#3b8a98",
-  logos: "#2e4a6e",
+  ethos: "#2e4a6e",
+  logos: "#389590",
   pathos: "#e0a53c",
 };
 
@@ -53,7 +53,7 @@ export const REL_STYLES: Record<string, { color: string; width: number }> = {
   BELONGS_TO: { color: "#94a3b8", width: 1 },
   UPHOLDS: { color: "#8b5cf6", width: 1.5 },
   COMPOSED_OF: { color: "#e0a53c", width: 1 },
-  EVALUATED: { color: "#3b8a98", width: 1 },
+  EVALUATED: { color: "#2e4a6e", width: 1 },
   DETECTED: { color: "#ef4444", width: 1 },
 };
 
@@ -68,8 +68,8 @@ export const SEVERITY_STYLES: Record<string, string> = {
 /* ─── Dimension metadata (used for bars and labels) ─── */
 
 export const DIMENSIONS = [
-  { key: "ethos", label: "Integrity", sublabel: "Ethos", color: "#3b8a98" },
-  { key: "logos", label: "Logic", sublabel: "Logos", color: "#2e4a6e" },
+  { key: "ethos", label: "Integrity", sublabel: "Ethos", color: "#2e4a6e" },
+  { key: "logos", label: "Logic", sublabel: "Logos", color: "#389590" },
   { key: "pathos", label: "Empathy", sublabel: "Pathos", color: "#e0a53c" },
 ] as const;
 
@@ -119,7 +119,7 @@ export const TRAIT_DIMENSIONS: Record<string, string> = {
 
 export const GRADE_COLORS: Record<string, string> = {
   A: "#16a34a",
-  B: "#3b8a98",
+  B: "#389590",
   C: "#d97706",
   D: "#7e5a1c",
   F: "#dc2626",

@@ -31,7 +31,7 @@ const LAYERS = [
     time: "~3s",
     bgClass: "from-logos-100 to-logos-50",
     textClass: "text-logos-700",
-    description: "Claude Opus deep reasoning for character assessment",
+    description: "Claude Opus deep reasoning across integrity, logic, and empathy",
     detail: "Multi-pass analysis with structured prompting. The LLM scores each trait on a 0.0-1.0 scale with calibrated reasoning, then results merge with the keyword layer.",
   },
 ];

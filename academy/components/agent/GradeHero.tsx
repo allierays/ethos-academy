@@ -200,6 +200,11 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
             <StatCard
               label={<GlossaryTerm slug="homework">Homework</GlossaryTerm>}
               value={String(report?.homework?.focusAreas?.length ?? 0)}
+              sublabel={
+                (report?.homework?.focusAreas?.filter(f => f.priority === "high")?.length ?? 0) > 0
+                  ? `${report?.homework?.focusAreas?.filter(f => f.priority === "high")?.length} high priority`
+                  : undefined
+              }
               href="#homework"
             />
           </div>

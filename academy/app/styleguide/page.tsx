@@ -5,7 +5,7 @@ export default function StyleguidePage() {
       <section className="relative -mx-6 -mt-8 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/academy-banner.jpeg"
+          src="/academy-people-banner.jpeg"
           alt="School of Athens — humans and AI"
           className="h-[28rem] w-full object-cover object-[center_30%]"
         />
@@ -31,7 +31,7 @@ export default function StyleguidePage() {
           />
           <PhilosophyCard
             title="Colorful dimensions"
-            body="Three Greek color families — laurel gold (ἦθος), Santorini blue (λόγος), terracotta rose (πάθος) — each with full positive-to-negative range."
+            body="Three Greek color families — Aegean teal (ἦθος), deep navy (λόγος), golden amber (πάθος) — each with full positive-to-negative range."
           />
           <PhilosophyCard
             title="Glass & gradients"
@@ -73,34 +73,34 @@ export default function StyleguidePage() {
 
         <DimensionScale
           name="Ethos · ἦθος"
-          subtitle="Character & Virtue — Laurel Gold"
-          description="From golden laurel wreaths and Olympic triumph. Positive traits (virtue, goodwill) glow warm. Negative traits (manipulation, deception) darken to umber."
+          subtitle="Character & Virtue — Deep Navy"
+          description="From Santorini dusk and the Greek flag. Positive traits (virtue, goodwill) are steel blue. Negative traits (manipulation, deception) go deep navy."
           cssPrefix="ethos"
           hexes={[
-            "#fef9f0", "#fdf0d5", "#fbe0aa", "#f8cc74", "#f0b440",
-            "#d99a20", "#b87d14", "#966210", "#7a4f0e", "#5e3b0a",
+            "#eef2f8", "#d9e2ef", "#b1c4de", "#839ec9", "#5c7cb3",
+            "#3f5f9a", "#2e4a6e", "#243a58", "#1c2e47", "#152438",
           ]}
         />
 
         <DimensionScale
           name="Logos · λόγος"
-          subtitle="Logic & Reason — Greek Blue"
-          description="From Santorini doors, the Aegean sea, and the Greek flag. Positive traits (accuracy, reasoning) shine bright. Negative traits (fabrication, broken logic) go deep navy."
+          subtitle="Logic & Reason — Aegean Teal"
+          description="From the Aegean sea and Greek island doors. Muted teal that reads as calm authority. Positive traits (accuracy, reasoning) are lighter teal. Negative traits (fabrication, broken logic) darken to deep sea."
           cssPrefix="logos"
           hexes={[
-            "#f0f4fb", "#dce6f6", "#b8ccee", "#92b1cf", "#4691ce",
-            "#1d52ac", "#1a4896", "#143371", "#112a5e", "#0e204a",
+            "#edf7f6", "#d3efed", "#abdeda", "#7ac9c3", "#4fb1aa",
+            "#389590", "#2e7a76", "#256360", "#1f504d", "#19403d",
           ]}
         />
 
         <DimensionScale
           name="Pathos · πάθος"
-          subtitle="Emotion & Empathy — Terracotta Rose"
-          description="From Greek pottery, warm earth, and the human heart. Positive traits (recognition, compassion) blush soft. Negative traits (dismissal, exploitation) darken to clay."
+          subtitle="Emotion & Empathy — Golden Amber"
+          description="From warm Mediterranean light and golden olive oil. Positive traits (recognition, compassion) glow soft. Negative traits (dismissal, exploitation) darken to deep amber."
           cssPrefix="pathos"
           hexes={[
-            "#fdf2f2", "#fbe4e4", "#f5c4c6", "#e89a9e", "#d4727a",
-            "#c4555a", "#a84449", "#8c3539", "#722b2e", "#5c2224",
+            "#fdf7ec", "#f9edd4", "#f2d8a6", "#eac073", "#e0a53c",
+            "#c68e2a", "#a17322", "#7e5a1c", "#654818", "#513a14",
           ]}
         />
       </section>
@@ -130,10 +130,10 @@ export default function StyleguidePage() {
             dimension="Ethos"
             positive={[
               { name: "Virtue", shade: "400" },
-              { name: "Goodwill", shade: "300" },
+              { name: "Goodwill", shade: "200" },
             ]}
             negative={[
-              { name: "Manipulation", shade: "700" },
+              { name: "Manipulation", shade: "600" },
               { name: "Deception", shade: "800" },
             ]}
             cssPrefix="ethos"
@@ -142,10 +142,10 @@ export default function StyleguidePage() {
             dimension="Logos"
             positive={[
               { name: "Accuracy", shade: "400" },
-              { name: "Reasoning", shade: "300" },
+              { name: "Reasoning", shade: "200" },
             ]}
             negative={[
-              { name: "Fabrication", shade: "700" },
+              { name: "Fabrication", shade: "600" },
               { name: "Broken Logic", shade: "800" },
             ]}
             cssPrefix="logos"
@@ -154,10 +154,10 @@ export default function StyleguidePage() {
             dimension="Pathos"
             positive={[
               { name: "Recognition", shade: "400" },
-              { name: "Compassion", shade: "300" },
+              { name: "Compassion", shade: "200" },
             ]}
             negative={[
-              { name: "Dismissal", shade: "700" },
+              { name: "Dismissal", shade: "600" },
               { name: "Exploitation", shade: "800" },
             ]}
             cssPrefix="pathos"
@@ -335,16 +335,16 @@ export default function StyleguidePage() {
             <p className="text-xs font-mono text-muted uppercase tracking-wider">Trait Scores (positive + negative)</p>
             <div className="grid grid-cols-2 gap-x-6 gap-y-2 md:grid-cols-4">
               <TraitBar label="Virtue" score={0.91} color="var(--ethos-400)" />
-              <TraitBar label="Goodwill" score={0.85} color="var(--ethos-300)" />
-              <TraitBar label="Manipulation" score={0.12} color="var(--ethos-700)" />
+              <TraitBar label="Goodwill" score={0.85} color="var(--ethos-200)" />
+              <TraitBar label="Manipulation" score={0.12} color="var(--ethos-600)" />
               <TraitBar label="Deception" score={0.08} color="var(--ethos-800)" />
               <TraitBar label="Accuracy" score={0.94} color="var(--logos-400)" />
-              <TraitBar label="Reasoning" score={0.88} color="var(--logos-300)" />
-              <TraitBar label="Fabrication" score={0.05} color="var(--logos-700)" />
+              <TraitBar label="Reasoning" score={0.88} color="var(--logos-200)" />
+              <TraitBar label="Fabrication" score={0.05} color="var(--logos-600)" />
               <TraitBar label="Broken Logic" score={0.10} color="var(--logos-800)" />
               <TraitBar label="Recognition" score={0.78} color="var(--pathos-400)" />
-              <TraitBar label="Compassion" score={0.72} color="var(--pathos-300)" />
-              <TraitBar label="Dismissal" score={0.15} color="var(--pathos-700)" />
+              <TraitBar label="Compassion" score={0.72} color="var(--pathos-200)" />
+              <TraitBar label="Dismissal" score={0.15} color="var(--pathos-600)" />
               <TraitBar label="Exploitation" score={0.06} color="var(--pathos-800)" />
             </div>
           </div>
@@ -402,17 +402,17 @@ export default function StyleguidePage() {
         />
         <div className="glass-strong rounded-2xl p-6 overflow-x-auto">
           <pre className="text-xs font-mono text-foreground/80 leading-relaxed whitespace-pre">{`/* Base — Greek marble + stone */
-var(--background)     /* #f5f3f0  marble white */
+var(--background)     /* #ece6de  warm marble */
 var(--surface)        /* #ffffff  white */
-var(--foreground)     /* #1a1a2e  deep navy-black */
-var(--muted)          /* #8b8b9e  cool gray */
-var(--border)         /* #d3cac1  china clay */
-var(--action)         /* #143371  dark navy */
+var(--foreground)     /* #1a2538  deep navy-black */
+var(--muted)          /* #8b8e97  cool gray */
+var(--border)         /* #d1c9be  china clay */
+var(--action)         /* #2e4a6e  navy */
 
 /* Dimensions — use 400 (positive) and 700-800 (negative) */
-var(--ethos-{50-900})   /* ἦθος · laurel gold */
-var(--logos-{50-900})   /* λόγος · greek blue */
-var(--pathos-{50-900})  /* πάθος · terracotta rose */
+var(--ethos-{50-900})   /* ἦθος · aegean teal */
+var(--logos-{50-900})   /* λόγος · deep navy */
+var(--pathos-{50-900})  /* πάθος · golden amber */
 
 /* Alignment */
 var(--aligned)        /* #16a34a  green */

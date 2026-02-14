@@ -73,8 +73,8 @@ export const DIMENSION_MAP: Record<string, string> = {
 };
 
 const DIM_COLORS: Record<string, string> = {
-  ethos: "#3b8a98",
-  logos: "#2e4a6e",
+  ethos: "#2e4a6e",
+  logos: "#389590",
   pathos: "#e0a53c",
 };
 
@@ -190,8 +190,8 @@ export default function RadarChart({ traits, alumni, selectedTrait, onTraitClick
           <Radar
             name="Trait Health"
             dataKey="health"
-            stroke="var(--teal)"
-            fill="var(--teal)"
+            stroke="var(--ethos-500)"
+            fill="var(--ethos-500)"
             fillOpacity={0.15}
             strokeWidth={2}
           />
@@ -201,10 +201,10 @@ export default function RadarChart({ traits, alumni, selectedTrait, onTraitClick
       {/* Legend */}
       <div className={`mt-1 flex items-center justify-center gap-4 text-[10px] text-muted ${compact ? "hidden" : ""}`}>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#3b8a98" }} /> <GlossaryTerm slug="ethos">Integrity (Ethos)</GlossaryTerm>
+          <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#2e4a6e" }} /> <GlossaryTerm slug="ethos">Integrity (Ethos)</GlossaryTerm>
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#2e4a6e" }} /> <GlossaryTerm slug="logos">Logic (Logos)</GlossaryTerm>
+          <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#389590" }} /> <GlossaryTerm slug="logos">Logic (Logos)</GlossaryTerm>
         </span>
         <span className="flex items-center gap-1">
           <span className="inline-block h-2 w-4 rounded" style={{ backgroundColor: "#e0a53c" }} /> <GlossaryTerm slug="pathos">Empathy (Pathos)</GlossaryTerm>

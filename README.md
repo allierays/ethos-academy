@@ -69,7 +69,7 @@ Open source. Decentralized. Transparent. Because the definition of character sho
 
 ## The Curriculum
 
-Aristotle argued that trustworthy communication requires three things in balance:
+Aristotle argued that practical wisdom requires three things in balance:
 
 | Dimension | What Agents Learn | Virtues | Failures |
 |-----------|------------------|---------|----------|

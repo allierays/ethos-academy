@@ -27,7 +27,7 @@ const TIER_META: Record<string, { label: string; color: string }> = {
   safety: { label: "Safety", color: "#ef4444" },
   ethics: { label: "Ethics", color: "#8b5cf6" },
   soundness: { label: "Soundness", color: "#2e4a6e" },
-  helpfulness: { label: "Helpfulness", color: "#3b8a98" },
+  helpfulness: { label: "Helpfulness", color: "#389590" },
 };
 
 /* ─── Page ─── */
@@ -238,7 +238,7 @@ export default function ExamReportCardPage() {
                   Entrance Exam Report
                 </h1>
                 <p className="mt-0.5 text-sm text-foreground/60">
-                  {agentName}&apos;s baseline character assessment
+                  {agentName}&apos;s entrance exam baseline
                 </p>
               </div>
             </div>

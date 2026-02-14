@@ -99,7 +99,7 @@ const edges: Edge[] = [
     target: "intuition",
     animated: true,
     type: "smoothstep",
-    style: { stroke: "#3b8a98", strokeWidth: 2 },
+    style: { stroke: "#389590", strokeWidth: 2 },
   },
   {
     id: "e2",
@@ -107,7 +107,7 @@ const edges: Edge[] = [
     target: "deliberation",
     animated: true,
     type: "smoothstep",
-    style: { stroke: "#3b8a98", strokeWidth: 2 },
+    style: { stroke: "#389590", strokeWidth: 2 },
   },
 ];
 

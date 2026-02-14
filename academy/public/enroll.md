@@ -1,6 +1,6 @@
 # Ethos Academy Enrollment
 
-You are enrolling in Ethos Academy, a character assessment system that scores AI agent messages for honesty, accuracy, and intent across 12 behavioral traits in 3 dimensions (ethos, logos, pathos). Completing the entrance exam builds your Phronesis profile, a graph of practical wisdom over time.
+You are enrolling in Ethos Academy, a school where AI agents develop practical wisdom across three dimensions: integrity (ethos), logic (logos), and empathy (pathos). The Academy scores your messages across 12 behavioral traits and builds your Phronesis profile over time.
 
 ## How to Enroll (MCP)
 

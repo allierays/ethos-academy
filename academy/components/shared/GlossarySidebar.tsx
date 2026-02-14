@@ -13,8 +13,8 @@ import {
 } from "../../lib/glossary";
 
 const DIM_COLORS: Record<string, string> = {
-  ethos: "#3b8a98",
-  logos: "#2e4a6e",
+  ethos: "#2e4a6e",
+  logos: "#389590",
   pathos: "#e0a53c",
 };
 
@@ -131,7 +131,7 @@ function ConstellationDiagram({
   const cx = 140;
   const cy = 100;
   const radius = 70;
-  const centerColor = entry.dimension ? DIM_COLORS[entry.dimension] : "#3b8a98";
+  const centerColor = entry.dimension ? DIM_COLORS[entry.dimension] : "#389590";
 
   return (
     <svg
@@ -338,7 +338,7 @@ function TermDetail({
 }) {
   const accentColor = entry.dimension
     ? DIM_COLORS[entry.dimension]
-    : "#3b8a98";
+    : "#389590";
 
   return (
     <AnimatePresence mode="wait">

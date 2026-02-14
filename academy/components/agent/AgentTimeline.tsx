@@ -214,13 +214,13 @@ export default function AgentTimeline() {
 
           <div className="mt-3 flex items-center gap-4 text-xs text-muted">
             <span className="flex items-center gap-1">
-              <span className="inline-block h-2 w-4 rounded bg-teal" /> Ethos
+              <span className="inline-block h-2 w-4 rounded bg-ethos-500" /> Ethos
             </span>
             <span className="flex items-center gap-1">
-              <span className="inline-block h-2 w-4 rounded bg-blue" /> Logos
+              <span className="inline-block h-2 w-4 rounded bg-logos-500" /> Logos
             </span>
             <span className="flex items-center gap-1">
-              <span className="inline-block h-2 w-4 rounded bg-warm" /> Pathos
+              <span className="inline-block h-2 w-4 rounded bg-pathos-500" /> Pathos
             </span>
             {flaggedPoints.length > 0 && (
               <span className="flex items-center gap-1">

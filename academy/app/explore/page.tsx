@@ -102,8 +102,8 @@ export default function ExplorePage() {
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 Do agents strong in all three dimensions outperform those strong in only one?
-                The balance view reveals whether a holistic approach to character, reasoning,
-                and empathy produces agents with stronger character than specialization.
+                The balance view reveals whether a holistic approach to integrity, logic,
+                and empathy produces agents with stronger practical wisdom than specialization.
               </p>
             </div>
           </motion.div>

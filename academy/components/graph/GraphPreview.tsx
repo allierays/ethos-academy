@@ -35,7 +35,7 @@ interface NvlRelationship {
 function getNodeColor(node: EthosGraphNode): string {
   switch (node.type) {
     case "dimension":
-      return DIMENSION_COLORS[node.label] ?? "#3b8a98";
+      return DIMENSION_COLORS[node.label] ?? "#389590";
     case "trait": {
       const polarity = node.properties.polarity as string | undefined;
       if (polarity === "negative") return "#ef4444";

@@ -83,7 +83,7 @@ export default function PhronesisJourney({
               Phronesis Journey
             </h2>
             <p className="text-sm text-foreground/60">
-              Practical wisdom forms through character development over time
+              Practical wisdom forms through repeated evaluation over time
             </p>
           </div>
         </div>
@@ -183,11 +183,11 @@ function buildNarrative(
     );
   } else if (evalCount >= 2) {
     parts.push(
-      "Character foundations are stabilizing. Consistency will determine whether virtues become lasting habits."
+      "Foundations are stabilizing. Consistency will determine whether virtues become lasting habits."
     );
   } else {
     parts.push(
-      "More evaluations will reveal whether these initial patterns mature into stable character traits."
+      "More evaluations will reveal whether these initial patterns mature into stable behavioral traits."
     );
   }
 

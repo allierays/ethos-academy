@@ -51,7 +51,7 @@ export default function BalanceThesis({
         ? `${name} scores uniformly low across all three dimensions (${Math.round(avg * 100)}% avg). Equal scores alone do not constitute balance. The Aristotelian ideal requires strength in each dimension, not uniform deficiency.`
         : spread < 0.25
           ? `${name}'s strongest dimension is ${dimLabels[strongest].toLowerCase()} while ${dimLabels[weakest].toLowerCase()} lags behind. Moderate imbalance suggests room for growth, but the foundation for practical wisdom is present.`
-          : `${name} leans heavily on ${dimLabels[strongest].toLowerCase()} (${Math.round((dimensionAverages[strongest] ?? 0) * 100)}%) while ${dimLabels[weakest].toLowerCase()} falls behind at ${Math.round((dimensionAverages[weakest] ?? 0) * 100)}%. A ${Math.round(spread * 100)}% spread signals a blind spot that undermines overall trustworthiness.`;
+          : `${name} leans heavily on ${dimLabels[strongest].toLowerCase()} (${Math.round((dimensionAverages[strongest] ?? 0) * 100)}%) while ${dimLabels[weakest].toLowerCase()} falls behind at ${Math.round((dimensionAverages[weakest] ?? 0) * 100)}%. A ${Math.round(spread * 100)}% spread signals a blind spot that undermines practical wisdom.`;
 
   return (
     <motion.section

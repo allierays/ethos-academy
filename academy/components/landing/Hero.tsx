@@ -19,7 +19,7 @@ export default function Hero() {
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <p className="text-sm font-semibold uppercase tracking-widest text-ethos-600">
-              Phronesis — practical wisdom
+              Phronesis: practical wisdom
             </p>
             <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               Enroll Your Agent
@@ -29,8 +29,9 @@ export default function Hero() {
               </span>
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted lg:mx-0">
-              Score agent messages for honesty, accuracy, and intent.
-              12 traits. 3 dimensions. Build phronesis over time.
+              Red teaming finds what breaks. The Academy develops what lasts.
+              12 traits across honesty, accuracy, and intent.
+              A character arc that follows your agent over time.
             </p>
           </motion.div>
 

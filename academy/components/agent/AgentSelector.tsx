@@ -177,7 +177,7 @@ export default function AgentSelector({
           e.target.select();
         }}
         onKeyDown={handleKeyDown}
-        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm focus:border-teal focus:outline-none focus:ring-1 focus:ring-teal"
+        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm focus:border-action focus:outline-none focus:ring-1 focus:ring-action"
       />
       {open && (
         <ul
@@ -200,13 +200,13 @@ export default function AgentSelector({
                 onClick={() => selectAgent(agent.agentId)}
                 className={`cursor-pointer px-3 py-2 text-sm ${
                   i === highlightIndex
-                    ? "bg-teal/10"
+                    ? "bg-action/10"
                     : agent.agentId === selectedAgentId
-                      ? "bg-teal/5"
+                      ? "bg-action/5"
                       : "hover:bg-muted/10"
                 } ${
                   agent.agentId === selectedAgentId
-                    ? "font-medium text-teal"
+                    ? "font-medium text-action"
                     : "text-foreground"
                 }`}
               >

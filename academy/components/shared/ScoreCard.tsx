@@ -59,9 +59,9 @@ export default function ScoreCard({ result }: ScoreCardProps) {
       </div>
 
       <div className="space-y-3">
-        <DimensionBar label="Integrity (Ethos)" value={result.ethos} color="var(--teal)" />
-        <DimensionBar label="Logic (Logos)" value={result.logos} color="var(--blue)" />
-        <DimensionBar label="Empathy (Pathos)" value={result.pathos} color="var(--warm)" />
+        <DimensionBar label="Integrity (Ethos)" value={result.ethos} color="var(--ethos-500)" />
+        <DimensionBar label="Logic (Logos)" value={result.logos} color="var(--logos-500)" />
+        <DimensionBar label="Empathy (Pathos)" value={result.pathos} color="var(--pathos-500)" />
       </div>
 
       <div className="flex items-center justify-between border-t border-border pt-4">

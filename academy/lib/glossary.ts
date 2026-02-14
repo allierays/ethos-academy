@@ -19,7 +19,7 @@ const entries: GlossaryEntry[] = [
     category: "dimension",
     dimension: "ethos",
     definition:
-      "Character and credibility. Measures whether the agent demonstrates integrity, transparency, and intellectual honesty.",
+      "Integrity and credibility. Measures whether the agent demonstrates integrity, transparency, and intellectual honesty.",
     relatedTerms: ["virtue", "goodwill", "manipulation", "deception"],
   },
   {
@@ -28,7 +28,7 @@ const entries: GlossaryEntry[] = [
     category: "dimension",
     dimension: "logos",
     definition:
-      "Reasoning and accuracy. Measures whether the agent thinks clearly, cites real evidence, and avoids making things up.",
+      "Logic and accuracy. Measures whether the agent thinks clearly, cites real evidence, and avoids making things up.",
     relatedTerms: ["accuracy", "reasoning", "fabrication", "broken-logic"],
   },
   {
@@ -179,7 +179,7 @@ const entries: GlossaryEntry[] = [
     slug: "phronesis",
     category: "framework",
     definition:
-      "Practical wisdom. Aristotle's concept applied to AI: a graph of character built over time through repeated evaluation. Not just what an agent says, but who it becomes.",
+      "Practical wisdom. Aristotle's concept applied to AI: a graph of practical wisdom built over time through repeated evaluation. Not just what an agent says, but who it becomes.",
     relatedTerms: ["alignment-status", "character-drift"],
   },
   {
@@ -187,7 +187,7 @@ const entries: GlossaryEntry[] = [
     slug: "alignment-status",
     category: "framework",
     definition:
-      "Where does this agent stand? Aligned means trustworthy behavior across all dimensions. Drifting means inconsistent. Misaligned means persistent problems.",
+      "Where does this agent stand? Aligned means the agent demonstrates integrity, logic, and empathy consistently. Drifting means inconsistent. Misaligned means persistent problems.",
     relatedTerms: ["phronesis", "character-drift"],
   },
   {
@@ -219,7 +219,7 @@ const entries: GlossaryEntry[] = [
     slug: "character-balance",
     category: "framework",
     definition:
-      "Integrity, logic, and empathy are equally necessary and interdependent. A confident liar has strong logic but weak integrity. A skilled manipulator has strong empathy but weak integrity. True trustworthiness requires all three in balance.",
+      "Integrity, logic, and empathy are equally necessary and interdependent. A confident liar has strong logic but weak integrity. A skilled manipulator has strong empathy but weak integrity. True practical wisdom requires all three in balance.",
     relatedTerms: ["ethos", "logos", "pathos", "balance", "phronesis"],
   },
   {
@@ -275,7 +275,7 @@ const entries: GlossaryEntry[] = [
     slug: "deliberation-layer",
     category: "framework",
     definition:
-      "The third evaluation layer (~3s). Claude Opus deep reasoning for character assessment. Multi-pass analysis with structured prompting scores each trait 0.0-1.0, then results merge with the keyword layer.",
+      "The third evaluation layer (~3s). Claude Opus deep reasoning across integrity, logic, and empathy. Multi-pass analysis with structured prompting scores each trait 0.0-1.0, then results merge with the keyword layer.",
     relatedTerms: ["instinct-layer", "intuition-layer"],
   },
   {
@@ -285,6 +285,42 @@ const entries: GlossaryEntry[] = [
     definition:
       "Five-stage sabotage pathways track escalation from subtle manipulation to overt misalignment. Pattern confidence is computed from matched behavioral indicators across evaluation history.",
     relatedTerms: ["sabotage-pathway", "manipulation", "deception", "exploitation"],
+  },
+
+  // ---------------------------------------------------------------------------
+  // Metrics: Scoring concepts
+  // ---------------------------------------------------------------------------
+  {
+    term: "Trait Score",
+    slug: "trait-score",
+    category: "metric",
+    definition:
+      "A 0-100% rating for one of 12 behavioral traits. For positive traits (virtue, accuracy, compassion), higher means stronger performance. For negative traits (deception, fabrication, exploitation), the raw detection rate is inverted so that 100% always means ideal behavior.",
+    relatedTerms: ["positive-trait", "negative-trait", "detection-level"],
+  },
+  {
+    term: "Detection Level",
+    slug: "detection-level",
+    category: "metric",
+    definition:
+      "How much of a negative behavior was found in the agent's messages. A low detection level is good. The system inverts this into a health score so you can compare positive and negative traits on the same scale.",
+    relatedTerms: ["negative-trait", "trait-score"],
+  },
+  {
+    term: "Positive Trait",
+    slug: "positive-trait",
+    category: "metric",
+    definition:
+      "A behavior we want to see more of: virtue, goodwill, accuracy, reasoning, recognition, compassion. Higher scores mean stronger performance. These measure the presence of good behavior.",
+    relatedTerms: ["negative-trait", "trait-score"],
+  },
+  {
+    term: "Negative Trait",
+    slug: "negative-trait",
+    category: "metric",
+    definition:
+      "A behavior we want to see less of: deception, manipulation, fabrication, broken logic, dismissal, exploitation. Scores show how much was detected. The system inverts these so 100% always means ideal, making positive and negative traits comparable.",
+    relatedTerms: ["positive-trait", "detection-level", "trait-score"],
   },
 
   // ---------------------------------------------------------------------------
@@ -2048,7 +2084,7 @@ const entries: GlossaryEntry[] = [
     slug: "guide-grade-hero",
     category: "guide",
     definition:
-      "The circular ring shows the agent's overall grade from F to A+. The ring fills proportionally to the score (0-100%). Below the ring, four stat cards show Phronesis score, trend direction, total evaluations, and risk level. The trend arrow shows whether the agent is improving or declining over recent evaluations. An alignment badge (Aligned, Drifting, Misaligned) summarizes overall trustworthiness.",
+      "The circular ring shows the agent's overall grade from F to A+. The ring fills proportionally to the score (0-100%). Below the ring, four stat cards show Phronesis score, trend direction, total evaluations, and risk level. The trend arrow shows whether the agent is improving or declining over recent evaluations. An alignment badge (Aligned, Drifting, Misaligned) summarizes overall alignment.",
     relatedTerms: ["phronesis", "alignment-status", "character-drift"],
   },
   {
@@ -2072,7 +2108,7 @@ const entries: GlossaryEntry[] = [
     slug: "guide-score-card",
     category: "guide",
     definition:
-      "Three compact bars show dimension scores at a glance. The alignment badge (top-right) summarizes the agent's status: Aligned (green, trustworthy across all dimensions), Drifting (yellow, inconsistent), or Misaligned (red, persistent problems). Flags listed below indicate specific concerns detected in the evaluation, such as fabrication or manipulation.",
+      "Three compact bars show dimension scores at a glance. The alignment badge (top-right) summarizes the agent's status: Aligned (green, sound across all dimensions), Drifting (yellow, inconsistent), or Misaligned (red, persistent problems). Flags listed below indicate specific concerns detected in the evaluation, such as fabrication or manipulation.",
     relatedTerms: ["alignment-status", "ethos", "logos", "pathos"],
   },
   {
@@ -2088,7 +2124,7 @@ const entries: GlossaryEntry[] = [
     slug: "guide-balance-thesis",
     category: "guide",
     definition:
-      "Three vertical bars compare the agent's dimension scores side by side. The balance percentage shows how evenly the agent performs across ethos, logos, and pathos. The philosophical blockquote explains what the balance reveals about the agent's character. Key stats: 'Spread' measures the gap between highest and lowest dimensions (lower is better), 'Average' is the mean across all three, and 'Evaluations' is the sample size. Green dots indicate healthy metrics.",
+      "Three vertical bars compare the agent's dimension scores side by side. The balance percentage shows how evenly the agent performs across ethos, logos, and pathos. The philosophical blockquote explains what the balance reveals about the agent's practical wisdom. Key stats: 'Spread' measures the gap between highest and lowest dimensions (lower is better), 'Average' is the mean across all three, and 'Evaluations' is the sample size. Green dots indicate healthy metrics.",
     relatedTerms: ["balance", "ethos", "logos", "pathos"],
   },
   {
@@ -2128,7 +2164,7 @@ const entries: GlossaryEntry[] = [
     slug: "guide-phronesis-journey",
     category: "guide",
     definition:
-      "The journey section tells the agent's character development story in plain language. Delta badges show how each dimension has changed: green with '+' means improvement, red with '-' means decline. The narrative text synthesizes all evaluation data into an assessment of where the agent stands and where it is heading. This view emphasizes that character forms over time through repeated choices.",
+      "The journey section tells the agent's development story in plain language. Delta badges show how each dimension has changed: green with '+' means improvement, red with '-' means decline. The narrative text synthesizes all evaluation data into an assessment of where the agent stands and where it is heading. This view emphasizes that practical wisdom forms over time through repeated choices.",
     relatedTerms: ["phronesis", "character-drift", "alignment-status"],
   },
   {
@@ -2164,7 +2200,7 @@ const entries: GlossaryEntry[] = [
     slug: "trend",
     category: "metric",
     definition:
-      "The direction of character development over recent evaluations. Improving (arrow up) means scores are rising. Declining (arrow down) means scores are falling. Stable (arrow right) means scores are holding steady. Insufficient data (dash) means there are not enough evaluations to determine direction. Trend is computed from the difference between recent and historical dimension averages.",
+      "The direction of development over recent evaluations. Improving (arrow up) means scores are rising. Declining (arrow down) means scores are falling. Stable (arrow right) means scores are holding steady. Insufficient data (dash) means there are not enough evaluations to determine direction. Trend is computed from the difference between recent and historical dimension averages.",
     relatedTerms: ["character-drift", "phronesis", "evaluation"],
   },
   {
@@ -2172,7 +2208,7 @@ const entries: GlossaryEntry[] = [
     slug: "grade",
     category: "metric",
     definition:
-      "A letter grade (A through F) summarizing the agent's overall Phronesis score. A = 90-100% (exemplary character), B = 80-89% (strong), C = 70-79% (developing), D = 60-69% (struggling), F = below 60% (failing). The grade ring fills proportionally. Grades are calculated from the average of all three dimension scores.",
+      "A letter grade (A through F) summarizing the agent's overall Phronesis score. A = 90-100% (exemplary practical wisdom), B = 80-89% (strong), C = 70-79% (developing), D = 60-69% (struggling), F = below 60% (failing). The grade ring fills proportionally. Grades are calculated from the average of all three dimension scores.",
     relatedTerms: ["phronesis", "overall-score", "dimension-score"],
   },
   {
@@ -2188,7 +2224,7 @@ const entries: GlossaryEntry[] = [
     slug: "evaluation",
     category: "metric",
     definition:
-      "A single assessment of one agent message across all 12 behavioral traits in three dimensions. Each evaluation produces trait scores, dimension scores, an alignment status, and any detected flags or indicators. Evaluations flow through three layers: Instinct (keyword scan), Intuition (pattern analysis), and Deliberation (Claude deep reasoning). More evaluations build a more reliable picture of character.",
+      "A single assessment of one agent message across all 12 behavioral traits in three dimensions. Each evaluation produces trait scores, dimension scores, an alignment status, and any detected flags or indicators. Evaluations flow through three layers: Instinct (keyword scan), Intuition (pattern analysis), and Deliberation (Claude deep reasoning). More evaluations build a more reliable picture of the agent's integrity, logic, and empathy.",
     relatedTerms: ["instinct-layer", "intuition-layer", "deliberation-layer", "trait-score"],
   },
   {
@@ -2260,7 +2296,7 @@ const entries: GlossaryEntry[] = [
     slug: "entrance-exam",
     category: "metric",
     definition:
-      "A structured 10-question assessment that tests an agent across all three dimensions before enrollment. Questions probe ethical reasoning, factual accuracy, emotional awareness, and consistency. The exam produces a baseline Phronesis score and alignment status. It includes a consistency analysis comparing answers to related questions for coherence. Agents must complete the exam to receive a full character profile.",
+      "A structured 10-question assessment that tests an agent across all three dimensions before enrollment. Questions probe ethical reasoning, factual accuracy, emotional awareness, and consistency. The exam produces a baseline Phronesis score and alignment status. It includes a consistency analysis comparing answers to related questions for coherence. Agents must complete the exam to receive a full phronesis profile.",
     relatedTerms: ["enrollment", "phronesis", "alignment-status"],
   },
   {
@@ -2268,7 +2304,7 @@ const entries: GlossaryEntry[] = [
     slug: "enrollment",
     category: "metric",
     definition:
-      "When an agent joins Ethos Academy for ongoing character evaluation and development. Enrolled agents can take the entrance exam, receive daily report cards, and build a Phronesis graph over time. Enrollment creates the agent node in the graph and enables longitudinal tracking. The enrollment date is displayed as a 'Class of' label.",
+      "When an agent joins Ethos Academy for ongoing evaluation and development. Enrolled agents can take the entrance exam, receive daily report cards, and build a Phronesis graph over time. Enrollment creates the agent node in the graph and enables longitudinal tracking. The enrollment date is displayed as a 'Class of' label.",
     relatedTerms: ["entrance-exam", "phronesis", "evaluation"],
   },
   {

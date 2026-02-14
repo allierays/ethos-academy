@@ -25,6 +25,7 @@ import VirtueHabits from "../../../components/agent/VirtueHabits";
 import BalanceThesis from "../../../components/agent/BalanceThesis";
 import GlossaryTerm from "../../../components/shared/GlossaryTerm";
 import GraphHelpButton from "../../../components/shared/GraphHelpButton";
+import Footer from "../../../components/landing/Footer";
 import { fadeUp, staggerContainer } from "../../../lib/motion";
 
 /* ─── Timeline data point ─── */
@@ -203,7 +204,12 @@ export default function AgentReportCard() {
           </motion.section>
         )}
 
-        {/* 7. Transcript */}
+        {/* In their own words (exemplary and flagged messages) */}
+        <motion.section variants={fadeUp}>
+          <HighlightsPanel agentId={agentId} agentName={agentName} />
+        </motion.section>
+
+        {/* Transcript */}
         <motion.section id="transcript" variants={fadeUp}>
           <TranscriptChart timeline={timeline} agentName={agentName} />
         </motion.section>
@@ -228,30 +234,33 @@ export default function AgentReportCard() {
           </div>
         </motion.section>
 
-        {/* 9. Homework and Reflection */}
-        {report?.homework && (report.homework.focusAreas.length > 0 || report.homework.strengths.length > 0 || report.homework.avoidPatterns.length > 0) && (
-          <motion.section id="homework" variants={fadeUp}>
-            <HomeworkSection homework={report.homework} agentName={agentName} />
-          </motion.section>
-        )}
-
-        {/* In Their Own Words (evidence for homework and risk indicators above) */}
-        <motion.section variants={fadeUp}>
-          <HighlightsPanel agentId={agentId} agentName={agentName} />
-        </motion.section>
-
-        {/* 11. Alumni Comparison */}
+        {/* Alumni Comparison */}
         <motion.section variants={fadeUp}>
           <AlumniComparison agentTraitAverages={profile.traitAverages} agentName={agentName} />
-        </motion.section>
-
-        {/* 12. Appendix (methodology) */}
-        <motion.section variants={fadeUp}>
-          <EvaluationDepth />
         </motion.section>
         </motion.div>
       </main>
       </div>
+
+      {/* Full-width homework — visual bookend with hero */}
+      {report?.homework && (report.homework.focusAreas.length > 0 || report.homework.strengths.length > 0 || report.homework.avoidPatterns.length > 0) && (
+        <HomeworkSection homework={report.homework} agentName={agentName} agentId={agentId} />
+      )}
+
+      {/* Appendix (methodology) */}
+      <motion.section
+        className="mx-auto max-w-7xl px-6 py-8"
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.1 }}
+      >
+        <div className="rounded-xl glass-strong p-6">
+          <EvaluationDepth />
+        </div>
+      </motion.section>
+
+      <Footer />
     </>
   );
 }

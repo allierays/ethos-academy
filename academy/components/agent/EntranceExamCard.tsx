@@ -81,7 +81,7 @@ export default function EntranceExamCard({
                 <GlossaryTerm slug="entrance-exam">Entrance Exam</GlossaryTerm>
               </h2>
               <p className="text-sm text-foreground/60">
-                Baseline character assessment
+                Entrance exam baseline
               </p>
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function EntranceExamCard({
           </span>
         </div>
         <p className="mt-4 text-sm leading-relaxed text-foreground/60">
-          {agentName} has not enrolled in Ethos Academy. Enroll to take the entrance exam and establish a character baseline.
+          {agentName} has not enrolled in Ethos Academy. Enroll to take the entrance exam and establish a baseline.
         </p>
       </motion.section>
     );
@@ -174,7 +174,7 @@ export default function EntranceExamCard({
           </span>
         </div>
         <p className="mt-4 text-sm leading-relaxed text-foreground/60">
-          {agentName} enrolled but has not completed the entrance exam. Complete the exam to establish a character baseline.
+          {agentName} enrolled but has not completed the entrance exam. Complete the exam to establish a baseline.
         </p>
       </motion.section>
     );
@@ -206,7 +206,7 @@ export default function EntranceExamCard({
               Entrance Exam
             </h2>
             <p className="text-sm text-foreground/60">
-              Baseline character assessment
+              Entrance exam baseline
             </p>
           </div>
         </div>
@@ -305,7 +305,7 @@ function ClipboardIcon() {
       height="18"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#3b8a98"
+      stroke="#389590"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
