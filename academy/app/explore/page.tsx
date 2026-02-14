@@ -1,6 +1,8 @@
 import { getAlumni } from "../../lib/api";
 import ExploreClient from "./ExploreClient";
 
+export const dynamic = "force-dynamic";
+
 function avg(values: (number | undefined)[]): number {
   const defined = values.filter((v): v is number => v !== undefined);
   if (defined.length === 0) return 0;

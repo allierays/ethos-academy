@@ -1,6 +1,8 @@
 import { getRecords } from "../../lib/api";
 import RecordsClient from "./RecordsClient";
 
+export const dynamic = "force-dynamic";
+
 interface RecordsPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }

@@ -2,6 +2,8 @@ import { getAgents } from "../../lib/api";
 import type { AgentSummary } from "../../lib/types";
 import AlumniClient from "./AlumniClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AlumniPage() {
   let agents: AgentSummary[] = [];
   try {
