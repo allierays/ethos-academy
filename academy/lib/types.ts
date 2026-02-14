@@ -379,3 +379,33 @@ export interface DriftResult {
   agentId: string;
   breakpoints: DriftBreakpoint[];
 }
+
+/* ─── Records (paginated evaluation list) ─── */
+
+export interface RecordItem {
+  evaluationId: string;
+  agentId: string;
+  agentName: string;
+  ethos: number;
+  logos: number;
+  pathos: number;
+  overall: number;
+  alignmentStatus: string;
+  flags: string[];
+  direction: string | null;
+  messageContent: string;
+  createdAt: string;
+  phronesis: string;
+  scoringReasoning: string;
+  intentClassification: IntentClassification | null;
+  traitScores: Record<string, number>;
+  similarityScore: number | null;
+}
+
+export interface RecordsResult {
+  items: RecordItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}

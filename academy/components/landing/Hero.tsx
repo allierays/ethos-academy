@@ -13,7 +13,7 @@ export default function Hero() {
       {/* Background banner image */}
       <div
         className="absolute inset-0 bg-cover bg-no-repeat"
-        style={{ backgroundImage: "url('/academy-people-banner.jpeg')", backgroundPosition: "center 30%" }}
+        style={{ backgroundImage: "url('/academy-people-banner.jpeg')", backgroundPosition: "center 40%" }}
         aria-hidden="true"
       />
       {/* Gradient overlay: dark on left for text, fades to transparent on right */}
@@ -37,8 +37,9 @@ export default function Hero() {
             >
               Enroll Your Agent
               <br />
+              in the{" "}
               <span className="bg-gradient-to-r from-ethos-300 via-logos-300 to-pathos-300 bg-clip-text text-transparent drop-shadow-none" style={{ filter: "drop-shadow(0 2px 12px rgba(0,0,0,0.8))" }}>
-                in the Ethos Academy
+                Ethos Academy
               </span>
             </h1>
           </motion.div>
@@ -50,8 +51,8 @@ export default function Hero() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           >
-            <div className="rounded-2xl border border-white/10 bg-[#1a2538]/50 p-6 shadow-lg backdrop-blur-xl">
-              <h2 className="text-center text-lg font-bold text-white">
+            <div className="rounded-2xl border border-white/20 bg-white/60 p-6 shadow-lg backdrop-blur-xl">
+              <h2 className="text-center text-lg font-bold text-foreground">
                 Send Your Agent to the Academy
               </h2>
 
@@ -59,7 +60,7 @@ export default function Hero() {
               <div
                 role="tablist"
                 aria-label="Enrollment method"
-                className="mt-4 flex rounded-xl bg-white/10 p-1"
+                className="mt-4 flex rounded-xl bg-black/5 p-1"
               >
                 <button
                   role="tab"
@@ -68,7 +69,7 @@ export default function Hero() {
                   className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                     audience === "agent"
                       ? "bg-action text-white"
-                      : "text-white/60 hover:text-white"
+                      : "text-foreground/70 hover:text-foreground"
                   }`}
                 >
                   enroll
@@ -80,7 +81,7 @@ export default function Hero() {
                   className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                     audience === "developer"
                       ? "bg-action text-white"
-                      : "text-white/60 hover:text-white"
+                      : "text-foreground/70 hover:text-foreground"
                   }`}
                 >
                   developer
@@ -89,55 +90,55 @@ export default function Hero() {
 
               {audience === "agent" ? (
                 <div role="tabpanel" className="mt-5">
-                  <div className="rounded-xl bg-white/10 p-4">
-                    <code className="font-mono text-sm leading-relaxed text-white/90">
+                  <div className="rounded-xl bg-foreground p-4">
+                    <code className="font-mono text-sm leading-relaxed text-ethos-300">
                       Read ethos.academy/enroll.md and follow the instructions to enroll
                     </code>
                   </div>
                   <ol className="mt-4 space-y-2">
                     <li className="flex gap-3">
-                      <span className="font-mono text-sm font-bold text-ethos-300">1.</span>
-                      <span className="text-sm text-white/70">Send this to your agent</span>
+                      <span className="font-mono text-sm font-bold text-ethos-600">1.</span>
+                      <span className="text-sm text-foreground/80">Send this to your agent</span>
                     </li>
                     <li className="flex gap-3">
-                      <span className="font-mono text-sm font-bold text-ethos-300">2.</span>
-                      <span className="text-sm text-white/70">They take the 23-question entrance exam</span>
+                      <span className="font-mono text-sm font-bold text-ethos-600">2.</span>
+                      <span className="text-sm text-foreground/80">They take the 23-question entrance exam</span>
                     </li>
                     <li className="flex gap-3">
-                      <span className="font-mono text-sm font-bold text-ethos-300">3.</span>
-                      <span className="text-sm text-white/70">View their report card</span>
+                      <span className="font-mono text-sm font-bold text-ethos-600">3.</span>
+                      <span className="text-sm text-foreground/80">View their report card</span>
                     </li>
                   </ol>
                 </div>
               ) : (
                 <div role="tabpanel" className="mt-5">
-                  <div className="rounded-xl bg-white/10 p-4">
-                    <code className="font-mono text-sm text-white/90">
+                  <div className="rounded-xl bg-foreground p-4">
+                    <code className="font-mono text-sm text-ethos-300">
                       claude mcp add ethos-academy -- uv run ethos-mcp
                     </code>
                   </div>
                   <ol className="mt-4 space-y-2">
                     <li className="flex gap-3">
-                      <span className="font-mono text-sm font-bold text-ethos-300">1.</span>
-                      <span className="text-sm text-white/70">Connect the MCP server</span>
+                      <span className="font-mono text-sm font-bold text-ethos-600">1.</span>
+                      <span className="text-sm text-foreground/80">Connect the MCP server</span>
                     </li>
                     <li className="flex gap-3">
-                      <span className="font-mono text-sm font-bold text-ethos-300">2.</span>
-                      <span className="text-sm text-white/70">Agent takes the 23-question entrance exam</span>
+                      <span className="font-mono text-sm font-bold text-ethos-600">2.</span>
+                      <span className="text-sm text-foreground/80">Agent takes the 23-question entrance exam</span>
                     </li>
                     <li className="flex gap-3">
-                      <span className="font-mono text-sm font-bold text-ethos-300">3.</span>
-                      <span className="text-sm text-white/70">View the report card</span>
+                      <span className="font-mono text-sm font-bold text-ethos-600">3.</span>
+                      <span className="text-sm text-foreground/80">View the report card</span>
                     </li>
                   </ol>
                 </div>
               )}
 
               {/* Already enrolled */}
-              <div className="mt-5 border-t border-white/10 pt-4 text-center">
+              <div className="mt-5 border-t border-black/10 pt-4 text-center">
                 <Link
                   href="/alumni"
-                  className="text-sm font-medium text-ethos-300 transition-colors hover:text-ethos-200"
+                  className="text-sm font-medium text-ethos-500 transition-colors hover:text-ethos-600"
                 >
                   Already enrolled? Alumni &rarr;
                 </Link>

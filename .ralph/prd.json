@@ -3287,7 +3287,7 @@
       "type": "frontend",
       "title": "Add Records TypeScript types, API client function, and nav link",
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "batch": 4,
       "dependsOn": [
         "TASK-044"
@@ -3345,7 +3345,8 @@
         "academy/lib/api.ts",
         "academy/components/shared/Header.tsx"
       ],
-      "notes": "The getRecords function should accept an optional RecordsSearchParams object and build URLSearchParams. Use snake_case for query param keys that need it (min_score, max_score) since the API expects snake_case query params."
+      "notes": "The getRecords function should accept an optional RecordsSearchParams object and build URLSearchParams. Use snake_case for query param keys that need it (min_score, max_score) since the API expects snake_case query params.",
+      "retryCount": 0
     },
     {
       "id": "TASK-046",

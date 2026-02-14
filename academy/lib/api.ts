@@ -18,6 +18,7 @@ import type {
   HighlightsResult,
   InsightsResult,
   PatternResult,
+  RecordsResult,
   ReflectionResult,
   SimilarityResult,
 } from "./types";
@@ -235,4 +236,39 @@ export async function getDrift(agentId: string): Promise<DriftResult> {
   return fetchApi<DriftResult>(
     `/agent/${encodeURIComponent(agentId)}/drift`
   );
+}
+
+/**
+ * Search and filter evaluation records with pagination.
+ */
+export interface RecordsSearchParams {
+  q?: string;
+  agent?: string;
+  alignment?: string;
+  flagged?: boolean;
+  sort?: string;
+  order?: string;
+  page?: number;
+  size?: number;
+}
+
+export async function getRecords(
+  params?: RecordsSearchParams
+): Promise<RecordsResult> {
+  const searchParams = new URLSearchParams();
+  if (params) {
+    if (params.q) searchParams.set("q", params.q);
+    if (params.agent) searchParams.set("agent", params.agent);
+    if (params.alignment) searchParams.set("alignment", params.alignment);
+    if (params.flagged !== undefined)
+      searchParams.set("flagged", String(params.flagged));
+    if (params.sort) searchParams.set("sort", params.sort);
+    if (params.order) searchParams.set("order", params.order);
+    if (params.page !== undefined)
+      searchParams.set("page", String(params.page));
+    if (params.size !== undefined)
+      searchParams.set("size", String(params.size));
+  }
+  const qs = searchParams.toString();
+  return fetchApi<RecordsResult>(`/records${qs ? `?${qs}` : ""}`);
 }

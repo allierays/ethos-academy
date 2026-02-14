@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { label: "Explore", href: "/explore" },
   { label: "How It Works", href: "/how-it-works" },
   { label: "Framework", href: "/framework" },
+  { label: "Records", href: "/records" },
   { label: "Alumni", href: "/alumni" },
 ];
 
@@ -16,13 +17,13 @@ export default function Header() {
   const { openGlossary } = useGlossary();
 
   return (
-    <header className="relative z-10 border-b border-white/10 bg-[#1a2538]/50 backdrop-blur-md">
+    <header className="relative z-10 border-b border-white/20 bg-white/60 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-action text-white text-sm font-bold">
             E
           </div>
-          <span className="text-lg font-semibold tracking-tight text-white">
+          <span className="text-lg font-semibold tracking-tight text-foreground">
             Ethos Academy
           </span>
         </Link>
@@ -35,8 +36,8 @@ export default function Header() {
                 href={item.href}
                 className={
                   isActive
-                    ? "text-white font-medium"
-                    : "text-white/70 hover:text-white transition-colors"
+                    ? "text-foreground font-medium"
+                    : "text-foreground/60 hover:text-foreground transition-colors"
                 }
               >
                 {item.label}
@@ -46,7 +47,7 @@ export default function Header() {
           <button
             onClick={() => openGlossary()}
             aria-label="Open glossary"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-md text-foreground/60 hover:bg-black/5 hover:text-foreground transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M2 2h4.5c.8 0 1.5.7 1.5 1.5V14l-1-1H2V2z" />
