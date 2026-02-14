@@ -10,6 +10,7 @@ interface GlossaryState {
   openGlossary: (slug?: string) => void;
   closeGlossary: () => void;
   selectTerm: (slug: string) => void;
+  clearSelection: () => void;
 }
 
 const GlossaryContext = createContext<GlossaryState | null>(null);
@@ -31,6 +32,10 @@ export function GlossaryProvider({ children }: { children: ReactNode }) {
     setSelectedTerm(null);
   }, []);
 
+  const clearSelection = useCallback(() => {
+    setSelectedTerm(null);
+  }, []);
+
   const selectTerm = useCallback((slug: string) => {
     const entry = getGlossaryEntry(slug);
     if (entry) {
@@ -41,7 +46,7 @@ export function GlossaryProvider({ children }: { children: ReactNode }) {
 
   return (
     <GlossaryContext.Provider
-      value={{ isOpen, selectedTerm, openGlossary, closeGlossary, selectTerm }}
+      value={{ isOpen, selectedTerm, openGlossary, closeGlossary, selectTerm, clearSelection }}
     >
       {children}
     </GlossaryContext.Provider>

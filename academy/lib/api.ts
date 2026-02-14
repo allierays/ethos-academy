@@ -7,7 +7,9 @@ import type {
   AgentProfile,
   AgentSummary,
   AlumniResult,
+  ConstitutionalTrailResult,
   DailyReportCard,
+  DriftResult,
   EvaluationHistoryItem,
   EvaluationResult,
   ExamReportCard,
@@ -17,6 +19,7 @@ import type {
   InsightsResult,
   PatternResult,
   ReflectionResult,
+  SimilarityResult,
 } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8917";
@@ -204,5 +207,32 @@ export async function getExamHistory(
 ): Promise<ExamSummary[]> {
   return fetchApi<ExamSummary[]>(
     `/agent/${encodeURIComponent(agentId)}/exam`
+  );
+}
+
+/**
+ * Get constitutional value trail for an agent (5-hop graph traversal).
+ */
+export async function getTrail(
+  agentId: string
+): Promise<ConstitutionalTrailResult> {
+  return fetchApi<ConstitutionalTrailResult>(
+    `/agent/${encodeURIComponent(agentId)}/trail`
+  );
+}
+
+/**
+ * Get behavioral similarity network (Jaccard over shared indicators).
+ */
+export async function getSimilarity(): Promise<SimilarityResult> {
+  return fetchApi<SimilarityResult>("/graph/similarity");
+}
+
+/**
+ * Get character drift breakpoints for an agent.
+ */
+export async function getDrift(agentId: string): Promise<DriftResult> {
+  return fetchApi<DriftResult>(
+    `/agent/${encodeURIComponent(agentId)}/drift`
   );
 }

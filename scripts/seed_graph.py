@@ -130,6 +130,20 @@ async def _create_indexes(service: GraphService) -> None:
         await service.execute_query(idx)
     print(f"  Created {len(indexes)} performance indexes")
 
+    # Vector index for semantic search over evaluation embeddings
+    try:
+        await service.execute_query(
+            "CREATE VECTOR INDEX evaluation_embeddings IF NOT EXISTS "
+            "FOR (e:Evaluation) ON (e.message_embedding) "
+            "OPTIONS {indexConfig: {`vector.dimensions`: 1536, `vector.similarity_function`: 'cosine'}}"
+        )
+        print("  Created vector index: evaluation_embeddings")
+    except Exception as exc:
+        logger.warning(
+            "Vector index creation failed (Neo4j may not support it): %s", exc
+        )
+        print(f"  Warning: vector index creation skipped ({exc})")
+
 
 async def _seed_dimensions(service: GraphService) -> None:
     """Seed 3 Dimension nodes."""

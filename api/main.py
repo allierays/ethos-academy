@@ -21,9 +21,12 @@ from ethos import (
     get_agent_history,
     get_alumni,
     get_daily_report_history,
+    get_drift,
     get_exam_report,
     get_graph_data,
     get_highlights,
+    get_similarity,
+    get_trail,
     list_agents,
     list_exams,
     register_for_exam,
@@ -35,7 +38,9 @@ from ethos.models import (
     AgentSummary,
     AlumniResult,
     AuthenticityResult,
+    ConstitutionalTrailResult,
     DailyReportCard,
+    DriftResult,
     EvaluationHistoryItem,
     EvaluationResult,
     ExamAnswerResult,
@@ -45,6 +50,7 @@ from ethos.models import (
     GraphData,
     HighlightsResult,
     PatternResult,
+    SimilarityResult,
 )
 from ethos.shared.errors import (
     ConfigError,
@@ -243,6 +249,24 @@ async def authenticity_endpoint(agent_name: str):
 @app.get("/graph", response_model=GraphData)
 async def graph_endpoint():
     return await get_graph_data()
+
+
+# ── Graph Advantage endpoints ─────────────────────────────────────────
+
+
+@app.get("/agent/{agent_id}/trail", response_model=ConstitutionalTrailResult)
+async def trail_endpoint(agent_id: str):
+    return await get_trail(agent_id)
+
+
+@app.get("/graph/similarity", response_model=SimilarityResult)
+async def similarity_endpoint():
+    return await get_similarity()
+
+
+@app.get("/agent/{agent_id}/drift", response_model=DriftResult)
+async def drift_endpoint(agent_id: str):
+    return await get_drift(agent_id)
 
 
 # ── Exam request models ──────────────────────────────────────────────

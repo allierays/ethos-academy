@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import PhronesisGraph from "../../components/graph/PhronesisGraph";
+import SimilarityNetwork from "../../components/graph/SimilarityNetwork";
 import AlumniPanel from "../../components/alumni/AlumniPanel";
 import DimensionBalance from "../../components/shared/DimensionBalance";
 import { fadeUp, whileInView } from "../../lib/motion";
@@ -11,7 +12,7 @@ import { useEffect } from "react";
 import { getAlumni } from "../../lib/api";
 import GlossaryTerm from "../../components/shared/GlossaryTerm";
 
-const TABS = ["Graph", "Alumni", "Balance"] as const;
+const TABS = ["Graph", "Similarity", "Alumni", "Balance"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function ExplorePage() {
@@ -80,6 +81,16 @@ export default function ExplorePage() {
             <PhronesisGraph onNodeClick={handleNodeClick} />
             <p className="mt-3 text-xs text-muted">
               Click an agent node to view their full report card.
+            </p>
+          </motion.div>
+        )}
+
+        {activeTab === "Similarity" && (
+          <motion.div {...whileInView} variants={fadeUp}>
+            <SimilarityNetwork onAgentClick={(agentId) => router.push(`/agent/${encodeURIComponent(agentId)}`)} />
+            <p className="mt-3 text-xs text-muted">
+              Agents never interact but trigger the same indicators? That&apos;s behavioral similarity
+              only a graph can reveal.
             </p>
           </motion.div>
         )}

@@ -293,14 +293,17 @@ async def call_claude_with_tools(
     model = _get_model(tier)
     client = anthropic.AsyncAnthropic(api_key=config.anthropic_api_key)
 
-    # Try Think-then-Extract when the model supports extended thinking
-    thinking_config = _get_thinking_config(model)
-    if thinking_config:
-        result = await _call_think_then_extract(
-            client, model, system_prompt, user_prompt, tier, tools, thinking_config
-        )
-        if result is not None:
-            return result
+    # Think-then-Extract only for deep tiers where reasoning depth matters.
+    # Standard/focused stay on the fast single-call path — Sonnet's 4096-token
+    # thinking budget doesn't produce meaningfully different scores, just 2x latency.
+    if tier in ("deep", "deep_with_context"):
+        thinking_config = _get_thinking_config(model)
+        if thinking_config:
+            result = await _call_think_then_extract(
+                client, model, system_prompt, user_prompt, tier, tools, thinking_config
+            )
+            if result is not None:
+                return result
 
     # Fallback: single-call path (original behavior + prompt caching)
     max_tokens = 4096

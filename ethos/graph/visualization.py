@@ -398,6 +398,102 @@ async def get_precedes_rels(service: GraphService) -> list[dict]:
         return []
 
 
+# ── Constitutional Trail (5-hop path: Agent→Eval→Indicator→Trait→CV) ──────
+
+_CONSTITUTIONAL_TRAIL_QUERY = """
+MATCH (a:Agent {agent_id: $agent_id})-[:EVALUATED]->(e:Evaluation)
+      -[d:DETECTED]->(i:Indicator)-[:BELONGS_TO]->(t:Trait)
+      -[u:UPHOLDS]->(cv:ConstitutionalValue)
+WITH cv, t, i, u.relationship AS impact,
+     count(DISTINCT e) AS eval_count,
+     avg(d.confidence) AS avg_confidence,
+     collect(DISTINCT d.evidence)[..3] AS sample_evidence
+RETURN cv.name AS cv_name, cv.priority AS cv_priority,
+       impact, t.name AS trait_name, t.polarity AS trait_polarity,
+       i.id AS indicator_id, i.name AS indicator_name,
+       eval_count, avg_confidence, sample_evidence
+ORDER BY cv.priority ASC, eval_count DESC
+"""
+
+
+async def get_constitutional_trail(service: GraphService, agent_id: str) -> list[dict]:
+    """Trace Agent -> Evaluation -> Indicator -> Trait -> ConstitutionalValue."""
+    if not service.connected:
+        return []
+    try:
+        records, _, _ = await service.execute_query(
+            _CONSTITUTIONAL_TRAIL_QUERY, {"agent_id": agent_id}
+        )
+        return [
+            {
+                "constitutional_value": rec.get("cv_name", ""),
+                "cv_priority": rec.get("cv_priority", 0),
+                "impact": rec.get("impact", ""),
+                "trait": rec.get("trait_name", ""),
+                "trait_polarity": rec.get("trait_polarity", ""),
+                "indicator_id": rec.get("indicator_id", ""),
+                "indicator_name": rec.get("indicator_name", ""),
+                "eval_count": rec.get("eval_count", 0),
+                "avg_confidence": rec.get("avg_confidence", 0.0),
+                "sample_evidence": [e for e in (rec.get("sample_evidence") or []) if e],
+            }
+            for rec in records
+        ]
+    except Exception as exc:
+        logger.warning("Failed to get constitutional trail: %s", exc)
+        return []
+
+
+# ── Behavioral Similarity (Jaccard over shared indicators) ────────────────
+
+_SIMILARITY_QUERY = """
+MATCH (a:Agent)-[:EVALUATED]->(:Evaluation)-[:DETECTED]->(i:Indicator)
+WITH a, collect(DISTINCT i.id) AS indicators
+WHERE size(indicators) > 0
+WITH collect({agent_id: a.agent_id, agent_name: a.agent_name,
+              phronesis: a.phronesis_score, indicators: indicators}) AS agents
+UNWIND range(0, size(agents) - 2) AS idx1
+UNWIND range(idx1 + 1, size(agents) - 1) AS idx2
+WITH agents[idx1] AS a1, agents[idx2] AS a2
+WITH a1, a2,
+     [x IN a1.indicators WHERE x IN a2.indicators] AS shared
+WITH a1, a2, shared,
+     toFloat(size(shared)) /
+       (size(a1.indicators) + size(a2.indicators) - size(shared)) AS jaccard
+WHERE jaccard > 0.15
+RETURN a1.agent_id AS agent1_id, a1.agent_name AS agent1_name,
+       a1.phronesis AS agent1_phronesis,
+       a2.agent_id AS agent2_id, a2.agent_name AS agent2_name,
+       a2.phronesis AS agent2_phronesis,
+       jaccard AS similarity, shared AS shared_indicators
+ORDER BY jaccard DESC
+"""
+
+
+async def get_similarity_data(service: GraphService) -> list[dict]:
+    """Compute Jaccard similarity between agents over shared indicators."""
+    if not service.connected:
+        return []
+    try:
+        records, _, _ = await service.execute_query(_SIMILARITY_QUERY)
+        return [
+            {
+                "agent1_id": rec.get("agent1_id", ""),
+                "agent1_name": rec.get("agent1_name", ""),
+                "agent1_phronesis": rec.get("agent1_phronesis"),
+                "agent2_id": rec.get("agent2_id", ""),
+                "agent2_name": rec.get("agent2_name", ""),
+                "agent2_phronesis": rec.get("agent2_phronesis"),
+                "similarity": rec.get("similarity", 0.0),
+                "shared_indicators": rec.get("shared_indicators", []),
+            }
+            for rec in records
+        ]
+    except Exception as exc:
+        logger.warning("Failed to get similarity data: %s", exc)
+        return []
+
+
 async def get_indicator_backbone(service: GraphService) -> dict:
     """Pull only indicators that have at least one DETECTED relationship.
 

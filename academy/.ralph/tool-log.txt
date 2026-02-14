@@ -1898,3 +1898,5 @@ sleep 8 && curl -s -o /dev/null -w "%{http_code}" http://loca
 [00:02:18] BASH: rm -rf node_modules && npm ci 2>&1 | tail -10
 [00:02:24] BASH: git diff --stat -- academy/package.json academy/package-lock.json
 [00:02:28] BASH: git status -- academy/package.json academy/package-lock.json
+[01:13:31] BASH: cd /Users/allierays/Sites/ethos/academy && npx tsc --noEmit 2>&1 | head -40
+[01:13:37] BASH: uv run python -c "from api.main import app; routes = [r.path for r in app.routes

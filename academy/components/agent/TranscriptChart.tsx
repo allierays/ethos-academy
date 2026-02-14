@@ -10,10 +10,12 @@ import {
   ResponsiveContainer,
   ReferenceDot,
   ReferenceArea,
+  ReferenceLine,
 } from "recharts";
 import { motion } from "motion/react";
-import { DIMENSION_COLORS } from "../../lib/colors";
+import { DIMENSION_COLORS, DIMENSION_LABELS } from "../../lib/colors";
 import { fadeUp, whileInView } from "../../lib/motion";
+import type { DriftBreakpoint } from "../../lib/types";
 import GraphHelpButton from "../shared/GraphHelpButton";
 import GlossaryTerm from "../shared/GlossaryTerm";
 
@@ -30,9 +32,10 @@ interface TimelineDataPoint {
 interface TranscriptChartProps {
   timeline: TimelineDataPoint[];
   agentName?: string;
+  breakpoints?: DriftBreakpoint[];
 }
 
-export default function TranscriptChart({ timeline, agentName }: TranscriptChartProps) {
+export default function TranscriptChart({ timeline, agentName, breakpoints = [] }: TranscriptChartProps) {
   const name = agentName ?? "this agent";
   const flaggedPoints = timeline.filter((d) => d.flags.length > 0);
 
@@ -204,6 +207,23 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
                     strokeWidth={2}
                   />
                 ))}
+                {breakpoints.map((bp) => (
+                  <ReferenceLine
+                    key={`drift-${bp.evalIndex}-${bp.dimension}`}
+                    x={bp.evalIndex}
+                    stroke="#dc2626"
+                    strokeWidth={2}
+                    strokeDasharray="4 3"
+                    strokeOpacity={0.7}
+                    label={{
+                      value: `${bp.delta > 0 ? "+" : ""}${(bp.delta * 100).toFixed(0)}% ${(DIMENSION_LABELS[bp.dimension] ?? bp.dimension).toLowerCase()}`,
+                      position: "top",
+                      fill: "#dc2626",
+                      fontSize: 9,
+                      fontWeight: 600,
+                    }}
+                  />
+                ))}
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -277,7 +297,43 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
             Flagged
           </span>
         )}
+        {breakpoints.length > 0 && (
+          <span className="flex items-center gap-1">
+            <span className="inline-block h-2 w-4 border-l-2 border-dashed border-[#dc2626]" />{" "}
+            Drift breakpoint
+          </span>
+        )}
       </div>
+
+      {/* Drift breakpoint details */}
+      {breakpoints.length > 0 && (
+        <div className="mt-3 rounded-lg bg-misaligned/5 border border-misaligned/10 px-4 py-3">
+          <p className="text-xs font-semibold text-misaligned/80 uppercase tracking-wider mb-2">
+            Character Drift Detected
+          </p>
+          <div className="space-y-1.5">
+            {breakpoints.map((bp, i) => (
+              <div key={i} className="flex items-center gap-2 text-xs">
+                <span className="font-mono text-misaligned">#{bp.evalIndex}</span>
+                <span className="text-foreground/70">
+                  {(DIMENSION_LABELS[bp.dimension] ?? bp.dimension)} {bp.delta < 0 ? "dropped" : "rose"}{" "}
+                  <span className="font-semibold">{Math.abs(Math.round(bp.delta * 100))}%</span>
+                  {" "}({(bp.beforeAvg * 100).toFixed(0)}% &rarr; {(bp.afterAvg * 100).toFixed(0)}%)
+                </span>
+                {bp.indicators.length > 0 && (
+                  <span className="text-muted ml-auto truncate max-w-[200px]">
+                    {bp.indicators.slice(0, 3).join(", ")}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+          <p className="mt-2 text-[10px] text-foreground/40">
+            Breakpoints use a 5-evaluation sliding window. Only the PRECEDES linked list in Neo4j
+            guarantees temporal chain integrity at scale.
+          </p>
+        </div>
+      )}
     </motion.section>
   );
 }

@@ -279,7 +279,19 @@ function StatCard({
   const className = "flex flex-col items-center justify-center rounded-lg bg-white/10 backdrop-blur-xl border border-white/20 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-colors hover:bg-white/15";
 
   if (href) {
-    return <a href={href} className={className}>{inner}</a>;
+    return (
+      <a
+        href={href}
+        className={className}
+        onClick={(e) => {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          target?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
+      >
+        {inner}
+      </a>
+    );
   }
   return <div className={className}>{inner}</div>;
 }

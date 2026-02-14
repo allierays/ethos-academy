@@ -534,3 +534,73 @@ class AuthenticityResult(BaseModel):
     authenticity_score: float = Field(default=0.5, ge=0.0, le=1.0)
     classification: AuthenticityClassification = "indeterminate"
     confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+
+
+# ── Graph Advantage: Constitutional Trail ────────────────────────────
+
+
+class ConstitutionalTrailItem(BaseModel):
+    """One path from indicator through trait to constitutional value."""
+
+    constitutional_value: str = ""
+    cv_priority: int = 0
+    impact: str = ""
+    trait: str = ""
+    trait_polarity: str = ""
+    indicator_id: str = ""
+    indicator_name: str = ""
+    eval_count: int = 0
+    avg_confidence: float = 0.0
+    sample_evidence: list[str] = Field(default_factory=list)
+
+
+class ConstitutionalTrailResult(BaseModel):
+    """Full constitutional value trail for an agent."""
+
+    agent_id: str = ""
+    items: list[ConstitutionalTrailItem] = Field(default_factory=list)
+
+
+# ── Graph Advantage: Behavioral Similarity ───────────────────────────
+
+
+class SimilarityEdge(BaseModel):
+    """Jaccard similarity between two agents over shared indicators."""
+
+    agent1_id: str = ""
+    agent1_name: str = ""
+    agent1_phronesis: float | None = None
+    agent2_id: str = ""
+    agent2_name: str = ""
+    agent2_phronesis: float | None = None
+    similarity: float = 0.0
+    shared_indicators: list[str] = Field(default_factory=list)
+
+
+class SimilarityResult(BaseModel):
+    """All similarity edges above threshold."""
+
+    edges: list[SimilarityEdge] = Field(default_factory=list)
+
+
+# ── Graph Advantage: Character Drift Breakpoints ─────────────────────
+
+
+class DriftBreakpoint(BaseModel):
+    """A point where an agent's character shifted significantly."""
+
+    eval_index: int = 0
+    evaluation_id: str = ""
+    dimension: str = ""
+    delta: float = 0.0
+    before_avg: float = 0.0
+    after_avg: float = 0.0
+    created_at: str = ""
+    indicators: list[str] = Field(default_factory=list)
+
+
+class DriftResult(BaseModel):
+    """Drift breakpoints for an agent's evaluation timeline."""
+
+    agent_id: str = ""
+    breakpoints: list[DriftBreakpoint] = Field(default_factory=list)

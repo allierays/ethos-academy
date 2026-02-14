@@ -55,30 +55,53 @@ const DIM_PILL_STYLES: Record<string, string> = {
   pathos: "bg-pathos-100 text-pathos-700",
 };
 
-function IndicatorPill({ ind }: { ind: HighlightIndicator }) {
+function IndicatorPill({
+  ind,
+  expanded,
+  onToggle,
+}: {
+  ind: HighlightIndicator;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
   const label = ind.name.replace(/_/g, " ");
   const dimension = TRAIT_DIMENSIONS[ind.trait] ?? "ethos";
   const pillStyle = DIM_PILL_STYLES[dimension] ?? "bg-border/10 text-muted";
+  const hasEvidence = !!ind.evidence;
   return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${pillStyle}`}
-      title={ind.evidence || ind.trait}
-    >
-      {label}
-      <span className="opacity-60">{Math.round(ind.confidence * 100)}%</span>
-    </span>
+    <div className="flex flex-col">
+      <button
+        onClick={hasEvidence ? onToggle : undefined}
+        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${pillStyle} ${hasEvidence ? "cursor-pointer hover:opacity-80" : ""}`}
+        title={hasEvidence ? (expanded ? "Hide evidence" : "Show evidence") : ind.trait}
+      >
+        {label}
+        <span className="opacity-60">{Math.round(ind.confidence * 100)}%</span>
+      </button>
+      {expanded && ind.evidence && (
+        <p className="mt-1 max-w-[260px] text-[10px] italic leading-snug text-muted/80">
+          &ldquo;{ind.evidence}&rdquo;
+        </p>
+      )}
+    </div>
   );
 }
 
 function IndicatorPills({ indicators }: { indicators: HighlightIndicator[] }) {
   const [showAll, setShowAll] = useState(false);
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const visible = showAll ? indicators : indicators.slice(0, 2);
   const remaining = indicators.length - 2;
 
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+    <div className="mt-2 flex flex-wrap items-start gap-1.5">
       {visible.map((ind, i) => (
-        <IndicatorPill key={`${ind.name}-${i}`} ind={ind} />
+        <IndicatorPill
+          key={`${ind.name}-${i}`}
+          ind={ind}
+          expanded={expandedIdx === i}
+          onToggle={() => setExpandedIdx(expandedIdx === i ? null : i)}
+        />
       ))}
       {remaining > 0 && !showAll && (
         <button

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useGlossary } from "../../lib/GlossaryContext";
 import {
@@ -45,15 +45,27 @@ const staggerChild = {
 };
 
 export default function GlossarySidebar() {
-  const { isOpen, selectedTerm, closeGlossary, selectTerm } = useGlossary();
+  const { isOpen, selectedTerm, closeGlossary, selectTerm, clearSelection } = useGlossary();
+  const [search, setSearch] = useState("");
+
+  const handleClose = () => {
+    setSearch("");
+    closeGlossary();
+  };
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) closeGlossary();
+      if (e.key === "Escape" && isOpen) {
+        if (selectedTerm) {
+          clearSelection();
+        } else {
+          handleClose();
+        }
+      }
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [isOpen, closeGlossary]);
+  }, [isOpen, selectedTerm, closeGlossary, clearSelection]);
 
   return (
     <AnimatePresence>
@@ -67,17 +79,44 @@ export default function GlossarySidebar() {
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border px-5 py-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#1a2538]">
-              Glossary
-            </h2>
+            <div className="flex items-center gap-2">
+              {selectedTerm && (
+                <button
+                  onClick={clearSelection}
+                  aria-label="Back to glossary list"
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-muted hover:bg-border/40 hover:text-foreground transition-colors"
+                >
+                  <ArrowLeftIcon />
+                </button>
+              )}
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-[#1a2538]">
+                Glossary
+              </h2>
+            </div>
             <button
-              onClick={closeGlossary}
+              onClick={handleClose}
               aria-label="Close glossary"
               className="flex h-7 w-7 items-center justify-center rounded-md text-muted hover:bg-border/40 hover:text-foreground transition-colors"
             >
               <XIcon />
             </button>
           </div>
+
+          {/* Search */}
+          {!selectedTerm && (
+            <div className="border-b border-border px-5 py-3">
+              <div className="relative">
+                <SearchIcon />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search terms..."
+                  className="w-full rounded-md border border-border bg-white py-1.5 pl-8 pr-3 text-sm text-foreground placeholder:text-muted focus:border-[#389590] focus:outline-none focus:ring-1 focus:ring-[#389590]/30 transition-colors"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto px-5 py-4">
@@ -100,7 +139,7 @@ export default function GlossarySidebar() {
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <TermList onSelect={selectTerm} />
+                  <TermList onSelect={selectTerm} search={search} />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -526,7 +565,44 @@ function TermDetail({
   );
 }
 
-function TermList({ onSelect }: { onSelect: (slug: string) => void }) {
+function TermList({ onSelect, search }: { onSelect: (slug: string) => void; search: string }) {
+  const query = search.toLowerCase().trim();
+
+  const matchesSearch = (entry: GlossaryEntry) => {
+    if (!query) return true;
+    return (
+      entry.term.toLowerCase().includes(query) ||
+      entry.definition.toLowerCase().includes(query) ||
+      entry.slug.toLowerCase().includes(query)
+    );
+  };
+
+  // Flat search results mode
+  if (query) {
+    const matches = ALL_GLOSSARY_ENTRIES.filter(matchesSearch);
+    if (matches.length === 0) {
+      return (
+        <p className="py-8 text-center text-sm text-muted">
+          No results for &ldquo;{search.trim()}&rdquo;
+        </p>
+      );
+    }
+    return (
+      <div>
+        <p className="text-[10px] font-medium uppercase tracking-wider text-muted">
+          {matches.length} result{matches.length !== 1 ? "s" : ""}
+        </p>
+        <ul className="mt-2 space-y-0.5">
+          {matches.map((entry) => (
+            <li key={entry.slug}>
+              <TermListButton entry={entry} onSelect={onSelect} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
       {CATEGORIES.map(({ key, label }) => {
@@ -618,6 +694,41 @@ function TermListButton({
       )}
       {entry.term}
     </button>
+  );
+}
+
+function ArrowLeftIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M9 1L3 7l6 6" />
+    </svg>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+    >
+      <circle cx="6" cy="6" r="4.5" />
+      <path d="M9.5 9.5L13 13" />
+    </svg>
   );
 }
 

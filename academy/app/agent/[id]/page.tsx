@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "motion/react";
-import { getAgent, getHistory, getCharacterReport } from "../../../lib/api";
+import { getAgent, getHistory, getCharacterReport, getDrift } from "../../../lib/api";
 import type {
   AgentProfile,
   EvaluationHistoryItem,
   DailyReportCard,
+  DriftBreakpoint,
 } from "../../../lib/types";
 import CharacterHealth from "../../../components/agent/CharacterHealth";
 import AlumniComparison from "../../../components/alumni/AlumniComparison";
@@ -17,6 +18,7 @@ import RiskIndicators from "../../../components/agent/RiskIndicators";
 import HomeworkSection from "../../../components/agent/HomeworkSection";
 import PatternsPanel from "../../../components/agent/PatternsPanel";
 import TranscriptChart from "../../../components/agent/TranscriptChart";
+import ConstitutionalTrail from "../../../components/agent/ConstitutionalTrail";
 
 import EvaluationDepth from "../../../components/agent/EvaluationDepth";
 import HighlightsPanel from "../../../components/agent/HighlightsPanel";
@@ -50,6 +52,7 @@ export default function AgentReportCard() {
   const [timeline, setTimeline] = useState<TimelineDataPoint[]>([]);
   const [history, setHistory] = useState<EvaluationHistoryItem[]>([]);
   const [report, setReport] = useState<DailyReportCard | null>(null);
+  const [breakpoints, setBreakpoints] = useState<DriftBreakpoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,11 +64,12 @@ export default function AgentReportCard() {
       setLoading(true);
       setError(null);
       try {
-        const [profileResult, historyResult, reportResult] =
+        const [profileResult, historyResult, reportResult, driftResult] =
           await Promise.allSettled([
             getAgent(agentId),
             getHistory(agentId),
             getCharacterReport(agentId),
+            getDrift(agentId),
           ]);
 
         if (cancelled) return;
@@ -98,6 +102,10 @@ export default function AgentReportCard() {
           if (r.grade && r.totalEvaluationCount > 0) {
             setReport(r);
           }
+        }
+
+        if (driftResult.status === "fulfilled" && driftResult.value.breakpoints.length > 0) {
+          setBreakpoints(driftResult.value.breakpoints);
         }
       } catch (err) {
         if (!cancelled) {
@@ -209,9 +217,14 @@ export default function AgentReportCard() {
           <HighlightsPanel agentId={agentId} agentName={agentName} />
         </motion.section>
 
-        {/* Transcript */}
+        {/* Transcript with drift breakpoints */}
         <motion.section id="transcript" variants={fadeUp}>
-          <TranscriptChart timeline={timeline} agentName={agentName} />
+          <TranscriptChart timeline={timeline} agentName={agentName} breakpoints={breakpoints} />
+        </motion.section>
+
+        {/* Constitutional Value Trail (5-hop graph traversal) */}
+        <motion.section id="constitutional-trail" variants={fadeUp}>
+          <ConstitutionalTrail agentId={agentId} agentName={agentName} />
         </motion.section>
 
         {/* 8. Risk and Sabotage Pathways */}

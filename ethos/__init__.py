@@ -10,6 +10,7 @@ from ethos.agents import (
     list_agents,
 )
 from ethos.authenticity import analyze_authenticity
+from ethos.graph_features import get_drift, get_similarity, get_trail
 from ethos.daily_reports import get_daily_report, get_daily_report_history
 from ethos.enrollment.service import (
     complete_exam,
@@ -24,8 +25,10 @@ from ethos.models import (
     AgentSummary,
     AlumniResult,
     AuthenticityResult,
+    ConstitutionalTrailResult,
     DailyReportCard,
     DetectedPattern,
+    DriftResult,
     EvaluationHistoryItem,
     EvaluationResult,
     GraphData,
@@ -37,6 +40,7 @@ from ethos.models import (
     HomeworkFocus,
     InsightsResult,
     PatternResult,
+    SimilarityResult,
 )
 from ethos.patterns import detect_patterns
 from ethos.tools import character_report, evaluate_incoming, evaluate_outgoing
@@ -49,6 +53,9 @@ __all__ = [
     "character_report",
     "detect_patterns",
     "get_graph_data",
+    "get_trail",
+    "get_similarity",
+    "get_drift",
     "list_agents",
     "get_agent",
     "get_agent_history",
@@ -73,6 +80,9 @@ __all__ = [
     "AgentSummary",
     "AlumniResult",
     "AuthenticityResult",
+    "ConstitutionalTrailResult",
+    "SimilarityResult",
+    "DriftResult",
     "EvaluationHistoryItem",
     "HighlightItem",
     "HighlightsResult",

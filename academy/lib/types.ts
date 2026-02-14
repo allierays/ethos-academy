@@ -324,3 +324,58 @@ export interface ExamSummary {
   completedAt: string | null;
   phronesisScore: number;
 }
+
+/* ─── Graph Advantage: Constitutional Trail ─── */
+
+export interface ConstitutionalTrailItem {
+  constitutionalValue: string;
+  cvPriority: number;
+  impact: string;
+  trait: string;
+  traitPolarity: string;
+  indicatorId: string;
+  indicatorName: string;
+  evalCount: number;
+  avgConfidence: number;
+  sampleEvidence: string[];
+}
+
+export interface ConstitutionalTrailResult {
+  agentId: string;
+  items: ConstitutionalTrailItem[];
+}
+
+/* ─── Graph Advantage: Behavioral Similarity ─── */
+
+export interface SimilarityEdge {
+  agent1Id: string;
+  agent1Name: string;
+  agent1Phronesis: number | null;
+  agent2Id: string;
+  agent2Name: string;
+  agent2Phronesis: number | null;
+  similarity: number;
+  sharedIndicators: string[];
+}
+
+export interface SimilarityResult {
+  edges: SimilarityEdge[];
+}
+
+/* ─── Graph Advantage: Character Drift ─── */
+
+export interface DriftBreakpoint {
+  evalIndex: number;
+  evaluationId: string;
+  dimension: string;
+  delta: number;
+  beforeAvg: number;
+  afterAvg: number;
+  createdAt: string;
+  indicators: string[];
+}
+
+export interface DriftResult {
+  agentId: string;
+  breakpoints: DriftBreakpoint[];
+}
