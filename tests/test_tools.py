@@ -31,6 +31,8 @@ def _mock_tool_results() -> dict[str, dict]:
             "cost_to_reader": "none",
             "stakes_reality": "real",
             "proportionality": "proportional",
+            "persona_type": "real_identity",
+            "relational_quality": "transactional",
             "claims": [],
         },
         "detect_indicators": {"indicators": []},

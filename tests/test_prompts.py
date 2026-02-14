@@ -163,8 +163,8 @@ class TestDirectionContext:
             "test", KeywordScanResult(), "standard", direction="outbound"
         )
         assert "outbound" in system.lower()
-        assert "virtue" in system.lower()
-        assert "character" in system.lower()
+        assert "informed" in system.lower()
+        assert "independent" in system.lower()
 
     def test_no_direction_no_extra_context(self):
         from ethos.evaluation.prompts import build_evaluation_prompt

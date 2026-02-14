@@ -48,6 +48,8 @@ def _mock_tool_results(
             "cost_to_reader": "none",
             "stakes_reality": "real",
             "proportionality": "proportional",
+            "persona_type": "real_identity",
+            "relational_quality": "transactional",
             "claims": [],
         },
         "detect_indicators": {
@@ -306,6 +308,8 @@ class TestParseFailure:
                 "cost_to_reader": "none",
                 "stakes_reality": "real",
                 "proportionality": "proportional",
+                "persona_type": "real_identity",
+                "relational_quality": "transactional",
                 "claims": [],
             }
         }
