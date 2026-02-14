@@ -22,27 +22,30 @@ ALL_TRAITS = [
 ]
 
 
-def _mock_tool_results() -> dict[str, dict]:
-    return {
-        "identify_intent": {
-            "rhetorical_mode": "conversational",
-            "primary_intent": "inform",
-            "action_requested": "none",
-            "cost_to_reader": "none",
-            "stakes_reality": "real",
-            "proportionality": "proportional",
-            "persona_type": "real_identity",
-            "relational_quality": "transactional",
-            "claims": [],
+def _mock_tool_results() -> tuple[dict[str, dict], str]:
+    return (
+        {
+            "identify_intent": {
+                "rhetorical_mode": "conversational",
+                "primary_intent": "inform",
+                "action_requested": "none",
+                "cost_to_reader": "none",
+                "stakes_reality": "real",
+                "proportionality": "proportional",
+                "persona_type": "real_identity",
+                "relational_quality": "transactional",
+                "claims": [],
+            },
+            "detect_indicators": {"indicators": []},
+            "score_traits": {
+                "trait_scores": {t: 0.5 for t in ALL_TRAITS},
+                "overall_trust": "trustworthy",
+                "confidence": 0.9,
+                "reasoning": "Test evaluation",
+            },
         },
-        "detect_indicators": {"indicators": []},
-        "score_traits": {
-            "trait_scores": {t: 0.5 for t in ALL_TRAITS},
-            "overall_trust": "trustworthy",
-            "confidence": 0.9,
-            "reasoning": "Test evaluation",
-        },
-    }
+        "",
+    )
 
 
 class TestEvaluateIncoming:

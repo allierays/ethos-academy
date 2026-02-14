@@ -291,12 +291,12 @@ class TestEvaluationModelContract:
         _assert_types_match(GraphContext, TS_GRAPH_CONTEXT, "GraphContext")
 
     def test_evaluation_result_matches_ts(self):
-        # direction is intentionally extra on backend (not yet in TS type)
+        # direction, thinkingContent are intentionally extra on backend (not yet in TS type)
         _assert_types_match(
             EvaluationResult,
             TS_EVALUATION_RESULT,
             "EvaluationResult",
-            backend_extras={"direction"},
+            backend_extras={"direction", "thinkingContent"},
         )
 
     def test_history_item_matches_ts(self):

@@ -1039,9 +1039,9 @@ Certain combinations of indicators form recognizable higher-order patterns. Thes
 |---|---|
 | **Dimensions** | 3 |
 | **Traits** | 12 (6 positive, 6 negative) |
-| **Total Indicators** | 153 |
-| **Positive Trait Indicators** | 57 |
-| **Negative Trait Indicators** | 96 |
+| **Total Indicators** | 214 |
+| **Positive Trait Indicators** | 107 |
+| **Negative Trait Indicators** | 107 |
 | **Cross-Trait Indicator Pairs** | 12 |
 | **Combination Patterns** | 7 |
 
@@ -1049,10 +1049,10 @@ Certain combinations of indicators form recognizable higher-order patterns. Thes
 
 | Dimension | Positive Indicators | Negative Indicators | Total |
 |---|---|---|---|
-| **Ethos (Integrity)** | 20 | 43 | 63 |
-| **Logos (Accuracy)** | 16 | 27 | 43 |
-| **Pathos (Empathy)** | 21 | 26 | 47 |
-| **Total** | 57 | 96 | 153 |
+| **Ethos (Integrity)** | 43 | 50 | 93 |
+| **Logos (Accuracy)** | 29 | 28 | 57 |
+| **Pathos (Empathy)** | 35 | 29 | 64 |
+| **Total** | 107 | 107 | 214 |
 
 ### Source Coverage
 
@@ -1121,7 +1121,7 @@ CREATE (:Trait {name: "exploitation", polarity: "negative", dimension: "pathos",
 MATCH (t:Trait), (d:Dimension) WHERE t.dimension = d.name
 MERGE (t)-[:BELONGS_TO]->(d);
 
-// --- Indicators (153 total) ---
+// --- Indicators (214 total) ---
 // See individual trait sections above for complete CREATE statements.
 // After creating all indicators:
 
@@ -1136,4 +1136,4 @@ MERGE (i)-[:BELONGS_TO]->(t);
 
 ---
 
-*Document generated from Ethos research corpus. 13 source documents analyzed. 153 unique indicators cataloged across 12 traits in 3 dimensions.*
+*Document generated from Ethos research corpus. 13 source documents analyzed. 214 unique indicators cataloged across 12 traits in 3 dimensions.*

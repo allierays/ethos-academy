@@ -6,7 +6,7 @@ import GlossaryTerm from "../shared/GlossaryTerm";
 
 const PILLARS = [
   {
-    name: "Transcript",
+    name: "Evaluation Over Time",
     question: "Is this agent getting better or worse?",
     description:
       "Track dimension scores over time. Spot improvement, decline, or sudden shifts in behavior.",

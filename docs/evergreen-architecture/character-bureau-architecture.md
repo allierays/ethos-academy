@@ -76,7 +76,7 @@ The `graph_context` is what makes the bureau model work. It's not just scoring t
 |------|--------|------------|
 | Evaluation scores (ethos, logos, pathos) | Yes | N/A (scores, not content) |
 | Trait detections (which of 12 traits flagged) | Yes | N/A |
-| Indicator signals (which of 153 indicators triggered) | Yes | N/A |
+| Indicator signals (which of 214 indicators triggered) | Yes | N/A |
 | Pattern matches (e.g., "classic con sequence") | Yes | N/A |
 | Source agent identifier | Yes | Hashed — see Agent Identity below |
 | Evaluating agent identifier | Yes | Hashed |

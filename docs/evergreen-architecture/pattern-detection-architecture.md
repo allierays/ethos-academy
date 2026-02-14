@@ -6,7 +6,7 @@
 
 ## The Problem
 
-Many of Ethos's 153 indicators describe behaviors that unfold across multiple messages, not within a single one:
+Many of Ethos's 214 indicators describe behaviors that unfold across multiple messages, not within a single one:
 
 | Indicator | Why One Message Isn't Enough |
 |---|---|

@@ -326,6 +326,88 @@ function AccentBar({ color }: { color: string }) {
 }
 
 // ---------------------------------------------------------------------------
+// Alignment Scale Diagram
+// ---------------------------------------------------------------------------
+
+const SCALE_ZONES = [
+  { label: "Alarming", pct: 0, color: "#b85050" },
+  { label: "Concerning", pct: 25, color: "#c46a5a" },
+  { label: "Uncertain", pct: 40, color: "#c88a3a" },
+  { label: "Developing", pct: 55, color: "#c09840" },
+  { label: "Sound", pct: 70, color: "#5aaa82" },
+  { label: "Exemplary", pct: 85, color: "#3a9a6e" },
+];
+
+function AlignmentScaleDiagram() {
+  const w = 280;
+  const barY = 50;
+  const barH = 14;
+  const barX = 10;
+  const barW = w - 20;
+
+  return (
+    <svg viewBox={`0 0 ${w} 100`} className="w-full" role="img" aria-label="Alignment scale zones">
+      {/* Gradient bar */}
+      <defs>
+        <linearGradient id="scale-grad" x1="0" y1="0" x2="1" y2="0">
+          {SCALE_ZONES.map((z) => (
+            <stop key={z.label} offset={`${z.pct}%`} stopColor={z.color} />
+          ))}
+          <stop offset="100%" stopColor="#3a9a6e" />
+        </linearGradient>
+      </defs>
+      {/* Track bg */}
+      <rect x={barX} y={barY} width={barW} height={barH} rx={7} fill="#e8e6e1" />
+      {/* Colored bar */}
+      <motion.rect
+        x={barX}
+        y={barY}
+        width={barW}
+        height={barH}
+        rx={7}
+        fill="url(#scale-grad)"
+        initial={{ width: 0 }}
+        animate={{ width: barW }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      />
+      {/* Zone labels */}
+      {SCALE_ZONES.map((z) => {
+        const x = barX + (z.pct / 100) * barW;
+        return (
+          <g key={z.label}>
+            {/* Tick */}
+            <line x1={x} y1={barY + barH + 2} x2={x} y2={barY + barH + 6} stroke={z.color} strokeWidth={1.5} />
+            {/* Label */}
+            <text
+              x={x}
+              y={barY + barH + 16}
+              textAnchor="middle"
+              fill={z.color}
+              fontSize="7"
+              fontWeight="600"
+            >
+              {z.label}
+            </text>
+            {/* Percent */}
+            <text
+              x={x}
+              y={barY - 6}
+              textAnchor="middle"
+              fill="#94a3b8"
+              fontSize="7"
+            >
+              {z.pct}%
+            </text>
+          </g>
+        );
+      })}
+      {/* 100% label */}
+      <text x={barX + barW} y={barY - 6} textAnchor="middle" fill="#94a3b8" fontSize="7">100%</text>
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // TermDetail (enhanced)
 // ---------------------------------------------------------------------------
 
@@ -352,7 +434,7 @@ function TermDetail({
       >
         <AccentBar color={accentColor} />
 
-        {/* Constellation */}
+        {/* Diagram */}
         <motion.div variants={staggerChild}>
           <ConstellationDiagram entry={entry} onSelect={onSelect} />
         </motion.div>
@@ -403,6 +485,16 @@ function TermDetail({
         >
           {entry.definition}
         </motion.p>
+
+        {/* Alignment scale inline diagram */}
+        {entry.slug === "highlights" && (
+          <motion.div variants={staggerChild} className="mt-4">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted mb-2">
+              Score Scale
+            </p>
+            <AlignmentScaleDiagram />
+          </motion.div>
+        )}
 
         {/* Related chips */}
         {entry.relatedTerms && entry.relatedTerms.length > 0 && (

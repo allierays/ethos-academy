@@ -129,7 +129,11 @@ class TestPromptRouting:
         await call_claude("my system prompt", "my user prompt", "standard")
 
         call_args = mock_client.messages.create.call_args
-        assert call_args.kwargs["system"] == "my system prompt"
+        system = call_args.kwargs["system"]
+        # System prompt is now a cacheable content block array
+        assert isinstance(system, list)
+        assert system[0]["text"] == "my system prompt"
+        assert system[0]["cache_control"] == {"type": "ephemeral"}
 
     @patch("ethos.evaluation.claude_client.anthropic")
     @patch("ethos.evaluation.claude_client.EthosConfig.from_env")
@@ -172,7 +176,8 @@ class TestPromptRouting:
         await call_claude("sys", "usr", "standard")
 
         call_args = mock_client.messages.create.call_args
-        assert call_args.kwargs["max_tokens"] == 2048
+        # Sonnet gets thinking config, which bumps max_tokens to 8192
+        assert call_args.kwargs["max_tokens"] == 8192
 
 
 # ---------------------------------------------------------------------------
@@ -194,9 +199,8 @@ class TestReturnValue:
 
         mock_client = AsyncMock()
         mock_anthropic.AsyncAnthropic.return_value = mock_client
-        mock_client.messages.create.return_value = MagicMock(
-            content=[MagicMock(text='{"trait_scores": {}}')]
-        )
+        text_block = MagicMock(type="text", text='{"trait_scores": {}}')
+        mock_client.messages.create.return_value = MagicMock(content=[text_block])
 
         result = await call_claude("sys", "usr", "standard")
 

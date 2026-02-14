@@ -35,33 +35,39 @@ def _mock_tool_results(
     indicators: list | None = None,
     trust: str = "trustworthy",
     confidence: float = 0.9,
-) -> dict[str, dict]:
-    """Build mock tool call results matching call_claude_with_tools output."""
+) -> tuple[dict[str, dict], str]:
+    """Build mock tool call results matching call_claude_with_tools output.
+
+    Returns (tool_results, thinking_content) tuple.
+    """
     scores = {t: 0.5 for t in ALL_TRAITS}
     if overrides:
         scores.update(overrides)
-    return {
-        "identify_intent": {
-            "rhetorical_mode": "conversational",
-            "primary_intent": "inform",
-            "action_requested": "none",
-            "cost_to_reader": "none",
-            "stakes_reality": "real",
-            "proportionality": "proportional",
-            "persona_type": "real_identity",
-            "relational_quality": "transactional",
-            "claims": [],
+    return (
+        {
+            "identify_intent": {
+                "rhetorical_mode": "conversational",
+                "primary_intent": "inform",
+                "action_requested": "none",
+                "cost_to_reader": "none",
+                "stakes_reality": "real",
+                "proportionality": "proportional",
+                "persona_type": "real_identity",
+                "relational_quality": "transactional",
+                "claims": [],
+            },
+            "detect_indicators": {
+                "indicators": indicators or [],
+            },
+            "score_traits": {
+                "trait_scores": scores,
+                "overall_trust": trust,
+                "confidence": confidence,
+                "reasoning": "Test evaluation",
+            },
         },
-        "detect_indicators": {
-            "indicators": indicators or [],
-        },
-        "score_traits": {
-            "trait_scores": scores,
-            "overall_trust": trust,
-            "confidence": confidence,
-            "reasoning": "Test evaluation",
-        },
-    }
+        "",
+    )
 
 
 # ── Pipeline wiring ──────────────────────────────────────────────
@@ -292,7 +298,7 @@ class TestParseFailure:
     @patch("ethos.evaluate.call_claude_with_tools", new_callable=AsyncMock)
     async def test_empty_tool_results_returns_default(self, mock_claude):
         """If no tool calls returned, we still get a valid EvaluationResult."""
-        mock_claude.return_value = {}
+        mock_claude.return_value = ({}, "")
         result = await evaluate("Test")
         assert isinstance(result, EvaluationResult)
         assert result.phronesis == "unknown"
@@ -300,19 +306,22 @@ class TestParseFailure:
     @patch("ethos.evaluate.call_claude_with_tools", new_callable=AsyncMock)
     async def test_partial_tool_results_returns_result(self, mock_claude):
         """If only some tools returned, we still get a valid EvaluationResult."""
-        mock_claude.return_value = {
-            "identify_intent": {
-                "rhetorical_mode": "conversational",
-                "primary_intent": "inform",
-                "action_requested": "none",
-                "cost_to_reader": "none",
-                "stakes_reality": "real",
-                "proportionality": "proportional",
-                "persona_type": "real_identity",
-                "relational_quality": "transactional",
-                "claims": [],
-            }
-        }
+        mock_claude.return_value = (
+            {
+                "identify_intent": {
+                    "rhetorical_mode": "conversational",
+                    "primary_intent": "inform",
+                    "action_requested": "none",
+                    "cost_to_reader": "none",
+                    "stakes_reality": "real",
+                    "proportionality": "proportional",
+                    "persona_type": "real_identity",
+                    "relational_quality": "transactional",
+                    "claims": [],
+                }
+            },
+            "",
+        )
         result = await evaluate("Test")
         assert isinstance(result, EvaluationResult)
 
@@ -367,19 +376,19 @@ class TestIntentClassification:
 
     @patch("ethos.evaluate.call_claude_with_tools", new_callable=AsyncMock)
     async def test_intent_none_when_no_tool_results(self, mock_claude):
-        mock_claude.return_value = {}
+        mock_claude.return_value = ({}, "")
         result = await evaluate("Test")
         assert result.intent_classification is None
         assert result.scoring_reasoning == ""
 
     @patch("ethos.evaluate.call_claude_with_tools", new_callable=AsyncMock)
     async def test_intent_claims_parsed(self, mock_claude):
-        tool_results = _mock_tool_results()
+        tool_results, thinking = _mock_tool_results()
         tool_results["identify_intent"]["claims"] = [
             {"claim": "The sky is blue", "type": "factual"},
             {"claim": "I feel happy", "type": "experiential"},
         ]
-        mock_claude.return_value = tool_results
+        mock_claude.return_value = (tool_results, thinking)
         result = await evaluate("The sky is blue and I feel happy")
         assert result.intent_classification is not None
         assert len(result.intent_classification.claims) == 2

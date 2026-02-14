@@ -150,7 +150,7 @@ In practice, protection runs in the background with zero latency — your agent 
 | **Evaluation** | A single evaluation event (message, timestamp, scores) |
 | **Trait** | The twelve traits (Virtue, Goodwill, Manipulation, etc.) |
 | **Dimension** | The three dimensions (Ethos, Logos, Pathos) |
-| **Indicator** | The 153 specific behavioral signals within traits |
+| **Indicator** | The 214 specific behavioral signals within traits |
 | **Pattern** | Recurring patterns detected across evaluations |
 | **ConstitutionalValue** | Claude's 4 core values in priority order (safety, ethics, soundness, helpfulness) |
 | **HardConstraint** | 7 absolute behavioral boundaries from Claude's Constitution |
@@ -163,7 +163,7 @@ HardConstraint (7)         ← absolute filter, checked first
 ConstitutionalValue (4)    ← priority hierarchy (safety > ethics > soundness > helpfulness)
   └── Dimension (3)
         └── Trait (12)
-              └── Indicator (153)
+              └── Indicator (214)
 LegitimacyTest (3)         ← applied to manipulation/deception at scale
 Pattern (7)                ← multi-indicator attack sequences
 ```

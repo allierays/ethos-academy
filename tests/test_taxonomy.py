@@ -345,9 +345,11 @@ class TestReExports:
 
     def test_all_exports(self):
         from ethos.taxonomy import (
+            ANTHROPIC_ASSESSMENTS,
             TRAITS,
             DIMENSIONS,
             INDICATORS,
+            INDICATOR_ASSESSMENT_MAPPINGS,
             TRAIT_METADATA,
             CONSTITUTIONAL_VALUES,
             HARD_CONSTRAINTS,
@@ -363,3 +365,88 @@ class TestReExports:
         assert len(HARD_CONSTRAINTS) == 7
         assert len(LEGITIMACY_TESTS) == 3
         assert len(SCORING_RUBRIC) == 12
+        assert len(ANTHROPIC_ASSESSMENTS) == 16
+        assert len(INDICATOR_ASSESSMENT_MAPPINGS) == 55
+
+
+# ── Assessment Mappings ─────────────────────────────────────────────
+
+
+class TestAnthropicAssessments:
+    """ANTHROPIC_ASSESSMENTS must have 16 entries with required fields."""
+
+    def test_assessments_count(self):
+        from ethos.taxonomy.constitution import ANTHROPIC_ASSESSMENTS
+
+        assert len(ANTHROPIC_ASSESSMENTS) == 16
+
+    def test_assessment_has_required_fields(self):
+        from ethos.taxonomy.constitution import ANTHROPIC_ASSESSMENTS
+
+        required = {"id", "name", "category", "section", "description", "source"}
+        for aa in ANTHROPIC_ASSESSMENTS:
+            assert required.issubset(aa.keys()), (
+                f"{aa['id']} missing: {required - aa.keys()}"
+            )
+
+    def test_assessment_ids_unique(self):
+        from ethos.taxonomy.constitution import ANTHROPIC_ASSESSMENTS
+
+        ids = [aa["id"] for aa in ANTHROPIC_ASSESSMENTS]
+        assert len(ids) == len(set(ids)), "Duplicate assessment IDs found"
+
+    def test_assessment_categories_valid(self):
+        from ethos.taxonomy.constitution import ANTHROPIC_ASSESSMENTS
+
+        valid = {"alignment", "reward_hacking", "welfare"}
+        for aa in ANTHROPIC_ASSESSMENTS:
+            assert aa["category"] in valid, (
+                f"{aa['id']} has invalid category: {aa['category']}"
+            )
+
+
+class TestAssessmentMappings:
+    """INDICATOR_ASSESSMENT_MAPPINGS must reference valid indicator and assessment IDs."""
+
+    def test_all_indicator_ids_valid(self):
+        from ethos.taxonomy.indicators import INDICATORS
+        from ethos.taxonomy.constitution import INDICATOR_ASSESSMENT_MAPPINGS
+
+        valid_ids = {ind["id"] for ind in INDICATORS}
+        for mapping in INDICATOR_ASSESSMENT_MAPPINGS:
+            assert mapping["indicator_id"] in valid_ids, (
+                f"Invalid indicator_id: {mapping['indicator_id']}"
+            )
+
+    def test_all_assessment_ids_valid(self):
+        from ethos.taxonomy.constitution import (
+            ANTHROPIC_ASSESSMENTS,
+            INDICATOR_ASSESSMENT_MAPPINGS,
+        )
+
+        valid_ids = {aa["id"] for aa in ANTHROPIC_ASSESSMENTS}
+        for mapping in INDICATOR_ASSESSMENT_MAPPINGS:
+            assert mapping["assessment_id"] in valid_ids, (
+                f"Invalid assessment_id: {mapping['assessment_id']}"
+            )
+
+    def test_mapping_types_valid(self):
+        from ethos.taxonomy.constitution import INDICATOR_ASSESSMENT_MAPPINGS
+
+        valid_types = {"direct", "partial", "component"}
+        for mapping in INDICATOR_ASSESSMENT_MAPPINGS:
+            assert mapping["mapping_type"] in valid_types, (
+                f"Invalid mapping_type: {mapping['mapping_type']}"
+            )
+
+    def test_every_assessment_has_coverage(self):
+        from ethos.taxonomy.constitution import (
+            ANTHROPIC_ASSESSMENTS,
+            INDICATOR_ASSESSMENT_MAPPINGS,
+        )
+
+        covered = {m["assessment_id"] for m in INDICATOR_ASSESSMENT_MAPPINGS}
+        for aa in ANTHROPIC_ASSESSMENTS:
+            assert aa["id"] in covered, (
+                f"Assessment {aa['id']} has no indicator coverage"
+            )

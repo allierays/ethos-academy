@@ -188,12 +188,12 @@ export function spectrumLabel(score: number): string {
 }
 
 export function spectrumColor(score: number): string {
-  if (score >= 0.85) return "#16a34a";
-  if (score >= 0.7) return "#389590";
-  if (score >= 0.55) return "#d97706";
-  if (score >= 0.4) return "#b45309";
-  if (score >= 0.25) return "#dc2626";
-  return "#991b1b";
+  if (score >= 0.85) return "#3a9a6e";
+  if (score >= 0.7) return "#5aaa82";
+  if (score >= 0.55) return "#c09840";
+  if (score >= 0.4) return "#c88a3a";
+  if (score >= 0.25) return "#c46a5a";
+  return "#b85050";
 }
 
 export const INTENT_COLORS: Record<string, string> = {

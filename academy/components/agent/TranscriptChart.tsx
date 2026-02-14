@@ -15,6 +15,7 @@ import { motion } from "motion/react";
 import { DIMENSION_COLORS } from "../../lib/colors";
 import { fadeUp, whileInView } from "../../lib/motion";
 import GraphHelpButton from "../shared/GraphHelpButton";
+import GlossaryTerm from "../shared/GlossaryTerm";
 
 interface TimelineDataPoint {
   index: number;
@@ -52,10 +53,10 @@ export default function TranscriptChart({ timeline, agentName }: TranscriptChart
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
-            Transcript
+            Evaluation Over Time
           </h2>
           <p className="mt-0.5 text-sm text-foreground/60">
-            Is {name} getting better or worse?
+            We are what we repeatedly do. These messages mark the peaks and valleys of character.
           </p>
         </div>
         <GraphHelpButton slug="guide-transcript" />

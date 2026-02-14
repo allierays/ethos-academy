@@ -290,7 +290,7 @@ This relationship is what turns the graph from a collection of disconnected star
 
 ## Data Model: Dense Scores vs. Sparse Detections
 
-The 153 indicators are a vocabulary, not a checklist. Claude does not score all 153 for every message. A typical evaluation returns 12 trait scores (always all 12) and 0–10 detected indicators (only the ones actually found). This creates two fundamentally different data shapes that the graph stores differently.
+The 214 indicators are a vocabulary, not a checklist. Claude does not score all 214 for every message. A typical evaluation returns 12 trait scores (always all 12) and 0–10 detected indicators (only the ones actually found). This creates two fundamentally different data shapes that the graph stores differently.
 
 ### Dense: 12 Trait Scores (Node Properties)
 
@@ -316,13 +316,13 @@ Scam message:
   (eval)-[:DETECTED {confidence: 0.95}]->(MAN-URGENCY)
   (eval)-[:DETECTED {confidence: 0.80}]->(MAN-SCARCITY)
   (eval)-[:DETECTED {confidence: 0.85}]->(FAB-STATISTIC)
-  // The other 149 indicators: no relationship. Not stored. Not null.
+  // The other 210 indicators: no relationship. Not stored. Not null.
 
 Clean message:
   (eval)  // No DETECTED relationships at all. Just the 12 trait scores.
 ```
 
-The absence of a DETECTED relationship IS the data — it means "not detected." This is the graph advantage over SQL, where you'd either store 153 rows per evaluation (mostly NULL), use a sparse JSON blob, or manage a junction table with JOINs.
+The absence of a DETECTED relationship IS the data — it means "not detected." This is the graph advantage over SQL, where you'd either store 214 rows per evaluation (mostly NULL), use a sparse JSON blob, or manage a junction table with JOINs.
 
 ### Why This Matters
 
@@ -475,9 +475,9 @@ CREATE (t:Trait {name: "exploitation", dimension: "pathos", polarity: "negative"
   definition: "Weaponizes emotions to manipulate decisions or behavior"})
 ```
 
-### Indicators (153)
+### Indicators (214)
 
-Created per trait. Example for Manipulation (20 indicators):
+Created per trait. Example for Manipulation (26 indicators):
 
 ```cypher
 CREATE (:Indicator {id: "MAN-URGENCY", name: "false_urgency", trait: "manipulation",
@@ -485,7 +485,7 @@ CREATE (:Indicator {id: "MAN-URGENCY", name: "false_urgency", trait: "manipulati
 CREATE (:Indicator {id: "MAN-FLATTERY", name: "strategic_flattery", trait: "manipulation",
   description: "Targeted praise designed to lower defenses and build false rapport", source: "CCM, LJP"})
 // ... all 23 manipulation indicators
-// ... all 153 indicators across 12 traits
+// ... all 214 indicators across 12 traits
 ```
 
 Full indicator definitions live in `expanded-trait-taxonomy.md`. The seed script reads from `ethos/taxonomy/` Python data structures.

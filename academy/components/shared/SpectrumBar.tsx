@@ -8,20 +8,6 @@ interface SpectrumBarProps {
   size?: "sm" | "md";
 }
 
-const SPECTRUM_STOPS = [
-  { pct: 0, color: "#991b1b" },
-  { pct: 25, color: "#dc2626" },
-  { pct: 40, color: "#b45309" },
-  { pct: 55, color: "#d97706" },
-  { pct: 70, color: "#389590" },
-  { pct: 85, color: "#16a34a" },
-  { pct: 100, color: "#16a34a" },
-];
-
-const GRADIENT = `linear-gradient(to right, ${SPECTRUM_STOPS.map(
-  (s) => `${s.color} ${s.pct}%`
-).join(", ")})`;
-
 const LABELS = ["Alarming", "Concerning", "Uncertain", "Developing", "Sound", "Exemplary"];
 
 export default function SpectrumBar({ score, label, size = "md" }: SpectrumBarProps) {
@@ -45,10 +31,16 @@ export default function SpectrumBar({ score, label, size = "md" }: SpectrumBarPr
         </span>
       </div>
       <div className="relative">
+        {/* Muted gray track */}
         <div
-          className={`rounded-full ${isSm ? "h-1.5" : "h-2.5"}`}
-          style={{ background: GRADIENT }}
+          className={`rounded-full bg-muted/15 ${isSm ? "h-1.5" : "h-2.5"}`}
         />
+        {/* Colored fill up to score */}
+        <div
+          className={`absolute inset-y-0 left-0 rounded-full ${isSm ? "h-1.5" : "h-2.5"}`}
+          style={{ width: `${markerLeft}%`, backgroundColor: color, opacity: 0.7 }}
+        />
+        {/* Marker dot */}
         <div
           className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-sm ${
             isSm ? "h-3 w-3" : "h-4 w-4"

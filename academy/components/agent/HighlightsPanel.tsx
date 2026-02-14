@@ -263,7 +263,7 @@ export default function HighlightsPanel({ agentId, agentName }: HighlightsPanelP
         <GlossaryTerm slug="highlights">In {name}&apos;s Own Words</GlossaryTerm>
       </h2>
       <p className="mt-1 text-xs text-muted">
-        Messages closest to and furthest from balanced practical wisdom, ranked by alignment score.
+        Character reveals itself in specifics. The strongest and weakest moments of practical wisdom.
       </p>
 
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">

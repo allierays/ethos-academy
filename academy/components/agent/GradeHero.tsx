@@ -181,12 +181,12 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
           {/* Right: stat cards + help */}
           <motion.div className="flex items-start gap-3" variants={fadeUp}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <StatCard label={<GlossaryTerm slug="evaluation">Evaluations</GlossaryTerm>} value={String(evalCount)} href="#habits" />
             <StatCard
               label={<GlossaryTerm slug="trend">Trend</GlossaryTerm>} value={trend.arrow} sublabel={trend.label}
               valueClass={trend.color === "text-aligned" ? "text-emerald-400" : trend.color === "text-misaligned" ? "text-red-400" : "text-slate-400"}
               href="#transcript"
             />
-            <StatCard label={<GlossaryTerm slug="evaluation">Evaluations</GlossaryTerm>} value={String(evalCount)} href="#habits" />
             <StatCard
               label={<GlossaryTerm slug="risk-level">Risk</GlossaryTerm>} value={riskLevel}
               valueClass={`capitalize text-xs font-semibold rounded-full px-2 py-0.5 ${riskStyle}`}

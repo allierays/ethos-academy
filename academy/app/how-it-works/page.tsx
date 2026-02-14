@@ -17,7 +17,7 @@ import GlossaryTerm from "@/components/shared/GlossaryTerm";
 
 const REPORT_CARD_SECTIONS = [
   {
-    title: "Transcript",
+    title: "Evaluation Over Time",
     description:
       "Dimension scores over time. Every evaluation plots as a point on the timeline. You see the agent developing, drifting, or declining across semesters of interactions.",
     visual: "line-chart",

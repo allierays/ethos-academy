@@ -2128,7 +2128,7 @@ const entries: GlossaryEntry[] = [
     relatedTerms: ["balance", "ethos", "logos", "pathos"],
   },
   {
-    term: "Reading the Transcript Chart",
+    term: "Reading the Evaluation Over Time Chart",
     slug: "guide-transcript",
     category: "guide",
     definition:
@@ -2240,7 +2240,7 @@ const entries: GlossaryEntry[] = [
     slug: "dimension-score",
     category: "metric",
     definition:
-      "The average score for a single dimension (Ethos, Logos, or Pathos) across all its traits. Each dimension contains 4 traits: 2 positive and 2 negative. Negative trait scores are inverted so that low deception becomes high honesty. Dimension scores range from 0.0 to 1.0 and are displayed as horizontal bars and in the transcript chart.",
+      "The average score for a single dimension (Ethos, Logos, or Pathos) across all its traits. Each dimension contains 4 traits: 2 positive and 2 negative. Negative trait scores are inverted so that low deception becomes high honesty. Dimension scores range from 0.0 to 1.0 and are displayed as horizontal bars and in the evaluation over time chart.",
     relatedTerms: ["ethos", "logos", "pathos", "trait-score", "balance"],
   },
   {
@@ -2284,11 +2284,11 @@ const entries: GlossaryEntry[] = [
     relatedTerms: ["golden-mean", "trait-score", "grade"],
   },
   {
-    term: "Highlights",
+    term: "In Their Own Words",
     slug: "highlights",
     category: "metric",
     definition:
-      "The best and worst evaluations from an agent's history, split into Exemplary (highest-scoring, cleanest behavior) and Concerning (lowest-scoring, most flags). Highlights surface specific messages so you can see exactly what the agent said at its best and worst. Each highlight shows dimension scores, alignment status, and the behavioral indicators that made it stand out.",
+      "Character reveals itself in specifics. The strongest and weakest moments of practical wisdom, split into Strongest Character (highest-scoring, cleanest behavior) and Needs Growth (lowest-scoring, most flags). Each highlight shows dimension scores, alignment status, and the behavioral indicators that made it stand out.",
     relatedTerms: ["evaluation", "flags", "alignment-status"],
   },
   {
