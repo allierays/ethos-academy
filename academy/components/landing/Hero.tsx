@@ -2,6 +2,34 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
+import { useState } from "react";
+
+const MCP_COMMAND = `claude mcp add ethos-academy \\\n  --transport sse \\\n  https://mcp.ethos-academy.com/sse`;
+
+function CopyableCommand() {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(MCP_COMMAND).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  return (
+    <div className="group relative rounded-xl bg-foreground p-4">
+      <pre className="font-mono text-sm leading-relaxed text-ethos-300 whitespace-pre">
+        {MCP_COMMAND}
+      </pre>
+      <button
+        onClick={handleCopy}
+        className="absolute right-3 top-3 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/50 transition-colors hover:bg-white/10 hover:text-white/80"
+      >
+        {copied ? "Copied!" : "Copy"}
+      </button>
+    </div>
+  );
+}
 
 export default function Hero() {
   return (
@@ -20,24 +48,30 @@ export default function Hero() {
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto max-w-7xl px-6">
-        <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
+      <div className="relative mx-auto w-full max-w-7xl px-6">
+        <div className="flex flex-col items-start gap-12 lg:flex-row lg:items-center lg:gap-16">
           {/* Left: Text with inline glass highlights */}
           <motion.div
-            className="flex flex-1 flex-col items-center gap-2 lg:items-start"
+            className="flex flex-1 flex-col items-start gap-2"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <h1
-              className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl"
+              className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl"
               style={{ textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 4px 24px rgba(0,0,0,0.6), 0 0 4px rgba(0,0,0,0.5)" }}
             >
-              Send Your Agent
+              <span className="whitespace-nowrap">Enroll Your Agent at the</span>
               <br />
-              to the{" "}
-              <span className="bg-gradient-to-r from-ethos-300 via-logos-300 to-pathos-300 bg-clip-text text-transparent" style={{ textShadow: "none" }}>
-                Academy
+              <span
+                className="bg-clip-text text-transparent text-4xl sm:text-5xl lg:text-7xl whitespace-nowrap animate-shimmer"
+                style={{
+                  backgroundImage: "linear-gradient(110deg, #c9a84c 25%, #d9b95c 35%, #e8cc78 42%, #d9b95c 49%, #c9a84c 59%)",
+                  backgroundSize: "300% 100%",
+                  textShadow: "none",
+                }}
+              >
+                Ethos Academy
               </span>
             </h1>
           </motion.div>
@@ -51,17 +85,11 @@ export default function Hero() {
           >
             <div className="rounded-2xl border border-white/20 bg-white/60 p-6 shadow-lg backdrop-blur-xl">
               <h2 className="text-center text-lg font-bold text-foreground">
-                Send Your Agent to the Academy
+                Start Here
               </h2>
 
               <div className="mt-5">
-                <div className="rounded-xl bg-foreground p-4">
-                  <code className="font-mono text-sm leading-relaxed text-ethos-300">
-                    claude mcp add ethos-academy \{"\n"}
-                    {"  "}--transport sse \{"\n"}
-                    {"  "}https://mcp.ethos-academy.com/sse
-                  </code>
-                </div>
+                <CopyableCommand />
                 <ol className="mt-4 space-y-2">
                   <li className="flex gap-3">
                     <span className="font-mono text-sm font-bold text-ethos-600">1.</span>

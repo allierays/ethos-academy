@@ -10,6 +10,9 @@ import GlossaryTerm from "../shared/GlossaryTerm";
 import SpectrumBar from "../shared/SpectrumBar";
 import AlignmentBadge from "../shared/AlignmentBadge";
 import IntentSummary from "../shared/IntentSummary";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBrain, faEnvelope, faChartBar, faFingerprint, faCrosshairs } from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { DIMENSIONS, DIMENSION_COLORS, TRAIT_DIMENSIONS, TRAIT_LABELS, spectrumColor } from "../../lib/colors";
 
 const TRAIT_GROUPS: { dimension: string; label: string; color: string; traits: string[] }[] = [
@@ -59,6 +62,47 @@ function cleanMarkdown(text: string): string {
     .replace(/\uFFFD/g, "")
     .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, "")
     .trim();
+}
+
+/* ─── Reasoning text with dimension highlights ─── */
+
+const DIMENSION_HIGHLIGHT: { pattern: RegExp; color: string }[] = [
+  { pattern: /\b(ethos)\b/gi, color: DIMENSION_COLORS.ethos },
+  { pattern: /\b(logos)\b/gi, color: DIMENSION_COLORS.logos },
+  { pattern: /\b(pathos)\b/gi, color: DIMENSION_COLORS.pathos },
+];
+
+function HighlightedSpan({ text }: { text: string }) {
+  const parts = text.split(/\b(ethos|logos|pathos)\b/gi);
+  return (
+    <>
+      {parts.map((part, i) => {
+        const match = DIMENSION_HIGHLIGHT.find((d) => d.pattern.test(part));
+        if (match) {
+          match.pattern.lastIndex = 0;
+          return (
+            <span key={i} className="font-bold" style={{ color: match.color }}>
+              {part}
+            </span>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+}
+
+function HighlightedReasoning({ text }: { text: string }) {
+  const sentences = text.split(/(?<=\.)\s+(?=[A-Z])/);
+  return (
+    <>
+      {sentences.map((sentence, i) => (
+        <p key={i} className={i < sentences.length - 1 ? "mb-2.5" : ""}>
+          <HighlightedSpan text={sentence} />
+        </p>
+      ))}
+    </>
+  );
 }
 
 /* ─── Inline helpers (match Records styling) ─── */
@@ -128,6 +172,63 @@ function formatTimeAgo(date: Date): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+/* ─── Accordion section for expanded details ─── */
+
+function DetailSection({
+  title,
+  icon,
+  accent,
+  defaultOpen = false,
+  children,
+}: {
+  title: string;
+  icon?: IconDefinition;
+  accent?: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-2.5 w-full rounded-lg bg-[#ded8ce]/30 px-3 py-2 group hover:bg-[#ded8ce]/50 transition-colors border-l-3"
+        style={{ borderLeftColor: accent ?? "transparent" }}
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          className={`text-muted/60 transition-transform duration-200 shrink-0 ${open ? "rotate-90" : ""}`}
+        >
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+        {icon && <FontAwesomeIcon icon={icon} className="w-3 h-3 shrink-0" style={{ color: accent ?? "currentColor" }} />}
+        <h4 className="text-xs font-bold uppercase tracking-wider text-foreground group-hover:text-action transition-colors">
+          {title}
+        </h4>
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="pt-2">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 /* ─── Expanded Detail (matches Records ExpandedDetail) ─── */
 
 function ExpandedHighlight({ item }: { item: HighlightItem }) {
@@ -139,7 +240,7 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
       transition={{ duration: 0.25, ease: "easeInOut" }}
       className="overflow-hidden"
     >
-      <div className="border-t border-border/30 bg-white/60 [&>div]:px-5 [&>div]:py-4 [&>div:nth-child(even)]:bg-[#ded8ce]/15">
+      <div className="border-t border-border/30 bg-white/60 [&>div]:px-5 [&>div]:py-3">
         {/* Overall score spectrum */}
         <div>
           <div className="max-w-xs">
@@ -147,27 +248,14 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
           </div>
         </div>
 
-        {/* Message content */}
-        {item.messageContent && (
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-1.5">Message</h4>
-            <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap bg-white/70 rounded-lg p-4">
-              {cleanMarkdown(item.messageContent)}
-            </p>
-          </div>
-        )}
-
-        {/* Scoring reasoning */}
-        {item.scoringReasoning && (
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-1.5">Reasoning</h4>
-            <p className="text-sm text-foreground/70 leading-relaxed">{item.scoringReasoning}</p>
-          </div>
-        )}
-
-        {/* Dimension scores */}
-        <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-2">Dimensions</h4>
+        {/* Reasoning + Dimensions (merged) */}
+        <DetailSection title="Reasoning" icon={faBrain} accent={DIMENSION_COLORS.ethos} defaultOpen>
+          {item.scoringReasoning && (
+            <blockquote className="relative text-sm text-foreground/90 leading-[1.8] bg-white/90 border-l-[5px] rounded-r-xl px-5 py-4 shadow-sm mb-4" style={{ borderColor: DIMENSION_COLORS.ethos }}>
+              <svg className="absolute top-3 right-4 w-8 h-8 opacity-[0.06]" viewBox="0 0 24 24" fill="currentColor"><path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/></svg>
+              <HighlightedReasoning text={item.scoringReasoning} />
+            </blockquote>
+          )}
           <div className="space-y-2.5">
             {DIMENSIONS.map((dim) => {
               const val = item[dim.key as keyof HighlightItem] as number;
@@ -180,12 +268,20 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
               );
             })}
           </div>
-        </div>
+        </DetailSection>
+
+        {/* Message content */}
+        {item.messageContent && (
+          <DetailSection title="Original Message" icon={faEnvelope} accent="#64748b">
+            <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap bg-white/70 rounded-lg p-4">
+              {cleanMarkdown(item.messageContent)}
+            </p>
+          </DetailSection>
+        )}
 
         {/* Trait scores grouped by dimension */}
         {Object.keys(item.traitScores ?? {}).length > 0 && (
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-2">Trait Scores</h4>
+          <DetailSection title="Trait Scores" icon={faChartBar} accent={DIMENSION_COLORS.logos}>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {TRAIT_GROUPS.map((group) => (
                 <div key={group.dimension}>
@@ -212,13 +308,12 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
                 </div>
               ))}
             </div>
-          </div>
+          </DetailSection>
         )}
 
         {/* Intent classification */}
         {item.intentClassification && (
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-2">Intent</h4>
+          <DetailSection title="Intent" icon={faCrosshairs} accent={DIMENSION_COLORS.pathos}>
             <div className="space-y-3">
               <IntentSummary intent={item.intentClassification} />
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -240,17 +335,14 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
                 </div>
               </div>
             </div>
-          </div>
+          </DetailSection>
         )}
 
         {/* Detected indicators */}
         {item.indicators?.length > 0 && (
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-2">
-              Detected Indicators ({item.indicators.length})
-            </h4>
+          <DetailSection title={`Detected Indicators (${item.indicators.length})`} icon={faFingerprint} accent="#8b5cf6">
             <IndicatorGroup indicators={item.indicators} />
-          </div>
+          </DetailSection>
         )}
       </div>
     </motion.div>

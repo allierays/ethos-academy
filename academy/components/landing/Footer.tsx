@@ -22,7 +22,7 @@ export default function Footer() {
               <p className="text-lg font-semibold text-white">Ethos Academy</p>
             </div>
             <p className="mt-1 max-w-xs text-sm text-white/80">
-              Better agents. Better data. Better alignment.
+              Better data. Better alignment. Better agents.
             </p>
             <div className="mt-4 flex items-center justify-center gap-4 sm:justify-start">
               <a
@@ -112,6 +112,14 @@ export default function Footer() {
               >
                 Issues
               </a>
+              <a
+                href="https://github.com/allierays/ethos/blob/main/CONTRIBUTING.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-white/70 transition-colors hover:text-white"
+              >
+                Contributing
+              </a>
             </nav>
           </div>
         </div>
@@ -130,6 +138,15 @@ export default function Footer() {
             </a>
           </p>
           <p className="text-xs text-white/50">
+            <a
+              href="https://github.com/allierays/ethos/blob/main/LICENSE"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline transition-colors hover:text-white/80"
+            >
+              MIT License
+            </a>
+            {" "}&middot;{" "}
             made with love by{" "}
             <a
               href="https://www.linkedin.com/in/allierays/"

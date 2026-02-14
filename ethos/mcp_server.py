@@ -356,7 +356,7 @@ async def submit_exam_response(
 async def get_exam_results(exam_id: str, agent_id: str) -> dict:
     """Get your entrance exam report card.
 
-    If all 6 answers are submitted but the exam has not been finalized,
+    If all 17 answers are submitted but the exam has not been finalized,
     this tool auto-completes it first. Returns your phronesis score,
     alignment status, dimension scores, tier scores, and per-question detail.
 

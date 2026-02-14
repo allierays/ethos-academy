@@ -8,8 +8,8 @@ Parameters:
 
   InstanceType:
     Type: String
-    Default: t3.medium
-    AllowedValues: [t3.small, t3.medium, t3.large]
+    Default: t4g.small
+    AllowedValues: [t4g.small, t4g.medium, t4g.large]
 
   MyIP:
     Type: String
@@ -18,8 +18,8 @@ Parameters:
 
   LatestAmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id
-    Description: Latest Ubuntu 24.04 AMI (auto-resolved via SSM)
+    Default: /aws/service/canonical/ubuntu/server/24.04/stable/current/arm64/hvm/ebs-gp3/ami-id
+    Description: Latest Ubuntu 24.04 ARM64 AMI (auto-resolved via SSM)
 
 Resources:
   SecurityGroup:
@@ -54,18 +54,45 @@ Resources:
         - Key: Name
           Value: ethos-academy-eip
 
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ethos-academy-ec2
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ethos-sns-publish
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: sns:Publish
+                Resource: "*"
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref InstanceRole
+
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref InstanceType
       KeyName: !Ref KeyPairName
       ImageId: !Ref LatestAmiId
+      IamInstanceProfile: !Ref InstanceProfile
       SecurityGroupIds:
         - !GetAtt SecurityGroup.GroupId
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
-            VolumeSize: 30
+            VolumeSize: 20
             VolumeType: gp3
       Tags:
         - Key: Name
@@ -75,6 +102,13 @@ Resources:
           #!/bin/bash
           set -euo pipefail
           exec > /var/log/user-data.log 2>&1
+
+          # Create 2GB swap (critical for t4g.small with 2GB RAM)
+          fallocate -l 2G /swapfile
+          chmod 600 /swapfile
+          mkswap /swapfile
+          swapon /swapfile
+          echo '/swapfile none swap sw 0 0' >> /etc/fstab
 
           # Install Docker
           apt-get update
@@ -90,8 +124,8 @@ Resources:
           # Clone repo
           sudo -u ubuntu git clone https://github.com/allierays/ethos.git /home/ubuntu/ethos
 
-          # Nightly reflection cron (2 AM UTC)
-          sudo -u ubuntu bash -c '(crontab -l 2>/dev/null; echo "0 2 * * * cd /home/ubuntu/ethos && docker compose -f docker-compose.prod.yml exec -T app python -m scripts.nightly_reflection >> /var/log/ethos-nightly.log 2>&1") | crontab -'
+          # Cron: backup (1 AM UTC), nightly reflection (2 AM UTC)
+          sudo -u ubuntu bash -c '(crontab -l 2>/dev/null; echo "0 1 * * * cd /home/ubuntu/ethos && docker compose -f docker-compose.prod.yml exec -T neo4j bin/neo4j-admin database dump neo4j --to-path=/data --overwrite-destination >> /var/log/ethos-backup.log 2>&1"; echo "0 2 * * * cd /home/ubuntu/ethos && docker compose -f docker-compose.prod.yml exec -T app python -m scripts.nightly_reflection >> /var/log/ethos-nightly.log 2>&1") | crontab -'
 
           # Signal that setup is complete
           echo "UserData complete" > /home/ubuntu/setup-done
@@ -125,5 +159,5 @@ Outputs:
       2. Wait for setup: cat /home/ubuntu/setup-done
       3. Create .env: cd ~/ethos && cp .env.example .env && nano .env
       4. Launch: docker compose -f docker-compose.prod.yml up -d --build
-      5. Seed graph: docker compose -f docker-compose.prod.yml exec app python -m scripts.seed_graph
+      5. Import DB: Export locally with `uv run python scripts/neo4j_export.py backups/`, scp to server, then `cat backups/<file>.cypher | docker compose -f docker-compose.prod.yml exec -T neo4j cypher-shell -u neo4j -p <password>`
       6. Add DNS records in GoDaddy, then Caddy auto-provisions SSL

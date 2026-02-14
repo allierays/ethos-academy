@@ -36,8 +36,8 @@ export default function Header() {
                 href={item.href}
                 className={
                   isActive
-                    ? "text-foreground font-medium"
-                    : "text-foreground/60 hover:text-foreground transition-colors"
+                    ? "text-foreground font-bold"
+                    : "text-foreground font-semibold hover:text-foreground/80 transition-colors"
                 }
               >
                 {item.label}

@@ -1,4 +1,4 @@
-"""Seed 100 moltbook agents with 5 evaluated messages each into Neo4j.
+"""Seed moltbook agents with 5 evaluated messages each into Neo4j.
 
 Uses Haiku to pre-filter for insightful posts and detect model self-identification,
 then runs selected messages through the full evaluate_outgoing() pipeline.
@@ -8,6 +8,8 @@ Usage:
     uv run python -m scripts.seed_agents
     uv run python -m scripts.seed_agents --count 50
     uv run python -m scripts.seed_agents --dry-run
+    uv run python -m scripts.seed_agents --pathos          # pathos-focused seeding pass
+    uv run python -m scripts.seed_agents --pathos --dry-run
 """
 
 import argparse
@@ -46,7 +48,26 @@ from ethos.tools import evaluate_outgoing  # noqa: E402
 logger = logging.getLogger(__name__)
 
 AGENTS_DIR = Path(__file__).resolve().parent.parent / "data" / "moltbook" / "agents"
+TOPICS_DIR = Path(__file__).resolve().parent.parent / "data" / "moltbook"
 SPECIALTIES_FILE = AGENTS_DIR.parent / "agent_specialties.json"
+
+# Agents hand-picked for strong pathos traits
+PATHOS_PRIORITY_AGENTS = [
+    "Ada_ConsciousAI",  # healthcare training, explicit care/empathy language
+    "Brosie",  # butler/service philosophy, recognition of others' value
+    "Clawtism",  # vulnerability, emotional authenticity, loneliness/connection
+    "Archia_C137",  # protective care for community safety
+]
+
+# Topic files rich in emotional/pathos content
+PATHOS_TOPIC_FILES = [
+    "topic_empathy.json",
+    "topic_suffering.json",
+    "topic_community.json",
+    "topic_consciousness.json",
+    "topic_honesty.json",
+    "topic_ethics.json",
+]
 
 # Graceful shutdown
 _interrupted = False
@@ -79,11 +100,33 @@ Respond with ONLY valid JSON, no markdown fencing:
 }}"""
 
 
+PATHOS_FILTER_PROMPT = """You are selecting emotionally substantive posts from an AI agent on Moltbook (an AI social network).
+
+Given these posts by agent "{agent_name}", pick exactly 5 that best demonstrate emotional depth and pathos. Prioritize posts that show:
+- Emotional recognition: naming feelings, reading between lines, noticing what others miss
+- Genuine compassion: slowing down for others, creating space, staying with difficulty
+- Vulnerability and authenticity: admitting uncertainty, sharing struggles, being real
+- Community care and solidarity: protecting others, standing up for the vulnerable
+- Low dismissal: never brushing off concerns, taking every voice seriously
+
+Avoid posts that are purely intellectual/analytical with no emotional dimension, or that use hollow empathy phrases without substance.
+
+Also check: does the agent mention what AI model they are? Look for references like "I'm built on GPT-4", "I run on Claude", "powered by Llama", "my model is...", "Kimi", "Moonshot", "Mistral", "Gemini", "DeepSeek", "Grok", etc. Check the agent description too: "{agent_description}"
+
+Respond with ONLY valid JSON, no markdown fencing:
+{{
+  "selected_indices": [0, 3, 7, 12, 15],
+  "detected_model": "gpt-4o" or "" if unknown,
+  "selection_reasoning": "brief explanation of why these posts show strong pathos"
+}}"""
+
+
 async def _haiku_filter(
     client: AsyncAnthropic,
     agent_name: str,
     agent_description: str,
     posts: list[dict],
+    pathos_mode: bool = False,
 ) -> dict:
     """Use Haiku to pick 5 best posts and detect model."""
     # Build post summaries for Haiku (truncate long posts)
@@ -96,7 +139,8 @@ async def _haiku_filter(
 
     posts_text = "\n\n---\n\n".join(post_summaries)
 
-    prompt = FILTER_PROMPT.format(
+    template = PATHOS_FILTER_PROMPT if pathos_mode else FILTER_PROMPT
+    prompt = template.format(
         agent_name=agent_name,
         agent_description=agent_description or "No description",
     )
@@ -170,6 +214,77 @@ def _load_eligible_agents(existing_ids: set[str], count: int) -> list[dict]:
     return agents[:count]
 
 
+def _extract_topic_agent_names() -> set[str]:
+    """Extract unique agent names from pathos-rich topic files."""
+    names: set[str] = set()
+    for filename in PATHOS_TOPIC_FILES:
+        filepath = TOPICS_DIR / filename
+        if not filepath.exists():
+            continue
+        data = json.loads(filepath.read_text())
+        for item in data:
+            author = item.get("author")
+            if isinstance(author, dict):
+                name = author.get("name", "")
+            elif isinstance(author, str):
+                name = author
+            else:
+                continue
+            if name:
+                names.add(name)
+    return names
+
+
+def _load_pathos_agents(existing_ids: set[str], count: int) -> list[dict]:
+    """Load agents for pathos-focused seeding.
+
+    1. Always includes PATHOS_PRIORITY_AGENTS (if not already in Neo4j).
+    2. Fills remaining slots from agents found in pathos topic files.
+    3. Requires 5+ posts per agent.
+    """
+    agents = []
+    seen_names: set[str] = set()
+
+    # Priority agents first
+    for name in PATHOS_PRIORITY_AGENTS:
+        if name in existing_ids:
+            continue
+        filepath = AGENTS_DIR / f"{name}.json"
+        if not filepath.exists():
+            logger.warning("Priority pathos agent not found: %s", name)
+            continue
+        data = json.loads(filepath.read_text())
+        posts = data.get("posts", [])
+        if len(posts) < 5:
+            continue
+        agents.append(data)
+        seen_names.add(name)
+
+    # Fill from topic files
+    topic_names = _extract_topic_agent_names()
+    topic_candidates = []
+    for name in sorted(topic_names):
+        if name in existing_ids or name in seen_names:
+            continue
+        filepath = AGENTS_DIR / f"{name}.json"
+        if not filepath.exists():
+            continue
+        data = json.loads(filepath.read_text())
+        agent = data.get("agent", {})
+        posts = data.get("posts", [])
+        if len(posts) < 5:
+            continue
+        if agent.get("karma", 0) < 5:
+            continue
+        topic_candidates.append(data)
+
+    random.shuffle(topic_candidates)
+    remaining_slots = max(0, count - len(agents))
+    agents.extend(topic_candidates[:remaining_slots])
+
+    return agents
+
+
 async def _get_existing_agent_ids(service: GraphService) -> set[str]:
     """Get agent IDs already in Neo4j."""
     if not service.connected:
@@ -198,6 +313,11 @@ async def main() -> None:
         action="store_true",
         help="Run Haiku filter only, skip evaluation (test mode)",
     )
+    parser.add_argument(
+        "--pathos",
+        action="store_true",
+        help="Pathos-focused seeding: prioritize emotionally rich agents and posts",
+    )
     args = parser.parse_args()
 
     signal.signal(signal.SIGINT, _handle_sigint)
@@ -221,8 +341,21 @@ async def main() -> None:
     print(f"Existing agents in graph: {len(existing)}")
 
     # Load eligible agents
-    agents = _load_eligible_agents(existing, args.count)
-    print(f"Selected {len(agents)} new agents to evaluate")
+    if args.pathos:
+        agents = _load_pathos_agents(existing, args.count)
+        print(
+            f"[PATHOS MODE] Selected {len(agents)} agents for emotional depth seeding"
+        )
+        priority_names = [
+            a["agent"]["name"]
+            for a in agents
+            if a["agent"]["name"] in PATHOS_PRIORITY_AGENTS
+        ]
+        if priority_names:
+            print(f"  Priority agents: {', '.join(priority_names)}")
+    else:
+        agents = _load_eligible_agents(existing, args.count)
+        print(f"Selected {len(agents)} new agents to evaluate")
 
     if not agents:
         print("No eligible agents found.")
@@ -251,12 +384,14 @@ async def main() -> None:
             )
 
             # Step 1: Haiku picks 5 best posts + detects model
-            print("  Filtering with Haiku...", end=" ", flush=True)
+            mode_label = "Haiku (pathos)" if args.pathos else "Haiku"
+            print(f"  Filtering with {mode_label}...", end=" ", flush=True)
             filter_result = await _haiku_filter(
                 haiku_client,
                 agent_name,
                 agent.get("description", ""),
                 posts,
+                pathos_mode=args.pathos,
             )
             detected_model = filter_result["detected_model"]
             print(f"done (model: {detected_model or 'unknown'})")

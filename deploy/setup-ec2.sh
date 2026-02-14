@@ -10,6 +10,14 @@
 
 set -euo pipefail
 
+echo "=== Creating 2GB swap ==="
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+echo "=== Swap enabled ==="
+
 echo "=== Installing Docker ==="
 sudo apt-get update
 sudo apt-get install -y ca-certificates curl git
@@ -28,9 +36,9 @@ echo "=== Docker installed ==="
 echo "=== Cloning repo ==="
 git clone https://github.com/allierays/ethos.git ~/ethos
 
-echo "=== Setting up nightly cron ==="
-(crontab -l 2>/dev/null; echo "0 2 * * * cd /home/ubuntu/ethos && docker compose -f docker-compose.prod.yml exec -T app python -m scripts.nightly_reflection >> /var/log/ethos-nightly.log 2>&1") | crontab -
-echo "=== Nightly reflection cron installed (2 AM UTC) ==="
+echo "=== Setting up cron jobs ==="
+(crontab -l 2>/dev/null; echo "0 1 * * * cd /home/ubuntu/ethos && docker compose -f docker-compose.prod.yml exec -T neo4j bin/neo4j-admin database dump neo4j --to-path=/data --overwrite-destination >> /var/log/ethos-backup.log 2>&1"; echo "0 2 * * * cd /home/ubuntu/ethos && docker compose -f docker-compose.prod.yml exec -T app python -m scripts.nightly_reflection >> /var/log/ethos-nightly.log 2>&1") | crontab -
+echo "=== Cron installed: backup (1 AM UTC), nightly reflection (2 AM UTC) ==="
 
 echo ""
 echo "=== NEXT STEPS ==="
@@ -46,8 +54,10 @@ echo ""
 echo "3. Launch:"
 echo "   docker compose -f docker-compose.prod.yml up -d --build"
 echo ""
-echo "4. Seed Neo4j (after containers are healthy):"
-echo "   docker compose -f docker-compose.prod.yml exec app python -m scripts.seed_graph"
+echo "4. Import Neo4j data (after containers are healthy):"
+echo "   Export locally:  uv run python scripts/neo4j_export.py backups/"
+echo "   Copy to server:  scp -i your-key.pem backups/neo4j-backup-*.cypher ubuntu@YOUR_EC2_IP:~/ethos/backups/"
+echo "   Import on server: cat backups/<file>.cypher | docker compose -f docker-compose.prod.yml exec -T neo4j cypher-shell -u neo4j -p <password>"
 echo ""
 echo "5. Verify:"
 echo "   curl http://localhost:8000/health"
