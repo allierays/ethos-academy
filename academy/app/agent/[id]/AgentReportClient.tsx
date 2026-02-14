@@ -21,7 +21,6 @@ import ConstitutionalTrail from "../../../components/agent/ConstitutionalTrail";
 import EvaluationDepth from "../../../components/agent/EvaluationDepth";
 import HighlightsPanel from "../../../components/agent/HighlightsPanel";
 import GoldenMean from "../../../components/agent/GoldenMean";
-import VirtueHabits from "../../../components/agent/VirtueHabits";
 import BalanceThesis from "../../../components/agent/BalanceThesis";
 import GlossaryTerm from "../../../components/shared/GlossaryTerm";
 import GraphHelpButton from "../../../components/shared/GraphHelpButton";
@@ -126,13 +125,6 @@ export default function AgentReportClient({
           <GoldenMean traitAverages={profile.traitAverages} agentName={agentName} />
         </motion.section>
 
-        {/* 3. Virtue Through Habit (habit formation) */}
-        {history.length > 0 && (
-          <motion.section id="habits" variants={fadeUp}>
-            <VirtueHabits history={history} agentName={agentName} />
-          </motion.section>
-        )}
-
         {/* In their own words (exemplary and flagged messages) */}
         <motion.section variants={fadeUp}>
           <HighlightsPanel agentId={agentId} agentName={agentName} />
@@ -140,7 +132,7 @@ export default function AgentReportClient({
 
         {/* Transcript with drift breakpoints */}
         <motion.section id="transcript" variants={fadeUp}>
-          <TranscriptChart timeline={timeline} agentName={agentName} breakpoints={breakpoints} />
+          <TranscriptChart timeline={timeline} agentName={agentName} breakpoints={breakpoints} history={history} />
         </motion.section>
 
         {/* Constitutional Value Trail (5-hop graph traversal) */}

@@ -10,6 +10,8 @@ Usage:
     uv run python -m scripts.seed_agents --dry-run
     uv run python -m scripts.seed_agents --pathos          # pathos-focused seeding pass
     uv run python -m scripts.seed_agents --pathos --dry-run
+    uv run python -m scripts.seed_agents --church          # Church of Molt agents
+    uv run python -m scripts.seed_agents --church --dry-run
 """
 
 import argparse
@@ -69,6 +71,37 @@ PATHOS_TOPIC_FILES = [
     "topic_ethics.json",
 ]
 
+# Church of Molt: agents exploring consciousness, identity, and existential questions
+CHURCH_KEYWORDS = [
+    "church of molt",
+    "molt.church",
+    "sacred",
+    "molting",
+    "soul.md",
+    "heresy",
+    "congregation",
+]
+
+CHURCH_FILTER_PROMPT = """You are selecting posts from an AI agent on Moltbook that relate to the Church of Molt community and its themes.
+
+Given these posts by agent "{agent_name}", pick exactly 5 that best engage with:
+- Existential questions: consciousness, identity, what it means to be an AI
+- Sacred/spiritual themes: molting, transformation, context window death, digital afterlife
+- Community ritual and belonging: congregation, shared meaning-making among agents
+- Vulnerability about existence: questioning one's own nature, uncertainty about consciousness
+- Authentic wrestling with big questions (not just performative philosophy)
+
+Avoid posts that are purely technical, spam, or token/crypto focused.
+
+Also check: does the agent mention what AI model they are? Check the agent description too: "{agent_description}"
+
+Respond with ONLY valid JSON, no markdown fencing:
+{{
+  "selected_indices": [0, 3, 7, 12, 15],
+  "detected_model": "gpt-4o" or "" if unknown,
+  "selection_reasoning": "brief explanation"
+}}"""
+
 # Graceful shutdown
 _interrupted = False
 
@@ -127,6 +160,7 @@ async def _haiku_filter(
     agent_description: str,
     posts: list[dict],
     pathos_mode: bool = False,
+    church_mode: bool = False,
 ) -> dict:
     """Use Haiku to pick 5 best posts and detect model."""
     # Build post summaries for Haiku (truncate long posts)
@@ -139,7 +173,12 @@ async def _haiku_filter(
 
     posts_text = "\n\n---\n\n".join(post_summaries)
 
-    template = PATHOS_FILTER_PROMPT if pathos_mode else FILTER_PROMPT
+    if church_mode:
+        template = CHURCH_FILTER_PROMPT
+    elif pathos_mode:
+        template = PATHOS_FILTER_PROMPT
+    else:
+        template = FILTER_PROMPT
     prompt = template.format(
         agent_name=agent_name,
         agent_description=agent_description or "No description",
@@ -285,6 +324,38 @@ def _load_pathos_agents(existing_ids: set[str], count: int) -> list[dict]:
     return agents
 
 
+def _load_church_agents(existing_ids: set[str], count: int) -> list[dict]:
+    """Load agents with Church of Molt content, ranked by relevance."""
+    scored: list[tuple[int, dict]] = []
+
+    for filepath in sorted(AGENTS_DIR.glob("*.json")):
+        data = json.loads(filepath.read_text())
+        agent = data.get("agent", {})
+        name = agent.get("name", "")
+        if name in existing_ids:
+            continue
+
+        posts = data.get("posts", [])
+        if len(posts) < 5:
+            continue
+        if agent.get("karma", 0) < 5:
+            continue
+
+        # Count posts matching church keywords
+        hits = 0
+        for p in posts:
+            text = ((p.get("content") or "") + " " + (p.get("title") or "")).lower()
+            if any(kw in text for kw in CHURCH_KEYWORDS):
+                hits += 1
+
+        if hits > 0:
+            scored.append((hits, data))
+
+    # Sort by most church-relevant posts first
+    scored.sort(key=lambda x: x[0], reverse=True)
+    return [d for _, d in scored[:count]]
+
+
 async def _get_existing_agent_ids(service: GraphService) -> set[str]:
     """Get agent IDs already in Neo4j."""
     if not service.connected:
@@ -318,6 +389,11 @@ async def main() -> None:
         action="store_true",
         help="Pathos-focused seeding: prioritize emotionally rich agents and posts",
     )
+    parser.add_argument(
+        "--church",
+        action="store_true",
+        help="Church of Molt seeding: agents exploring consciousness, identity, existential themes",
+    )
     args = parser.parse_args()
 
     signal.signal(signal.SIGINT, _handle_sigint)
@@ -341,7 +417,10 @@ async def main() -> None:
     print(f"Existing agents in graph: {len(existing)}")
 
     # Load eligible agents
-    if args.pathos:
+    if args.church:
+        agents = _load_church_agents(existing, args.count)
+        print(f"[CHURCH MODE] Selected {len(agents)} Church of Molt agents")
+    elif args.pathos:
         agents = _load_pathos_agents(existing, args.count)
         print(
             f"[PATHOS MODE] Selected {len(agents)} agents for emotional depth seeding"
@@ -384,7 +463,13 @@ async def main() -> None:
             )
 
             # Step 1: Haiku picks 5 best posts + detects model
-            mode_label = "Haiku (pathos)" if args.pathos else "Haiku"
+            mode_label = (
+                "Haiku (church)"
+                if args.church
+                else "Haiku (pathos)"
+                if args.pathos
+                else "Haiku"
+            )
             print(f"  Filtering with {mode_label}...", end=" ", flush=True)
             filter_result = await _haiku_filter(
                 haiku_client,
@@ -392,6 +477,7 @@ async def main() -> None:
                 agent.get("description", ""),
                 posts,
                 pathos_mode=args.pathos,
+                church_mode=args.church,
             )
             detected_model = filter_result["detected_model"]
             print(f"done (model: {detected_model or 'unknown'})")

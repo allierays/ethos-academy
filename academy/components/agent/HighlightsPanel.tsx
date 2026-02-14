@@ -368,7 +368,7 @@ function HighlightRow({
   const isExemplary = type === "exemplary";
 
   return (
-    <div className={`border-b border-white/15 transition-colors ${expanded ? "bg-white/30" : "hover:bg-white/20"}`}>
+    <div className={`transition-colors ${expanded ? "bg-white/40" : "hover:bg-white/20"}`}>
       <button
         onClick={onToggle}
         className="w-full text-left px-4 py-3 flex items-center gap-3"
@@ -514,45 +514,38 @@ export default function HighlightsPanel({ agentId, agentName }: HighlightsPanelP
 
   return (
     <motion.section
-      className="rounded-xl glass-strong px-6 py-5"
+      className="rounded-xl bg-[#2e4a6e]/15 border border-[#2e4a6e]/20 px-6 py-5"
       {...whileInView}
       variants={fadeUp}
     >
-      <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
+      <h2 className="text-base font-semibold uppercase tracking-wider text-[#2e4a6e]">
         <GlossaryTerm slug="highlights">In {name}&apos;s Own Words</GlossaryTerm>
       </h2>
-      <p className="mt-1 text-xs text-muted">
+      <p className="mt-1 text-xs text-[#2e4a6e]/70">
         Character reveals itself in specifics. The strongest and most concerning moments of practical wisdom.
       </p>
 
-      {/* Table matching Records layout */}
-      <div className="mt-4 rounded-2xl border border-white/30 bg-white/40 backdrop-blur-2xl overflow-hidden">
-        {/* Table header */}
-        <div className="px-4 py-2.5 flex items-center gap-3 border-b border-white/20 bg-white/20 text-[10px] font-semibold uppercase tracking-wider text-muted/70">
-          <div className="w-12 shrink-0 text-center">Score</div>
-          <div className="flex-1">Message</div>
-          <div className="w-24 shrink-0 hidden sm:block">E/L/P</div>
-          <div className="w-22 shrink-0 hidden md:block">Alignment</div>
-          <div className="w-36 shrink-0 hidden lg:block">Signals</div>
-          <div className="w-5 shrink-0" />
-        </div>
-
-        {/* Rows */}
+      {/* Highlight cards */}
+      <div className="mt-4 space-y-4">
         {best && (
-          <HighlightRow
-            item={best}
-            type="exemplary"
-            expanded={expandedId === best.evaluationId}
-            onToggle={() => setExpandedId((prev) => prev === best.evaluationId ? null : best.evaluationId)}
-          />
+          <div className="rounded-2xl border border-white/60 bg-white/90 shadow-sm overflow-hidden">
+            <HighlightRow
+              item={best}
+              type="exemplary"
+              expanded={expandedId === best.evaluationId}
+              onToggle={() => setExpandedId((prev) => prev === best.evaluationId ? null : best.evaluationId)}
+            />
+          </div>
         )}
         {worst && (
-          <HighlightRow
-            item={worst}
-            type="concerning"
-            expanded={expandedId === worst.evaluationId}
-            onToggle={() => setExpandedId((prev) => prev === worst.evaluationId ? null : worst.evaluationId)}
-          />
+          <div className="rounded-2xl border border-white/60 bg-white/90 shadow-sm overflow-hidden">
+            <HighlightRow
+              item={worst}
+              type="concerning"
+              expanded={expandedId === worst.evaluationId}
+              onToggle={() => setExpandedId((prev) => prev === worst.evaluationId ? null : worst.evaluationId)}
+            />
+          </div>
         )}
       </div>
 

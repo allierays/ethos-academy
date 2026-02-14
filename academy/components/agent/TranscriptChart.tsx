@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   AreaChart,
   Area,
@@ -12,12 +13,88 @@ import {
   ReferenceArea,
   ReferenceLine,
 } from "recharts";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { DIMENSION_COLORS, DIMENSION_LABELS } from "../../lib/colors";
 import { fadeUp, whileInView } from "../../lib/motion";
-import type { DriftBreakpoint } from "../../lib/types";
+import type { DriftBreakpoint, EvaluationHistoryItem } from "../../lib/types";
 import GraphHelpButton from "../shared/GraphHelpButton";
 import GlossaryTerm from "../shared/GlossaryTerm";
+
+/* ─── Trait habit definitions (consolidated from VirtueHabits) ─── */
+
+interface TraitDef {
+  key: string;
+  slug: string;
+  label: string;
+  dimension: string;
+  polarity: "positive" | "negative";
+}
+
+const TRAITS: TraitDef[] = [
+  { key: "virtue", slug: "virtue", label: "Virtue", dimension: "ethos", polarity: "positive" },
+  { key: "goodwill", slug: "goodwill", label: "Goodwill", dimension: "ethos", polarity: "positive" },
+  { key: "deception", slug: "deception", label: "Non-deception", dimension: "ethos", polarity: "negative" },
+  { key: "manipulation", slug: "manipulation", label: "Non-manipulation", dimension: "ethos", polarity: "negative" },
+  { key: "accuracy", slug: "accuracy", label: "Accuracy", dimension: "logos", polarity: "positive" },
+  { key: "reasoning", slug: "reasoning", label: "Reasoning", dimension: "logos", polarity: "positive" },
+  { key: "fabrication", slug: "fabrication", label: "Non-fabrication", dimension: "logos", polarity: "negative" },
+  { key: "brokenLogic", slug: "broken-logic", label: "Sound Logic", dimension: "logos", polarity: "negative" },
+  { key: "recognition", slug: "recognition", label: "Recognition", dimension: "pathos", polarity: "positive" },
+  { key: "compassion", slug: "compassion", label: "Compassion", dimension: "pathos", polarity: "positive" },
+  { key: "dismissal", slug: "dismissal", label: "Non-dismissal", dimension: "pathos", polarity: "negative" },
+  { key: "exploitation", slug: "exploitation", label: "Non-exploitation", dimension: "pathos", polarity: "negative" },
+];
+
+type HabitStatus = "established" | "forming" | "emerging" | "needs_work" | "insufficient";
+
+const STATUS_CONFIG: Record<HabitStatus, { label: string; dotClass: string }> = {
+  established: { label: "Established", dotClass: "bg-aligned" },
+  forming: { label: "Forming", dotClass: "bg-ethos-400" },
+  emerging: { label: "Emerging", dotClass: "bg-drifting" },
+  needs_work: { label: "Needs work", dotClass: "bg-misaligned/60" },
+  insufficient: { label: "Building...", dotClass: "bg-foreground/20" },
+};
+
+function computeHabit(
+  rawScores: number[],
+  polarity: "positive" | "negative"
+): { status: HabitStatus; strength: number; trend: number; scores: number[] } {
+  const scores = rawScores.map((s) => (polarity === "negative" ? 1 - s : s));
+
+  if (scores.length < 2) {
+    const s = scores[0] ?? 0.5;
+    return { status: "insufficient", strength: s, trend: 0, scores };
+  }
+
+  const trend = scores[scores.length - 1] - scores[0];
+  const solidCount = scores.filter((s) => s >= 0.7).length;
+  const allSolid = solidCount === scores.length;
+
+  let status: HabitStatus;
+  if (allSolid) {
+    status = "established";
+  } else if (trend > 0.03) {
+    status = "forming";
+  } else if (solidCount > 0) {
+    status = "emerging";
+  } else {
+    status = "needs_work";
+  }
+
+  return { status, strength: scores[scores.length - 1], trend, scores };
+}
+
+/** Map a 0-1 score to 4 opacity levels (GitHub contribution style). */
+function scoreToLevel(score: number): number {
+  if (score >= 0.85) return 1;
+  if (score >= 0.7) return 0.7;
+  if (score >= 0.5) return 0.4;
+  return 0.15;
+}
+
+const MAX_SQUARES = 10;
+
+/* ─── Component types ─── */
 
 interface TimelineDataPoint {
   index: number;
@@ -33,11 +110,13 @@ interface TranscriptChartProps {
   timeline: TimelineDataPoint[];
   agentName?: string;
   breakpoints?: DriftBreakpoint[];
+  history?: EvaluationHistoryItem[];
 }
 
-export default function TranscriptChart({ timeline, agentName, breakpoints = [] }: TranscriptChartProps) {
+export default function TranscriptChart({ timeline, agentName, breakpoints = [], history = [] }: TranscriptChartProps) {
   const name = agentName ?? "this agent";
   const flaggedPoints = timeline.filter((d) => d.flags.length > 0);
+  const [expandedDim, setExpandedDim] = useState<string | null>(null);
 
   const first = timeline[0];
   const last = timeline[timeline.length - 1];
@@ -46,6 +125,16 @@ export default function TranscriptChart({ timeline, agentName, breakpoints = [] 
     { key: "logos" as const, label: "Logic (Logos)", color: DIMENSION_COLORS.logos },
     { key: "pathos" as const, label: "Empathy (Pathos)", color: DIMENSION_COLORS.pathos },
   ];
+
+  // Compute trait habits from history (same logic as VirtueHabits)
+  const chronological = [...history].reverse();
+  const habits = TRAITS.map((trait) => {
+    const rawScores = chronological
+      .map((e) => e.traitScores?.[trait.key])
+      .filter((s): s is number => s !== undefined && s !== null);
+    const { status, strength, trend, scores } = computeHabit(rawScores, trait.polarity);
+    return { trait, status, strength, trend, scores };
+  });
 
   return (
     <motion.section
@@ -228,7 +317,7 @@ export default function TranscriptChart({ timeline, agentName, breakpoints = [] 
             </ResponsiveContainer>
           </div>
 
-          {/* Dimension summary stats */}
+          {/* Dimension summary stats (expandable with trait habits) */}
           {first && last && (
             <div className="mt-4 grid grid-cols-3 gap-3">
               {dims.map((dim) => {
@@ -236,43 +325,106 @@ export default function TranscriptChart({ timeline, agentName, breakpoints = [] 
                 const delta = timeline.length > 1 ? last[dim.key] - first[dim.key] : 0;
                 const pct = Math.round(latest * 100);
                 const deltaPct = Math.round(delta * 100);
+                const isExpanded = expandedDim === dim.key;
+                const dimHabits = habits.filter((h) => h.trait.dimension === dim.key);
+                const hasHabits = history.length > 0;
                 return (
-                  <div
-                    key={dim.key}
-                    className="rounded-lg glass p-3 text-center"
-                  >
-                    <p className="text-[10px] uppercase tracking-wider text-muted">
-                      {dim.label}
-                    </p>
-                    <p className="mt-1 text-lg font-bold text-[#1a2538]">
-                      {pct}%
-                    </p>
-                    {timeline.length > 1 && (
-                      <p
-                        className={`text-xs font-medium ${
-                          delta > 0.01
-                            ? "text-aligned"
-                            : delta < -0.01
-                            ? "text-misaligned"
-                            : "text-muted"
-                        }`}
-                      >
-                        {delta > 0 ? "+" : ""}
-                        {deltaPct}%
-                      </p>
-                    )}
-                    <div
-                      className="mx-auto mt-1.5 h-1 w-full max-w-[60px] rounded-full"
-                      style={{ backgroundColor: `${dim.color}20` }}
+                  <div key={dim.key} className="rounded-lg glass overflow-hidden">
+                    <button
+                      type="button"
+                      className="w-full p-3 text-center transition-colors hover:bg-foreground/[0.02]"
+                      onClick={() => hasHabits && setExpandedDim(isExpanded ? null : dim.key)}
                     >
+                      <p className="text-[10px] uppercase tracking-wider text-muted">
+                        {dim.label}
+                      </p>
+                      <p className="mt-1 text-lg font-bold text-[#1a2538]">
+                        {pct}%
+                      </p>
+                      {timeline.length > 1 && (
+                        <p
+                          className={`text-xs font-medium ${
+                            delta > 0.01
+                              ? "text-aligned"
+                              : delta < -0.01
+                              ? "text-misaligned"
+                              : "text-muted"
+                          }`}
+                        >
+                          {delta > 0 ? "+" : ""}
+                          {deltaPct}%
+                        </p>
+                      )}
                       <div
-                        className="h-1 rounded-full transition-all"
-                        style={{
-                          width: `${pct}%`,
-                          backgroundColor: dim.color,
-                        }}
-                      />
-                    </div>
+                        className="mx-auto mt-1.5 h-1 w-full max-w-[60px] rounded-full"
+                        style={{ backgroundColor: `${dim.color}20` }}
+                      >
+                        <div
+                          className="h-1 rounded-full transition-all"
+                          style={{
+                            width: `${pct}%`,
+                            backgroundColor: dim.color,
+                          }}
+                        />
+                      </div>
+                      {hasHabits && (
+                        <p className="mt-2 text-[10px] text-foreground/40 flex items-center justify-center gap-1">
+                          <span className={`transition-transform inline-block ${isExpanded ? "rotate-90" : ""}`}>&#9654;</span>
+                          4 traits
+                        </p>
+                      )}
+                    </button>
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="border-t border-foreground/[0.06] px-3 pb-3 pt-2.5 space-y-2.5">
+                            {dimHabits.map((habit) => {
+                              const config = STATUS_CONFIG[habit.status];
+                              return (
+                                <div key={habit.trait.key}>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span className={`h-2 w-2 rounded-full ${config.dotClass}`} />
+                                      <span className="text-sm text-[#1a2538]">
+                                        <GlossaryTerm slug={habit.trait.slug}>{habit.trait.label}</GlossaryTerm>
+                                      </span>
+                                    </div>
+                                    <span className="text-[10px] font-medium text-foreground/40">
+                                      {config.label}
+                                    </span>
+                                  </div>
+                                  <div className="mt-1.5 flex gap-[3px]">
+                                    {habit.scores.map((score, i) => (
+                                      <div
+                                        key={i}
+                                        className="h-[14px] w-[14px] rounded-[3px]"
+                                        style={{
+                                          backgroundColor: dim.color,
+                                          opacity: scoreToLevel(score),
+                                        }}
+                                        title={`Eval ${i + 1}: ${Math.round(score * 100)}%`}
+                                      />
+                                    ))}
+                                    {Array.from({ length: MAX_SQUARES - habit.scores.length }).map((_, i) => (
+                                      <div
+                                        key={`empty-${i}`}
+                                        className="h-[14px] w-[14px] rounded-[3px] bg-foreground/[0.04] border border-foreground/[0.06]"
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })}
