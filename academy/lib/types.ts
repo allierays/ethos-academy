@@ -382,6 +382,16 @@ export interface DriftResult {
 
 /* ─── Records (paginated evaluation list) ─── */
 
+export interface DetectedIndicatorSummary {
+  id: string;
+  name: string;
+  trait: string;
+  description: string;
+  confidence: number;
+  severity: number;
+  evidence: string;
+}
+
 export interface RecordItem {
   evaluationId: string;
   agentId: string;
@@ -400,6 +410,11 @@ export interface RecordItem {
   intentClassification: IntentClassification | null;
   traitScores: Record<string, number>;
   similarityScore: number | null;
+  modelUsed: string;
+  agentModel: string;
+  routingTier: string;
+  keywordDensity: number;
+  detectedIndicators: DetectedIndicatorSummary[];
 }
 
 export interface RecordsResult {

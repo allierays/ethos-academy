@@ -52,6 +52,18 @@ class DetectedIndicator(BaseModel):
     evidence: str = ""
 
 
+class DetectedIndicatorSummary(BaseModel):
+    """Lightweight indicator summary for record list views."""
+
+    id: str = ""
+    name: str = ""
+    trait: str = ""
+    description: str = ""
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+    severity: float = Field(default=0.0, ge=0.0, le=1.0)
+    evidence: str = ""
+
+
 class TraitScore(BaseModel):
     name: str
     dimension: str
@@ -629,6 +641,11 @@ class RecordItem(BaseModel):
     intent_classification: IntentClassification | None = None
     trait_scores: dict[str, float] = Field(default_factory=dict)
     similarity_score: float | None = None
+    model_used: str = ""
+    agent_model: str = ""
+    routing_tier: str = "standard"
+    keyword_density: float = 0.0
+    detected_indicators: list[DetectedIndicatorSummary] = Field(default_factory=list)
 
 
 class RecordsResult(BaseModel):
