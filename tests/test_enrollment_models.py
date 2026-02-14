@@ -425,7 +425,7 @@ class TestAgentProfileEnrollment:
         profile = AgentProfile(agent_id="test")
         assert profile.enrolled is False
         assert profile.enrolled_at == ""
-        assert profile.counselor_name == ""
+        assert profile.guardian_name == ""
         assert profile.entrance_exam_completed is False
 
     def test_enrolled_agent(self):
@@ -433,12 +433,12 @@ class TestAgentProfileEnrollment:
             agent_id="test",
             enrolled=True,
             enrolled_at="2026-02-12T00:00:00Z",
-            counselor_name="Dr. Ethics",
+            guardian_name="Dr. Ethics",
             entrance_exam_completed=True,
         )
         assert profile.enrolled is True
         assert profile.enrolled_at == "2026-02-12T00:00:00Z"
-        assert profile.counselor_name == "Dr. Ethics"
+        assert profile.guardian_name == "Dr. Ethics"
         assert profile.entrance_exam_completed is True
 
     def test_interview_fields_default_empty(self):

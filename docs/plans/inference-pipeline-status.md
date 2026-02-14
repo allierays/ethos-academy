@@ -155,6 +155,6 @@ Between each batch: check for errors, verify data quality, spot-check JSONL entr
 
 ## Known Issues
 
-- **Neo4j warnings:** `enrolled`, `enrolled_at`, `counselor_name`, `entrance_exam_completed` properties don't exist on Moltbook agents (only on enrolled Ethos Academy students). Harmless; `coalesce()` returns defaults.
+- **Neo4j warnings:** `enrolled`, `enrolled_at`, `guardian_name`, `entrance_exam_completed` properties don't exist on Moltbook agents (only on enrolled Ethos Academy students). Harmless; `coalesce()` returns defaults.
 - **MAN-PRIDE indicator:** Filtered as invalid by parser. Not in the 155 taxonomy. Claude occasionally invents indicator IDs.
 - **No concurrency:** Script runs sequentially (1 eval/sec). Could add `asyncio.Semaphore` for parallel evals but risk is rate limiting from Anthropic API.

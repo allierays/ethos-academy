@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { getAgent, getHistory, getCharacterReport, getDrift } from "../../../lib/api";
 import AgentReportClient from "./AgentReportClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AgentPage({
   params,
 }: {

@@ -268,7 +268,7 @@ function ExpandedDetail({ record }: { record: RecordItem }) {
       transition={{ duration: 0.25, ease: "easeInOut" }}
       className="overflow-hidden"
     >
-      <div className="border-t border-foreground/[0.06] [&>div]:px-5 [&>div]:py-3" style={{ background: "#f5f2ed" }}>
+      <div className="border-t border-foreground/[0.06] [&>div]:px-5 [&>div]:py-3" style={{ background: "#f5f2ed" }} onClick={(e) => e.stopPropagation()}>
         {/* Overall score spectrum + metadata */}
         <div>
           <div className="max-w-xs mb-3">
@@ -448,7 +448,7 @@ function RecordRow({
       <td colSpan={6} className="p-0 overflow-hidden">
         <button
           onClick={(e) => { e.stopPropagation(); onToggle(); }}
-          className="w-full text-left px-4 py-3 flex items-center gap-3"
+          className="w-full text-left px-4 py-3 flex items-center gap-3 cursor-pointer"
           aria-expanded={expanded}
         >
           {/* Score */}

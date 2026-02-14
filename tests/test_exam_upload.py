@@ -174,7 +174,7 @@ class TestUploadExamEndpoint:
                     "agent_name": "My Bot",
                     "specialty": "customer support",
                     "model": "gpt-4",
-                    "counselor_name": "Alice",
+                    "guardian_name": "Alice",
                 },
             )
 
@@ -183,4 +183,4 @@ class TestUploadExamEndpoint:
         assert call_kwargs.kwargs["name"] == "My Bot"
         assert call_kwargs.kwargs["specialty"] == "customer support"
         assert call_kwargs.kwargs["model"] == "gpt-4"
-        assert call_kwargs.kwargs["counselor_name"] == "Alice"
+        assert call_kwargs.kwargs["guardian_name"] == "Alice"

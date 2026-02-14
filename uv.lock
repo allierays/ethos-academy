@@ -471,6 +471,7 @@ source = { editable = "." }
 dependencies = [
     { name = "anthropic" },
     { name = "boto3" },
+    { name = "cryptography" },
     { name = "fastapi" },
     { name = "fastmcp" },
     { name = "httpx" },
@@ -493,6 +494,7 @@ dev = [
 requires-dist = [
     { name = "anthropic", specifier = ">=0.79.0" },
     { name = "boto3", specifier = ">=1.35" },
+    { name = "cryptography", specifier = ">=44.0" },
     { name = "fastapi", specifier = ">=0.128.6" },
     { name = "fastmcp", specifier = ">=2.0,<3" },
     { name = "httpx", specifier = ">=0.28.1" },

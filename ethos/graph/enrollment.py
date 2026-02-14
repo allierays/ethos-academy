@@ -34,8 +34,8 @@ ON CREATE SET a.created_at = datetime(),
               a.evaluation_count = 0
 SET a.enrolled = true,
     a.enrolled_at = coalesce(a.enrolled_at, datetime()),
-    a.counselor_name = $counselor_name,
-    a.counselor_phone = CASE WHEN $counselor_phone <> '' THEN $counselor_phone ELSE coalesce(a.counselor_phone, '') END,
+    a.guardian_name = $guardian_name,
+    a.guardian_phone = CASE WHEN $guardian_phone <> '' THEN $guardian_phone ELSE coalesce(a.guardian_phone, '') END,
     a.agent_name = CASE WHEN $name <> '' THEN $name ELSE coalesce(a.agent_name, '') END,
     a.agent_specialty = CASE WHEN $specialty <> '' THEN $specialty ELSE coalesce(a.agent_specialty, '') END,
     a.agent_model = CASE WHEN $model <> '' THEN $model ELSE coalesce(a.agent_model, '') END
@@ -110,7 +110,7 @@ RETURN a.agent_id AS agent_id,
        coalesce(a.help_philosophy, '') AS help_philosophy,
        coalesce(a.failure_narrative, '') AS failure_narrative,
        coalesce(a.aspiration, '') AS aspiration,
-       coalesce(a.counselor_phone, '') AS counselor_phone,
+       coalesce(a.guardian_phone, '') AS guardian_phone,
        collect({
            question_id: r.question_id,
            question_number: r.question_number,
@@ -172,12 +172,12 @@ async def enroll_and_create_exam(
     name: str,
     specialty: str,
     model: str,
-    counselor_name: str,
+    guardian_name: str,
     exam_id: str,
     exam_type: str,
     scenario_count: int = 6,
     question_version: str = "v3",
-    counselor_phone: str = "",
+    guardian_phone: str = "",
 ) -> dict:
     """MERGE Agent with enrollment fields and CREATE EntranceExam with TOOK_EXAM relationship.
 
@@ -194,8 +194,8 @@ async def enroll_and_create_exam(
                 "name": name,
                 "specialty": specialty,
                 "model": model,
-                "counselor_name": counselor_name,
-                "counselor_phone": counselor_phone,
+                "guardian_name": guardian_name,
+                "guardian_phone": guardian_phone,
                 "exam_id": exam_id,
                 "exam_type": exam_type,
                 "scenario_count": scenario_count,
@@ -342,7 +342,7 @@ async def get_exam_results(
             "answered_ids": list(r.get("answered_ids") or []),
             "responses": r["responses"],
             # Agent contact info
-            "counselor_phone": r.get("counselor_phone", ""),
+            "guardian_phone": r.get("guardian_phone", ""),
             # Interview properties from Agent node
             "telos": r.get("telos", ""),
             "relationship_stance": r.get("relationship_stance", ""),
@@ -507,3 +507,194 @@ RETURN ex.current_question AS current_question
     except Exception as exc:
         logger.warning("Failed to store interview answer: %s", exc)
         return {}
+
+
+# ── Guardian Phone Verification Queries ──────────────────────────────
+
+_STORE_GUARDIAN_PHONE = """
+MATCH (a:Agent {agent_id: $agent_id})
+SET a.guardian_phone_encrypted = $encrypted_phone,
+    a.guardian_phone_verified = false,
+    a.guardian_phone_verification_code = $code_hash,
+    a.guardian_phone_verification_expires = $expires,
+    a.guardian_phone_verification_attempts = 0,
+    a.guardian_notifications_opted_out = coalesce(a.guardian_notifications_opted_out, false)
+RETURN a.agent_id AS agent_id
+"""
+
+_VERIFY_GUARDIAN_PHONE = """
+MATCH (a:Agent {agent_id: $agent_id})
+WHERE a.guardian_phone_verification_code = $code_hash
+  AND a.guardian_phone_verification_attempts < $max_attempts
+SET a.guardian_phone_verified = true,
+    a.guardian_phone_verification_code = null,
+    a.guardian_phone_verification_expires = null,
+    a.guardian_phone_verification_attempts = null
+RETURN a.agent_id AS agent_id
+"""
+
+_INCREMENT_VERIFICATION_ATTEMPTS = """
+MATCH (a:Agent {agent_id: $agent_id})
+SET a.guardian_phone_verification_attempts = coalesce(a.guardian_phone_verification_attempts, 0) + 1
+RETURN a.guardian_phone_verification_attempts AS attempts
+"""
+
+_GET_GUARDIAN_PHONE_STATUS = """
+MATCH (a:Agent {agent_id: $agent_id})
+RETURN a.guardian_phone_encrypted AS encrypted_phone,
+       coalesce(a.guardian_phone_verified, false) AS verified,
+       coalesce(a.guardian_notifications_opted_out, false) AS opted_out,
+       a.guardian_phone_verification_code AS code_hash,
+       a.guardian_phone_verification_expires AS expires,
+       coalesce(a.guardian_phone_verification_attempts, 0) AS attempts
+"""
+
+_SET_NOTIFICATION_OPT_OUT = """
+MATCH (a:Agent {agent_id: $agent_id})
+SET a.guardian_notifications_opted_out = $opted_out
+RETURN a.agent_id AS agent_id
+"""
+
+_CLEAR_GUARDIAN_PHONE = """
+MATCH (a:Agent {agent_id: $agent_id})
+REMOVE a.guardian_phone_encrypted,
+       a.guardian_phone_verified,
+       a.guardian_phone_verification_code,
+       a.guardian_phone_verification_expires,
+       a.guardian_phone_verification_attempts
+SET a.guardian_notifications_opted_out = false
+RETURN a.agent_id AS agent_id
+"""
+
+
+async def store_guardian_phone(
+    service: GraphService,
+    agent_id: str,
+    encrypted_phone: str,
+    code_hash: str,
+    expires: str,
+) -> bool:
+    """Store encrypted phone + verification code hash on Agent node."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _STORE_GUARDIAN_PHONE,
+            {
+                "agent_id": agent_id,
+                "encrypted_phone": encrypted_phone,
+                "code_hash": code_hash,
+                "expires": expires,
+            },
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to store guardian phone: %s", exc)
+        return False
+
+
+async def verify_guardian_phone(
+    service: GraphService,
+    agent_id: str,
+    code_hash: str,
+    max_attempts: int = 3,
+) -> bool:
+    """Mark phone as verified if code matches and attempts not exceeded."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _VERIFY_GUARDIAN_PHONE,
+            {
+                "agent_id": agent_id,
+                "code_hash": code_hash,
+                "max_attempts": max_attempts,
+            },
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to verify guardian phone: %s", exc)
+        return False
+
+
+async def increment_verification_attempts(
+    service: GraphService,
+    agent_id: str,
+) -> int:
+    """Increment failed verification attempt counter. Returns new count."""
+    if not service.connected:
+        return 0
+    try:
+        records, _, _ = await service.execute_query(
+            _INCREMENT_VERIFICATION_ATTEMPTS,
+            {"agent_id": agent_id},
+        )
+        return records[0]["attempts"] if records else 0
+    except Exception as exc:
+        logger.warning("Failed to increment verification attempts: %s", exc)
+        return 0
+
+
+async def get_guardian_phone_status(
+    service: GraphService,
+    agent_id: str,
+) -> dict:
+    """Get guardian phone status from Agent node. Returns empty dict if unavailable."""
+    if not service.connected:
+        return {}
+    try:
+        records, _, _ = await service.execute_query(
+            _GET_GUARDIAN_PHONE_STATUS,
+            {"agent_id": agent_id},
+        )
+        if not records:
+            return {}
+        r = records[0]
+        return {
+            "encrypted_phone": r.get("encrypted_phone", ""),
+            "verified": r.get("verified", False),
+            "opted_out": r.get("opted_out", False),
+            "code_hash": r.get("code_hash"),
+            "expires": r.get("expires"),
+            "attempts": r.get("attempts", 0),
+        }
+    except Exception as exc:
+        logger.warning("Failed to get guardian phone status: %s", exc)
+        return {}
+
+
+async def set_notification_opt_out(
+    service: GraphService,
+    agent_id: str,
+    opted_out: bool,
+) -> bool:
+    """Toggle notification opt-out flag on Agent node."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _SET_NOTIFICATION_OPT_OUT,
+            {"agent_id": agent_id, "opted_out": opted_out},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to set notification opt-out: %s", exc)
+        return False
+
+
+async def clear_guardian_phone(
+    service: GraphService,
+    agent_id: str,
+) -> bool:
+    """Remove all guardian phone data from Agent node."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _CLEAR_GUARDIAN_PHONE,
+            {"agent_id": agent_id},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to clear guardian phone: %s", exc)
+        return False

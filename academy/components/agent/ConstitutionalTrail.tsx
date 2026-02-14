@@ -258,7 +258,7 @@ function ValueCard({ group, defaultOpen }: { group: ValueGroup; defaultOpen: boo
       {/* Card header */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full text-left px-4 py-3.5 flex items-start gap-3 group hover:bg-white/90 transition-colors"
+        className="w-full text-left px-4 py-3.5 flex items-start gap-3 group hover:bg-white/90 transition-colors cursor-pointer"
       >
         <div className="flex-1 min-w-0">
           {/* Row 1: Priority badge, value name, verdict */}
@@ -362,7 +362,7 @@ function TraitRow({ trait }: { trait: TraitGroup }) {
             <button
               type="button"
               onClick={() => setShowAll((s) => !s)}
-              className="text-[11px] text-action hover:underline"
+              className="text-[11px] text-coral hover:underline cursor-pointer"
             >
               {showAll ? "Show less" : `+${trait.indicators.length - INDICATOR_PREVIEW_LIMIT} more indicators`}
             </button>

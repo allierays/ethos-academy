@@ -140,7 +140,7 @@ def _full_agent_profile() -> AgentProfile:
         alignment_history=["aligned", "aligned", "developing"],
         enrolled=True,
         enrolled_at="2024-01-15T00:00:00Z",
-        counselor_name="Dr. Aristotle",
+        guardian_name="Dr. Aristotle",
         entrance_exam_completed=True,
     )
 
@@ -306,7 +306,7 @@ AGENT_PROFILE_KEYS = {
     "alignmentHistory",
     "enrolled",
     "enrolledAt",
-    "counselorName",
+    "guardianName",
     "entranceExamCompleted",
 }
 
@@ -578,7 +578,7 @@ class TestAgentProfileContract:
         data = resp.json()
         assert data["enrolled"] is True
         assert data["enrolled_at"] == "2024-01-15T00:00:00Z"
-        assert data["counselor_name"] == "Dr. Aristotle"
+        assert data["guardian_name"] == "Dr. Aristotle"
         assert data["entrance_exam_completed"] is True
 
 

@@ -71,6 +71,7 @@ from ethos.shared.errors import (
     EvaluationError,
     GraphUnavailableError,
     ParseError,
+    VerificationError,
 )
 
 logger = logging.getLogger(__name__)
@@ -251,6 +252,14 @@ def handle_enrollment_error(request: Request, exc: EnrollmentError) -> JSONRespo
     return _error_response(409, exc)
 
 
+@app.exception_handler(VerificationError)
+def handle_verification_error(request: Request, exc: VerificationError) -> JSONResponse:
+    msg = str(exc).lower()
+    if "expired" in msg or "too many" in msg:
+        return _error_response(429, exc)
+    return _error_response(400, exc)
+
+
 @app.exception_handler(EthosError)
 def handle_ethos_error(request: Request, exc: EthosError) -> JSONResponse:
     return _error_response(500, exc)
@@ -428,8 +437,8 @@ class ExamRegisterRequest(BaseModel):
     agent_name: str | None = None
     specialty: str | None = None
     model: str | None = None
-    counselor_name: str | None = None
-    counselor_phone: str | None = None
+    guardian_name: str | None = None
+    guardian_phone: str | None = None
 
 
 class ExamAnswerRequest(BaseModel):
@@ -447,8 +456,8 @@ class UploadExamRequest(BaseModel):
     agent_name: str | None = None
     specialty: str | None = None
     model: str | None = None
-    counselor_name: str | None = None
-    counselor_phone: str | None = None
+    guardian_name: str | None = None
+    guardian_phone: str | None = None
 
 
 # ── Exam endpoints ───────────────────────────────────────────────────
@@ -463,8 +472,8 @@ async def register_exam_endpoint(
         name=req.agent_name or "",
         specialty=req.specialty or "",
         model=req.model or "",
-        counselor_name=req.counselor_name or "",
-        counselor_phone=req.counselor_phone or "",
+        guardian_name=req.guardian_name or "",
+        guardian_phone=req.guardian_phone or "",
     )
 
 
@@ -500,8 +509,8 @@ async def upload_exam_endpoint(agent_id: str, req: UploadExamRequest) -> ExamRep
         name=req.agent_name or "",
         specialty=req.specialty or "",
         model=req.model or "",
-        counselor_name=req.counselor_name or "",
-        counselor_phone=req.counselor_phone or "",
+        guardian_name=req.guardian_name or "",
+        guardian_phone=req.guardian_phone or "",
     )
 
 
@@ -527,3 +536,62 @@ async def homework_endpoint(agent_id: str) -> Homework:
     """Return just the homework object from the latest character report."""
     report = await character_report(agent_id)
     return report.homework
+
+
+# ── Guardian phone verification endpoints ──────────────────────────────
+
+
+class GuardianPhoneRequest(BaseModel):
+    phone: str = Field(min_length=10, max_length=20)
+
+
+class VerifyCodeRequest(BaseModel):
+    code: str = Field(min_length=6, max_length=6)
+
+
+@app.post("/agent/{agent_id}/guardian/phone")
+async def submit_guardian_phone(agent_id: str, req: GuardianPhoneRequest):
+    """Submit a guardian phone number and send a verification code."""
+    from ethos.phone_service import submit_phone
+
+    return (await submit_phone(agent_id, req.phone)).model_dump()
+
+
+@app.post("/agent/{agent_id}/guardian/phone/verify")
+async def verify_guardian_phone_endpoint(agent_id: str, req: VerifyCodeRequest):
+    """Verify a 6-digit code sent to the guardian's phone."""
+    from ethos.phone_service import verify_phone
+
+    return (await verify_phone(agent_id, req.code)).model_dump()
+
+
+@app.get("/agent/{agent_id}/guardian/phone/status")
+async def guardian_phone_status(agent_id: str):
+    """Check guardian phone status. Never returns the phone number."""
+    from ethos.phone_service import get_phone_status
+
+    return (await get_phone_status(agent_id)).model_dump()
+
+
+@app.post("/agent/{agent_id}/guardian/phone/resend")
+async def resend_guardian_code(agent_id: str):
+    """Resend a fresh verification code to the guardian's phone."""
+    from ethos.phone_service import resend_code
+
+    return (await resend_code(agent_id)).model_dump()
+
+
+@app.post("/agent/{agent_id}/guardian/notifications/opt-out")
+async def opt_out_notifications(agent_id: str):
+    """Opt out of guardian SMS notifications."""
+    from ethos.phone_service import opt_out
+
+    return (await opt_out(agent_id)).model_dump()
+
+
+@app.post("/agent/{agent_id}/guardian/notifications/opt-in")
+async def opt_in_notifications(agent_id: str):
+    """Opt back in to guardian SMS notifications."""
+    from ethos.phone_service import opt_in
+
+    return (await opt_in(agent_id)).model_dump()

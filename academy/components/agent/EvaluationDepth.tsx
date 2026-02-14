@@ -133,7 +133,7 @@ export default function EvaluationDepth() {
       {/* Expandable methodology details */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="mt-5 flex w-full items-center gap-2 text-left text-sm font-semibold text-[#1a2538] hover:text-action transition-colors"
+        className="mt-5 flex w-full items-center gap-2 text-left text-sm font-semibold text-[#1a2538] hover:text-coral border-l-3 border-coral pl-3 cursor-pointer transition-colors"
       >
         <svg
           className={`h-4 w-4 shrink-0 transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}

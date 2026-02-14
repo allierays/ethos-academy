@@ -267,7 +267,7 @@ class AgentProfile(BaseModel):
     alignment_history: list[str] = Field(default_factory=list)
     enrolled: bool = False
     enrolled_at: str = ""
-    counselor_name: str = ""
+    guardian_name: str = ""
     entrance_exam_completed: bool = False
     # Interview self-narrative fields
     telos: str = ""
@@ -550,6 +550,14 @@ class ExamSummary(BaseModel):
     completed: bool
     completed_at: str | None = None
     phronesis_score: float = Field(ge=0.0, le=1.0)
+
+
+class GuardianPhoneStatus(BaseModel):
+    """Phone verification status returned by the API. Never exposes the number."""
+
+    has_phone: bool = False
+    verified: bool = False
+    opted_out: bool = False
 
 
 # ── Authenticity detection models ────────────────────────────────────

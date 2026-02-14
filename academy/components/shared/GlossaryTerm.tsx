@@ -28,7 +28,7 @@ export default function GlossaryTerm({ slug, children }: GlossaryTermProps) {
       aria-label={`Learn about ${entry.term}`}
       onClick={() => selectTerm(slug)}
       onKeyDown={handleKeyDown}
-      className="cursor-pointer text-accent border-b border-dotted border-accent/40 hover:border-accent transition-colors"
+      className="cursor-pointer border-b border-dotted border-current/30 hover:border-coral transition-colors"
     >
       {children}
     </span>

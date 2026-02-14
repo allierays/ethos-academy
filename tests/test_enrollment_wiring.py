@@ -97,7 +97,7 @@ class TestAgentFieldMapping:
         profile = AgentProfile(agent_id="test-agent")
         assert profile.enrolled is False
         assert profile.enrolled_at == ""
-        assert profile.counselor_name == ""
+        assert profile.guardian_name == ""
         assert profile.entrance_exam_completed is False
 
     def test_agent_profile_enrollment_set(self):
@@ -108,12 +108,12 @@ class TestAgentFieldMapping:
             agent_id="test-agent",
             enrolled=True,
             enrolled_at="2026-02-12T00:00:00Z",
-            counselor_name="Dr. Ethics",
+            guardian_name="Dr. Ethics",
             entrance_exam_completed=True,
         )
         assert profile.enrolled is True
         assert profile.enrolled_at == "2026-02-12T00:00:00Z"
-        assert profile.counselor_name == "Dr. Ethics"
+        assert profile.guardian_name == "Dr. Ethics"
         assert profile.entrance_exam_completed is True
 
     def test_agent_summary_enrolled_default(self):
@@ -141,7 +141,7 @@ class TestGraphReadShape:
 
         assert "enrolled" in _GET_PROFILE_QUERY
         assert "enrolled_at" in _GET_PROFILE_QUERY
-        assert "counselor_name" in _GET_PROFILE_QUERY
+        assert "guardian_name" in _GET_PROFILE_QUERY
         assert "entrance_exam_completed" in _GET_PROFILE_QUERY
 
     def test_all_agents_query_returns_enrolled(self):

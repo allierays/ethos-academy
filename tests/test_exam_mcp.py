@@ -96,7 +96,7 @@ class TestTakeEntranceExam:
                 agent_name="TestBot",
                 specialty="general",
                 model="claude-sonnet-4-5-20250929",
-                counselor_name="professor",
+                guardian_name="professor",
             )
 
         assert isinstance(result, dict)

@@ -26,3 +26,7 @@ class ParseError(EthosError):
 
 class EnrollmentError(EthosError):
     """Raised when enrollment or exam operations fail."""
+
+
+class VerificationError(EthosError):
+    """Raised when phone verification fails (bad code, expired, max attempts)."""

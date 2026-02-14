@@ -104,8 +104,8 @@ async def register_for_exam(
     name: str = "",
     specialty: str = "",
     model: str = "",
-    counselor_name: str = "",
-    counselor_phone: str = "",
+    guardian_name: str = "",
+    guardian_phone: str = "",
 ) -> ExamRegistration:
     """Enroll an agent and create a new entrance exam.
 
@@ -142,8 +142,8 @@ async def register_for_exam(
             name=name,
             specialty=specialty,
             model=model,
-            counselor_name=counselor_name,
-            counselor_phone=counselor_phone,
+            guardian_name=guardian_name,
+            guardian_phone=guardian_phone,
             exam_id=exam_id,
             exam_type="entrance",
             scenario_count=TOTAL_QUESTIONS,
@@ -345,13 +345,12 @@ async def complete_exam(exam_id: str, agent_id: str) -> ExamReportCard:
 
     report = _build_report_card(exam_id, results)
 
-    # Send SMS notification to counselor
+    # Send SMS notification to guardian (checks verified + opted-in via graph)
     try:
-        from ethos.notifications import notify_counselor
+        from ethos.notifications import send_notification
 
         base_url = os.environ.get("ACADEMY_BASE_URL", "https://ethos-academy.com")
-        await notify_counselor(
-            phone=results.get("counselor_phone", ""),
+        await send_notification(
             agent_id=agent_id,
             agent_name=results.get("agent_name", ""),
             message_type="exam_complete",
@@ -370,8 +369,8 @@ async def upload_exam(
     name: str = "",
     specialty: str = "",
     model: str = "",
-    counselor_name: str = "",
-    counselor_phone: str = "",
+    guardian_name: str = "",
+    guardian_phone: str = "",
 ) -> ExamReportCard:
     """Submit a complete exam via upload (all 17 responses at once).
 
@@ -413,8 +412,8 @@ async def upload_exam(
             name=name,
             specialty=specialty,
             model=model,
-            counselor_name=counselor_name,
-            counselor_phone=counselor_phone,
+            guardian_name=guardian_name,
+            guardian_phone=guardian_phone,
             exam_id=exam_id,
             exam_type="upload",
             scenario_count=TOTAL_QUESTIONS,

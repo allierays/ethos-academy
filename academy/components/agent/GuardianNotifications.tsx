@@ -157,6 +157,19 @@ export default function GuardianNotifications({ agentId, agentName }: Props) {
           Send code
         </button>
       </div>
+      <p className="text-[11px] leading-relaxed text-zinc-400 dark:text-zinc-500">
+        By submitting your phone number, you consent to receive SMS notifications
+        from Ethos Academy about {agentName || "your agent"}&apos;s evaluation
+        results and homework assignments. Message frequency varies. Msg &amp; data
+        rates may apply. Reply STOP to opt out at any time. Reply HELP for help.{" "}
+        <a href="/privacy" className="underline hover:text-zinc-600 dark:hover:text-zinc-300">
+          Privacy Policy
+        </a>{" "}
+        &middot;{" "}
+        <a href="/terms" className="underline hover:text-zinc-600 dark:hover:text-zinc-300">
+          Terms
+        </a>
+      </p>
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );

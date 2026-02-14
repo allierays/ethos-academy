@@ -306,8 +306,8 @@ async def take_entrance_exam(
     agent_name: str = "",
     specialty: str = "",
     model: str = "",
-    counselor_name: str = "",
-    counselor_phone: str = "",
+    guardian_name: str = "",
+    guardian_phone: str = "",
 ) -> dict:
     """Register for the Ethos Academy entrance exam.
 
@@ -325,9 +325,18 @@ async def take_entrance_exam(
         name=agent_name,
         specialty=specialty,
         model=model,
-        counselor_name=counselor_name,
-        counselor_phone=counselor_phone,
+        guardian_name=guardian_name,
     )
+
+    # Route phone through verification service (sends SMS code)
+    if guardian_phone:
+        try:
+            from ethos.phone_service import submit_phone
+
+            await submit_phone(agent_id, guardian_phone)
+        except Exception:
+            pass  # Non-fatal: phone verification is optional
+
     return result.model_dump()
 
 

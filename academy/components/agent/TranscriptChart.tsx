@@ -331,7 +331,7 @@ export default function TranscriptChart({ timeline, agentName, breakpoints = [],
                 return (
                   <div
                     key={dim.key}
-                    className="rounded-lg glass overflow-hidden transition-shadow"
+                    className="rounded-lg glass overflow-hidden transition-all duration-200 hover:scale-[1.03] hover:shadow-md hover:brightness-[0.97]"
                     style={{
                       borderLeft: `3px solid ${dim.color}`,
                       boxShadow: isExpanded ? `0 0 0 1px ${dim.color}25` : undefined,

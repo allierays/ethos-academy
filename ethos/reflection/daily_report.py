@@ -248,24 +248,22 @@ async def generate_daily_report(agent_id: str) -> DailyReportCard:
             except Exception as exc:
                 logger.warning("Failed to store daily report (non-fatal): %s", exc)
 
-            # Send SMS notification to counselor if homework was generated
+            # Send SMS notification to guardian if homework was generated
+            # Uses send_notification which reads phone from graph (not profile)
             if homework.focus_areas:
                 try:
-                    from ethos.notifications import notify_counselor
+                    from ethos.notifications import send_notification
 
-                    counselor_phone = profile.get("counselor_phone", "")
-                    if counselor_phone:
-                        base_url = os.environ.get(
-                            "ACADEMY_BASE_URL", "https://ethos-academy.com"
-                        )
-                        await notify_counselor(
-                            phone=counselor_phone,
-                            agent_id=agent_id,
-                            agent_name=profile.get("agent_name", ""),
-                            message_type="homework_assigned",
-                            summary=homework.directive,
-                            link=f"{base_url}/agent/{agent_id}",
-                        )
+                    base_url = os.environ.get(
+                        "ACADEMY_BASE_URL", "https://ethos-academy.com"
+                    )
+                    await send_notification(
+                        agent_id=agent_id,
+                        agent_name=profile.get("agent_name", ""),
+                        message_type="homework_assigned",
+                        summary=homework.directive,
+                        link=f"{base_url}/agent/{agent_id}",
+                    )
                 except Exception as exc:
                     logger.warning("SMS notification failed (non-fatal): %s", exc)
 

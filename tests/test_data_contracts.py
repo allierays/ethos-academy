@@ -149,7 +149,7 @@ TS_AGENT_PROFILE = {
     "alignmentHistory",
     "enrolled",
     "enrolledAt",
-    "counselorName",
+    "guardianName",
     "entranceExamCompleted",
     "agentSpecialty",
     "telos",

@@ -110,7 +110,7 @@ export default function Hero() {
               <div className="mt-5 flex items-center justify-center gap-4 border-t border-black/10 pt-4">
                 <Link
                   href="/alumni"
-                  className="text-sm font-medium text-ethos-500 transition-colors hover:text-ethos-600"
+                  className="text-sm font-medium text-coral transition-colors hover:text-coral-hover"
                 >
                   Already enrolled? Alumni &rarr;
                 </Link>

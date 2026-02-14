@@ -119,7 +119,7 @@ async def get_agent(agent_id: str) -> AgentProfile:
                 alignment_history=raw.get("alignment_history") or [],
                 enrolled=raw.get("enrolled", False),
                 enrolled_at=str(raw.get("enrolled_at") or ""),
-                counselor_name=raw.get("counselor_name", ""),
+                guardian_name=raw.get("guardian_name", ""),
                 entrance_exam_completed=raw.get("entrance_exam_completed", False),
             )
     except Exception as exc:

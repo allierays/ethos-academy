@@ -303,7 +303,7 @@ async def test_register_creates_exam(mock_gc):
             name="TestBot",
             specialty="testing",
             model="claude-sonnet",
-            counselor_name="Professor Ethos",
+            guardian_name="Professor Ethos",
         )
 
     assert result.agent_id == "agent-1"
