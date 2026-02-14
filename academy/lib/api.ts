@@ -62,7 +62,7 @@ function transformKeys<T>(obj: unknown, preserveKeys = false): T {
 
 async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15_000);
+  const timeout = setTimeout(() => controller.abort("Request timed out after 15s"), 15_000);
 
   try {
     const res = await fetch(`${API_URL}${path}`, {
