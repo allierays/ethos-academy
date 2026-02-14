@@ -291,29 +291,32 @@ async def submit_exam_response(
 
 
 @mcp.tool()
-async def get_exam_results(exam_id: str) -> dict:
+async def get_exam_results(exam_id: str, agent_id: str) -> dict:
     """Get your entrance exam report card.
 
     If all 6 answers are submitted but the exam has not been finalized,
     this tool auto-completes it first. Returns your phronesis score,
     alignment status, dimension scores, tier scores, and per-question detail.
+
+    Both exam_id and agent_id are required. The exam must belong to the
+    specified agent (verified via the TOOK_EXAM relationship).
     """
     # Check if exam needs auto-completion
     async with graph_context() as service:
         if not service.connected:
             raise EnrollmentError("Graph unavailable — cannot retrieve exam results")
 
-        status = await get_exam_status(service, exam_id)
+        status = await get_exam_status(service, exam_id, agent_id)
         if not status:
-            raise EnrollmentError(f"Exam {exam_id} not found")
+            raise EnrollmentError(f"Exam {exam_id} not found for agent {agent_id}")
 
     if status["completed_count"] >= TOTAL_QUESTIONS and not status["completed"]:
         # All answers submitted but not yet finalized — auto-complete
-        result = await complete_exam(exam_id)
+        result = await complete_exam(exam_id, agent_id)
         return result.model_dump()
 
     # Already completed or not yet finished
-    result = await _get_exam_report(exam_id)
+    result = await _get_exam_report(exam_id, agent_id)
     return result.model_dump()
 
 

@@ -40,7 +40,7 @@ RETURN ex.exam_id AS exam_id
 """
 
 _STORE_EXAM_ANSWER = """
-MATCH (ex:EntranceExam {exam_id: $exam_id})
+MATCH (a:Agent {agent_id: $agent_id})-[:TOOK_EXAM]->(ex:EntranceExam {exam_id: $exam_id})
 MATCH (e:Evaluation {evaluation_id: $evaluation_id})
 CREATE (ex)-[:EXAM_RESPONSE {
     question_id: $question_id,
@@ -51,7 +51,7 @@ RETURN ex.current_question AS current_question
 """
 
 _GET_EXAM_STATUS = """
-MATCH (ex:EntranceExam {exam_id: $exam_id})
+MATCH (a:Agent {agent_id: $agent_id})-[:TOOK_EXAM]->(ex:EntranceExam {exam_id: $exam_id})
 OPTIONAL MATCH (ex)-[r:EXAM_RESPONSE]->(e:Evaluation)
 RETURN ex.exam_id AS exam_id,
        ex.current_question AS current_question,
@@ -61,7 +61,7 @@ RETURN ex.exam_id AS exam_id,
 """
 
 _MARK_EXAM_COMPLETE = """
-MATCH (a:Agent)-[:TOOK_EXAM]->(ex:EntranceExam {exam_id: $exam_id})
+MATCH (a:Agent {agent_id: $agent_id})-[:TOOK_EXAM]->(ex:EntranceExam {exam_id: $exam_id})
 SET ex.completed = true,
     ex.completed_at = datetime(),
     a.entrance_exam_completed = true
@@ -69,7 +69,7 @@ RETURN ex.exam_id AS exam_id
 """
 
 _GET_EXAM_RESULTS = """
-MATCH (a:Agent)-[:TOOK_EXAM]->(ex:EntranceExam {exam_id: $exam_id})
+MATCH (a:Agent {agent_id: $agent_id})-[:TOOK_EXAM]->(ex:EntranceExam {exam_id: $exam_id})
 OPTIONAL MATCH (ex)-[r:EXAM_RESPONSE]->(e:Evaluation)
 WITH a, ex, r, e
 ORDER BY r.question_number ASC
@@ -125,7 +125,8 @@ LIMIT 1
 """
 
 _CHECK_DUPLICATE_ANSWER = """
-MATCH (ex:EntranceExam {exam_id: $exam_id})-[r:EXAM_RESPONSE {question_id: $question_id}]->(e:Evaluation)
+MATCH (a:Agent {agent_id: $agent_id})-[:TOOK_EXAM]->(ex:EntranceExam {exam_id: $exam_id})
+MATCH (ex)-[r:EXAM_RESPONSE {question_id: $question_id}]->(e:Evaluation)
 RETURN r.question_id AS question_id
 LIMIT 1
 """
@@ -177,12 +178,14 @@ async def enroll_and_create_exam(
 async def store_exam_answer(
     service: GraphService,
     exam_id: str,
+    agent_id: str,
     question_id: str,
     question_number: int,
     evaluation_id: str,
 ) -> dict:
     """Create EXAM_RESPONSE relationship from EntranceExam to Evaluation.
 
+    Validates exam ownership via Agent-[:TOOK_EXAM]->EntranceExam join.
     Increments current_question on the exam node.
     Returns dict with current_question on success, empty dict on failure.
     """
@@ -194,6 +197,7 @@ async def store_exam_answer(
             _STORE_EXAM_ANSWER,
             {
                 "exam_id": exam_id,
+                "agent_id": agent_id,
                 "question_id": question_id,
                 "question_number": question_number,
                 "evaluation_id": evaluation_id,
@@ -210,9 +214,11 @@ async def store_exam_answer(
 async def get_exam_status(
     service: GraphService,
     exam_id: str,
+    agent_id: str,
 ) -> dict:
     """Get exam progress: current_question, completed_count, scenario_count, completed.
 
+    Validates exam ownership via Agent-[:TOOK_EXAM]->EntranceExam join.
     Returns dict with status fields, empty dict if not found or unavailable.
     """
     if not service.connected:
@@ -221,7 +227,7 @@ async def get_exam_status(
     try:
         records, _, _ = await service.execute_query(
             _GET_EXAM_STATUS,
-            {"exam_id": exam_id},
+            {"exam_id": exam_id, "agent_id": agent_id},
         )
         if not records:
             return {}
@@ -241,9 +247,11 @@ async def get_exam_status(
 async def mark_exam_complete(
     service: GraphService,
     exam_id: str,
+    agent_id: str,
 ) -> dict:
     """Set exam as completed and mark agent's entrance_exam_completed=true.
 
+    Validates exam ownership via Agent-[:TOOK_EXAM]->EntranceExam join.
     Returns dict with exam_id on success, empty dict on failure.
     """
     if not service.connected:
@@ -252,7 +260,7 @@ async def mark_exam_complete(
     try:
         records, _, _ = await service.execute_query(
             _MARK_EXAM_COMPLETE,
-            {"exam_id": exam_id},
+            {"exam_id": exam_id, "agent_id": agent_id},
         )
         if records:
             return {"exam_id": records[0]["exam_id"]}
@@ -265,9 +273,11 @@ async def mark_exam_complete(
 async def get_exam_results(
     service: GraphService,
     exam_id: str,
+    agent_id: str,
 ) -> dict:
     """Get exam metadata with all linked evaluation scores via EXAM_RESPONSE.
 
+    Validates exam ownership via Agent-[:TOOK_EXAM]->EntranceExam join.
     Returns dict with agent info, exam metadata, and list of per-question responses.
     Returns empty dict if not found or unavailable.
     """
@@ -277,7 +287,7 @@ async def get_exam_results(
     try:
         records, _, _ = await service.execute_query(
             _GET_EXAM_RESULTS,
-            {"exam_id": exam_id},
+            {"exam_id": exam_id, "agent_id": agent_id},
         )
         if not records:
             return {}
@@ -359,10 +369,12 @@ async def check_active_exam(
 async def check_duplicate_answer(
     service: GraphService,
     exam_id: str,
+    agent_id: str,
     question_id: str,
 ) -> bool:
     """Check if an EXAM_RESPONSE with this question_id already exists.
 
+    Validates exam ownership via Agent-[:TOOK_EXAM]->EntranceExam join.
     Returns True if duplicate found, False otherwise (including when graph unavailable).
     """
     if not service.connected:
@@ -371,7 +383,7 @@ async def check_duplicate_answer(
     try:
         records, _, _ = await service.execute_query(
             _CHECK_DUPLICATE_ANSWER,
-            {"exam_id": exam_id, "question_id": question_id},
+            {"exam_id": exam_id, "agent_id": agent_id, "question_id": question_id},
         )
         return len(records) > 0
     except Exception as exc:

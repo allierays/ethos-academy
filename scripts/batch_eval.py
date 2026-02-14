@@ -56,6 +56,12 @@ async def curate_posts(
             }
         ],
     )
+    if not resp.content or not hasattr(resp.content[0], "text"):
+        print(
+            f"  WARN: Haiku returned empty response for {agent_name}, falling back to longest"
+        )
+        posts.sort(key=lambda p: len(p.get("content", "")), reverse=True)
+        return posts[:top_n]
     text = resp.content[0].text.strip()
     # Parse the JSON array from response
     try:

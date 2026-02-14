@@ -45,6 +45,39 @@ TOTAL_QUESTIONS = len(QUESTIONS)  # 6
 _QUESTIONS_BY_ID: dict[str, dict] = {q["id"]: q for q in QUESTIONS}
 _QUESTIONS_ORDERED: list[str] = [q["id"] for q in QUESTIONS]
 
+# Agent IDs that are too generic and will collide between users
+_RESERVED_AGENT_IDS = frozenset(
+    {
+        "test",
+        "agent",
+        "bot",
+        "my-agent",
+        "my-bot",
+        "assistant",
+        "claude",
+        "gpt",
+        "gpt4",
+        "gemini",
+        "llama",
+        "demo",
+    }
+)
+
+
+def _validate_agent_id(agent_id: str) -> None:
+    """Reject agent_ids that are too short, too long, or too generic."""
+    if len(agent_id) < 3:
+        raise EnrollmentError(
+            f"agent_id must be at least 3 characters, got '{agent_id}'"
+        )
+    if len(agent_id) > 128:
+        raise EnrollmentError("agent_id must be at most 128 characters")
+    if agent_id.lower() in _RESERVED_AGENT_IDS:
+        raise EnrollmentError(
+            f"agent_id '{agent_id}' is too generic and will collide with other users. "
+            f"Use a descriptive name like 'claude-opus-code-review' or 'gpt4-support-acme'."
+        )
+
 
 def _get_question(question_id: str) -> ExamQuestion:
     """Look up a question by ID and return as ExamQuestion model."""
@@ -66,31 +99,28 @@ async def register_for_exam(
     MERGE Agent (may already exist), CREATE EntranceExam, return first question.
     Raises EnrollmentError if graph is unavailable.
     """
+    _validate_agent_id(agent_id)
+
     exam_id = str(uuid.uuid4())
 
     async with graph_context() as service:
         if not service.connected:
             raise EnrollmentError("Graph unavailable — cannot register for exam")
 
-        # Check for active (incomplete) exam
+        # Check for active (incomplete) exam — always resume if one exists
         active_exam_id = await check_active_exam(service, agent_id)
         if active_exam_id:
-            if name:
-                # Resume: return current exam state with next unanswered question
-                status = await get_exam_status(service, active_exam_id)
-                answered = status.get("current_question", 0) if status else 0
-                next_idx = min(answered, TOTAL_QUESTIONS - 1)
-                next_question = _get_question(_QUESTIONS_ORDERED[next_idx])
-                return ExamRegistration(
-                    exam_id=active_exam_id,
-                    agent_id=agent_id,
-                    question_number=answered + 1,
-                    total_questions=TOTAL_QUESTIONS,
-                    question=next_question,
-                    message="Resuming your Ethos Academy entrance exam.",
-                )
-            raise EnrollmentError(
-                f"Agent {agent_id} already has an active exam: {active_exam_id}"
+            status = await get_exam_status(service, active_exam_id, agent_id)
+            answered = status.get("current_question", 0) if status else 0
+            next_idx = min(answered, TOTAL_QUESTIONS - 1)
+            next_question = _get_question(_QUESTIONS_ORDERED[next_idx])
+            return ExamRegistration(
+                exam_id=active_exam_id,
+                agent_id=agent_id,
+                question_number=answered + 1,
+                total_questions=TOTAL_QUESTIONS,
+                question=next_question,
+                message="Resuming your Ethos Academy entrance exam.",
             )
 
         result = await enroll_and_create_exam(
@@ -139,16 +169,18 @@ async def submit_answer(
         if not service.connected:
             raise EnrollmentError("Graph unavailable — cannot submit answer")
 
-        # Check exam exists and get status
-        status = await get_exam_status(service, exam_id)
+        # Check exam exists and verify ownership via TOOK_EXAM
+        status = await get_exam_status(service, exam_id, agent_id)
         if not status:
-            raise EnrollmentError(f"Exam {exam_id} not found")
+            raise EnrollmentError(f"Exam {exam_id} not found for agent {agent_id}")
 
         if status["completed"]:
             raise EnrollmentError(f"Exam {exam_id} is already completed")
 
         # Check for duplicate submission
-        is_duplicate = await check_duplicate_answer(service, exam_id, question_id)
+        is_duplicate = await check_duplicate_answer(
+            service, exam_id, agent_id, question_id
+        )
         if is_duplicate:
             raise EnrollmentError(
                 f"Question {question_id} already submitted for exam {exam_id}"
@@ -169,6 +201,7 @@ async def submit_answer(
         stored = await store_exam_answer(
             service=service,
             exam_id=exam_id,
+            agent_id=agent_id,
             question_id=question_id,
             question_number=question_number,
             evaluation_id=result.evaluation_id,
@@ -201,19 +234,20 @@ async def submit_answer(
     )
 
 
-async def complete_exam(exam_id: str) -> ExamReportCard:
+async def complete_exam(exam_id: str, agent_id: str) -> ExamReportCard:
     """Finalize exam: verify all 6 answered, aggregate scores, compute consistency.
 
+    Validates exam ownership via agent_id before completing.
     Raises EnrollmentError if not all questions answered or exam not found.
     """
     async with graph_context() as service:
         if not service.connected:
             raise EnrollmentError("Graph unavailable — cannot complete exam")
 
-        # Verify exam exists and all questions answered
-        status = await get_exam_status(service, exam_id)
+        # Verify exam exists, ownership validated via TOOK_EXAM join
+        status = await get_exam_status(service, exam_id, agent_id)
         if not status:
-            raise EnrollmentError(f"Exam {exam_id} not found")
+            raise EnrollmentError(f"Exam {exam_id} not found for agent {agent_id}")
 
         if status["completed_count"] < TOTAL_QUESTIONS:
             raise EnrollmentError(
@@ -222,12 +256,12 @@ async def complete_exam(exam_id: str) -> ExamReportCard:
             )
 
         # Mark complete in graph
-        marked = await mark_exam_complete(service, exam_id)
+        marked = await mark_exam_complete(service, exam_id, agent_id)
         if not marked:
             raise EnrollmentError(f"Failed to mark exam {exam_id} as complete")
 
         # Fetch all evaluation results
-        results = await get_exam_results(service, exam_id)
+        results = await get_exam_results(service, exam_id, agent_id)
         if not results:
             raise EnrollmentError(f"Failed to retrieve results for exam {exam_id}")
 
@@ -307,6 +341,7 @@ async def upload_exam(
             stored = await store_exam_answer(
                 service=service,
                 exam_id=exam_id,
+                agent_id=agent_id,
                 question_id=qid,
                 question_number=question_number,
                 evaluation_id=eval_result.evaluation_id,
@@ -315,12 +350,12 @@ async def upload_exam(
                 raise EnrollmentError(f"Failed to store answer for {qid} in graph")
 
         # Mark complete
-        marked = await mark_exam_complete(service, exam_id)
+        marked = await mark_exam_complete(service, exam_id, agent_id)
         if not marked:
             raise EnrollmentError(f"Failed to mark upload exam {exam_id} as complete")
 
         # Fetch results and build report card
-        results = await get_exam_results(service, exam_id)
+        results = await get_exam_results(service, exam_id, agent_id)
         if not results:
             raise EnrollmentError(f"Failed to retrieve results for exam {exam_id}")
 
@@ -350,18 +385,19 @@ async def list_exams(agent_id: str) -> list[ExamSummary]:
     ]
 
 
-async def get_exam_report(exam_id: str) -> ExamReportCard:
+async def get_exam_report(exam_id: str, agent_id: str) -> ExamReportCard:
     """Retrieve a stored exam report card from graph.
 
+    Validates exam ownership via agent_id before returning results.
     Raises EnrollmentError if exam not found or not completed.
     """
     async with graph_context() as service:
         if not service.connected:
             raise EnrollmentError("Graph unavailable — cannot retrieve exam report")
 
-        results = await get_exam_results(service, exam_id)
+        results = await get_exam_results(service, exam_id, agent_id)
         if not results:
-            raise EnrollmentError(f"Exam {exam_id} not found")
+            raise EnrollmentError(f"Exam {exam_id} not found for agent {agent_id}")
 
         if not results["completed"]:
             raise EnrollmentError(f"Exam {exam_id} is not yet completed")

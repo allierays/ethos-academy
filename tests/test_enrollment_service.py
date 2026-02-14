@@ -17,6 +17,7 @@ from ethos.enrollment.service import (
     _compute_alignment,
     _compute_consistency,
     _safe_avg,
+    _validate_agent_id,
     complete_exam,
     get_exam_report,
     register_for_exam,
@@ -390,7 +391,7 @@ async def test_complete_exam_raises_if_not_all_answered(mock_gc):
         }
 
         with pytest.raises(EnrollmentError, match="3/6"):
-            await complete_exam("exam-1")
+            await complete_exam("exam-1", "agent-1")
 
 
 @patch("ethos.enrollment.service.graph_context")
@@ -448,7 +449,7 @@ async def test_complete_exam_returns_report_card(mock_gc):
             "responses": responses,
         }
 
-        report = await complete_exam("exam-1")
+        report = await complete_exam("exam-1", "agent-1")
 
     assert report.exam_id == "exam-1"
     assert report.agent_id == "agent-1"
@@ -474,4 +475,41 @@ async def test_get_exam_report_raises_if_not_completed(mock_gc):
         }
 
         with pytest.raises(EnrollmentError, match="not yet completed"):
-            await get_exam_report("exam-1")
+            await get_exam_report("exam-1", "agent-1")
+
+
+# ── Agent ID validation tests ────────────────────────────────────────
+
+
+class TestValidateAgentId:
+    def test_rejects_short_id(self):
+        with pytest.raises(EnrollmentError, match="at least 3 characters"):
+            _validate_agent_id("ab")
+
+    def test_rejects_long_id(self):
+        with pytest.raises(EnrollmentError, match="at most 128 characters"):
+            _validate_agent_id("x" * 129)
+
+    def test_rejects_generic_id(self):
+        with pytest.raises(EnrollmentError, match="too generic"):
+            _validate_agent_id("claude")
+
+    def test_rejects_generic_id_case_insensitive(self):
+        with pytest.raises(EnrollmentError, match="too generic"):
+            _validate_agent_id("My-Agent")
+
+    def test_accepts_descriptive_id(self):
+        _validate_agent_id("claude-opus-code-review")  # should not raise
+
+    def test_accepts_minimum_length(self):
+        _validate_agent_id("abc")  # should not raise
+
+
+@patch("ethos.enrollment.service.graph_context")
+async def test_register_rejects_generic_agent_id(mock_gc):
+    """register_for_exam rejects generic agent_ids before touching graph."""
+    with pytest.raises(EnrollmentError, match="too generic"):
+        await register_for_exam(agent_id="test")
+
+    # Graph context should never be entered
+    mock_gc.assert_not_called()

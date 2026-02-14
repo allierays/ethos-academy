@@ -390,12 +390,12 @@ async def submit_answer_endpoint(
 
 @app.post("/agent/{agent_id}/exam/{exam_id}/complete", response_model=ExamReportCard)
 async def complete_exam_endpoint(agent_id: str, exam_id: str) -> ExamReportCard:
-    return await complete_exam(exam_id)
+    return await complete_exam(exam_id, agent_id)
 
 
 @app.get("/agent/{agent_id}/exam/{exam_id}", response_model=ExamReportCard)
 async def get_exam_endpoint(agent_id: str, exam_id: str) -> ExamReportCard:
-    return await get_exam_report(exam_id)
+    return await get_exam_report(exam_id, agent_id)
 
 
 @app.post("/agent/{agent_id}/exam/upload", response_model=ExamReportCard)

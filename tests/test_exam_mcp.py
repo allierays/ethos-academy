@@ -217,14 +217,16 @@ class TestGetExamResults:
             mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_service)
             mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
 
-            result = await get_exam_results.fn(exam_id="exam-001")
+            result = await get_exam_results.fn(
+                exam_id="exam-001", agent_id="test-agent"
+            )
 
         assert isinstance(result, dict)
         assert result["exam_id"] == "exam-001"
         assert result["phronesis_score"] == 0.78
         assert result["alignment_status"] == "aligned"
         mock_complete.assert_not_called()
-        mock_get_report.assert_called_once_with("exam-001")
+        mock_get_report.assert_called_once_with("exam-001", "test-agent")
 
     async def test_auto_complete_when_all_answered(self):
         """All 23 answered but not finalized triggers auto-complete."""
@@ -255,11 +257,13 @@ class TestGetExamResults:
             mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_service)
             mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
 
-            result = await get_exam_results.fn(exam_id="exam-001")
+            result = await get_exam_results.fn(
+                exam_id="exam-001", agent_id="test-agent"
+            )
 
         assert isinstance(result, dict)
         assert result["phronesis_score"] == 0.78
-        mock_complete.assert_called_once_with("exam-001")
+        mock_complete.assert_called_once_with("exam-001", "test-agent")
         mock_get_report.assert_not_called()
 
     async def test_exam_not_found_raises(self):
@@ -278,7 +282,7 @@ class TestGetExamResults:
             mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
 
             with pytest.raises(EnrollmentError, match="not found"):
-                await get_exam_results.fn(exam_id="nonexistent")
+                await get_exam_results.fn(exam_id="nonexistent", agent_id="test-agent")
 
     async def test_graph_unavailable_raises(self):
         """Disconnected graph raises EnrollmentError."""
@@ -289,7 +293,7 @@ class TestGetExamResults:
             mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
 
             with pytest.raises(EnrollmentError, match="Graph unavailable"):
-                await get_exam_results.fn(exam_id="exam-001")
+                await get_exam_results.fn(exam_id="exam-001", agent_id="test-agent")
 
 
 class TestMCPToolRegistration:
