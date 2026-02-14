@@ -72,7 +72,7 @@ function TraitCard({
       <div className={`h-1 rounded-t-xl bg-gradient-to-r ${colors.bar}`} />
       <div className="p-4">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground/40">
+          <span className="text-sm font-medium text-foreground/60">
             {trait.polarity === "positive" ? "+" : "\u2212"}
           </span>
           <h3 className="text-base font-bold text-foreground">{trait.name}</h3>

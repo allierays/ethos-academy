@@ -25,8 +25,8 @@
   --action-hover: #213855;
 
   /* ─── Coral (interactive accent) ─── */
-  --coral: #9e3a24;
-  --coral-hover: #7d2e1c;
+  --coral: #c2613d;
+  --coral-hover: #a8502f;
   --coral-light: #fdf0ed;
 
   /* ─── Ethos (ἦθος · integrity/virtue) — Navy blue ─── */
@@ -145,6 +145,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  overflow-x: hidden;
 }
 
 /* ─── Glassmorphism utility ─── */

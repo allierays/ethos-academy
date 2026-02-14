@@ -7,7 +7,7 @@ export default function StyleguidePage() {
         <img
           src="/academy-people-banner.jpeg"
           alt="School of Athens — humans and AI"
-          className="h-[28rem] w-full object-cover object-[center_30%]"
+          className="h-[16rem] sm:h-[22rem] md:h-[28rem] w-full object-cover object-[center_30%]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 px-6 pb-8">
@@ -401,7 +401,7 @@ export default function StyleguidePage() {
           description="Copy-paste reference for all design tokens."
         />
         <div className="glass-strong rounded-2xl p-6 overflow-x-auto">
-          <pre className="text-xs font-mono text-foreground/80 leading-relaxed whitespace-pre">{`/* Base — Greek marble + stone */
+          <pre className="text-[10px] sm:text-xs font-mono text-foreground/80 leading-relaxed whitespace-pre">{`/* Base — Greek marble + stone */
 var(--background)     /* #ece6de  warm marble */
 var(--surface)        /* #ffffff  white */
 var(--foreground)     /* #1a2538  deep navy-black */

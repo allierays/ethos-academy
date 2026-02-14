@@ -64,7 +64,7 @@ export default function FrameworkPage() {
           </motion.p>
 
           <motion.h1
-            className="mt-4 text-5xl font-bold tracking-tight text-white"
+            className="mt-4 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white"
             initial="hidden"
             animate="visible"
             variants={fadeUp}
@@ -99,7 +99,7 @@ export default function FrameworkPage() {
             {DIMENSIONS.map((dim) => (
               <span
                 key={dim.key}
-                className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white/80"
+                className="flex items-center gap-2 rounded-full bg-white/10 px-2.5 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm font-medium text-white/80"
               >
                 <span
                   className={`h-2.5 w-2.5 rounded-full ${DIM_COLORS[dim.key].dot}`}

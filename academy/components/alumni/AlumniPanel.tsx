@@ -111,7 +111,7 @@ export default function AlumniPanel() {
       )}
 
       {!loading && !error && data.length > 0 && (
-        <div className="mt-4 h-64">
+        <div className="mt-4 h-48 sm:h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} layout="vertical">
               <CartesianGrid

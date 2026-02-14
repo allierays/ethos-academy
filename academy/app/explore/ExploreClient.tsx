@@ -44,7 +44,7 @@ export default function ExploreClient({
       </motion.div>
 
       {/* Tab navigation */}
-      <div className="mt-6 flex gap-1 rounded-lg bg-border/20 p-1 w-fit">
+      <div className="mt-6 flex flex-wrap gap-1 rounded-lg bg-border/20 p-1">
         {TABS.map((tab) => (
           <button
             key={tab}

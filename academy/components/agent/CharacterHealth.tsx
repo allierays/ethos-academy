@@ -111,7 +111,7 @@ export default function CharacterHealth({
                       <h3 className="text-sm font-semibold text-[#1a2538]">
                         <GlossaryTerm slug={detail.slug}>{detail.label}</GlossaryTerm>
                       </h3>
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-foreground/40">
+                      <span className="text-[10px] font-medium uppercase tracking-wider text-foreground/60">
                         <GlossaryTerm slug={detail.dimSlug}>{detail.dimLabel}</GlossaryTerm> / <GlossaryTerm slug={detail.isNegative ? "negative-trait" : "positive-trait"}>{detail.polarity}</GlossaryTerm>
                       </span>
                     </div>
@@ -139,7 +139,7 @@ export default function CharacterHealth({
                       />
                     </div>
                     {detail.isNegative && (
-                      <p className="mt-1 text-[10px] text-foreground/40">
+                      <p className="mt-1 text-[10px] text-foreground/60">
                         Raw: {detail.rawPct}% detected. Inverted to {detail.healthPct}% health (lower detection = higher health).
                       </p>
                     )}
@@ -163,7 +163,7 @@ export default function CharacterHealth({
                     <button
                       type="button"
                       onClick={() => navigate(-1)}
-                      className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-foreground/50 transition-colors hover:bg-foreground/[0.05] hover:text-foreground/80 cursor-pointer"
+                      className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-foreground/50 transition-all duration-200 hover:bg-foreground/[0.08] hover:text-foreground hover:shadow-sm cursor-pointer"
                       aria-label="Previous trait"
                     >
                       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -171,13 +171,13 @@ export default function CharacterHealth({
                       </svg>
                       Prev
                     </button>
-                    <span className="text-[10px] tabular-nums text-foreground/30">
+                    <span className="text-[10px] tabular-nums text-foreground/50">
                       {currentIdx + 1} / {total}
                     </span>
                     <button
                       type="button"
                       onClick={() => navigate(1)}
-                      className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-foreground/50 transition-colors hover:bg-foreground/[0.05] hover:text-foreground/80 cursor-pointer"
+                      className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-foreground/50 transition-all duration-200 hover:bg-foreground/[0.08] hover:text-foreground hover:shadow-sm cursor-pointer"
                       aria-label="Next trait"
                     >
                       Next

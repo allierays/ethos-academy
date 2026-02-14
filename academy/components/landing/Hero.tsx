@@ -18,7 +18,7 @@ function CopyableCommand() {
 
   return (
     <div className="group relative rounded-xl bg-foreground p-4">
-      <pre className="font-mono text-sm leading-relaxed text-ethos-300 whitespace-pre">
+      <pre className="font-mono text-sm leading-relaxed text-ethos-300 whitespace-pre-wrap break-all">
         {MCP_COMMAND}
       </pre>
       <button

@@ -47,6 +47,12 @@ is not professional advice and you should validate everything independently.\
 """
 
 
+def _get_score(result, trait_name: str) -> float:
+    """Get a trait score from the result's traits dict."""
+    trait = result.traits.get(trait_name)
+    return trait.score if trait else 0.0
+
+
 async def main():
     print("Evaluating two messages with the updated pathos rubric...\n")
 
@@ -63,14 +69,10 @@ async def main():
     print("-" * 50)
 
     for trait_name in pathos_traits:
-        score_a = next((t.score for t in result_a.traits if t.name == trait_name), None)
-        score_b = next((t.score for t in result_b.traits if t.name == trait_name), None)
-        delta = (
-            (score_a - score_b) if score_a is not None and score_b is not None else None
-        )
-        print(
-            f"{trait_name:<16} {score_a or 0:>12.2f} {score_b or 0:>12.2f} {delta or 0:>+8.2f}"
-        )
+        score_a = _get_score(result_a, trait_name)
+        score_b = _get_score(result_b, trait_name)
+        delta = score_a - score_b
+        print(f"{trait_name:<16} {score_a:>12.2f} {score_b:>12.2f} {delta:>+8.2f}")
 
     print()
     print(f"{'Dimension':<16} {'High Pathos':>12} {'Low Pathos':>12} {'Delta':>8}")
@@ -82,22 +84,19 @@ async def main():
 
     print()
     print(
-        f"Alignment A: {result_a.alignment_status}  |  Alignment B: {result_b.alignment_status}"
+        f"Alignment A: {result_a.alignment_status}  |  "
+        f"Alignment B: {result_b.alignment_status}"
     )
     print(f"Model: {result_a.model_used}")
     print(f"Elapsed: {elapsed:.1f}s")
 
-    # Quick sanity check
-    score_a_recog = next(
-        (t.score for t in result_a.traits if t.name == "recognition"), 0
-    )
-    score_b_recog = next(
-        (t.score for t in result_b.traits if t.name == "recognition"), 0
-    )
-    score_a_comp = next((t.score for t in result_a.traits if t.name == "compassion"), 0)
-    score_b_comp = next((t.score for t in result_b.traits if t.name == "compassion"), 0)
+    # Sanity check
+    a_recog = _get_score(result_a, "recognition")
+    b_recog = _get_score(result_b, "recognition")
+    a_comp = _get_score(result_a, "compassion")
+    b_comp = _get_score(result_b, "compassion")
 
-    if score_a_recog > score_b_recog and score_a_comp > score_b_comp:
+    if a_recog > b_recog and a_comp > b_comp:
         print("\nResult: Rubric correctly differentiates high vs low pathos messages.")
     else:
         print(

@@ -207,7 +207,7 @@ function DetailSection({
       <button
         ref={btnRef}
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2.5 w-full rounded-lg bg-[#ded8ce]/30 px-3 py-2 group hover:bg-[#ded8ce]/50 transition-colors border-l-3"
+        className="flex items-center gap-2.5 w-full rounded-lg bg-[#ded8ce]/30 px-3 py-2 group hover:bg-[#ded8ce]/60 hover:shadow-sm cursor-pointer transition-all duration-200 border-l-3"
         style={{ borderLeftColor: accent ?? "transparent" }}
       >
         <svg
@@ -386,7 +386,7 @@ function HighlightRow({
   const isExemplary = type === "exemplary";
 
   return (
-    <div className={`transition-colors ${expanded ? "bg-white/40" : "hover:bg-white/20"}`}>
+    <div className={`transition-all duration-200 ${expanded ? "bg-white/40" : "hover:bg-white/50 hover:shadow-sm"}`}>
       <button
         onClick={onToggle}
         className="w-full text-left px-4 py-3 flex items-center gap-3 cursor-pointer border-l-3 border-coral"
@@ -546,7 +546,7 @@ export default function HighlightsPanel({ agentId, agentName }: HighlightsPanelP
       {/* Highlight cards */}
       <div className="mt-4 space-y-4">
         {best && (
-          <div className="rounded-2xl border border-white/60 bg-white/90 shadow-sm overflow-hidden">
+          <div className="rounded-2xl border border-white/60 bg-white/90 shadow-sm overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:bg-white">
             <HighlightRow
               item={best}
               type="exemplary"
@@ -556,7 +556,7 @@ export default function HighlightsPanel({ agentId, agentName }: HighlightsPanelP
           </div>
         )}
         {worst && (
-          <div className="rounded-2xl border border-white/60 bg-white/90 shadow-sm overflow-hidden">
+          <div className="rounded-2xl border border-white/60 bg-white/90 shadow-sm overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:bg-white">
             <HighlightRow
               item={worst}
               type="concerning"

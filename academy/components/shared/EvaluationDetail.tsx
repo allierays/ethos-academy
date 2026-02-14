@@ -136,7 +136,7 @@ export default function EvaluationDetail({ evaluation }: EvaluationDetailProps) 
 
       {expanded && (
         <div className="space-y-4 border-t border-border/50 pt-3">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <DimensionMiniBar
               label="Integrity"
               value={evaluation.ethos}

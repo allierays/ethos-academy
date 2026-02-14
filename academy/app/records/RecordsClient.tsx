@@ -448,7 +448,7 @@ function RecordRow({
       <td colSpan={6} className="p-0 overflow-hidden">
         <button
           onClick={(e) => { e.stopPropagation(); onToggle(); }}
-          className="w-full text-left px-4 py-3 flex items-center gap-3 cursor-pointer"
+          className="w-full text-left px-2 sm:px-4 py-3 flex items-center gap-3 cursor-pointer"
           aria-expanded={expanded}
         >
           {/* Score */}

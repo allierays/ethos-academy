@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Header from "../components/shared/Header";
+import Footer from "../components/landing/Footer";
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { GlossaryProvider } from "../lib/GlossaryContext";
 import GlossarySidebar from "../components/shared/GlossarySidebar";
@@ -53,6 +54,7 @@ export default function RootLayout({
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
+          <Footer />
           <GlossarySidebar />
         </GlossaryProvider>
       </body>

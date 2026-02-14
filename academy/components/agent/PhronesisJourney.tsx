@@ -95,7 +95,7 @@ export default function PhronesisJourney({
           &ldquo;We are what we repeatedly do. Excellence, then, is not an act
           but a habit.&rdquo;
         </p>
-        <p className="mt-1 text-xs text-foreground/40">
+        <p className="mt-1 text-xs text-foreground/60">
           Aristotle, for AI agents
         </p>
       </blockquote>

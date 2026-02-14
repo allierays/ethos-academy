@@ -109,7 +109,7 @@ export default function BalanceThesis({
           <span className={`text-sm font-semibold ${categoryColor}`}>
             {category}
           </span>
-          <span className="text-xs text-foreground/40">{balancePct}%</span>
+          <span className="text-xs text-foreground/60">{balancePct}%</span>
         </div>
       </div>
 

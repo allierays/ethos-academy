@@ -331,7 +331,7 @@ export default function TranscriptChart({ timeline, agentName, breakpoints = [],
                 return (
                   <div
                     key={dim.key}
-                    className="rounded-lg glass overflow-hidden transition-all duration-200 hover:scale-[1.03] hover:shadow-md hover:brightness-[0.97]"
+                    className="rounded-lg glass overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
                     style={{
                       borderLeft: `3px solid ${dim.color}`,
                       boxShadow: isExpanded ? `0 0 0 1px ${dim.color}25` : undefined,
@@ -339,7 +339,7 @@ export default function TranscriptChart({ timeline, agentName, breakpoints = [],
                   >
                     <button
                       type="button"
-                      className="w-full p-3 text-center transition-colors hover:bg-foreground/[0.02] cursor-pointer"
+                      className="w-full p-3 text-center cursor-pointer"
                       onClick={() => hasHabits && setExpandedDim(isExpanded ? null : dim.key)}
                     >
                       <p className="text-[10px] uppercase tracking-wider text-muted">
@@ -375,7 +375,7 @@ export default function TranscriptChart({ timeline, agentName, breakpoints = [],
                         />
                       </div>
                       {hasHabits && (
-                        <p className="mt-2 text-[10px] text-foreground/40 flex items-center justify-center gap-1">
+                        <p className="mt-2 text-[10px] text-foreground/60 flex items-center justify-center gap-1">
                           <svg
                             className={`h-2.5 w-2.5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                             viewBox="0 0 12 12"
@@ -416,7 +416,7 @@ export default function TranscriptChart({ timeline, agentName, breakpoints = [],
                                         <GlossaryTerm slug={habit.trait.slug}>{habit.trait.label}</GlossaryTerm>
                                       </span>
                                     </div>
-                                    <span className="text-[10px] font-medium text-foreground/40">
+                                    <span className="text-[10px] font-medium text-foreground/60">
                                       {config.label}
                                     </span>
                                   </div>
@@ -501,7 +501,7 @@ export default function TranscriptChart({ timeline, agentName, breakpoints = [],
               </div>
             ))}
           </div>
-          <p className="mt-2 text-[10px] text-foreground/40">
+          <p className="mt-2 text-[10px] text-foreground/60">
             Breakpoints use a 5-evaluation sliding window. Only the PRECEDES linked list in Neo4j
             guarantees temporal chain integrity at scale.
           </p>

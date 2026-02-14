@@ -91,7 +91,7 @@ export default function WhatIsPhronesis() {
             <img
               src="/homepage.png"
               alt="Aristotle"
-              className="h-[28rem] w-[28rem] rounded-3xl object-cover shadow-lg"
+              className="h-64 w-64 sm:h-80 sm:w-80 md:h-[28rem] md:w-[28rem] rounded-3xl object-cover shadow-lg"
             />
           </motion.div>
         </div>

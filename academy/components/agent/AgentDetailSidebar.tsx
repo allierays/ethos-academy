@@ -57,7 +57,7 @@ export default function AgentDetailSidebar({
 
   return (
     <div
-      className="flex h-full w-80 flex-col border-l border-border bg-white"
+      className="flex h-full w-full sm:w-80 flex-col border-l border-border bg-white"
       data-testid="agent-detail-sidebar"
     >
       {/* Header */}

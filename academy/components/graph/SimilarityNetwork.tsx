@@ -239,13 +239,12 @@ export default function SimilarityNetwork({ onAgentClick }: SimilarityNetworkPro
       </div>
 
       {/* SVG Network */}
-      <div className="overflow-hidden rounded-lg border border-border/50 bg-slate-50/50">
+      <div className="w-full overflow-x-auto rounded-lg border border-border/50 bg-slate-50/50">
         <svg
           ref={svgRef}
-          width={width}
-          height={height}
           viewBox={`0 0 ${width} ${height}`}
           className="w-full"
+          style={{ minWidth: 400 }}
         >
           {/* Edges */}
           {data.edges.map((edge, i) => {

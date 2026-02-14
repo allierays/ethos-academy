@@ -148,7 +148,7 @@ export default function AgentTimeline() {
             </div>
           )}
 
-          <div className="mt-4 h-64">
+          <div className="mt-4 h-48 sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />

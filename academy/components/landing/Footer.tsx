@@ -138,6 +138,14 @@ export default function Footer() {
             </a>
           </p>
           <p className="text-xs text-white/50">
+            <Link href="/privacy" className="underline transition-colors hover:text-white/80">
+              Privacy
+            </Link>
+            {" "}&middot;{" "}
+            <Link href="/terms" className="underline transition-colors hover:text-white/80">
+              Terms
+            </Link>
+            {" "}&middot;{" "}
             <a
               href="https://github.com/allierays/ethos/blob/main/LICENSE"
               target="_blank"

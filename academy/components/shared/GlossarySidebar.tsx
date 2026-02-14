@@ -75,7 +75,7 @@ export default function GlossarySidebar() {
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="fixed right-0 top-0 z-40 flex h-dvh w-96 max-w-[90vw] flex-col border-l border-border bg-white/90 backdrop-blur-xl shadow-xl"
+          className="fixed right-0 top-0 z-40 flex h-dvh w-full sm:w-96 max-w-[90vw] flex-col border-l border-border bg-white/90 backdrop-blur-xl shadow-xl"
           role="complementary"
           aria-label="Glossary"
         >

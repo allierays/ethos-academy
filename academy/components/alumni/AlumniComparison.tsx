@@ -122,7 +122,7 @@ export default function AlumniComparison({
                   <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color }}>
                     {dim.label}
                   </span>
-                  <span className="text-[9px] text-foreground/40">{dim.sublabel}</span>
+                  <span className="text-[9px] text-foreground/60">{dim.sublabel}</span>
                 </div>
 
                 {/* Chart for this dimension */}
@@ -145,7 +145,7 @@ export default function AlumniComparison({
                         tick={{ fontSize: 10, fill: "#64748b" }}
                         tickLine={false}
                         axisLine={false}
-                        width={80}
+                        width={55}
                       />
                       <Tooltip
                         contentStyle={{
@@ -182,7 +182,7 @@ export default function AlumniComparison({
           })}
 
           {/* Shared x-axis scale */}
-          <div className="flex items-center justify-between px-[80px] text-[9px] text-foreground/30">
+          <div className="flex items-center justify-between px-[55px] text-[9px] text-foreground/50">
             <span>0</span>
             <span>0.25</span>
             <span>0.5</span>

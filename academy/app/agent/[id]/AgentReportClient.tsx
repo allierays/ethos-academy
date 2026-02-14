@@ -25,7 +25,6 @@ import GoldenMean from "../../../components/agent/GoldenMean";
 import BalanceThesis from "../../../components/agent/BalanceThesis";
 import GlossaryTerm from "../../../components/shared/GlossaryTerm";
 import GraphHelpButton from "../../../components/shared/GraphHelpButton";
-import Footer from "../../../components/landing/Footer";
 import { fadeUp, staggerContainer } from "../../../lib/motion";
 
 /* ─── Timeline data point ─── */
@@ -100,7 +99,7 @@ export default function AgentReportClient({
       <GradeHero profile={profile} report={report} timeline={timeline} />
 
       {/* Decorative blobs — full-width so they don't clip at max-w edges */}
-      <div className="relative">
+      <div className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
           <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-ethos-200/30 blur-3xl" />
           <div className="absolute top-1/3 -right-32 h-[400px] w-[400px] rounded-full bg-logos-200/20 blur-3xl" />
@@ -192,7 +191,6 @@ export default function AgentReportClient({
         </div>
       </motion.section>
 
-      <Footer />
     </>
   );
 }

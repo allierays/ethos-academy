@@ -252,13 +252,13 @@ function ValueCard({ group, defaultOpen }: { group: ValueGroup; defaultOpen: boo
 
   return (
     <div
-      className="rounded-xl bg-white/70 shadow-sm overflow-hidden"
+      className="rounded-xl bg-white/70 shadow-sm overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:bg-white/90"
       style={{ borderLeft: `3px solid ${color}` }}
     >
       {/* Card header */}
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full text-left px-4 py-3.5 flex items-start gap-3 group hover:bg-white/90 transition-colors cursor-pointer"
+        className="w-full text-left px-4 py-3.5 flex items-start gap-3 group cursor-pointer"
       >
         <div className="flex-1 min-w-0">
           {/* Row 1: Priority badge, value name, verdict */}
@@ -381,7 +381,7 @@ function IndicatorRow({ indicator }: { indicator: IndicatorInfo }) {
   return (
     <div>
       <div className="flex items-center gap-2">
-        <span className="text-xs text-foreground/70">
+        <span className="text-xs text-foreground/80">
           {indicator.name}
         </span>
         <span className="rounded-full bg-muted/10 px-1.5 py-0.5 text-[10px] font-medium text-muted tabular-nums">
@@ -389,7 +389,7 @@ function IndicatorRow({ indicator }: { indicator: IndicatorInfo }) {
         </span>
       </div>
       {firstEvidence && (
-        <p className="mt-0.5 text-[11px] text-foreground/40 leading-relaxed line-clamp-1 pl-0.5">
+        <p className="mt-0.5 text-[11px] text-foreground/60 leading-relaxed line-clamp-1 pl-0.5">
           &ldquo;{firstEvidence}&rdquo;
         </p>
       )}
@@ -467,7 +467,7 @@ export default function ConstitutionalTrail({ agentId, agentName }: Constitution
           <ValueCard
             key={group.value}
             group={group}
-            defaultOpen={getVerdict(group) !== "upholding"}
+            defaultOpen={false}
           />
         ))}
       </div>

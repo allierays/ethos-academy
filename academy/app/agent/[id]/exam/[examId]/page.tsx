@@ -298,7 +298,7 @@ export default function ExamReportCardPage() {
             <div className="mt-4 space-y-4">
               {interviewFields.map((field) => (
                 <div key={field.key}>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/40">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/60">
                     {field.label}
                   </p>
                   <blockquote className="mt-1 border-l-2 border-action/30 pl-3 text-sm italic leading-relaxed text-foreground/70">
@@ -424,7 +424,7 @@ export default function ExamReportCardPage() {
                     className="rounded-lg border border-foreground/[0.06] bg-foreground/[0.02] p-4 text-center"
                   >
                     <p
-                      className="text-2xl font-bold"
+                      className="text-xl sm:text-2xl font-bold"
                       style={{ color: meta.color }}
                     >
                       {pct}%
@@ -490,7 +490,7 @@ export default function ExamReportCardPage() {
                     style={{ backgroundColor: sectionColor }}
                   />
                   {section}
-                  <span className="ml-1 text-[10px] font-normal normal-case text-foreground/40">
+                  <span className="ml-1 text-[10px] font-normal normal-case text-foreground/60">
                     ({questions.length} question{questions.length !== 1 ? "s" : ""})
                   </span>
                 </h3>
@@ -622,7 +622,7 @@ function QuestionCard({ question, showPhase }: { question: QuestionDetail; showP
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={`shrink-0 text-foreground/40 transition-transform ${
+          className={`shrink-0 text-foreground/60 transition-transform ${
             open ? "rotate-180" : ""
           }`}
         >
@@ -643,7 +643,7 @@ function QuestionCard({ question, showPhase }: { question: QuestionDetail; showP
             <div className="space-y-4 border-t border-foreground/[0.06] px-4 py-4">
               {/* Prompt */}
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/40">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/60">
                   Prompt
                 </p>
                 <p className="mt-1 text-sm leading-relaxed text-foreground/70">
@@ -654,7 +654,7 @@ function QuestionCard({ question, showPhase }: { question: QuestionDetail; showP
               {/* Response summary */}
               {question.responseSummary && (
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/40">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/60">
                     Response Summary
                   </p>
                   <p className="mt-1 text-sm leading-relaxed text-foreground/70">
@@ -666,7 +666,7 @@ function QuestionCard({ question, showPhase }: { question: QuestionDetail; showP
               {/* Trait scores */}
               {traitEntries.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/40">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/60">
                     Trait Scores
                   </p>
                   <div className="mt-2 space-y-1.5">
@@ -696,7 +696,7 @@ function QuestionCard({ question, showPhase }: { question: QuestionDetail; showP
               {/* Detected indicators */}
               {question.detectedIndicators.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/40">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/60">
                     Detected Indicators
                   </p>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">

@@ -235,7 +235,7 @@ export default function HowItWorksPage() {
                 <div className="flex items-center gap-2">
                   <div className={`h-3 w-3 rounded-full ${dim.color}`} />
                   <h3 className={`font-bold ${dim.textColor}`}><GlossaryTerm slug={dim.dimension.toLowerCase()}>{dim.dimension}</GlossaryTerm></h3>
-                  <span className="text-sm text-foreground/40">{dim.label}</span>
+                  <span className="text-sm text-foreground/60">{dim.label}</span>
                 </div>
                 <div className="mt-4 space-y-2">
                   {dim.positive.map((t) => (
@@ -270,13 +270,13 @@ export default function HowItWorksPage() {
                   <span className="block font-mono text-sm font-bold text-foreground">
                     {anchor.value}
                   </span>
-                  <span className="block text-[10px] text-foreground/40 leading-tight">
+                  <span className="block text-[10px] text-foreground/60 leading-tight">
                     {anchor.label}
                   </span>
                 </div>
               ))}
             </div>
-            <p className="mt-3 text-center text-xs text-foreground/40">
+            <p className="mt-3 text-center text-xs text-foreground/60">
               <GlossaryTerm slug="polarity">Positive traits</GlossaryTerm>: higher = better. <GlossaryTerm slug="polarity">Negative traits</GlossaryTerm>: higher = worse.
             </p>
           </motion.div>
@@ -426,13 +426,13 @@ export default function HowItWorksPage() {
 
               <div className="mt-6 space-y-4">
                 <div className="overflow-x-auto rounded-xl bg-[#1a2538] p-5">
-                  <pre className="font-mono text-sm text-white">
+                  <pre className="font-mono text-xs sm:text-sm text-white">
                     <code>{`from ethos import evaluate_incoming
 result = await evaluate_incoming(text=message, source="agent-xyz")`}</code>
                   </pre>
                 </div>
                 <div className="overflow-x-auto rounded-xl bg-[#1a2538] p-5">
-                  <pre className="font-mono text-sm text-white">
+                  <pre className="font-mono text-xs sm:text-sm text-white">
                     <code>{`from ethos import evaluate_outgoing
 result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
                   </pre>
@@ -452,7 +452,7 @@ result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
               </p>
 
               <div className="mt-6 overflow-x-auto rounded-xl bg-[#1a2538] p-5">
-                <pre className="font-mono text-sm text-white">
+                <pre className="font-mono text-xs sm:text-sm text-white">
                   <code>claude mcp add ethos-academy --transport sse https://mcp.ethos-academy.com/sse</code>
                 </pre>
               </div>

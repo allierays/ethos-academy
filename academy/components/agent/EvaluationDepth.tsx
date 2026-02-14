@@ -81,7 +81,7 @@ export default function EvaluationDepth() {
           <h2 className="text-base font-semibold uppercase tracking-wider text-[#1a2538]">
             Appendix
           </h2>
-          <span className="rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[10px] font-medium text-foreground/40">
+          <span className="rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[10px] font-medium text-foreground/60">
             How this report works
           </span>
         </div>
@@ -133,7 +133,7 @@ export default function EvaluationDepth() {
       {/* Expandable methodology details */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="mt-5 flex w-full items-center gap-2 text-left text-sm font-semibold text-[#1a2538] hover:text-coral border-l-3 border-coral pl-3 cursor-pointer transition-colors"
+        className="mt-5 flex w-full items-center gap-2 rounded-lg text-left text-sm font-semibold text-[#1a2538] hover:text-coral hover:bg-foreground/[0.04] hover:shadow-sm border-l-3 border-coral pl-3 py-2 cursor-pointer transition-all duration-200"
       >
         <svg
           className={`h-4 w-4 shrink-0 transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}

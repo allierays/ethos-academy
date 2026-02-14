@@ -3,8 +3,6 @@ import WhatIsPhronesis from "../components/landing/WhatIsPhronesis";
 import Pillars from "../components/landing/Pillars";
 import ScaleStatement from "../components/landing/ScaleStatement";
 import GraphTeaser from "../components/landing/GraphTeaser";
-import Footer from "../components/landing/Footer";
-
 export default function LandingPage() {
   return (
     <div>
@@ -13,7 +11,6 @@ export default function LandingPage() {
       <Pillars />
       <ScaleStatement />
       <GraphTeaser />
-      <Footer />
     </div>
   );
 }
