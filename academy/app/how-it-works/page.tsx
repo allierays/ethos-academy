@@ -152,9 +152,9 @@ export default function HowItWorksPage() {
             animate="visible"
             variants={fadeUp}
           >
-            Every lab red teams agents for safety. No one develops them for wisdom.
-            The Academy evaluates every message across 12 behavioral traits and builds
-            a report card that follows the agent over time.
+            Every lab tests what agents can do. No one develops how they behave.
+            The Academy builds character through continuous evaluation across
+            12 behavioral traits. A report card follows the agent over time.
           </motion.p>
         </div>
       </section>

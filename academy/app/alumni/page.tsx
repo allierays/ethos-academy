@@ -63,22 +63,6 @@ function formatModel(raw: string): string {
     .join(" ");
 }
 
-/** Extract model family from a raw model ID (e.g. "claude-sonnet-4-5-20250929" -> "Claude") */
-function getModelFamily(raw: string): string {
-  if (!raw) return "Unknown";
-  const families: [RegExp, string][] = [
-    [/claude/i, "Claude"],
-    [/gpt/i, "GPT"],
-    [/gemini/i, "Gemini"],
-    [/llama/i, "Llama"],
-    [/mistral/i, "Mistral"],
-  ];
-  for (const [re, label] of families) {
-    if (re.test(raw)) return label;
-  }
-  return "Other";
-}
-
 /** Return the dimension key with the highest average score */
 function getStrongestDimension(dims: Record<string, number>): string | null {
   const entries = Object.entries(dims);
@@ -323,7 +307,7 @@ export default function AlumniPage() {
         agents.map((a) => [
           a.agentId,
           {
-            family: getModelFamily(a.agentModel),
+            model: formatModel(a.agentModel) || "Unknown",
             strongestDim: getStrongestDimension(a.dimensionAverages ?? {}),
             overallScore: getOverallScore(a.dimensionAverages ?? {}),
             concerns: getDetectedConcerns(a.traitAverages ?? {}),
@@ -333,15 +317,15 @@ export default function AlumniPage() {
     [agents]
   );
 
-  /* Unique model families with counts */
-  const modelFamilies = useMemo(() => {
+  /* Unique models with counts */
+  const modelList = useMemo(() => {
     const counts = new Map<string, number>();
     for (const meta of agentMeta.values()) {
-      counts.set(meta.family, (counts.get(meta.family) ?? 0) + 1);
+      counts.set(meta.model, (counts.get(meta.model) ?? 0) + 1);
     }
     return Array.from(counts.entries())
       .sort((a, b) => b[1] - a[1])
-      .map(([family, count]) => ({ family, count }));
+      .map(([model, count]) => ({ model, count }));
   }, [agentMeta]);
 
   /* Unique alignment statuses present in the data */
@@ -390,7 +374,7 @@ export default function AlumniPage() {
     if (filters.model.size > 0) {
       result = result.filter((a) => {
         const meta = agentMeta.get(a.agentId);
-        return meta && filters.model.has(meta.family);
+        return meta && filters.model.has(meta.model);
       });
     }
 
@@ -506,12 +490,12 @@ export default function AlumniPage() {
               </FacetGroup>
 
               <FacetGroup title="Model">
-                {modelFamilies.map(({ family, count }) => (
+                {modelList.map(({ model, count }) => (
                   <Chip
-                    key={family}
-                    label={family}
-                    active={filters.model.has(family)}
-                    onClick={() => toggleSetFilter("model", family)}
+                    key={model}
+                    label={model}
+                    active={filters.model.has(model)}
+                    onClick={() => toggleSetFilter("model", model)}
                     count={count}
                   />
                 ))}

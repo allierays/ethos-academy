@@ -163,7 +163,7 @@ async def _seed_traits(service: GraphService) -> None:
 
 
 async def _seed_indicators(service: GraphService) -> None:
-    """Seed 153 Indicator nodes with BELONGS_TO→Trait relationships."""
+    """Seed 208 Indicator nodes with BELONGS_TO→Trait relationships."""
     for ind in INDICATORS:
         await service.execute_query(
             "MERGE (i:Indicator {id: $id}) "
