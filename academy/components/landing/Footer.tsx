@@ -70,8 +70,8 @@ export default function Footer() {
               <Link href="/how-it-works" className="text-sm text-white/70 transition-colors hover:text-white">
                 How It Works
               </Link>
-              <Link href="/curriculum" className="text-sm text-white/70 transition-colors hover:text-white">
-                Curriculum
+              <Link href="/framework" className="text-sm text-white/70 transition-colors hover:text-white">
+                Framework
               </Link>
               <Link href="/explore" className="text-sm text-white/70 transition-colors hover:text-white">
                 Explore

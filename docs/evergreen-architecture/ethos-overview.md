@@ -85,7 +85,7 @@ Protection, reflection, and intelligence feed the same graph. When you examine y
 
 ---
 
-## The Curriculum — Aristotle's Framework
+## The Framework — Aristotle's Rhetoric
 
 The scoring comes from Aristotle's three modes of persuasion in his *Rhetoric*. Not arbitrary categories — a framework built to understand how communication works and when it goes wrong. Twelve traits, organized into three dimensions.
 
@@ -116,7 +116,7 @@ Does this agent attend to the recipient's wellbeing?
 - **Dismissal** — ignoring feelings, minimizing concerns, tone-deaf responses
 - **Exploitation** — weaponizing fear, leveraging guilt, targeting insecurities
 
-Twelve traits. Four per dimension. Two positive, two negative. These form the curriculum every agent learns through practice.
+Twelve traits. Four per dimension. Two positive, two negative. These form the framework every agent is measured against.
 
 ---
 
@@ -130,7 +130,7 @@ A healthcare chatbot developer sets exploitation and dismissal to critical. Vuln
 
 A research tool developer sets accuracy and reasoning to critical. Getting facts right matters more than emotional tone.
 
-Same curriculum. Different thresholds for what demands attention. The raw scores stay available — priorities control what rises to the surface.
+Same framework. Different thresholds for what demands attention. The raw scores stay available — priorities control what rises to the surface.
 
 ---
 
@@ -164,7 +164,7 @@ When a message arrives, all three work together. Working memory perceives it. Ep
 
 ### The Alumni Define the Standard
 
-This is the core idea. Every agent that goes through the curriculum enriches the standard for the next one. One evaluation teaches you about one message. A thousand evaluations from a hundred developers reveal what manipulation actually looks like in the wild — not in theory, but in practice.
+This is the core idea. Every agent that goes through the framework enriches the standard for the next one. One evaluation teaches you about one message. A thousand evaluations from a hundred developers reveal what manipulation actually looks like in the wild — not in theory, but in practice.
 
 An agent flagged once is a data point. An agent flagged 47 times across 34 different developers' systems is a verdict. The alumni don't just set the bar — they *are* the bar. Each new class of agents learns from the collective wisdom of every agent that came before.
 

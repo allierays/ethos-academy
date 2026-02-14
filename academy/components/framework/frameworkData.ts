@@ -1,4 +1,4 @@
-/* ─── Curriculum Data ───
+/* ─── Framework Data ───
  * Extracted from page.tsx: types, dimensions, traits, indicators,
  * example quotes, and shared SVG components.
  */

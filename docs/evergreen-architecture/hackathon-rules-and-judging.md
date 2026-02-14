@@ -112,6 +112,17 @@ Build something that deeply models perspectives, relationships, and decisions; m
 
 Judging for the Anthropic Virtual Hackathon happens in **two stages**.
 
+### Judges
+
+| Judge | Role |
+|-------|------|
+| **Boris Cherny** | Head of Claude Code, creator. Author of "Programming TypeScript" |
+| **Cat Wu** | PM for Claude Code |
+| **Thariq Shihipar** | MTS on Claude Code, built Agent SDK |
+| **Lydia Hallie** | MTS, ex-Bun/Vercel DX |
+| **Ado Kukic** | DevRel |
+| **Jason Bigman** | Head of Community |
+
 ### Stage 1 — Asynchronous Judging
 
 - **Date:** Feb 16th
@@ -119,15 +130,15 @@ Judging for the Anthropic Virtual Hackathon happens in **two stages**.
 - Each team will have uploaded:
   1. A short demo video (3 minute maximum)
   2. GitHub repository or code link
-  3. Written summary (100–500 words)
+  3. Written summary (100-200 words)
 - Projects are scored using a **standardized judging criteria:**
 
 | Criterion | Weight | Description |
 |-----------|--------|-------------|
+| **Demo** | 30% | Is this a working, impressive demo? Does it hold up live? Is it genuinely cool to watch? |
 | **Impact** | 25% | What's the real-world potential here? Who benefits, and how much does it matter? Could this actually become something people use? Does it fit into one of the problem statements listed above? |
 | **Opus 4.6 Use** | 25% | How creatively did this team use Opus 4.6? Did they go beyond a basic integration? Did they surface capabilities that surprised even us? |
 | **Depth & Execution** | 20% | Did the team push past their first idea? Is the engineering sound and thoughtfully refined? Does this feel like something that was wrestled with — real craft, not just a quick hack? |
-| **Demo** | 30% | Is this a working, impressive demo? Does it hold up live? Is it genuinely cool to watch? |
 
 - After evaluation, the team aggregates scores to determine the top teams.
 
@@ -158,11 +169,10 @@ Judging for the Anthropic Virtual Hackathon happens in **two stages**.
 | Prize | Award |
 |-------|-------|
 | **1st Place** | $50,000 in Claude API Credits |
-| **2nd Place** | $15,000 in Claude API Credits |
-| **3rd Place** | $5,000 in Claude API Credits |
-| **Most Creative Opus 4.6 Exploration** | $1,000 in Claude API Credits — For the team that found the most unexpected capability or the use case nobody thought of; creative, inspiring, and pushing the boundaries of what's possible. |
-| **The "Vibe Coding" Prize** | $1,000 in Claude API Credits — For the project that didn't stop at the first idea. We're looking for the team that iterated on the vibes, showed rapid experimentation, and demonstrated genuine curiosity. |
-| **The "Real Things" Prize** | $1,000 in Claude API Credits — For the most practical, down-to-earth project that solves a real problem people actually have. |
+| **2nd Place** | $30,000 in Claude API Credits |
+| **3rd Place** | $10,000 in Claude API Credits |
+| **Most Creative Opus 4.6 Exploration** | $5,000 in Claude API Credits — For the team that found the most unexpected capability or the use case nobody thought to try; creative, inspiring, and pushing the boundaries of what's possible. |
+| **The "Keep Thinking" Prize** | $5,000 in Claude API Credits — For the team that didn't stop at the first idea. Iterated relentlessly, showed rapid experimentation, and demonstrated genuine curiosity and depth. |
 
 ---
 

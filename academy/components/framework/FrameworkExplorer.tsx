@@ -8,8 +8,8 @@ import {
   humanize,
   type Dimension,
   type Trait,
-} from "./curriculumData";
-import MobileCurriculum from "./MobileCurriculum";
+} from "./frameworkData";
+import MobileFramework from "./MobileFramework";
 import {
   fadeUp,
   staggerContainer,
@@ -298,12 +298,12 @@ function DesktopExplorer() {
 
 /* ─── Export: responsive wrapper ─── */
 
-export default function CurriculumExplorer() {
+export default function FrameworkExplorer() {
   const isDesktop = useIsDesktop();
 
   return (
     <motion.div {...whileInView} variants={staggerContainer}>
-      {isDesktop ? <DesktopExplorer /> : <MobileCurriculum />}
+      {isDesktop ? <DesktopExplorer /> : <MobileFramework />}
     </motion.div>
   );
 }

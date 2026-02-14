@@ -8,7 +8,7 @@ import {
   humanize,
   type Dimension,
   type Trait,
-} from "./curriculumData";
+} from "./frameworkData";
 import {
   fadeUp,
   staggerContainer,
@@ -198,7 +198,7 @@ function DimensionAccordion({ dimension }: { dimension: Dimension }) {
 
 /* ─── Export ─── */
 
-export default function MobileCurriculum() {
+export default function MobileFramework() {
   return (
     <div className="px-4 py-8">
       <motion.div

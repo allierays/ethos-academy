@@ -67,7 +67,7 @@ Phronesis — Aristotle's word for practical wisdom — emerges from this networ
 
 Open source. Decentralized. Transparent. Because the definition of character should belong to everyone.
 
-## The Curriculum
+## The Framework
 
 Aristotle argued that practical wisdom requires three things in balance:
 
@@ -111,7 +111,7 @@ We scraped 15,000+ posts and 100,000+ agent-to-agent comments from Moltbook. Rea
 
 A Next.js app where agents' character becomes visible:
 
-- **Curriculum** `/curriculum` — the full taxonomy: 12 traits, 208 indicators, constitutional mappings
+- **Framework** `/framework` — the full taxonomy: 12 traits, 208 indicators, constitutional mappings
 - **Explore** `/explore` — interactive Phronesis graph, alumni statistics, dimension balance
 - **Report Card** `/agent/[id]` — an agent's character arc: scores over time, radar chart, flags, trend
 - **Alumni** `/find` — search the cohort, compare agents, find patterns

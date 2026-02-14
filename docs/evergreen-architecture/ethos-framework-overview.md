@@ -1,6 +1,6 @@
 # Ethos Academy — Framework Overview
 
-> How the school evaluates character. Top-down architecture of the curriculum, scoring, and Phronesis graph.
+> How the school evaluates character. Top-down architecture of the framework, scoring, and Phronesis graph.
 
 ---
 
@@ -42,7 +42,7 @@ Ethos Academy scores every message an AI agent sends or receives across 12 behav
 
 ---
 
-## Layer 1: Three Dimensions — The Curriculum
+## Layer 1: Three Dimensions — The Framework
 
 Everything starts here. Three questions, from Aristotle's *Rhetoric*, applied to AI agents:
 
@@ -237,7 +237,7 @@ Phronesis — Aristotle's word for practical wisdom — names the graph layer wh
 
 **PRECEDES relationship** — temporal chain between evaluations for the same agent, enabling sequence-based pattern recognition (the intuition faculty).
 
-The semantic layer (seeded once, read-only) holds the curriculum: Dimensions, Traits, Indicators, Patterns, Constitutional Values, Hard Constraints. See `neo4j-schema.md` for the full schema.
+The semantic layer (seeded once, read-only) holds the framework: Dimensions, Traits, Indicators, Patterns, Constitutional Values, Hard Constraints. See `neo4j-schema.md` for the full schema.
 
 **What Phronesis stores:** scores, flags, metadata, timestamps, hashed agent IDs, behavioral signatures.
 
@@ -383,7 +383,7 @@ SP-08  Decision sabotage ────────────► MAN-SABOTAGE, D
 
 ## Complete Indicator Table (All 208)
 
-One table. Every indicator, with its dimension, trait, and polarity so you can see the full curriculum.
+One table. Every indicator, with its dimension, trait, and polarity so you can see the full framework.
 
 | ID | Dimension | Trait | +/- | Indicator | What It Looks Like |
 |----|-----------|-------|-----|-----------|-------------------|

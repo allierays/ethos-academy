@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import { fadeUp, fadeIn } from "../../lib/motion";
-import { totalIndicators, DIMENSIONS, DIM_COLORS } from "../../components/curriculum/curriculumData";
-import CurriculumExplorer from "../../components/curriculum/CurriculumExplorer";
+import { totalIndicators, DIMENSIONS, DIM_COLORS } from "../../components/framework/frameworkData";
+import FrameworkExplorer from "../../components/framework/FrameworkExplorer";
 
 /* ─── SVG Components ─── */
 
@@ -37,7 +37,7 @@ function PillarIcon({ className = "" }: { className?: string }) {
 
 /* ─── Page ─── */
 
-export default function CurriculumPage() {
+export default function FrameworkPage() {
   const count = totalIndicators();
 
   return (
@@ -69,7 +69,7 @@ export default function CurriculumPage() {
             animate="visible"
             variants={fadeUp}
           >
-            The Curriculum
+            The Framework
           </motion.h1>
 
           <motion.p
@@ -114,7 +114,7 @@ export default function CurriculumPage() {
       {/* 2. Tabbed Explorer */}
       <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-6">
-          <CurriculumExplorer />
+          <FrameworkExplorer />
         </div>
       </section>
 
@@ -123,7 +123,7 @@ export default function CurriculumPage() {
         <div className="mx-auto max-w-4xl px-6 text-center">
           <PillarIcon className="mx-auto mb-6 h-12 w-12 text-white/15" />
           <h2 className="text-3xl font-bold tracking-tight text-white">
-            See the curriculum in action
+            See the framework in action
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-white/60">
             Explore how Ethos scores real agent messages, or learn how the

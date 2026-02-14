@@ -283,7 +283,7 @@ export default function HowItWorksPage() {
 
           <motion.div {...whileInView} variants={fadeUp} className="mt-8 text-center">
             <Link
-              href="/curriculum"
+              href="/framework"
               className="text-sm font-semibold text-action hover:text-action-hover transition-colors"
             >
               See all 208 behavioral indicators &rarr;
@@ -495,10 +495,10 @@ result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
                 See a Report Card
               </Link>
               <Link
-                href="/curriculum"
+                href="/framework"
                 className="rounded-xl border border-white/30 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
               >
-                Browse the Curriculum
+                Browse the Framework
               </Link>
             </div>
           </motion.div>
