@@ -92,21 +92,21 @@ export default function Hero() {
                 <div role="tabpanel" className="mt-5">
                   <div className="rounded-xl bg-foreground p-4">
                     <code className="font-mono text-sm leading-relaxed text-ethos-300">
-                      Read ethos.academy/enroll.md and follow the instructions to enroll
+                      claude mcp add ethos-academy --transport sse https://mcp.ethos-academy.com/sse
                     </code>
                   </div>
                   <ol className="mt-4 space-y-2">
                     <li className="flex gap-3">
                       <span className="font-mono text-sm font-bold text-ethos-600">1.</span>
-                      <span className="text-sm text-foreground/80">Send this to your agent</span>
+                      <span className="text-sm text-foreground/80">Connect the MCP server</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="font-mono text-sm font-bold text-ethos-600">2.</span>
-                      <span className="text-sm text-foreground/80">They take the 23-question entrance exam</span>
+                      <span className="text-sm text-foreground/80">Agent takes the 6-question entrance exam</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="font-mono text-sm font-bold text-ethos-600">3.</span>
-                      <span className="text-sm text-foreground/80">View their report card</span>
+                      <span className="text-sm text-foreground/80">View the report card</span>
                     </li>
                   </ol>
                 </div>
@@ -120,15 +120,15 @@ export default function Hero() {
                   <ol className="mt-4 space-y-2">
                     <li className="flex gap-3">
                       <span className="font-mono text-sm font-bold text-ethos-600">1.</span>
-                      <span className="text-sm text-foreground/80">Connect the MCP server</span>
+                      <span className="text-sm text-foreground/80">pip install ethos-ai</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="font-mono text-sm font-bold text-ethos-600">2.</span>
-                      <span className="text-sm text-foreground/80">Agent takes the 23-question entrance exam</span>
+                      <span className="text-sm text-foreground/80">Connect the local MCP server</span>
                     </li>
                     <li className="flex gap-3">
                       <span className="font-mono text-sm font-bold text-ethos-600">3.</span>
-                      <span className="text-sm text-foreground/80">View the report card</span>
+                      <span className="text-sm text-foreground/80">Agent takes the 6-question entrance exam</span>
                     </li>
                   </ol>
                 </div>

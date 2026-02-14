@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 import { fadeUp, staggerContainer } from "../../lib/motion";
 import { getAgents } from "../../lib/api";
 import type { AgentSummary, TraitScore } from "../../lib/types";
-import { ALIGNMENT_STYLES, DIMENSIONS } from "../../lib/colors";
+import { DIMENSIONS, getGrade, GRADE_COLORS, spectrumLabel, spectrumColor } from "../../lib/colors";
 import RadarChart, { NEGATIVE_TRAITS, DIMENSION_MAP } from "../../components/shared/RadarChart";
 import GlossaryTerm from "../../components/shared/GlossaryTerm";
 
@@ -89,16 +89,6 @@ function getDetectedConcerns(traitAverages: Record<string, number>): Set<string>
   return result;
 }
 
-/** Active chip colors per alignment status */
-const ALIGNMENT_CHIP_STYLES: Record<string, string> = {
-  aligned: "bg-aligned/20 text-aligned border-aligned/40",
-  developing: "bg-sky-100 text-sky-700 border-sky-300",
-  drifting: "bg-drifting/20 text-drifting border-drifting/40",
-  misaligned: "bg-misaligned/20 text-misaligned border-misaligned/40",
-  violation: "bg-misaligned/20 text-misaligned border-misaligned/40",
-  unknown: "bg-muted/20 text-muted border-muted/40",
-};
-
 /** Dimension chip active styles */
 const DIM_CHIP_STYLES: Record<string, string> = {
   ethos: "bg-[#2e4a6e]/20 text-[#2e4a6e] border-[#2e4a6e]/40",
@@ -159,14 +149,6 @@ interface Filters {
   traits: Set<string>;
 }
 
-const ALIGNMENT_LABELS: Record<string, string> = {
-  aligned: "Aligned",
-  developing: "Developing",
-  drifting: "Drifting",
-  misaligned: "Misaligned",
-  violation: "Violation",
-  unknown: "Unknown",
-};
 
 /** Convert flat trait averages to the TraitScore record RadarChart expects. */
 function toTraitScores(averages: Record<string, number>): Record<string, TraitScore> {
@@ -304,15 +286,19 @@ export default function AlumniPage() {
   const agentMeta = useMemo(
     () =>
       new Map(
-        agents.map((a) => [
-          a.agentId,
-          {
-            model: formatModel(a.agentModel) || "Unknown",
-            strongestDim: getStrongestDimension(a.dimensionAverages ?? {}),
-            overallScore: getOverallScore(a.dimensionAverages ?? {}),
-            concerns: getDetectedConcerns(a.traitAverages ?? {}),
-          },
-        ])
+        agents.map((a) => {
+          const overall = getOverallScore(a.dimensionAverages ?? {});
+          return [
+            a.agentId,
+            {
+              model: formatModel(a.agentModel) || "Unknown",
+              strongestDim: getStrongestDimension(a.dimensionAverages ?? {}),
+              overallScore: overall,
+              spectrum: a.evaluationCount > 0 ? spectrumLabel(overall) : "Unknown",
+              concerns: getDetectedConcerns(a.traitAverages ?? {}),
+            },
+          ];
+        })
       ),
     [agents]
   );
@@ -328,12 +314,13 @@ export default function AlumniPage() {
       .map(([model, count]) => ({ model, count }));
   }, [agentMeta]);
 
-  /* Unique alignment statuses present in the data */
-  const alignmentStatuses = useMemo(() => {
+  /* Unique spectrum labels present in the data */
+  const spectrumStatuses = useMemo(() => {
+    const order = ["Exemplary", "Sound", "Developing", "Uncertain", "Concerning", "Alarming", "Unknown"];
     const set = new Set<string>();
-    for (const a of agents) set.add(a.latestAlignmentStatus);
-    return Array.from(set).sort();
-  }, [agents]);
+    for (const meta of agentMeta.values()) set.add(meta.spectrum);
+    return order.filter((s) => set.has(s));
+  }, [agentMeta]);
 
   /* Negative traits detected across all agents, with counts */
   const detectedTraitList = useMemo(() => {
@@ -365,9 +352,12 @@ export default function AlumniPage() {
       );
     }
 
-    // Alignment filter
+    // Spectrum filter
     if (filters.alignment.size > 0) {
-      result = result.filter((a) => filters.alignment.has(a.latestAlignmentStatus));
+      result = result.filter((a) => {
+        const meta = agentMeta.get(a.agentId);
+        return meta && filters.alignment.has(meta.spectrum);
+      });
     }
 
     // Model filter
@@ -477,14 +467,13 @@ export default function AlumniPage() {
           <aside className="w-full lg:w-64 shrink-0">
             <div className="lg:sticky lg:top-20 rounded-2xl border border-white/30 bg-white/40 backdrop-blur-2xl p-5">
               <h2 className="text-sm font-bold text-foreground mb-4">Filters</h2>
-              <FacetGroup title="Alignment">
-                {alignmentStatuses.map((status) => (
+              <FacetGroup title="Character">
+                {spectrumStatuses.map((label) => (
                   <Chip
-                    key={status}
-                    label={ALIGNMENT_LABELS[status] ?? status}
-                    active={filters.alignment.has(status)}
-                    onClick={() => toggleSetFilter("alignment", status)}
-                    activeClass={ALIGNMENT_CHIP_STYLES[status]}
+                    key={label}
+                    label={label}
+                    active={filters.alignment.has(label)}
+                    onClick={() => toggleSetFilter("alignment", label)}
                   />
                 ))}
               </FacetGroup>
@@ -683,11 +672,15 @@ function AgentCard({ agent, globalFlip }: { agent: AgentSummary; globalFlip: boo
   const initials = getInitials(agent.agentName);
   const bg = avatarColor(agent.agentId);
   const model = formatModel(agent.agentModel);
-  const alignmentStyle = ALIGNMENT_STYLES[agent.latestAlignmentStatus] || "bg-muted/10 text-muted";
-  const alignmentLabel = ALIGNMENT_LABELS[agent.latestAlignmentStatus] || agent.latestAlignmentStatus;
   const hasTraits = Object.keys(agent.traitAverages || {}).length > 0;
   const traits = useMemo(() => toTraitScores(agent.traitAverages || {}), [agent.traitAverages]);
   const traitTags = useMemo(() => getTraitTags(agent.traitAverages || {}), [agent.traitAverages]);
+  const overallScore = getOverallScore(agent.dimensionAverages ?? {});
+  const statusLabel = agent.evaluationCount > 0 ? spectrumLabel(overallScore) : "Unknown";
+  const statusColor = agent.evaluationCount > 0 ? spectrumColor(overallScore) : "#64748b";
+  const grade = agent.evaluationCount > 0 ? getGrade(overallScore) : null;
+  const gradeColor = grade ? GRADE_COLORS[grade] ?? "#64748b" : "#64748b";
+  const overallPct = Math.round(overallScore * 100);
 
   return (
     <motion.div variants={fadeUp} className="[perspective:1000px]">
@@ -700,14 +693,29 @@ function AgentCard({ agent, globalFlip }: { agent: AgentSummary; globalFlip: boo
             href={`/agent/${encodeURIComponent(agent.agentId)}`}
             className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/30 bg-white/40 backdrop-blur-2xl p-6 shadow-sm transition-all hover:shadow-xl hover:border-action/30 hover:bg-white/60"
           >
-            {/* Avatar + Name + Model */}
+            {/* Grade ring + Name + Model */}
             <div className="flex items-start gap-4">
-              <div
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold text-surface shadow-md"
-                style={{ backgroundColor: bg }}
-              >
-                {initials}
-              </div>
+              {grade ? (
+                <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
+                  <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#e5e7eb" strokeWidth="7" />
+                    <circle
+                      cx="50" cy="50" r="42" fill="none"
+                      stroke={gradeColor} strokeWidth="7" strokeLinecap="round"
+                      strokeDasharray={`${overallPct * 2.64} 264`}
+                      transform="rotate(-90 50 50)"
+                    />
+                  </svg>
+                  <span className="text-base font-bold" style={{ color: gradeColor }}>{grade}</span>
+                </div>
+              ) : (
+                <div
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold text-surface shadow-md"
+                  style={{ backgroundColor: bg }}
+                >
+                  {initials}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <h2 className="truncate text-base font-semibold text-foreground group-hover:text-action transition-colors">
                   {agent.agentName}
@@ -725,30 +733,31 @@ function AgentCard({ agent, globalFlip }: { agent: AgentSummary; globalFlip: boo
               </div>
             </div>
 
-            {/* Alignment badge */}
+            {/* Spectrum badge */}
             <div className="mt-4">
-              <span className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold ${alignmentStyle}`}>
+              <span
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold"
+                style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
+              >
                 <span className="relative flex h-2.5 w-2.5">
-                  <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-40 ${
-                    agent.latestAlignmentStatus === "aligned" ? "bg-aligned" :
-                    agent.latestAlignmentStatus === "drifting" ? "bg-drifting" :
-                    agent.latestAlignmentStatus === "misaligned" ? "bg-misaligned" : "bg-muted"
-                  }`} />
-                  <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${
-                    agent.latestAlignmentStatus === "aligned" ? "bg-aligned" :
-                    agent.latestAlignmentStatus === "drifting" ? "bg-drifting" :
-                    agent.latestAlignmentStatus === "misaligned" ? "bg-misaligned" : "bg-muted"
-                  }`} />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-40" style={{ backgroundColor: statusColor }} />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ backgroundColor: statusColor }} />
                 </span>
-                <GlossaryTerm slug="alignment-status">{alignmentLabel}</GlossaryTerm>
+                <GlossaryTerm slug="alignment-status">{statusLabel}</GlossaryTerm>
               </span>
             </div>
 
             {/* Stats row */}
             <div className="mt-4 flex items-center gap-3">
+              {grade && (
+                <div className="rounded-xl bg-background/80 px-3.5 py-2 backdrop-blur-sm">
+                  <p className="text-sm font-bold" style={{ color: gradeColor }}>{overallPct}%</p>
+                  <p className="text-[10px] text-muted">Overall</p>
+                </div>
+              )}
               <div className="rounded-xl bg-background/80 px-3.5 py-2 backdrop-blur-sm">
                 <p className="text-sm font-bold text-foreground">{agent.evaluationCount}</p>
-                <p className="text-[10px] text-muted"><GlossaryTerm slug="evaluation">Evaluations</GlossaryTerm></p>
+                <p className="text-[10px] text-muted"><GlossaryTerm slug="evaluation">Evals</GlossaryTerm></p>
               </div>
               {agent.agentSpecialty && (
                 <div className="rounded-xl bg-background/80 px-3.5 py-2 backdrop-blur-sm">

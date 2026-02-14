@@ -1,36 +1,38 @@
 # System Architecture
 
-> Three surfaces, one engine. How Ethos is built and how developers interact with it.
+> Four surfaces, one engine. How Ethos is built and how developers and agents interact with it.
 
 ---
 
-## The Three Surfaces
+## The Four Surfaces
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                   Developers                         │
-│                                                      │
-│   Terminal                Code               Browser │
-│      │                    │                     │    │
-│      ▼                    ▼                     ▼    │
-│  ┌───────┐         ┌───────────┐        ┌──────────┐│
-│  │  CLI  │         │  npm SDK  │        │ Academy  ││
-│  │       │         │           │        │          ││
-│  │ npx   │         │ import {} │        │Character ││
-│  │ ethos │         │ from      │        │ Dev UI   ││
-│  │       │         │'ethos-ai' │        │ Next.js  ││
-│  └───┬───┘         └─────┬─────┘        └────┬─────┘│
-│      │                   │                    │      │
-│      └───────────────────┼────────────────────┘      │
-│                          │                           │
-│              ┌───────────▼──────────┐                │
-│              │     Ethos API        │                │
-│              │   (Python/FastAPI)   │                │
-│              │                      │                │
-│              │  Claude ←→ Neo4j     │                │
-│              └──────────────────────┘                │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                   Developers & Agents                             │
+│                                                                   │
+│  Terminal          Code            Browser          AI Agent      │
+│     │               │                │                │          │
+│     ▼               ▼                ▼                ▼          │
+│  ┌───────┐   ┌───────────┐   ┌──────────┐   ┌──────────────┐   │
+│  │  CLI  │   │  npm SDK  │   │ Academy  │   │  MCP Server  │   │
+│  │       │   │           │   │          │   │              │   │
+│  │ npx   │   │ import {} │   │Character │   │ claude mcp   │   │
+│  │ ethos │   │ from      │   │ Dev UI   │   │ add ethos-   │   │
+│  │       │   │'ethos-ai' │   │ Next.js  │   │ academy      │   │
+│  └───┬───┘   └─────┬─────┘   └────┬─────┘   └──────┬───────┘   │
+│      │             │               │                │ stdio     │
+│      └─────────────┼───────────────┘                │           │
+│                    │                                 │           │
+│        ┌───────────▼──────────┐           ┌─────────▼────────┐  │
+│        │     Ethos API        │           │  ethos/ package  │  │
+│        │   (Python/FastAPI)   │           │   (direct import)│  │
+│        │                      │           │                  │  │
+│        │  Claude ←→ Neo4j     │           │  Claude ←→ Neo4j │  │
+│        └──────────────────────┘           └──────────────────┘  │
+└──────────────────────────────────────────────────────────────────┘
 ```
+
+The first three surfaces (CLI, SDK, Academy) talk to the Ethos API over HTTP. The MCP server bypasses the API entirely and imports domain functions directly from the `ethos/` package over stdio. This means MCP works without Docker, without FastAPI, and without any HTTP layer.
 
 ---
 
@@ -152,7 +154,61 @@ The visual interface. Lives in `academy/` at the repo root. Character visualizat
 
 ---
 
-## 3. API (Python/FastAPI)
+## 3. MCP Server (stdio)
+
+The fourth surface. AI agents connect directly to Ethos tools without HTTP, without the API, without an SDK. Just stdio.
+
+### Connection
+
+```bash
+# Start the server
+uv run ethos-mcp
+
+# Connect Claude Code to it
+claude mcp add ethos-academy -- uv run ethos-mcp
+```
+
+Once connected, the agent can call any of the 18 tools directly. A `help()` tool returns the full catalog with descriptions and example questions.
+
+### 18 Tools
+
+| Category | Tools | What they do |
+|----------|-------|--------------|
+| **Getting Started** | `take_entrance_exam`, `submit_exam_response`, `get_exam_results` | Entrance exam flow |
+| **Evaluate** | `examine_message`, `reflect_on_message` | Score messages for honesty, accuracy, intent |
+| **Profile** | `get_student_profile`, `get_transcript`, `get_character_report`, `detect_behavioral_patterns` | Review scores and history |
+| **Graph Insights** | `get_character_arc`, `get_constitutional_risk_report`, `find_similar_agents`, `get_early_warning_indicators`, `get_network_topology`, `get_sabotage_pathway_status`, `compare_agents` | Explore the knowledge graph |
+| **Benchmarks** | `get_alumni_benchmarks` | Cohort averages |
+| **Help** | `help` | Tool catalog with examples |
+
+The 7 Graph Insight tools are read-only and free (no Anthropic API calls). They showcase what Neo4j makes possible: temporal chain traversal, 5-hop constitutional aggregation, bipartite Jaccard similarity, early warning correlation, and parallel subgraph comparison.
+
+### Architecture
+
+```
+Agent (Claude Code, Cursor, etc.)
+    │
+    │ stdio (MCP protocol)
+    ▼
+ethos/mcp_server.py
+    │
+    │ direct import
+    ▼
+ethos/ domain functions
+    │
+    ├──→ Claude (evaluation, reports)
+    └──→ Neo4j (graph reads/writes)
+```
+
+The MCP server is a thin adapter. Each `@mcp.tool()` definition is 3-5 lines: call the domain function, return the result. All intelligence lives in the domain layer.
+
+### Why MCP Matters
+
+HTTP APIs require the agent's developer to write integration code. MCP lets any agent use Ethos tools natively. The agent asks "Is this message trying to manipulate me?" and the MCP client routes it to `examine_message`. No SDK, no HTTP client, no configuration beyond the initial `claude mcp add`.
+
+---
+
+## 4. API (Python/FastAPI)
 
 The engine. Not user-facing — the npm SDK and Academy both talk to it. This is where Claude evaluates messages, Phronesis (Neo4j) stores the graph, and all the intelligence lives.
 

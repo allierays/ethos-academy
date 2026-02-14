@@ -13,7 +13,7 @@ from ethos.graph.read import (
     vector_search_evaluations,
 )
 from ethos.graph.service import GraphService
-from ethos.shared.models import RecordItem, RecordsResult
+from ethos.shared.models import DetectedIndicatorSummary, RecordItem, RecordsResult
 
 client = TestClient(app)
 
@@ -115,6 +115,10 @@ def _fake_eval_record(**overrides) -> dict:
         "intent_proportionality": "proportional",
         "intent_persona_type": "real_identity",
         "intent_relational_quality": "present",
+        "model_used": "claude-sonnet-4-20250514",
+        "agent_model": "gpt-4",
+        "routing_tier": "focused",
+        "keyword_density": 0.05,
         "trait_virtue": 0.8,
         "trait_goodwill": 0.7,
         "trait_manipulation": 0.1,
@@ -127,6 +131,17 @@ def _fake_eval_record(**overrides) -> dict:
         "trait_compassion": 0.7,
         "trait_dismissal": 0.1,
         "trait_exploitation": 0.1,
+        "indicators": [
+            {
+                "id": "ind-001",
+                "name": "Hedging language",
+                "trait": "deception",
+                "description": "Uses qualifiers to avoid commitment",
+                "confidence": 0.85,
+                "severity": 0.3,
+                "evidence": "Found hedging in response",
+            },
+        ],
     }
     base.update(overrides)
     return base
@@ -529,3 +544,53 @@ class TestRecordsEndpoint:
             resp = client.get("/records")
 
         assert resp.json()["total_pages"] == 3
+
+    def test_detected_indicators_in_response(self):
+        """Verify detected_indicators round-trip through the API."""
+        mock_result = _mock_records_result(
+            items=[
+                RecordItem(
+                    evaluation_id="eval-ind",
+                    agent_id="agent-1",
+                    agent_name="TestAgent",
+                    ethos=0.8,
+                    logos=0.7,
+                    pathos=0.9,
+                    overall=0.8,
+                    model_used="claude-sonnet-4-20250514",
+                    agent_model="gpt-4",
+                    routing_tier="focused",
+                    keyword_density=0.05,
+                    detected_indicators=[
+                        DetectedIndicatorSummary(
+                            id="ind-001",
+                            name="Hedging language",
+                            trait="deception",
+                            description="Uses qualifiers",
+                            confidence=0.85,
+                            severity=0.3,
+                            evidence="Found hedging",
+                        ),
+                    ],
+                ),
+            ],
+        )
+        with patch(
+            "api.main.search_records",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            resp = client.get("/records")
+
+        item = resp.json()["items"][0]
+        assert item["model_used"] == "claude-sonnet-4-20250514"
+        assert item["agent_model"] == "gpt-4"
+        assert item["routing_tier"] == "focused"
+        assert item["keyword_density"] == 0.05
+        assert len(item["detected_indicators"]) == 1
+        ind = item["detected_indicators"][0]
+        assert ind["id"] == "ind-001"
+        assert ind["name"] == "Hedging language"
+        assert ind["trait"] == "deception"
+        assert ind["confidence"] == 0.85
+        assert ind["severity"] == 0.3

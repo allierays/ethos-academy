@@ -453,7 +453,7 @@ result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
 
               <div className="mt-6 overflow-x-auto rounded-xl bg-[#1a2538] p-5">
                 <pre className="font-mono text-sm text-white">
-                  <code>claude mcp add ethos-academy -- uv run ethos-mcp</code>
+                  <code>claude mcp add ethos-academy --transport sse https://mcp.ethos-academy.com/sse</code>
                 </pre>
               </div>
 

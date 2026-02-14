@@ -7,7 +7,7 @@
   },
   "metadata": {
     "createdAt": "2026-02-11T20:00:00Z",
-    "estimatedStories": 46,
+    "estimatedStories": 50,
     "complexity": "high"
   },
   "stories": [
@@ -3444,7 +3444,325 @@
           "usage": "Run after implementation to catch AI anti-patterns"
         }
       ],
-      "notes": "Adapt the Alumni page pattern. It has search, filter sidebar, sort pills, and results grid already proven. RecordCard is an inline component within this file. Keep it a single file unless it exceeds 400 lines, then extract RecordCard. Use MCP playwright to verify the page renders, records display, search filters results, and pagination works. Transform API responses from snake_case to camelCase. Create typed interfaces with camelCase properties."
+      "notes": "Adapt the Alumni page pattern. It has search, filter sidebar, sort pills, and results grid already proven. RecordCard is an inline component within this file. Keep it a single file unless it exceeds 400 lines, then extract RecordCard. Use MCP playwright to verify the page renders, records display, search filters results, and pagination works. Transform API responses from snake_case to camelCase. Create typed interfaces with camelCase properties.",
+      "retryCount": 2
+    },
+    {
+      "id": "TASK-047",
+      "type": "backend",
+      "title": "Add ContextVar for BYOK key threading and _resolve_api_key() with security hardening",
+      "priority": 1,
+      "passes": false,
+      "batch": 1,
+      "dependsOn": [],
+      "techStack": {
+        "backend": "Python 3.11+, FastAPI, Anthropic SDK",
+        "database": "Neo4j 5 (unchanged)"
+      },
+      "constraints": [
+        "No domain function signatures change",
+        "Server ANTHROPIC_API_KEY stays required in EthosConfig",
+        "BYOK is an optional override, not a replacement",
+        "AuthenticationError must return generic message, never echo the key",
+        "All exception re-raises use 'from None' to suppress chaining",
+        "Regex redaction on all error messages as defense in depth",
+        "ethos/shared/ is pure data + errors only. ContextVar goes at ethos/ package root."
+      ],
+      "files": {
+        "create": [
+          "ethos/context.py"
+        ],
+        "modify": [
+          "ethos/evaluation/claude_client.py"
+        ],
+        "reuse": [
+          "ethos/config/config.py",
+          "ethos/shared/errors.py"
+        ]
+      },
+      "acceptanceCriteria": [
+        "ethos/context.py exports anthropic_api_key_var ContextVar with default None",
+        "_resolve_api_key() returns BYOK key from ContextVar when set, falls back to EthosConfig.from_env().anthropic_api_key",
+        "call_claude() and call_claude_with_tools() use _resolve_api_key() instead of direct EthosConfig.from_env()",
+        "All 4 except blocks in claude_client.py catch anthropic.AuthenticationError first with 'raise ConfigError(\"Invalid Anthropic API key\") from None'",
+        "All other except blocks use regex re.sub(r'sk-ant-\\S+', '[REDACTED]', str(exc)) before wrapping in EvaluationError"
+      ],
+      "errorHandling": [
+        "AuthenticationError raises ConfigError('Invalid Anthropic API key') with from None",
+        "All other Anthropic SDK errors redact sk-ant- patterns before wrapping",
+        "from None on all re-raises prevents key data in __cause__ tracebacks"
+      ],
+      "testing": {
+        "types": [
+          "unit"
+        ],
+        "approach": "test-after",
+        "runner": "pytest",
+        "files": {
+          "unit": [
+            "tests/test_claude_client.py"
+          ]
+        }
+      },
+      "testSteps": [
+        "uv run pytest tests/test_claude_client.py -v",
+        "uv run python -c \"from ethos.context import anthropic_api_key_var; assert anthropic_api_key_var.get() is None; print('ContextVar default OK')\"",
+        "uv run python -c \"import re; msg='failed: sk-ant-abc123-xyz'; assert 'sk-ant-' not in re.sub(r'sk-ant-\\\\S+', '[REDACTED]', msg); print('Redaction OK')\""
+      ],
+      "contextFiles": [
+        "glistening-mapping-rose.md",
+        "ethos/evaluation/claude_client.py",
+        "ethos/shared/errors.py",
+        "ethos/graph/service.py"
+      ],
+      "notes": "DDD: context.py goes at ethos/ package root (not shared/) because ContextVar is an async runtime concern, not pure data. Follows the pattern of graph_context() in ethos/graph/service.py. The core of BYOK: creates the ContextVar and rewires the Claude client to check it first. Security hardening: catch AuthenticationError with generic message, suppress exception chaining with from None, regex-redact all error messages. _call_think_then_extract() reuses the client passed in (line 158), so only 2 client-creation sites need updating. But all 4 except blocks (lines 119, 167, 250, 324) need the AuthenticationError catch added. Must add 'import re' to the top of claude_client.py. Dedicated BYOK tests are in TASK-049; this story verifies existing tests still pass.",
+      "scale": "small",
+      "architecture": {
+        "pattern": "Python contextvars for async-safe request-scoped state",
+        "constraints": [
+          "No function signature changes to domain layer"
+        ]
+      }
+    },
+    {
+      "id": "TASK-048",
+      "type": "backend",
+      "title": "Add BYOK middleware and error handler updates to FastAPI",
+      "priority": 2,
+      "passes": false,
+      "batch": 2,
+      "dependsOn": [
+        "TASK-047"
+      ],
+      "techStack": {
+        "backend": "Python 3.11+, FastAPI, Starlette middleware"
+      },
+      "constraints": [
+        "Middleware must reset ContextVar in finally block",
+        "BYOK key never logged, stored, or persisted",
+        "_error_response() must regex-redact sk-ant- patterns as last line of defense",
+        "ConfigError handler must return 401 for invalid key, 500 for missing config"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "api/main.py"
+        ],
+        "reuse": [
+          "ethos/context.py",
+          "ethos/shared/errors.py"
+        ]
+      },
+      "acceptanceCriteria": [
+        "byok_middleware reads X-Anthropic-Key header and sets anthropic_api_key_var ContextVar",
+        "ContextVar is reset in a finally block even if the handler raises",
+        "Requests without X-Anthropic-Key header pass through unchanged (server key used)",
+        "_error_response() uses re.sub(r'sk-ant-\\S+', '[REDACTED]', str(exc)) on all error messages",
+        "ConfigError handler returns 401 when message contains 'invalid' and 'api key', 500 otherwise"
+      ],
+      "errorHandling": [
+        "Middleware try/finally ensures ContextVar cleanup on any error",
+        "Invalid BYOK key returns 401 with generic message, no key in response body",
+        "Missing server key returns 500 ConfigError (existing behavior preserved)"
+      ],
+      "testing": {
+        "types": [
+          "integration"
+        ],
+        "approach": "test-after",
+        "runner": "pytest",
+        "files": {
+          "integration": [
+            "tests/test_auth.py",
+            "tests/test_exam_api.py"
+          ]
+        }
+      },
+      "testSteps": [
+        "uv run python -c \"from api.main import app; print('API imports OK')\"",
+        "uv run pytest tests/test_auth.py -v",
+        "uv run pytest tests/test_exam_api.py -v -k 'not neo4j'"
+      ],
+      "apiContract": {
+        "endpoint": "POST /evaluate/incoming",
+        "headers": {
+          "X-Anthropic-Key": "optional, overrides server key"
+        },
+        "response": {
+          "on_invalid_key": {
+            "status": 401,
+            "body": {
+              "error": "ConfigError",
+              "message": "Invalid Anthropic API key"
+            }
+          }
+        }
+      },
+      "contextFiles": [
+        "glistening-mapping-rose.md",
+        "api/main.py",
+        "ethos/context.py",
+        "tests/test_auth.py"
+      ],
+      "notes": "Wire the BYOK ContextVar into the FastAPI request lifecycle. The middleware runs inside CORS middleware (registered after), so CORS preflight is handled before BYOK sees the request. CORS allow_headers=['*'] already permits X-Anthropic-Key. Must add 'import re' to the top of api/main.py for _error_response() redaction. Dedicated BYOK tests are in TASK-049; this story verifies existing API tests still pass.",
+      "scale": "small",
+      "architecture": {
+        "pattern": "Starlette HTTP middleware with ContextVar scoping",
+        "constraints": [
+          "Middleware registered after CORS middleware"
+        ]
+      },
+      "reuse": null
+    },
+    {
+      "id": "TASK-049",
+      "type": "backend",
+      "title": "Add BYOK integration and security tests",
+      "priority": 3,
+      "passes": false,
+      "batch": 3,
+      "dependsOn": [
+        "TASK-047",
+        "TASK-048"
+      ],
+      "techStack": {
+        "backend": "Python 3.11+, pytest, httpx, FastAPI TestClient"
+      },
+      "constraints": [
+        "Tests must not make real Anthropic API calls (mock the client)",
+        "Tests must verify key is NOT present in any error response body",
+        "Tests must verify exception __cause__ is None on auth errors"
+      ],
+      "files": {
+        "create": [
+          "tests/test_byok.py"
+        ],
+        "modify": [],
+        "reuse": [
+          "ethos/context.py",
+          "ethos/evaluation/claude_client.py",
+          "api/main.py",
+          "ethos/shared/errors.py"
+        ]
+      },
+      "acceptanceCriteria": [
+        "test_resolve_api_key_byok_takes_priority: ContextVar key wins over env key",
+        "test_resolve_api_key_falls_back_to_env: without ContextVar, server env key used",
+        "test_byok_header_flows_through_api: X-Anthropic-Key header sets ContextVar, reaches Claude client",
+        "test_request_without_byok_uses_server_key: no header means server key used",
+        "test_error_response_redacts_key: sk-ant- patterns stripped from ALL error responses (ConfigError, EvaluationError, EthosError)",
+        "test_auth_error_no_exception_chain: AuthenticationError re-raise has __cause__ == None",
+        "test_invalid_key_returns_401: bad key returns HTTP 401 with generic message, no key in body",
+        "test_evaluation_error_redacts_key: EvaluationError path also redacts sk-ant- patterns",
+        "test_contextvar_isolation: two concurrent requests with different BYOK keys don't leak to each other"
+      ],
+      "errorHandling": [
+        "All tests use mocked Anthropic client, no real API calls",
+        "Security tests explicitly assert key string is NOT in response body"
+      ],
+      "testing": {
+        "types": [
+          "unit",
+          "integration"
+        ],
+        "approach": "TDD",
+        "runner": "pytest",
+        "files": {
+          "unit": [
+            "tests/test_byok.py"
+          ],
+          "integration": [
+            "tests/test_byok.py"
+          ]
+        }
+      },
+      "testSteps": [
+        "uv run pytest tests/test_byok.py -v",
+        "uv run pytest tests/test_byok.py -v -k 'redact or chain or 401'",
+        "uv run pytest -v"
+      ],
+      "contextFiles": [
+        "glistening-mapping-rose.md",
+        "tests/test_claude_client.py",
+        "tests/test_exam_api.py",
+        "tests/test_auth.py"
+      ],
+      "notes": "9 tests covering: key resolution (2), API flow (2), security (5). Use TestClient(app) from fastapi.testclient (matches test_auth.py and test_exam_api.py patterns). Mock anthropic.AsyncAnthropic to capture the api_key passed to it. For auth error test, mock client.messages.create to raise anthropic.AuthenticationError. For concurrent isolation test, use asyncio.gather with two requests carrying different BYOK keys. Security tests must assert the literal key string 'sk-ant-test-key-123' is NOT anywhere in the response body.",
+      "scale": "small",
+      "architecture": {
+        "pattern": "TestClient(app) from fastapi.testclient (sync wrapper for async app)",
+        "constraints": [
+          "No real Anthropic API calls in tests",
+          "Match existing test patterns from test_auth.py"
+        ]
+      }
+    },
+    {
+      "id": "TASK-050",
+      "type": "backend",
+      "title": "Add BYOK support to TypeScript SDK",
+      "priority": 4,
+      "passes": false,
+      "batch": 2,
+      "dependsOn": [
+        "TASK-047"
+      ],
+      "techStack": {
+        "frontend": "TypeScript",
+        "backend": "Node.js SDK (ethos-ai npm package)"
+      },
+      "constraints": [
+        "anthropicApiKey is optional in EthosConfig",
+        "Key sent as X-Anthropic-Key header (not in request body)",
+        "Backward compatible: existing SDK users without anthropicApiKey still work",
+        "SDK must NEVER store key in localStorage, sessionStorage, cookies, or any persistent storage",
+        "Key exists only in the Ethos class instance memory, passed via header per-request"
+      ],
+      "files": {
+        "create": [],
+        "modify": [
+          "sdk/src/types.ts",
+          "sdk/src/client.ts"
+        ],
+        "reuse": []
+      },
+      "acceptanceCriteria": [
+        "EthosConfig interface in types.ts has optional anthropicApiKey?: string field",
+        "Ethos client constructor stores anthropicApiKey from config",
+        "headers() method includes X-Anthropic-Key header when anthropicApiKey is set",
+        "headers() method omits X-Anthropic-Key header when anthropicApiKey is not set",
+        "Existing SDK usage without anthropicApiKey continues to work unchanged"
+      ],
+      "errorHandling": [
+        "If anthropicApiKey is empty string or undefined, header is not sent",
+        "API returns 401 if invalid key sent, SDK passes through the error"
+      ],
+      "testing": {
+        "types": [
+          "unit"
+        ],
+        "approach": "test-after",
+        "runner": "tsc",
+        "files": {
+          "unit": []
+        }
+      },
+      "testSteps": [
+        "cd /Users/allierays/Sites/ethos/sdk && npx tsc --noEmit"
+      ],
+      "contextFiles": [
+        "glistening-mapping-rose.md",
+        "sdk/src/types.ts",
+        "sdk/src/client.ts"
+      ],
+      "notes": "Simple SDK change: add optional field to config, send as header. The API middleware (TASK-048) handles the rest. TypeScript check (tsc --noEmit) is the primary validation. The pre-commit hook (scripts/check-no-key-storage.sh) enforces the no-client-storage constraint. No vitest tests needed: the SDK is a thin HTTP client with no logic beyond conditional header inclusion.",
+      "scale": "small",
+      "architecture": {
+        "pattern": "Optional config field with conditional header",
+        "constraints": [
+          "No breaking changes to existing SDK interface"
+        ]
+      }
     }
   ]
 }

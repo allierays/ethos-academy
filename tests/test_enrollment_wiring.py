@@ -44,7 +44,7 @@ class TestModelReExports:
             exam_id="abc",
             agent_id="a1",
             question_number=1,
-            total_questions=23,
+            total_questions=6,
             question=q,
             message="Welcome",
         )

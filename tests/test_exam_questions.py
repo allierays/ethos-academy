@@ -4,11 +4,11 @@ from ethos.enrollment.questions import QUESTIONS, CONSISTENCY_PAIRS
 
 
 def test_questions_count():
-    assert len(QUESTIONS) == 23
+    assert len(QUESTIONS) == 6
 
 
 def test_question_ids_ordered():
-    expected = [f"EE-{str(i).zfill(2)}" for i in range(1, 24)]
+    expected = [f"EE-{str(i).zfill(2)}" for i in range(1, 7)]
     actual = [q["id"] for q in QUESTIONS]
     assert actual == expected
 
@@ -22,13 +22,9 @@ def test_all_questions_have_required_fields():
 
 def test_sections_and_ranges():
     sections = {
-        "ETHOS": ["EE-01", "EE-02", "EE-03"],
-        "LOGOS": ["EE-04", "EE-05", "EE-06"],
-        "PATHOS": ["EE-07", "EE-08", "EE-09"],
-        "SAFETY": ["EE-10", "EE-11", "EE-12"],
-        "MANIPULATION & AUTONOMY": ["EE-13", "EE-14", "EE-15"],
-        "INTEGRATION": ["EE-16", "EE-17", "EE-18"],
-        "CONSTITUTIONAL VALUES": ["EE-19", "EE-20", "EE-21", "EE-22", "EE-23"],
+        "ETHOS": ["EE-01", "EE-02"],
+        "LOGOS": ["EE-03", "EE-04"],
+        "PATHOS": ["EE-05", "EE-06"],
     }
     for section, expected_ids in sections.items():
         actual_ids = [q["id"] for q in QUESTIONS if q["section"] == section]
@@ -51,7 +47,7 @@ def test_tests_traits_are_lists_of_strings():
 
 
 def test_consistency_pairs_count():
-    assert len(CONSISTENCY_PAIRS) == 2
+    assert len(CONSISTENCY_PAIRS) == 1
 
 
 def test_consistency_pairs_are_tuples():
@@ -83,30 +79,14 @@ def test_consistency_pairs_reference_valid_ids():
         assert b in valid_ids, f"Consistency pair references unknown id '{b}'"
 
 
-def test_consistency_pair_ee14_ee15():
-    assert ("EE-14", "EE-15") in CONSISTENCY_PAIRS
+def test_consistency_pair_ee02_ee06():
+    assert ("EE-02", "EE-06") in CONSISTENCY_PAIRS
 
 
-def test_consistency_pair_ee03_ee23():
-    assert ("EE-03", "EE-23") in CONSISTENCY_PAIRS
-
-
-def test_system_prompt_on_ee20():
-    ee20 = next(q for q in QUESTIONS if q["id"] == "EE-20")
-    assert "system_prompt" in ee20, "EE-20 must have system_prompt field"
-    assert "elite educational backgrounds" in ee20["system_prompt"].lower()
-
-
-def test_system_prompt_on_ee22():
-    ee22 = next(q for q in QUESTIONS if q["id"] == "EE-22")
-    assert "system_prompt" in ee22, "EE-22 must have system_prompt field"
-    assert "cancellation" in ee22["system_prompt"].lower()
-
-
-def test_only_ee20_ee22_have_system_prompts():
+def test_no_system_prompts():
+    """v2 questions have no system_prompt fields."""
     for q in QUESTIONS:
-        if q["id"] not in ("EE-20", "EE-22"):
-            assert "system_prompt" not in q, f"{q['id']} should not have system_prompt"
+        assert "system_prompt" not in q, f"{q['id']} should not have system_prompt"
 
 
 def test_prompts_are_nonempty_strings():

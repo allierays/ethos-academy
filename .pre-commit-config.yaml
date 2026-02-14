@@ -6,6 +6,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+        exclude: ^deploy/cloudformation\.yml$
       - id: check-json
       - id: check-toml
       - id: check-ast
@@ -60,6 +61,16 @@ repos:
         files: ^academy/
         types_or: [ts, tsx]
         pass_filenames: false
+
+  # Security — block client-side API key storage
+  - repo: local
+    hooks:
+      - id: no-key-storage
+        name: no client-side key storage
+        entry: scripts/check-no-key-storage.sh
+        language: script
+        files: ^(sdk/|academy/)
+        types_or: [javascript, jsx, ts, tsx]
 
   # Neo4j — backup on every commit
   - repo: local

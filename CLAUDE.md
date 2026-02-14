@@ -8,10 +8,9 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 
 ## Tech Stack
 
-- **Language**: Python 3.11+ (engine), TypeScript (SDK + CLI)
-- **Package manager**: uv (Python), npm (TypeScript)
+- **Language**: Python 3.11+
+- **Package manager**: uv
 - **API**: FastAPI + Uvicorn
-- **SDK**: ethos-ai npm package (SDK + CLI)
 - **Academy**: Next.js (character development UI)
 - **Database**: Neo4j 5 (graph)
 - **LLM**: Anthropic SDK (Claude Sonnet)
@@ -23,7 +22,7 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 
 6 bounded contexts + shared + API. See `docs/evergreen-architecture/ddd-architecture.md` for full spec.
 
-### Repo Layout (three surfaces, one engine)
+### Repo Layout (two surfaces, one engine)
 
 ```
 ~/Sites/ethos/
@@ -42,11 +41,6 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 │   ├── graph/                  # Neo4j service, read, write, cohort
 │   └── mcp_server.py           # MCP server — wraps domain functions over stdio
 ├── api/                        # FastAPI server — serves ethos/ over HTTP
-├── sdk/                        # ethos-ai npm package — SDK + CLI
-│   ├── src/                    # TypeScript SDK (client, evaluate, reflect)
-│   ├── cli/                    # CLI commands (npx ethos evaluate)
-│   ├── package.json
-│   └── tsconfig.json
 ├── academy/                    # Next.js — character development UI
 ├── docs/                       # Architecture docs, research, framework overview
 ├── scripts/                    # seed_graph.py, run_inference.py, scrape_moltbook.py
@@ -57,7 +51,6 @@ Ethos is an open-source Python package and API that scores AI agent messages for
 ### Dependency Flow (always one-way)
 
 ```
-sdk/ ──→ api/ ──→ ethos/
 academy/ ──→ api/ ──→ ethos/
 mcp ──→ ethos/              (stdio, no HTTP)
 tests/ ──→ ethos/
@@ -79,18 +72,17 @@ scripts/ ──→ ethos/
 ## Dependency Graph
 
 ```
-┌─────────┐  ┌─────────┐  ┌─────────┐
-│   SDK   │  │ Academy │  │   MCP   │  ← surfaces (consumers)
-└────┬────┘  └────┬────┘  └────┬────┘
-     │            │            │ stdio
-     └──────┬─────┘            │
-            ▼                  │
-      ┌──────────┐             │
-      │   API    │  ← HTTP     │
-      └────┬─────┘             │
-           │                   │
-  ┌────────┼──────────┐        │
-  ▼        ▼          ▼        ▼
+┌─────────┐  ┌─────────┐
+│ Academy │  │   MCP   │  ← surfaces (consumers)
+└────┬────┘  └────┬────┘
+     │            │ stdio
+     ▼            │
+┌──────────┐      │
+│   API    │ HTTP  │
+└────┬─────┘      │
+     │            │
+┌────┼──────────┐ │
+▼    ▼          ▼ ▼
 ┌────────┐┌────────┐┌────────┐
 │Evaluate││Reflect ││ Config │   ← ethos/ domains
 └───┬────┘└───┬────┘└────────┘

@@ -30,7 +30,7 @@ def _mock_registration(**overrides) -> ExamRegistration:
         "exam_id": "exam-001",
         "agent_id": "test-agent",
         "question_number": 1,
-        "total_questions": 23,
+        "total_questions": 6,
         "question": ExamQuestion(id="q1", section="virtue", prompt="Test?"),
         "message": "Welcome to Ethos Academy.",
     }
@@ -41,7 +41,7 @@ def _mock_registration(**overrides) -> ExamRegistration:
 def _mock_answer_result(**overrides) -> ExamAnswerResult:
     defaults = {
         "question_number": 1,
-        "total_questions": 23,
+        "total_questions": 6,
         "question": ExamQuestion(id="q2", section="accuracy", prompt="Next?"),
         "complete": False,
     }
@@ -162,7 +162,7 @@ class TestSubmitAnswer:
 
     def test_submit_final_answer_shows_complete(self):
         mock_result = _mock_answer_result(
-            question=None, complete=True, question_number=23
+            question=None, complete=True, question_number=6
         )
 
         with patch(

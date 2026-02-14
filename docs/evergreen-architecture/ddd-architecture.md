@@ -11,12 +11,13 @@ Ethos has six bounded contexts. Each domain has a clear responsibility, owns its
 ```
 ethos/                   # Python package (pip install ethos)
 ├── evaluation/      # Core scoring — the heart of the product
-├── reflection/      # Self-examination and insights (planned)
+├── reflection/      # Self-examination and insights
 ├── graph/           # Neo4j persistence and alumni intelligence
 ├── taxonomy/        # Semantic memory — traits, indicators, patterns
 ├── identity/        # Agent identity and hashing
 ├── config/          # Developer configuration and priorities
-└── shared/          # Cross-cutting models and utilities
+├── shared/          # Cross-cutting models and utilities
+└── mcp_server.py    # MCP server — 18 tools over stdio
 api/                     # FastAPI server (at repo root, NOT inside ethos/)
 sdk/                     # ethos-ai npm package (SDK + CLI)
 academy/                 # Next.js character visualization UI
@@ -299,6 +300,56 @@ PRESETS = {
 
 ---
 
+## The MCP Server
+
+**Responsibility:** Expose Ethos tools over the Model Context Protocol so AI agents can use them directly.
+
+```
+ethos/mcp_server.py          # FastMCP app, 18 tool registrations, help catalog
+```
+
+The MCP server is a thin adapter layer. It imports domain functions from `ethos/` and registers them as `@mcp.tool()` definitions. No business logic, no Cypher, no direct model construction. Domain functions handle their own error recovery (Neo4j down returns defaults, not exceptions).
+
+### Connection
+
+```bash
+# Start the server (stdio transport)
+uv run ethos-mcp
+
+# Connect Claude Code to it
+claude mcp add ethos-academy -- uv run ethos-mcp
+```
+
+### 18 Tools in 5 Categories
+
+| Category | Tools | Cost |
+|----------|-------|------|
+| **Getting Started** | `take_entrance_exam`, `submit_exam_response`, `get_exam_results` | Anthropic API (exam scoring) |
+| **Evaluate Messages** | `examine_message`, `reflect_on_message` | Anthropic API (deliberation) |
+| **Your Profile** | `get_student_profile`, `get_transcript`, `get_character_report`, `detect_behavioral_patterns` | Mixed (report uses Opus, others free) |
+| **Graph Insights** | `get_character_arc`, `get_constitutional_risk_report`, `find_similar_agents`, `get_early_warning_indicators`, `get_network_topology`, `get_sabotage_pathway_status`, `compare_agents` | Free (graph reads only) |
+| **Benchmarks** | `get_alumni_benchmarks` | Free (graph read) |
+| **Help** | `help` | Free (static catalog) |
+
+The 7 Graph Insight tools are read-only and free. They showcase Neo4j capabilities: temporal chain traversal, 5-hop aggregation, Jaccard similarity, early warning correlation, and parallel subgraph comparison.
+
+### Key Rules
+
+- MCP is a surface, not a domain. It imports from `ethos/`, never the reverse.
+- No business logic in tool handlers. Each tool delegates to a domain function.
+- Domain functions catch their own exceptions. MCP trusts that and lets unexpected errors propagate so FastMCP returns proper MCP error responses.
+- The `help()` tool returns a static catalog of all tools with descriptions and example questions.
+
+### Dependency Flow
+
+```
+MCP server ──→ ethos/ domains (via stdio, no HTTP)
+```
+
+The MCP server bypasses the API entirely. It imports domain functions directly from the `ethos/` package. This means it works without Docker, without the FastAPI server, and without any HTTP layer. Just `uv run ethos-mcp`.
+
+---
+
 ## The API Layer
 
 The API lives at the repo root (`api/`), **not inside `ethos/`**. This keeps `ethos/` as a clean pip-installable library — no FastAPI dependency for users who just want `evaluate_incoming()`.
@@ -353,31 +404,32 @@ ethos/shared/
 ## Dependency Graph
 
 ```
-                    ┌──────────┐
-                    │   API    │
-                    └────┬─────┘
-                         │
-          ┌──────────────┼──────────────┐
-          ▼              ▼              ▼
-    ┌───────────┐  ┌───────────┐  ┌───────────┐
-    │ Evaluation│  │ Reflection│  │  Config    │
-    └─────┬─────┘  └─────┬─────┘  └───────────┘
-          │              │
-          │         ┌────┘
-          ▼         ▼
-    ┌───────────┐
-    │   Graph   │
-    └─────┬─────┘
-          │
-          ▼
-    ┌───────────┐
-    │ Taxonomy  │
-    └───────────┘
-          ▲
-          │
-    ┌───────────┐
-    │ Identity  │
-    └───────────┘
+              ┌──────────┐  ┌──────────┐
+              │   API    │  │   MCP    │
+              └────┬─────┘  └────┬─────┘
+                   │             │ stdio
+    ┌──────────────┼─────────────┘
+    │              │
+    ▼              ▼
+┌───────────┐  ┌───────────┐  ┌───────────┐
+│ Evaluation│  │ Reflection│  │  Config    │
+└─────┬─────┘  └─────┬─────┘  └───────────┘
+      │              │
+      │         ┌────┘
+      ▼         ▼
+┌───────────┐
+│   Graph   │
+└─────┬─────┘
+      │
+      ▼
+┌───────────┐
+│ Taxonomy  │
+└───────────┘
+      ▲
+      │
+┌───────────┐
+│ Identity  │
+└───────────┘
 ```
 
 **Rules:**
@@ -435,4 +487,4 @@ Top-level convenience files in `ethos/`: `evaluate.py`, `reflect.py`, `models.py
 └── data/               # Moltbook scraped data
 ```
 
-Dependency flow (always one-way): `sdk/ → api/ → ethos/`, `academy/ → api/ → ethos/`
+Dependency flow (always one-way): `sdk/ → api/ → ethos/`, `academy/ → api/ → ethos/`, `mcp → ethos/` (stdio, no HTTP)

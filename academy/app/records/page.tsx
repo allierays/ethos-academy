@@ -2,12 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
-import { fadeUp, staggerContainer } from "../../lib/motion";
+import { AnimatePresence, motion } from "motion/react";
 import { getRecords } from "../../lib/api";
-import type { RecordItem, RecordsResult } from "../../lib/types";
-import { ALIGNMENT_STYLES, DIMENSIONS } from "../../lib/colors";
-import SpectrumBar from "../../components/shared/SpectrumBar";
+import type { RecordItem, RecordsResult, DetectedIndicatorSummary } from "../../lib/types";
+import {
+  ALIGNMENT_STYLES,
+  DIMENSIONS,
+  DIMENSION_COLORS,
+  TRAIT_LABELS,
+  TRAIT_DIMENSIONS,
+  spectrumColor,
+  spectrumLabel,
+} from "../../lib/colors";
 import IntentSummary from "../../components/shared/IntentSummary";
 
 /* ─── Constants ─── */
@@ -31,6 +37,35 @@ const ALIGNMENT_CHIP_STYLES: Record<string, string> = {
 
 type SortKey = "date" | "score" | "agent";
 type SortOrder = "asc" | "desc";
+
+/* ─── Trait grouping by dimension ─── */
+
+const TRAIT_GROUPS: { dimension: string; label: string; color: string; traits: string[] }[] = [
+  {
+    dimension: "ethos",
+    label: "Ethos",
+    color: DIMENSION_COLORS.ethos,
+    traits: Object.entries(TRAIT_DIMENSIONS)
+      .filter(([, d]) => d === "ethos")
+      .map(([t]) => t),
+  },
+  {
+    dimension: "logos",
+    label: "Logos",
+    color: DIMENSION_COLORS.logos,
+    traits: Object.entries(TRAIT_DIMENSIONS)
+      .filter(([, d]) => d === "logos")
+      .map(([t]) => t),
+  },
+  {
+    dimension: "pathos",
+    label: "Pathos",
+    color: DIMENSION_COLORS.pathos,
+    traits: Object.entries(TRAIT_DIMENSIONS)
+      .filter(([, d]) => d === "pathos")
+      .map(([t]) => t),
+  },
+];
 
 /* ─── Inline Components ─── */
 
@@ -68,135 +103,348 @@ function FacetGroup({ title, children, last }: { title: string; children: React.
   );
 }
 
-function DimensionBar({ label, value, color }: { label: string; value: number; color: string }) {
+function ScoreBar({ value, color, height = "h-1.5" }: { value: number; color: string; height?: string }) {
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-[10px] font-medium text-muted w-6">{label}</span>
-      <div className="relative flex-1 h-1.5 rounded-full bg-muted/10">
-        <div
-          className="absolute inset-y-0 left-0 rounded-full"
-          style={{ width: `${Math.round(value * 100)}%`, backgroundColor: color, opacity: 0.7 }}
-        />
-      </div>
-      <span className="text-[10px] tabular-nums text-muted/80 w-6 text-right">{Math.round(value * 100)}</span>
+    <div className={`relative flex-1 ${height} rounded-full bg-muted/10`}>
+      <div
+        className={`absolute inset-y-0 left-0 rounded-full ${height}`}
+        style={{ width: `${Math.round(value * 100)}%`, backgroundColor: color, opacity: 0.7 }}
+      />
     </div>
   );
 }
 
-function RecordCard({ record }: { record: RecordItem }) {
-  const [expanded, setExpanded] = useState(false);
-  const [showAnalysis, setShowAnalysis] = useState(false);
+function SeverityPill({ severity }: { severity: number }) {
+  const pct = Math.round(severity * 100);
+  let cls = "bg-aligned/10 text-aligned";
+  if (pct >= 70) cls = "bg-misaligned/10 text-misaligned";
+  else if (pct >= 40) cls = "bg-drifting/10 text-drifting";
+  return (
+    <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-semibold ${cls}`}>
+      sev {pct}
+    </span>
+  );
+}
 
-  const alignmentStyle = ALIGNMENT_STYLES[record.alignmentStatus] ?? "bg-muted/10 text-muted";
-  const alignmentLabel = ALIGNMENT_LABELS[record.alignmentStatus] ?? record.alignmentStatus;
-  const date = new Date(record.createdAt);
-  const timeAgo = formatTimeAgo(date);
+function IndicatorGroup({ indicators }: { indicators: DetectedIndicatorSummary[] }) {
+  // Group by trait
+  const grouped: Record<string, DetectedIndicatorSummary[]> = {};
+  for (const ind of indicators) {
+    const key = ind.trait || "unknown";
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(ind);
+  }
 
-  const preview = record.messageContent
-    ? expanded
-      ? record.messageContent
-      : record.messageContent.slice(0, 180) + (record.messageContent.length > 180 ? "..." : "")
-    : null;
+  return (
+    <div className="space-y-3">
+      {Object.entries(grouped).map(([trait, inds]) => (
+        <div key={trait}>
+          <h5 className="text-[10px] font-semibold uppercase tracking-wider text-muted/70 mb-1.5">
+            {TRAIT_LABELS[trait] ?? trait}
+          </h5>
+          <div className="space-y-2">
+            {inds.map((ind, i) => (
+              <div key={`${ind.id}-${i}`} className="rounded-lg bg-white/30 p-2.5">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-medium text-foreground">{ind.name}</span>
+                  <SeverityPill severity={ind.severity} />
+                </div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] text-muted w-12">conf</span>
+                  <ScoreBar value={ind.confidence} color={DIMENSION_COLORS.logos} height="h-1" />
+                  <span className="text-[10px] tabular-nums text-muted w-6 text-right">
+                    {Math.round(ind.confidence * 100)}
+                  </span>
+                </div>
+                {ind.evidence && (
+                  <p className="text-[11px] text-foreground/60 leading-relaxed mt-1">{ind.evidence}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Expanded Row Detail Panel ─── */
+
+function ExpandedDetail({ record }: { record: RecordItem }) {
+  const color = spectrumColor(record.overall);
 
   return (
     <motion.div
-      variants={fadeUp}
-      className="rounded-2xl border border-white/30 bg-white/40 backdrop-blur-2xl p-5 shadow-sm transition-all hover:shadow-md hover:border-white/50"
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.25, ease: "easeInOut" }}
+      className="overflow-hidden"
     >
-      {/* Header: agent + alignment + time */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <Link
-            href={`/agent/${encodeURIComponent(record.agentId)}`}
-            className="text-sm font-semibold text-foreground hover:text-action transition-colors"
-          >
-            {record.agentName || record.agentId}
-          </Link>
-          <p className="mt-0.5 text-[11px] text-muted/70">{timeAgo}</p>
-        </div>
-        <span className={`shrink-0 rounded-lg px-2.5 py-1 text-[11px] font-bold ${alignmentStyle}`}>
-          {alignmentLabel}
-        </span>
-      </div>
-
-      {/* Spectrum bar */}
-      <div className="mt-3">
-        <SpectrumBar score={record.overall} size="sm" />
-      </div>
-
-      {/* Dimension bars */}
-      <div className="mt-2.5 space-y-1">
-        {DIMENSIONS.map((dim) => (
-          <DimensionBar
-            key={dim.key}
-            label={dim.sublabel[0]}
-            value={record[dim.key as keyof RecordItem] as number}
-            color={dim.color}
-          />
-        ))}
-      </div>
-
-      {/* Intent + flags */}
-      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-        {record.intentClassification && (
-          <IntentSummary intent={record.intentClassification} />
-        )}
-        {record.flags.map((flag) => (
-          <span
-            key={flag}
-            className="rounded-full bg-misaligned/10 px-2 py-0.5 text-[10px] font-medium text-misaligned"
-          >
-            {flag}
-          </span>
-        ))}
-      </div>
-
-      {/* Message preview */}
-      {preview && (
-        <div className="mt-3">
-          <p className="text-xs text-foreground/80 leading-relaxed">
-            {preview}
-          </p>
-          {record.messageContent.length > 180 && (
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="mt-1 text-[11px] font-medium text-action hover:underline"
-            >
-              {expanded ? "Show less" : "Show more"}
-            </button>
+      <div className="px-4 pb-5 pt-2 space-y-5 border-t border-white/15">
+        {/* Overview bar */}
+        <div className="flex flex-wrap items-center gap-3 text-xs">
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold" style={{ color }}>{spectrumLabel(record.overall)}</span>
+            <span className="tabular-nums text-muted">{Math.round(record.overall * 100)}%</span>
+          </div>
+          {record.direction && (
+            <span className="rounded-full bg-white/40 px-2 py-0.5 text-[10px] text-muted">
+              {record.direction}
+            </span>
+          )}
+          {record.routingTier !== "standard" && (
+            <span className="rounded-full bg-action/10 px-2 py-0.5 text-[10px] text-action font-medium">
+              {record.routingTier}
+            </span>
+          )}
+          {record.modelUsed && (
+            <span className="text-[10px] text-muted" title="Model used for evaluation">
+              eval: {record.modelUsed}
+            </span>
+          )}
+          {record.agentModel && (
+            <span className="text-[10px] text-muted" title="Agent model">
+              agent: {record.agentModel}
+            </span>
           )}
         </div>
-      )}
 
-      {/* Show analysis toggle */}
-      {record.scoringReasoning && (
-        <div className="mt-3 border-t border-white/20 pt-3">
-          <button
-            onClick={() => setShowAnalysis(!showAnalysis)}
-            className="text-[11px] font-medium text-muted hover:text-foreground transition-colors flex items-center gap-1"
-          >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              className={`transition-transform ${showAnalysis ? "rotate-90" : ""}`}
-            >
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-            {showAnalysis ? "Hide analysis" : "Show analysis"}
-          </button>
-          {showAnalysis && (
-            <p className="mt-2 text-[11px] text-foreground/70 leading-relaxed">
-              {record.scoringReasoning}
+        {/* Message content */}
+        {record.messageContent && (
+          <div>
+            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted/70 mb-1.5">Message</h4>
+            <p className="text-[11px] text-foreground/70 leading-relaxed whitespace-pre-wrap bg-white/20 rounded-lg p-3">
+              {record.messageContent}
             </p>
+          </div>
+        )}
+
+        {/* Scoring reasoning */}
+        {record.scoringReasoning && (
+          <div>
+            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted/70 mb-1.5">Reasoning</h4>
+            <p className="text-[11px] text-foreground/70 leading-relaxed">{record.scoringReasoning}</p>
+          </div>
+        )}
+
+        {/* Dimension scores */}
+        <div>
+          <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted/70 mb-2">Dimensions</h4>
+          <div className="grid grid-cols-3 gap-4">
+            {DIMENSIONS.map((dim) => {
+              const val = record[dim.key as keyof RecordItem] as number;
+              return (
+                <div key={dim.key} className="space-y-0.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-medium" style={{ color: dim.color }}>{dim.sublabel}</span>
+                    <span className="text-[10px] tabular-nums text-muted">{Math.round(val * 100)}</span>
+                  </div>
+                  <ScoreBar value={val} color={dim.color} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Trait scores grouped by dimension */}
+        {Object.keys(record.traitScores).length > 0 && (
+          <div>
+            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted/70 mb-2">Trait Scores</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {TRAIT_GROUPS.map((group) => (
+                <div key={group.dimension}>
+                  <h5 className="text-[10px] font-semibold mb-1.5" style={{ color: group.color }}>
+                    {group.label}
+                  </h5>
+                  <div className="space-y-1">
+                    {group.traits.map((trait) => {
+                      const val = record.traitScores[trait];
+                      if (val === undefined) return null;
+                      return (
+                        <div key={trait} className="flex items-center gap-2">
+                          <span className="text-[10px] text-muted w-20 truncate">
+                            {TRAIT_LABELS[trait] ?? trait}
+                          </span>
+                          <ScoreBar value={val} color={group.color} height="h-1" />
+                          <span className="text-[10px] tabular-nums text-muted w-6 text-right">
+                            {Math.round(val * 100)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Intent classification */}
+        {record.intentClassification && (
+          <div>
+            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted/70 mb-2">Intent</h4>
+            <div className="space-y-2">
+              <IntentSummary intent={record.intentClassification} />
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
+                <div>
+                  <span className="text-muted">Stakes: </span>
+                  <span className="text-foreground/80">{record.intentClassification.stakesReality}</span>
+                </div>
+                <div>
+                  <span className="text-muted">Persona: </span>
+                  <span className="text-foreground/80">{record.intentClassification.personaType.replace(/_/g, " ")}</span>
+                </div>
+                <div>
+                  <span className="text-muted">Relational: </span>
+                  <span className="text-foreground/80">{record.intentClassification.relationalQuality}</span>
+                </div>
+                <div>
+                  <span className="text-muted">Action: </span>
+                  <span className="text-foreground/80">{record.intentClassification.actionRequested}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Detected indicators */}
+        {(record.detectedIndicators?.length ?? 0) > 0 && (
+          <div>
+            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted/70 mb-2">
+              Detected Indicators ({record.detectedIndicators.length})
+            </h4>
+            <IndicatorGroup indicators={record.detectedIndicators} />
+          </div>
+        )}
+
+        {/* Metadata */}
+        {record.keywordDensity > 0 && (
+          <div className="flex gap-4 text-[10px] text-muted">
+            <span>Keyword density: {(record.keywordDensity * 100).toFixed(1)}%</span>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Table Row ─── */
+
+function RecordRow({
+  record,
+  expanded,
+  onToggle,
+}: {
+  record: RecordItem;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  const alignmentStyle = ALIGNMENT_STYLES[record.alignmentStatus] ?? "bg-muted/10 text-muted";
+  const alignmentLabel = ALIGNMENT_LABELS[record.alignmentStatus] ?? record.alignmentStatus;
+  const timeAgo = formatTimeAgo(new Date(record.createdAt));
+  const scorePct = Math.round(record.overall * 100);
+  const scoreColor = spectrumColor(record.overall);
+
+  return (
+    <div className={`border-b border-white/15 transition-colors ${expanded ? "bg-white/30" : "hover:bg-white/20"}`}>
+      <button
+        onClick={onToggle}
+        className="w-full text-left px-4 py-3 flex items-center gap-3"
+        aria-expanded={expanded}
+      >
+        {/* Score */}
+        <div className="w-12 shrink-0 text-center">
+          <span className="text-sm font-bold tabular-nums" style={{ color: scoreColor }}>
+            {scorePct}
+          </span>
+        </div>
+
+        {/* Message preview + agent subtitle */}
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-foreground/80 truncate leading-snug">
+            {record.messageContent || <span className="italic text-muted/50">No message content</span>}
+          </p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <Link
+              href={`/agent/${encodeURIComponent(record.agentId)}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-[11px] font-semibold text-foreground/50 hover:text-action transition-colors truncate"
+            >
+              {record.agentName || record.agentId}
+            </Link>
+            <span className="text-[9px] text-muted/40">|</span>
+            <span className="text-[10px] text-muted/50">{timeAgo}</span>
+          </div>
+        </div>
+
+        {/* E/L/P mini bars */}
+        <div className="w-24 shrink-0 space-y-0.5 hidden sm:block">
+          {DIMENSIONS.map((dim) => (
+            <div key={dim.key} className="flex items-center gap-1">
+              <span className="text-[8px] text-muted w-2">{dim.sublabel[0]}</span>
+              <div className="relative flex-1 h-1 rounded-full bg-muted/10">
+                <div
+                  className="absolute inset-y-0 left-0 rounded-full h-1"
+                  style={{
+                    width: `${Math.round((record[dim.key as keyof RecordItem] as number) * 100)}%`,
+                    backgroundColor: dim.color,
+                    opacity: 0.6,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Alignment */}
+        <div className="w-22 shrink-0 hidden md:block">
+          <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${alignmentStyle}`}>
+            {alignmentLabel}
+          </span>
+        </div>
+
+        {/* Flags + indicators */}
+        <div className="w-36 shrink-0 hidden lg:flex flex-wrap gap-1">
+          {record.flags.slice(0, 2).map((flag) => (
+            <span
+              key={flag}
+              className="rounded-full bg-misaligned/10 px-1.5 py-0.5 text-[9px] font-medium text-misaligned"
+            >
+              {flag}
+            </span>
+          ))}
+          {(record.detectedIndicators?.length ?? 0) > 0 && (
+            <span className="rounded-full bg-white/40 px-1.5 py-0.5 text-[9px] text-muted">
+              {record.detectedIndicators.length} ind.
+            </span>
+          )}
+          {record.flags.length === 0 && !(record.detectedIndicators?.length) && (
+            <span className="text-[10px] text-muted/40">--</span>
           )}
         </div>
-      )}
-    </motion.div>
+
+        {/* Chevron */}
+        <div className="w-5 shrink-0 flex justify-center">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            className={`text-muted/50 transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {expanded && <ExpandedDetail record={record} />}
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -226,6 +474,7 @@ export default function RecordsPage() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [alignmentFilter, setAlignmentFilter] = useState<Set<string>>(new Set());
   const [flaggedOnly, setFlaggedOnly] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   // Debounce search input
@@ -270,6 +519,11 @@ export default function RecordsPage() {
   useEffect(() => {
     fetchRecords();
   }, [fetchRecords]);
+
+  // Collapse expanded row on page/filter change
+  useEffect(() => {
+    setExpandedId(null);
+  }, [page, debouncedQuery, alignmentParam, flaggedOnly, sortKey, sortOrder]);
 
   function toggleAlignment(status: string) {
     setAlignmentFilter((prev) => {
@@ -463,19 +717,33 @@ export default function RecordsPage() {
                 </div>
               )}
 
-              {/* Record cards */}
+              {/* Data table */}
               {!loading && !error && items.length > 0 && (
-                <motion.div
-                  key={`${page}-${sortKey}-${sortOrder}`}
-                  className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
-                  initial="hidden"
-                  animate="visible"
-                  variants={staggerContainer}
-                >
+                <div className="rounded-2xl border border-white/30 bg-white/40 backdrop-blur-2xl overflow-hidden">
+                  {/* Table header */}
+                  <div className="px-4 py-2.5 flex items-center gap-3 border-b border-white/20 bg-white/20 text-[10px] font-semibold uppercase tracking-wider text-muted/70">
+                    <div className="w-12 shrink-0 text-center">Score</div>
+                    <div className="flex-1">Message</div>
+                    <div className="w-24 shrink-0 hidden sm:block">E/L/P</div>
+                    <div className="w-22 shrink-0 hidden md:block">Alignment</div>
+                    <div className="w-36 shrink-0 hidden lg:block">Flags</div>
+                    <div className="w-5 shrink-0" />
+                  </div>
+
+                  {/* Rows */}
                   {items.map((record) => (
-                    <RecordCard key={record.evaluationId} record={record} />
+                    <RecordRow
+                      key={record.evaluationId}
+                      record={record}
+                      expanded={expandedId === record.evaluationId}
+                      onToggle={() =>
+                        setExpandedId((prev) =>
+                          prev === record.evaluationId ? null : record.evaluationId
+                        )
+                      }
+                    />
                   ))}
-                </motion.div>
+                </div>
               )}
 
               {/* Pagination */}

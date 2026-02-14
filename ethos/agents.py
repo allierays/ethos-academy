@@ -23,6 +23,7 @@ from ethos.shared.models import (
     AgentProfile,
     AgentSummary,
     AlumniResult,
+    DetectedIndicatorSummary,
     EvaluationHistoryItem,
     HighlightIndicator,
     HighlightItem,
@@ -283,6 +284,26 @@ async def search_records(
                     if val is not None:
                         trait_scores[trait] = round(float(val), 4)
 
+                # Parse detected indicators from graph
+                raw_indicators = e.get("indicators", [])
+                detected_indicators = sorted(
+                    [
+                        DetectedIndicatorSummary(
+                            id=ind.get("id", ""),
+                            name=ind.get("name", ""),
+                            trait=ind.get("trait", ""),
+                            description=ind.get("description", ""),
+                            confidence=round(float(ind.get("confidence", 0)), 4),
+                            severity=round(float(ind.get("severity", 0)), 4),
+                            evidence=ind.get("evidence", ""),
+                        )
+                        for ind in raw_indicators
+                        if isinstance(ind, dict) and ind.get("name")
+                    ],
+                    key=lambda x: x.confidence,
+                    reverse=True,
+                )
+
                 items.append(
                     RecordItem(
                         evaluation_id=e.get("evaluation_id", ""),
@@ -301,6 +322,11 @@ async def search_records(
                         scoring_reasoning=e.get("scoring_reasoning", ""),
                         intent_classification=_build_intent(e),
                         trait_scores=trait_scores,
+                        model_used=e.get("model_used") or "",
+                        agent_model=e.get("agent_model") or "",
+                        routing_tier=e.get("routing_tier") or "standard",
+                        keyword_density=float(e.get("keyword_density") or 0),
+                        detected_indicators=detected_indicators,
                     )
                 )
 

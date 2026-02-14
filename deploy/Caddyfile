@@ -1,0 +1,11 @@
+ethos-academy.com {
+	reverse_proxy academy:3000
+}
+
+api.ethos-academy.com {
+	reverse_proxy app:8000
+}
+
+mcp.ethos-academy.com {
+	reverse_proxy mcp:8888
+}

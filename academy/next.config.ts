@@ -9,6 +9,7 @@ const __projectDir =
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
+  output: "standalone",
   turbopack: {
     root: resolve(__projectDir),
   },

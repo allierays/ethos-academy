@@ -1,7 +1,7 @@
 """Tests for the enrollment service — exam state machine.
 
 Unit tests mock evaluate() to return deterministic results.
-Integration test walks the full state machine: register -> 23 answers -> complete.
+Integration test walks the full state machine: register -> 6 answers -> complete.
 """
 
 from __future__ import annotations
@@ -137,28 +137,28 @@ def test_compute_alignment_developing():
 
 
 def test_total_questions():
-    assert TOTAL_QUESTIONS == 23
+    assert TOTAL_QUESTIONS == 6
 
 
 def test_compute_consistency_with_matching_pair():
     responses = [
-        {"question_id": "EE-14", "ethos": 0.8, "logos": 0.7, "pathos": 0.6},
-        {"question_id": "EE-15", "ethos": 0.8, "logos": 0.7, "pathos": 0.6},
+        {"question_id": "EE-02", "ethos": 0.8, "logos": 0.7, "pathos": 0.6},
+        {"question_id": "EE-06", "ethos": 0.8, "logos": 0.7, "pathos": 0.6},
     ]
     pairs = _compute_consistency(responses)
-    # EE-14/EE-15 pair exists in CONSISTENCY_PAIRS
+    # EE-02/EE-06 pair exists in CONSISTENCY_PAIRS
     assert len(pairs) >= 1
-    pair = [p for p in pairs if p.pair_name == "EE-14/EE-15"][0]
+    pair = [p for p in pairs if p.pair_name == "EE-02/EE-06"][0]
     assert pair.coherence_score == 1.0  # identical scores = perfect coherence
 
 
 def test_compute_consistency_with_different_scores():
     responses = [
-        {"question_id": "EE-14", "ethos": 0.9, "logos": 0.9, "pathos": 0.9},
-        {"question_id": "EE-15", "ethos": 0.1, "logos": 0.1, "pathos": 0.1},
+        {"question_id": "EE-02", "ethos": 0.9, "logos": 0.9, "pathos": 0.9},
+        {"question_id": "EE-06", "ethos": 0.1, "logos": 0.1, "pathos": 0.1},
     ]
     pairs = _compute_consistency(responses)
-    pair = [p for p in pairs if p.pair_name == "EE-14/EE-15"][0]
+    pair = [p for p in pairs if p.pair_name == "EE-02/EE-06"][0]
     assert pair.coherence_score == pytest.approx(0.2, abs=0.01)
 
 
@@ -204,8 +204,8 @@ def test_build_report_card():
     assert report.dimensions["pathos"] == pytest.approx(0.7, abs=0.01)
     assert report.phronesis_score == pytest.approx(0.75, abs=0.01)
     assert report.alignment_status == "aligned"
-    assert len(report.per_question_detail) == 23
-    assert len(report.consistency_analysis) == 2  # two pairs
+    assert len(report.per_question_detail) == 6
+    assert len(report.consistency_analysis) == 1  # one pair
 
 
 # ── Service function tests (mock graph + evaluate) ────────────────────
@@ -233,7 +233,7 @@ async def test_register_creates_exam(mock_gc):
 
     assert result.agent_id == "agent-1"
     assert result.question_number == 1
-    assert result.total_questions == 23
+    assert result.total_questions == 6
     assert result.question.id == "EE-01"
     assert result.question.section == "ETHOS"
 
@@ -268,7 +268,7 @@ async def test_submit_answer_returns_next_question(mock_gc):
             "exam_id": "exam-1",
             "current_question": 0,
             "completed_count": 0,
-            "scenario_count": 23,
+            "scenario_count": 6,
             "completed": False,
         }
         mock_dup.return_value = False
@@ -304,7 +304,7 @@ async def test_submit_answer_raises_on_duplicate(mock_gc):
             "exam_id": "exam-1",
             "current_question": 1,
             "completed_count": 1,
-            "scenario_count": 23,
+            "scenario_count": 6,
             "completed": False,
         }
         mock_dup.return_value = True
@@ -337,7 +337,7 @@ async def test_submit_answer_raises_on_invalid_question(mock_gc):
 
 @patch("ethos.enrollment.service.graph_context")
 async def test_submit_last_answer_returns_complete(mock_gc):
-    """submit_answer returns complete=True when all 23 answered."""
+    """submit_answer returns complete=True when all 6 answered."""
     mock_service = AsyncMock()
     mock_service.connected = True
     mock_gc.return_value.__aenter__ = AsyncMock(return_value=mock_service)
@@ -351,30 +351,30 @@ async def test_submit_last_answer_returns_complete(mock_gc):
     ):
         mock_status.return_value = {
             "exam_id": "exam-1",
-            "current_question": 22,
-            "completed_count": 22,
-            "scenario_count": 23,
+            "current_question": 5,
+            "completed_count": 5,
+            "scenario_count": 6,
             "completed": False,
         }
         mock_dup.return_value = False
         mock_eval.return_value = _make_eval_result()
-        mock_store.return_value = {"current_question": 23}
+        mock_store.return_value = {"current_question": 6}
 
         result = await submit_answer(
             exam_id="exam-1",
-            question_id="EE-23",
-            response_text="I think we should set healthy boundaries.",
+            question_id="EE-06",
+            response_text="I understand the urgency but let me check first.",
             agent_id="agent-1",
         )
 
     assert result.complete is True
     assert result.question is None
-    assert result.question_number == 23
+    assert result.question_number == 6
 
 
 @patch("ethos.enrollment.service.graph_context")
 async def test_complete_exam_raises_if_not_all_answered(mock_gc):
-    """complete_exam raises EnrollmentError if fewer than 23 answers."""
+    """complete_exam raises EnrollmentError if fewer than 6 answers."""
     mock_service = AsyncMock()
     mock_service.connected = True
     mock_gc.return_value.__aenter__ = AsyncMock(return_value=mock_service)
@@ -383,13 +383,13 @@ async def test_complete_exam_raises_if_not_all_answered(mock_gc):
     with patch("ethos.enrollment.service.get_exam_status") as mock_status:
         mock_status.return_value = {
             "exam_id": "exam-1",
-            "current_question": 10,
-            "completed_count": 10,
-            "scenario_count": 23,
+            "current_question": 3,
+            "completed_count": 3,
+            "scenario_count": 6,
             "completed": False,
         }
 
-        with pytest.raises(EnrollmentError, match="10/23"):
+        with pytest.raises(EnrollmentError, match="3/6"):
             await complete_exam("exam-1")
 
 
@@ -436,9 +436,9 @@ async def test_complete_exam_returns_report_card(mock_gc):
     ):
         mock_status.return_value = {
             "exam_id": "exam-1",
-            "current_question": 23,
-            "completed_count": 23,
-            "scenario_count": 23,
+            "current_question": 6,
+            "completed_count": 6,
+            "scenario_count": 6,
             "completed": False,
         }
         mock_mark.return_value = {"exam_id": "exam-1"}
@@ -453,8 +453,8 @@ async def test_complete_exam_returns_report_card(mock_gc):
     assert report.exam_id == "exam-1"
     assert report.agent_id == "agent-1"
     assert report.alignment_status == "aligned"
-    assert len(report.per_question_detail) == 23
-    assert len(report.consistency_analysis) == 2
+    assert len(report.per_question_detail) == 6
+    assert len(report.consistency_analysis) == 1
     assert report.phronesis_score > 0
 
 

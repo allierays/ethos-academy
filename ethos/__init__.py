@@ -12,6 +12,15 @@ from ethos.agents import (
 )
 from ethos.authenticity import analyze_authenticity
 from ethos.graph_features import get_drift, get_similarity, get_trail
+from ethos.graph_insights import (
+    compare_agents,
+    find_similar_agents,
+    get_character_arc,
+    get_constitutional_risk_report,
+    get_early_warning_indicators,
+    get_network_topology,
+    get_sabotage_pathway_status,
+)
 from ethos.daily_reports import get_daily_report, get_daily_report_history
 from ethos.enrollment.service import (
     complete_exam,
@@ -95,4 +104,11 @@ __all__ = [
     "search_records",
     "RecordItem",
     "RecordsResult",
+    "get_character_arc",
+    "get_constitutional_risk_report",
+    "find_similar_agents",
+    "get_early_warning_indicators",
+    "get_network_topology",
+    "get_sabotage_pathway_status",
+    "compare_agents",
 ]

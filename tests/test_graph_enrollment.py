@@ -130,7 +130,7 @@ class TestGetExamStatus:
                     "exam_id": "exam-001",
                     "current_question": 5,
                     "completed_count": 5,
-                    "scenario_count": 23,
+                    "scenario_count": 6,
                     "completed": False,
                 }
             ]
@@ -139,7 +139,7 @@ class TestGetExamStatus:
         assert result["exam_id"] == "exam-001"
         assert result["current_question"] == 5
         assert result["completed_count"] == 5
-        assert result["scenario_count"] == 23
+        assert result["scenario_count"] == 6
         assert result["completed"] is False
 
     async def test_returns_empty_when_disconnected(self):
@@ -196,7 +196,7 @@ class TestGetExamResults:
                     "created_at": "2026-01-01T00:00:00Z",
                     "completed": True,
                     "completed_at": "2026-01-01T01:00:00Z",
-                    "scenario_count": 23,
+                    "scenario_count": 6,
                     "responses": [
                         {"question_id": "EE-01", "question_number": 1, "ethos": 0.8},
                     ],
@@ -239,8 +239,8 @@ class TestGetAgentExams:
                     "created_at": "2026-01-01",
                     "completed": True,
                     "completed_at": "2026-01-01",
-                    "current_question": 23,
-                    "scenario_count": 23,
+                    "current_question": 6,
+                    "scenario_count": 6,
                 },
                 {
                     "exam_id": "exam-002",
@@ -249,7 +249,7 @@ class TestGetAgentExams:
                     "completed": False,
                     "completed_at": None,
                     "current_question": 5,
-                    "scenario_count": 23,
+                    "scenario_count": 6,
                 },
             ]
         )

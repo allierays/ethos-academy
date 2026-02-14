@@ -1,7 +1,7 @@
 """Enrollment service — exam registration, answer submission, completion.
 
 Orchestrates the entrance exam state machine:
-  register -> submit 23 answers -> complete -> report card
+  register -> submit 6 answers -> complete -> report card
 
 Calls graph functions (never writes Cypher directly) and evaluate() for scoring.
 Graph is required for enrollment — raises EnrollmentError if unavailable.
@@ -39,7 +39,7 @@ from ethos.shared.models import (
 
 logger = logging.getLogger(__name__)
 
-TOTAL_QUESTIONS = len(QUESTIONS)  # 23
+TOTAL_QUESTIONS = len(QUESTIONS)  # 6
 
 # Build lookup dicts from QUESTIONS data
 _QUESTIONS_BY_ID: dict[str, dict] = {q["id"]: q for q in QUESTIONS}
@@ -102,6 +102,7 @@ async def register_for_exam(
             counselor_name=counselor_name,
             exam_id=exam_id,
             exam_type="entrance",
+            scenario_count=TOTAL_QUESTIONS,
         )
         if not result:
             raise EnrollmentError("Failed to create exam in graph")
@@ -201,7 +202,7 @@ async def submit_answer(
 
 
 async def complete_exam(exam_id: str) -> ExamReportCard:
-    """Finalize exam: verify all 23 answered, aggregate scores, compute consistency.
+    """Finalize exam: verify all 6 answered, aggregate scores, compute consistency.
 
     Raises EnrollmentError if not all questions answered or exam not found.
     """
@@ -241,7 +242,7 @@ async def upload_exam(
     model: str = "",
     counselor_name: str = "",
 ) -> ExamReportCard:
-    """Submit a complete exam via upload (all 23 responses at once).
+    """Submit a complete exam via upload (all 6 responses at once).
 
     For agents on closed platforms where a human copies the agent's responses.
     Same questions, same scoring, tagged as exam_type='upload'.
@@ -284,11 +285,12 @@ async def upload_exam(
             counselor_name=counselor_name,
             exam_id=exam_id,
             exam_type="upload",
+            scenario_count=TOTAL_QUESTIONS,
         )
         if not result:
             raise EnrollmentError("Failed to create upload exam in graph")
 
-        # Evaluate and store all 23 responses
+        # Evaluate and store all responses
         for resp in responses:
             qid = resp["question_id"]
             text = resp.get("response_text", "")

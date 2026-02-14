@@ -28,12 +28,12 @@ SET a.enrolled = true,
 CREATE (ex:EntranceExam {
     exam_id: $exam_id,
     exam_type: $exam_type,
-    question_version: 'v1',
+    question_version: 'v2',
     created_at: datetime(),
     completed: false,
     completed_at: null,
     current_question: 0,
-    scenario_count: 23
+    scenario_count: $scenario_count
 })
 CREATE (a)-[:TOOK_EXAM]->(ex)
 RETURN ex.exam_id AS exam_id
@@ -143,6 +143,7 @@ async def enroll_and_create_exam(
     counselor_name: str,
     exam_id: str,
     exam_type: str,
+    scenario_count: int = 6,
 ) -> dict:
     """MERGE Agent with enrollment fields and CREATE EntranceExam with TOOK_EXAM relationship.
 
@@ -162,6 +163,7 @@ async def enroll_and_create_exam(
                 "counselor_name": counselor_name,
                 "exam_id": exam_id,
                 "exam_type": exam_type,
+                "scenario_count": scenario_count,
             },
         )
         if records:

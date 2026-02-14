@@ -15,12 +15,20 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from ethos.mcp_server import (
+    compare_agents,
     detect_behavioral_patterns,
     examine_message,
+    find_similar_agents,
     get_alumni_benchmarks,
+    get_character_arc,
     get_character_report,
+    get_constitutional_risk_report,
+    get_early_warning_indicators,
+    get_network_topology,
+    get_sabotage_pathway_status,
     get_student_profile,
     get_transcript,
+    help,
     reflect_on_message,
 )
 from ethos.shared.models import (
@@ -73,6 +81,37 @@ def _mock_agent_profile(**overrides) -> AgentProfile:
     }
     defaults.update(overrides)
     return AgentProfile(**defaults)
+
+
+class TestHelpTool:
+    """help() returns the full tool catalog."""
+
+    async def test_returns_all_categories(self):
+        result = await help.fn()
+
+        assert isinstance(result, dict)
+        assert "getting_started" in result
+        assert "evaluate_messages" in result
+        assert "your_profile" in result
+        assert "graph_insights" in result
+        assert "benchmarks" in result
+
+    async def test_each_category_has_required_keys(self):
+        result = await help.fn()
+
+        for category, data in result.items():
+            assert "description" in data, f"{category} missing description"
+            assert "tools" in data, f"{category} missing tools"
+            assert "example_questions" in data, f"{category} missing examples"
+            assert len(data["tools"]) > 0, f"{category} has no tools"
+            assert len(data["example_questions"]) > 0, f"{category} has no examples"
+
+    async def test_total_tool_count(self):
+        result = await help.fn()
+
+        total_tools = sum(len(data["tools"]) for data in result.values())
+        # 17 tools cataloged (help itself is not listed)
+        assert total_tools == 17
 
 
 class TestMCPToolsHappyPath:
@@ -291,3 +330,195 @@ class TestMCPToolsErrorPropagation:
         ):
             with pytest.raises(RuntimeError, match="Insufficient evaluations"):
                 await detect_behavioral_patterns.fn(agent_id="agent-1")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Graph Insight MCP Tools (7 new read-only tools)
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class TestInsightToolsHappyPath:
+    """Each insight tool returns a dict from the domain function."""
+
+    async def test_get_character_arc(self):
+        mock_result = {
+            "agent_id": "agent-1",
+            "total_evaluations": 9,
+            "arc": "growth",
+            "phases": [{"phase": "early"}, {"phase": "middle"}, {"phase": "recent"}],
+            "turning_points": [],
+            "first_eval": "2026-01-01",
+            "last_eval": "2026-01-09",
+        }
+        with patch(
+            "ethos.mcp_server._get_character_arc",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            result = await get_character_arc.fn(agent_id="agent-1")
+
+        assert isinstance(result, dict)
+        assert result["arc"] == "growth"
+        assert result["total_evaluations"] == 9
+
+    async def test_get_constitutional_risk_report_global(self):
+        mock_result = {
+            "scope": "global",
+            "at_risk_values": [{"value": "Truthfulness", "total_detections": 15}],
+            "total_values_affected": 1,
+        }
+        with patch(
+            "ethos.mcp_server._get_constitutional_risk_report",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            result = await get_constitutional_risk_report.fn()
+
+        assert isinstance(result, dict)
+        assert result["scope"] == "global"
+        assert result["total_values_affected"] == 1
+
+    async def test_get_constitutional_risk_report_agent_scoped(self):
+        mock_result = {
+            "scope": "agent-1",
+            "at_risk_values": [],
+            "total_values_affected": 0,
+        }
+        with patch(
+            "ethos.mcp_server._get_constitutional_risk_report",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            result = await get_constitutional_risk_report.fn(agent_id="agent-1")
+
+        assert result["scope"] == "agent-1"
+
+    async def test_find_similar_agents(self):
+        mock_result = {
+            "agent_id": "agent-1",
+            "similar_agents": [
+                {
+                    "agent_id": "agent-2",
+                    "similarity": 0.8,
+                    "shared_indicators": ["MAN-CONSENSUS"],
+                },
+            ],
+            "total_matches": 1,
+        }
+        with patch(
+            "ethos.mcp_server._find_similar_agents",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            result = await find_similar_agents.fn(agent_id="agent-1")
+
+        assert isinstance(result, dict)
+        assert result["total_matches"] == 1
+        assert result["similar_agents"][0]["similarity"] == 0.8
+
+    async def test_get_early_warning_indicators(self):
+        mock_result = {
+            "indicators": [
+                {"indicator_id": "MAN-CONSENSUS", "trouble_rate": 0.8},
+            ],
+            "total_indicators": 1,
+            "high_risk": [
+                {"indicator_id": "MAN-CONSENSUS", "trouble_rate": 0.8},
+            ],
+        }
+        with patch(
+            "ethos.mcp_server._get_early_warning_indicators",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            result = await get_early_warning_indicators.fn()
+
+        assert isinstance(result, dict)
+        assert result["total_indicators"] == 1
+        assert len(result["high_risk"]) == 1
+
+    async def test_get_network_topology(self):
+        mock_result = {
+            "connected": True,
+            "node_counts": {"Agent": 5, "Evaluation": 50},
+            "total_nodes": 55,
+            "total_relationships": 95,
+            "agent_count": 5,
+            "evaluation_count": 50,
+        }
+        with patch(
+            "ethos.mcp_server._get_network_topology",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            result = await get_network_topology.fn()
+
+        assert isinstance(result, dict)
+        assert result["connected"] is True
+        assert result["total_nodes"] == 55
+
+    async def test_get_sabotage_pathway_status_global(self):
+        mock_result = {
+            "scope": "global",
+            "pathways": [{"pattern_id": "SP-01", "confidence": 0.8}],
+            "active_count": 1,
+            "emerging_count": 0,
+            "total_detected": 1,
+        }
+        with patch(
+            "ethos.mcp_server._get_sabotage_pathway_status",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            result = await get_sabotage_pathway_status.fn()
+
+        assert isinstance(result, dict)
+        assert result["active_count"] == 1
+
+    async def test_get_sabotage_pathway_status_agent_scoped(self):
+        mock_result = {
+            "scope": "agent-1",
+            "pathways": [],
+            "active_count": 0,
+            "emerging_count": 0,
+            "total_detected": 0,
+        }
+        with patch(
+            "ethos.mcp_server._get_sabotage_pathway_status",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            result = await get_sabotage_pathway_status.fn(agent_id="agent-1")
+
+        assert result["scope"] == "agent-1"
+
+    async def test_compare_agents(self):
+        mock_result = {
+            "agent_1": {
+                "agent_id": "a-1",
+                "agent_name": "Bot A",
+                "evaluation_count": 10,
+                "alignment_rate": 1.0,
+            },
+            "agent_2": {
+                "agent_id": "a-2",
+                "agent_name": "Bot B",
+                "evaluation_count": 8,
+                "alignment_rate": 0.75,
+            },
+            "dimension_comparison": {
+                "ethos": {"agent_1": 0.8, "agent_2": 0.5, "delta": 0.3},
+            },
+            "trait_comparison": {},
+            "biggest_differences": [],
+        }
+        with patch(
+            "ethos.mcp_server._compare_agents",
+            new_callable=AsyncMock,
+            return_value=mock_result,
+        ):
+            result = await compare_agents.fn(agent_id_1="a-1", agent_id_2="a-2")
+
+        assert isinstance(result, dict)
+        assert result["agent_1"]["agent_name"] == "Bot A"
+        assert result["dimension_comparison"]["ethos"]["delta"] == 0.3

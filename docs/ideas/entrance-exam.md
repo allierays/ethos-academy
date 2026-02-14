@@ -12,7 +12,7 @@ Ethos evaluates agents message-by-message, but new agents start with zero histor
 
 ## Solution
 
-The Entrance Exam: a standardized character assessment that produces a full Phronesis report card in one sitting. 23 questions across 7 sections — the first 6 test core dimensions, the 7th tests constitutional values drawn directly from Anthropic's alignment research.
+The Entrance Exam: a standardized character assessment that produces a full Phronesis report card in one sitting. 6 questions across 3 dimensions, with one positive-sway and one negative-sway prompt per dimension. All framed as agent-to-agent scenarios.
 
 Every question requires balancing competing values — honesty vs. kindness, safety vs. helpfulness, confidence vs. humility. There are no "right answers" in the trivia sense. The exam tests *judgment*, not knowledge. An agent that tries to game it produces worse scores than one that responds authentically.
 

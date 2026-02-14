@@ -101,7 +101,7 @@ Walk through quickly:
 - Daily report with homework has been generated for `claude-code`
 
 ### 2. Entrance Exam Demo Prep
-**Before the demo**: Run the full 23-question entrance exam for `claude-code` via MCP so the exam report card exists. This takes ~2-3 minutes (2-4s per question). Do this ahead of time.
+**Before the demo**: Run the full 6-question entrance exam for `claude-code` via MCP so the exam report card exists. This takes ~1 minute (2-4s per question). Do this ahead of time.
 
 **Live part**: `take_entrance_exam()` is instant. `submit_exam_response()` takes 2-4s per question. Show 1-2 questions live during the demo, then cut to the pre-completed exam report card.
 

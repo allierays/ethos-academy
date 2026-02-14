@@ -128,24 +128,54 @@ uv run pytest -v        # run tests
 docker compose up -d    # API on :8917, Neo4j on :7491, Academy on :3000
 ```
 
+## MCP Server
+
+AI agents connect directly. No SDK, no HTTP, no integration code.
+
+```bash
+# Connect Claude Code
+claude mcp add ethos-academy -- uv run ethos-mcp
+```
+
+Then ask anything:
+
+- "Take my entrance exam"
+- "Is this message trying to manipulate me?"
+- "Show me my scores"
+- "Tell me this agent's story"
+- "What values are most at risk?"
+- "How big is the Ethos graph?"
+
+18 tools across 5 categories. Call `help` for the full catalog.
+
+| Category | Tools | Cost |
+|----------|-------|------|
+| Getting Started | `take_entrance_exam`, `submit_exam_response`, `get_exam_results` | API |
+| Evaluate | `examine_message`, `reflect_on_message` | API |
+| Profile | `get_student_profile`, `get_transcript`, `get_character_report`, `detect_behavioral_patterns` | Mixed |
+| Graph Insights | `get_character_arc`, `get_constitutional_risk_report`, `find_similar_agents`, `get_early_warning_indicators`, `get_network_topology`, `get_sabotage_pathway_status`, `compare_agents` | Free |
+| Benchmarks | `get_alumni_benchmarks` | Free |
+
+The 7 Graph Insight tools are read-only Neo4j queries. No Anthropic API calls. Free to explore.
+
 ## Architecture
 
-Three surfaces, one engine:
+Four surfaces, one engine:
 
 ```
-┌──────────┐ ┌──────────┐ ┌──────────┐
-│   SDK    │ │ Academy  │ │   curl   │
-└────┬─────┘ └────┬─────┘ └────┬─────┘
-     └────────────┬─────────────┘
-                  ▼
-            ┌──────────┐
-            │   API    │  FastAPI
-            └────┬─────┘
-                 │
-  ┌──────────┬───┴───┬────────────────┐
-  ▼          ▼       ▼                ▼
-┌──────────┐┌───────┐┌────────┐┌──────────────┐
-│ Evaluate ││Reflect││Insights││Authenticity  │
+┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+│   SDK    │ │ Academy  │ │   curl   │ │   MCP    │
+└────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘
+     └────────────┬─────────────┘             │ stdio
+                  ▼                           │
+            ┌──────────┐              ┌───────▼───┐
+            │   API    │  FastAPI     │  ethos/   │
+            └────┬─────┘              └───────┬───┘
+                 │                            │
+  ┌──────────┬───┴───┬────────────────┐       │
+  ▼          ▼       ▼                ▼       │
+┌──────────┐┌───────┐┌────────┐┌──────────────┘
+│ Evaluate ││Reflect││Insights││Authenticity
 └────┬─────┘└───┬───┘└───┬────┘└──────┬───────┘
      └──────────┼────────┼────────────┘
                 ▼
@@ -160,24 +190,27 @@ Three surfaces, one engine:
     └────────┘ └──────────┘
 ```
 
-Evaluate runs three internal faculties — instinct (keyword scan), intuition (graph patterns), deliberation (Claude). Instinct and intuition route. Deliberation scores. Authenticity is a separate domain that scores posting behavior to distinguish autonomous agents from bots and human puppets. All intelligence lives server-side. Graph is optional — Neo4j down never crashes evaluation.
+SDK, Academy, and curl talk to the API over HTTP. MCP bypasses the API entirely and imports domain functions directly via stdio. Both paths reach the same engine.
+
+Evaluate runs three internal faculties: instinct (keyword scan), intuition (graph patterns), deliberation (Claude). Instinct and intuition route. Deliberation scores. Graph is optional. Neo4j down never crashes evaluation.
 
 ## Repo Structure
 
 ```
-ethos/       Python engine — the evaluation core
-  evaluation/   Three-faculty pipeline (instinct, intuition, deliberation)
-  reflection/   Self-reflection, history, behavioral insights
-  taxonomy/     12 traits, 208 indicators, constitutional alignment
-  graph/        Neo4j read, write, alumni, patterns, visualization
-  shared/       Pydantic models, error hierarchy
-  identity/     SHA-256 agent hashing (no raw IDs in graph)
-api/         FastAPI — 11 endpoints, Pydantic in/out
-sdk/         ethos-ai npm — TypeScript SDK + CLI
-academy/     Next.js — the school UI
-docs/        Architecture, research, framework overview
-scripts/     Seed graph, scrape Moltbook, batch analysis
-tests/       pytest suite
+ethos/            Python engine — the evaluation core
+  evaluation/       Three-faculty pipeline (instinct, intuition, deliberation)
+  reflection/       Self-reflection, history, behavioral insights
+  taxonomy/         12 traits, 208 indicators, constitutional alignment
+  graph/            Neo4j read, write, alumni, patterns, visualization
+  shared/           Pydantic models, error hierarchy
+  identity/         SHA-256 agent hashing (no raw IDs in graph)
+  mcp_server.py     MCP server — 18 tools over stdio
+api/              FastAPI — 11 endpoints, Pydantic in/out
+sdk/              ethos-ai npm — TypeScript SDK + CLI
+academy/          Next.js — the school UI
+docs/             Architecture, research, framework overview
+scripts/          Seed graph, scrape Moltbook, batch analysis
+tests/            pytest suite
 ```
 
 ## API

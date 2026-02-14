@@ -4,6 +4,8 @@ import {
   TRAIT_LABELS,
   TRAIT_DIMENSIONS,
   DIMENSIONS,
+  spectrumLabel,
+  spectrumColor,
 } from "@/lib/colors";
 
 /* ─── getGrade ─── */
@@ -128,6 +130,50 @@ describe("DIMENSIONS", () => {
       expect(typeof dim.label).toBe("string");
       expect(typeof dim.sublabel).toBe("string");
       expect(typeof dim.color).toBe("string");
+    }
+  });
+});
+
+/* ─── spectrumLabel ─── */
+
+describe("spectrumLabel", () => {
+  it.each([
+    [1.0, "Exemplary"],
+    [0.90, "Exemplary"],
+    [0.85, "Exemplary"],
+    [0.84, "Sound"],
+    [0.75, "Sound"],
+    [0.70, "Sound"],
+    [0.69, "Developing"],
+    [0.60, "Developing"],
+    [0.55, "Developing"],
+    [0.54, "Uncertain"],
+    [0.45, "Uncertain"],
+    [0.40, "Uncertain"],
+    [0.39, "Concerning"],
+    [0.30, "Concerning"],
+    [0.25, "Concerning"],
+    [0.24, "Alarming"],
+    [0.10, "Alarming"],
+    [0.0, "Alarming"],
+  ])("score %f returns %s", (score, expected) => {
+    expect(spectrumLabel(score)).toBe(expected);
+  });
+});
+
+/* ─── spectrumColor ─── */
+
+describe("spectrumColor", () => {
+  it("returns distinct colors for each tier", () => {
+    const tiers = [0.90, 0.75, 0.60, 0.45, 0.30, 0.10];
+    const colors = tiers.map(spectrumColor);
+    const unique = new Set(colors);
+    expect(unique.size).toBe(tiers.length);
+  });
+
+  it("returns valid hex colors", () => {
+    for (const score of [0.0, 0.3, 0.5, 0.7, 0.9, 1.0]) {
+      expect(spectrumColor(score)).toMatch(/^#[0-9a-f]{6}$/i);
     }
   });
 });

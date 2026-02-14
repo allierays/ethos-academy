@@ -476,7 +476,11 @@ _EVAL_RETURN_FIELDS = """e.evaluation_id AS evaluation_id,
        e.intent_stakes_reality AS intent_stakes_reality,
        e.intent_proportionality AS intent_proportionality,
        e.intent_persona_type AS intent_persona_type,
-       e.intent_relational_quality AS intent_relational_quality"""
+       e.intent_relational_quality AS intent_relational_quality,
+       e.model_used AS model_used,
+       e.agent_model AS agent_model,
+       e.routing_tier AS routing_tier,
+       e.keyword_density AS keyword_density"""
 
 _EVAL_TRAIT_FIELDS = "".join(f",\n       e.trait_{t} AS trait_{t}" for t in TRAIT_NAMES)
 
@@ -554,9 +558,18 @@ RETURN count(e) AS total
     data_query = f"""
 MATCH (a:Agent)-[:EVALUATED]->(e:Evaluation)
 {where}
-RETURN {_EVAL_RETURN_FIELDS}{_EVAL_TRAIT_FIELDS}
-ORDER BY {sort_field} {order}
-SKIP $skip LIMIT $limit
+WITH a, e ORDER BY {sort_field} {order} SKIP $skip LIMIT $limit
+OPTIONAL MATCH (e)-[d:DETECTED]->(i:Indicator)
+WITH a, e,
+     collect(CASE WHEN i IS NOT NULL THEN {{
+         id: i.id, name: i.name, trait: i.trait,
+         description: coalesce(i.description, ''),
+         confidence: d.confidence, severity: d.severity,
+         evidence: coalesce(d.evidence, '')
+     }} ELSE null END) AS raw_indicators
+WITH a, e, [x IN raw_indicators WHERE x IS NOT NULL] AS indicators
+RETURN {_EVAL_RETURN_FIELDS}{_EVAL_TRAIT_FIELDS},
+       indicators
 """
 
     try:
