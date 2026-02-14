@@ -1,7 +1,10 @@
 """FastAPI application for the Ethos evaluation API."""
 
+import json
 import logging
 import os
+import uuid
+from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,6 +15,8 @@ from starlette.types import ASGIApp
 
 from api.auth import require_api_key
 from api.rate_limit import rate_limit
+from ethos.context import anthropic_api_key_var, request_id_var
+from ethos.graph.service import close_shared_service
 from ethos import (
     analyze_authenticity,
     character_report,
@@ -19,6 +24,7 @@ from ethos import (
     detect_patterns,
     evaluate_incoming,
     evaluate_outgoing,
+    generate_daily_report,
     get_agent,
     get_agent_history,
     get_alumni,
@@ -36,7 +42,6 @@ from ethos import (
     submit_answer,
     upload_exam,
 )
-from ethos.context import anthropic_api_key_var
 from ethos.evaluation.claude_client import _redact
 from ethos.models import (
     AgentProfile,
@@ -69,7 +74,56 @@ from ethos.shared.errors import (
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Ethos API (FastAPI)", version="0.1.0")
+
+# ── Structured logging ─────────────────────────────────────────────
+
+
+class _JsonFormatter(logging.Formatter):
+    """JSON log formatter that includes request_id when available."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        entry = {
+            "timestamp": self.formatTime(record),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+        req_id = request_id_var.get()
+        if req_id:
+            entry["request_id"] = req_id
+        if record.exc_info and record.exc_info[0]:
+            entry["exception"] = self.formatException(record.exc_info)
+        return json.dumps(entry)
+
+
+def _configure_logging() -> None:
+    """Set up structured logging. JSON in production, simple in dev."""
+    log_format = os.environ.get("LOG_FORMAT", "simple")
+    level = os.environ.get("LOG_LEVEL", "INFO").upper()
+    root = logging.getLogger()
+    root.setLevel(level)
+    if not root.handlers:
+        handler = logging.StreamHandler()
+        if log_format == "json":
+            handler.setFormatter(_JsonFormatter())
+        else:
+            handler.setFormatter(
+                logging.Formatter("%(asctime)s %(levelname)s [%(name)s] %(message)s")
+            )
+        root.addHandler(handler)
+
+
+_configure_logging()
+
+
+@asynccontextmanager
+async def _lifespan(app: FastAPI):
+    """Startup/shutdown lifecycle. Closes shared graph connection on exit."""
+    yield
+    await close_shared_service()
+
+
+app = FastAPI(title="Ethos API (FastAPI)", version="0.1.0", lifespan=_lifespan)
 
 
 def _get_cors_origins() -> list[str]:
@@ -127,6 +181,26 @@ class BYOKMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(BYOKMiddleware)
+
+
+# ── Request ID middleware ──────────────────────────────────────────
+
+
+class RequestIDMiddleware(BaseHTTPMiddleware):
+    """Generate a UUID per request and store in ContextVar for log correlation."""
+
+    async def dispatch(self, request: Request, call_next):
+        rid = str(uuid.uuid4())
+        token = request_id_var.set(rid)
+        try:
+            response = await call_next(request)
+            response.headers["X-Request-ID"] = rid
+            return response
+        finally:
+            request_id_var.reset(token)
+
+
+app.add_middleware(RequestIDMiddleware)
 
 
 # ── Exception handlers ──────────────────────────────────────────────
@@ -429,3 +503,15 @@ async def upload_exam_endpoint(agent_id: str, req: UploadExamRequest) -> ExamRep
 @app.get("/agent/{agent_id}/exam", response_model=list[ExamSummary])
 async def list_exams_endpoint(agent_id: str) -> list[ExamSummary]:
     return await list_exams(agent_id)
+
+
+# ── Report generation endpoint ────────────────────────────────────────
+
+
+@app.post(
+    "/agent/{agent_id}/report/generate",
+    response_model=DailyReportCard,
+    dependencies=[Depends(require_api_key)],
+)
+async def generate_report_endpoint(agent_id: str) -> DailyReportCard:
+    return await generate_daily_report(agent_id)

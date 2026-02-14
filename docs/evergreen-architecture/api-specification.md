@@ -2,6 +2,8 @@
 
 > Complete endpoint definitions, request/response schemas, and examples for the Ethos API.
 
+> **Auto-generated spec:** Run `uv run python -m scripts.export_openapi` to generate `docs/openapi.json` from the live FastAPI app.
+
 **Base URL:** `https://api.ethos-ai.org` (production) / `http://localhost:8917` (Docker) / `http://localhost:8000` (local dev)
 
 ---

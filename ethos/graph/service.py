@@ -2,6 +2,9 @@
 
 All Neo4j interaction goes through this service. Connect once, use everywhere,
 close on shutdown. If Neo4j is down, methods return graceful defaults.
+
+Connection pooling: A shared singleton reuses the Neo4j driver across requests.
+graph_context() is the public API. close_shared_service() for shutdown hooks.
 """
 
 from __future__ import annotations
@@ -67,9 +70,31 @@ class GraphService:
         return self._driver is not None
 
 
+# ── Shared singleton for connection pooling ─────────────────────────
+
+_shared_service: GraphService | None = None
+
+
+async def get_shared_service() -> GraphService:
+    """Return a shared GraphService, connecting lazily on first call."""
+    global _shared_service
+    if _shared_service is None or not _shared_service.connected:
+        _shared_service = GraphService()
+        await _shared_service.connect()
+    return _shared_service
+
+
+async def close_shared_service() -> None:
+    """Close the shared service. Call from API/MCP shutdown hooks."""
+    global _shared_service
+    if _shared_service is not None:
+        await _shared_service.close()
+        _shared_service = None
+
+
 @asynccontextmanager
 async def graph_context():
-    """Context manager for GraphService — connects and auto-closes.
+    """Context manager for GraphService — reuses the shared connection.
 
     Usage:
         async with graph_context() as service:
@@ -77,9 +102,6 @@ async def graph_context():
                 return default
             # use service...
     """
-    service = GraphService()
-    await service.connect()
-    try:
-        yield service
-    finally:
-        await service.close()
+    service = await get_shared_service()
+    yield service
+    # Don't close — shared connection persists across requests

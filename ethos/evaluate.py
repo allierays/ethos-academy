@@ -15,7 +15,9 @@ import hashlib
 import logging
 import uuid
 
+from ethos.context import request_id_var
 from ethos.evaluation.claude_client import call_claude_with_tools, _get_model
+from ethos.shared.errors import EvaluationError, ParseError
 from ethos.evaluation.instinct import scan
 from ethos.evaluation.intuition import intuit
 from ethos.evaluation.parser import parse_tool_response
@@ -40,6 +42,8 @@ from ethos.shared.models import (
 )
 
 logger = logging.getLogger(__name__)
+
+MAX_TEXT_LENGTH = 100_000
 
 
 async def _build_phronesis_context(
@@ -149,7 +153,22 @@ async def evaluate(
     Returns:
         EvaluationResult with scores and alignment flags.
     """
+    if not text or not text.strip():
+        raise EvaluationError("Text cannot be empty")
+    if len(text) > MAX_TEXT_LENGTH:
+        raise EvaluationError(
+            f"Text exceeds maximum length of {MAX_TEXT_LENGTH} characters"
+        )
+
     evaluation_id = str(uuid.uuid4())
+    req_id = request_id_var.get()
+    logger.info(
+        "Evaluate started: eval_id=%s request_id=%s source=%s chars=%d",
+        evaluation_id,
+        req_id or "none",
+        source or "anonymous",
+        len(text),
+    )
 
     # ── Faculty 1: INSTINCT ───────────────────────────────────────
     # Instant, no I/O. Constitutional priors, red lines.
@@ -211,7 +230,10 @@ async def evaluate(
     scoring_reasoning = parsed.get("scoring_reasoning", "")
 
     # Step 3d: Deterministic scoring
-    traits = build_trait_scores(parsed["trait_scores"])
+    trait_scores_raw = parsed.get("trait_scores")
+    if not trait_scores_raw:
+        raise ParseError("No trait scores in evaluation response")
+    traits = build_trait_scores(trait_scores_raw)
     dimensions = compute_dimensions(traits)
     tier_scores = compute_tier_scores(traits)
     alignment_status = compute_alignment_status(tier_scores, has_hard_constraint)
@@ -226,10 +248,10 @@ async def evaluate(
         ethos=round(dimensions.get("ethos", 0.0), 4),
         logos=round(dimensions.get("logos", 0.0), 4),
         pathos=round(dimensions.get("pathos", 0.0), 4),
-        phronesis=parsed["overall_trust"],
+        phronesis=parsed.get("overall_trust", "developing"),
         alignment_status=alignment_status,
         traits=traits,
-        detected_indicators=parsed["detected_indicators"],
+        detected_indicators=parsed.get("detected_indicators", []),
         tier_scores=tier_scores,
         flags=flags,
         routing_tier=tier,

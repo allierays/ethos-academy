@@ -254,7 +254,7 @@ async def call_claude(system_prompt: str, user_prompt: str, tier: str) -> str:
     """
     api_key = _resolve_api_key()
     model = _get_model(tier)
-    client = anthropic.AsyncAnthropic(api_key=api_key)
+    client = anthropic.AsyncAnthropic(api_key=api_key, max_retries=1)
 
     # Deep tiers (daily reports) produce large structured JSON responses
     max_tokens = 4096 if tier in ("deep", "deep_with_context") else 2048
@@ -321,7 +321,7 @@ async def call_claude_with_tools(
     """
     api_key = _resolve_api_key()
     model = _get_model(tier)
-    client = anthropic.AsyncAnthropic(api_key=api_key)
+    client = anthropic.AsyncAnthropic(api_key=api_key, max_retries=1)
 
     # Think-then-Extract only for deep tiers where reasoning depth matters.
     # Standard/focused stay on the fast single-call path — Sonnet's 4096-token

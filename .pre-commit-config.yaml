@@ -72,13 +72,16 @@ repos:
         files: ^academy/
         types_or: [javascript, jsx, ts, tsx]
 
-  # Neo4j — backup on every commit
+  # Neo4j — consistent backup on every commit via Cypher export
+  # Old approach (tar of /data) produced corrupt snapshots because Neo4j
+  # Community has no online checkpoint. Cypher queries read through the
+  # transaction layer, so the export always reflects committed state.
   - repo: local
     hooks:
       - id: neo4j-backup
         name: neo4j backup
-        entry: bash -c 'mkdir -p backups && if docker ps --format "{{.Names}}" 2>/dev/null | grep -q ethos-neo4j; then docker exec ethos-neo4j-1 tar czf /tmp/neo4j-backup.tar.gz -C /data . 2>/dev/null && docker cp ethos-neo4j-1:/tmp/neo4j-backup.tar.gz backups/neo4j-pre-commit-$(date +%Y%m%d-%H%M%S).tar.gz && ls -t backups/neo4j-pre-commit-*.tar.gz 2>/dev/null | tail -n +4 | xargs rm -f && echo "Neo4j backup saved"; else echo "Neo4j not running, skipping backup"; fi'
-        language: system
+        entry: scripts/neo4j-backup.sh
+        language: script
         always_run: true
         pass_filenames: false
         stages: [pre-commit]

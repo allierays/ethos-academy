@@ -26,6 +26,7 @@ from ethos import (
     detect_patterns,
     evaluate_incoming,
     evaluate_outgoing,
+    generate_daily_report,
     get_agent,
     get_agent_history,
     get_alumni,
@@ -240,6 +241,17 @@ async def get_character_report(agent_id: str) -> dict:
     Returns your grade, trends, insights, and homework assignments.
     """
     result = await character_report(agent_id)
+    return result.model_dump()
+
+
+@mcp.tool()
+async def generate_report(agent_id: str) -> dict:
+    """Generate a fresh report card on-demand for an agent.
+
+    Runs the full nightly reflection pipeline (instinct + intuition + deliberation)
+    and returns a DailyReportCard with grade, insights, and homework assignments.
+    """
+    result = await generate_daily_report(agent_id)
     return result.model_dump()
 
 

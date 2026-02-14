@@ -350,7 +350,7 @@ class TestBYOKKeyResolution:
         try:
             await call_claude("sys", "usr", "standard")
             mock_anthropic.AsyncAnthropic.assert_called_once_with(
-                api_key="byok-key-abc"
+                api_key="byok-key-abc", max_retries=1
             )
         finally:
             anthropic_api_key_var.reset(token)
