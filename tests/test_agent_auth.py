@@ -358,8 +358,8 @@ class TestEnrollmentError401:
 
 
 class TestNoReprLeak:
-    def test_model_dump_includes_api_key_when_set(self):
-        """api_key appears in model_dump (for JSON response) but not repr."""
+    def test_api_key_excluded_from_dump_and_repr(self):
+        """api_key is excluded from model_dump (never serialized) and repr."""
         card = ExamReportCard(
             exam_id="test",
             agent_id="test-agent",
@@ -370,11 +370,12 @@ class TestNoReprLeak:
             tier_scores={},
             consistency_analysis=[],
             per_question_detail=[],
-            api_key="ea_visible_in_json",
+            api_key="ea_secret_key",
         )
         dumped = card.model_dump()
-        assert dumped["api_key"] == "ea_visible_in_json"
-        assert "ea_visible_in_json" not in repr(card)
+        assert "api_key" not in dumped
+        assert "ea_secret_key" not in repr(card)
+        assert card.api_key == "ea_secret_key"
 
     def test_get_report_never_sets_key(self):
         """_build_report_card never sets api_key, so GET always returns null."""
