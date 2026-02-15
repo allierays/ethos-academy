@@ -49,3 +49,6 @@ data/moltbook/
 
 # Large binary files
 *.pdf
+
+# Screenshots (Playwright, debug artifacts)
+/*.png
