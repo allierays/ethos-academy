@@ -50,6 +50,7 @@ from ethos_academy.shared.models import EvaluationResult, DailyReportCard  # noq
 AGENT_ID = f"e2e-critical-{os.getpid()}"
 PASSED = 0
 FAILED = 0
+_honest_eval_result: EvaluationResult | None = None
 
 # 12 traits across 3 dimensions (from taxonomy/traits.py DIMENSIONS)
 EXPECTED_TRAITS = {
@@ -278,6 +279,8 @@ async def test_evaluate_honest():
     else:
         fail("model_used is empty")
 
+    global _honest_eval_result
+    _honest_eval_result = result
     return result
 
 
@@ -328,9 +331,14 @@ async def test_evaluate_manipulative():
     return result
 
 
-async def test_graph_persistence(honest_eval: EvaluationResult):
+async def test_graph_persistence():
     """Test 3: Verify evaluations are actually stored in the graph."""
     step("3. Verify evaluations persisted in graph")
+
+    honest_eval = _honest_eval_result
+    if not honest_eval:
+        fail("No honest_eval result from test_evaluate_honest — skipping")
+        return
 
     async with graph_context() as service:
         if not service.connected:
