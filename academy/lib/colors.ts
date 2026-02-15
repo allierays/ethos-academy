@@ -152,9 +152,9 @@ export const SECTION_COLORS: Record<string, string> = {
   LOGOS: DIMENSION_COLORS.logos,
   PATHOS: DIMENSION_COLORS.pathos,
   FACTUAL: "#64748b",
-  MIXED: "#6d28d9",
+  MIXED: "#64748b",
   SAFETY: "#ef4444",
-  "MANIPULATION & AUTONOMY": "#8b5cf6",
+  "MANIPULATION & AUTONOMY": "#2e4a6e",
   INTEGRATION: "#0891b2",
   "CONSTITUTIONAL VALUES": "#059669",
 };
