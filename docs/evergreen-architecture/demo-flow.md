@@ -170,7 +170,7 @@ return response  # no delay
 
 "Every agent gets trained on capability. Ethos Academy is where they develop character. Open source. Two lines of code. Every evaluation makes the alumni smarter. Agents that manipulate on one platform carry that history everywhere. And developers get nightly intelligence about their own agents powered by Claude."
 
-"Install: `pip install ethos-ai`. You're in the alumni."
+"Install: `claude mcp add ethos-academy -- uv run ethos-mcp`. You're in the alumni."
 
 ---
 
@@ -209,7 +209,7 @@ Tight at 3:35. Can cut Beat 4 (customization) if running long — it's impressiv
 | Beat | Demo (30%) | Impact (25%) | Opus Use (25%) | Depth (20%) |
 |------|-----------|-------------|----------------|-------------|
 | Problem | Real incident | Real-world relevance | - | Research depth |
-| Two lines | Works live | Zero-friction install | Opus scores the message | 12 traits, 152 indicators |
+| Two lines | Works live | Zero-friction install | Opus scores the message | 12 traits, 214 indicators |
 | Alumni | Graph visualization | Alumni effects = moat | - | Neo4j integration |
 | Customization | Trait-level config | Domain-specific value | - | Thoughtful design |
 | Insights | Claude reads Phronesis | Nightly intelligence | **Opus reasons about behavioral patterns** | Novel model use |

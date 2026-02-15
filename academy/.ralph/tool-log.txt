@@ -3107,3 +3107,53 @@ echo "PID=$!"
 [17:53:03] BASH: lsof -i :3000 2>/dev/null
 [17:53:20] BASH: kill -9 35744 2>/dev/null; sleep 2; rm -rf /Users/allierays/Sites/ethos/academy/
 [17:53:25] BASH: curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/
+[18:08:29] BASH: cd /Users/allierays/Sites/ethos/academy && npx next build --no-lint 2>&1 | tail
+[18:08:40] BASH: npx next build 2>&1 | tail -40
+[18:08:43] READ: app/how-it-works/page.tsx
+[18:08:50] EDIT: app/how-it-works/page.tsx
+[18:09:02] BASH: npx next build 2>&1 | tail -10
+[18:10:14] Glob: academy/**/*
+[18:10:14] Grep: Evaluation Over Time|EvaluationChart|evaluation-chart|CharacterTimeline
+[18:10:15] Grep: recharts|visx|d3|plotly|chart
+[18:10:15] Grep: evaluation.*history|history.*evaluation
+[18:10:16] READ: package.json
+[18:10:16] READ: components/agent/TranscriptChart.tsx
+[18:10:17] READ: components/agent/AgentTimeline.tsx
+[18:10:17] READ: components/agent/EvaluationDepth.tsx
+[18:10:19] Glob: academy/app/**/page.tsx
+[18:10:19] READ: lib/api.ts
+[18:10:20] Grep: getHistory|character.*profile|agent.*profile
+[18:10:21] READ: app/agent/[id]/page.tsx
+[18:10:21] READ: app/agent/[id]/AgentReportClient.tsx
+[18:10:23] Glob: academy/components/agent/*Panel*.tsx
+[18:10:23] Glob: academy/components/agent/*Sidebar*.tsx
+[18:10:23] READ: components/agent/InsightsPanel.tsx
+[18:10:25] READ: components/agent/AgentDetailSidebar.tsx
+[18:10:25] READ: lib/types.ts
+[18:10:27] READ: lib/types.ts
+[18:10:27] READ: lib/colors.ts
+[18:10:39] TASK: Find evaluation chart components
+[18:10:43] READ: components/agent/TranscriptChart.tsx
+[18:10:43] READ: app/agent/[id]/AgentReportClient.tsx
+[18:10:44] READ: lib/types.ts
+[18:11:34] READ: lib/colors.ts
+[18:11:41] EDIT: components/agent/TranscriptChart.tsx
+[18:11:47] EDIT: components/agent/TranscriptChart.tsx
+[18:11:53] EDIT: components/agent/TranscriptChart.tsx
+[18:11:59] EDIT: components/agent/TranscriptChart.tsx
+[18:12:30] EDIT: components/agent/TranscriptChart.tsx
+[18:12:35] EDIT: components/agent/TranscriptChart.tsx
+[18:12:48] BASH: npx next build 2>&1 | tail -25
+[18:12:53] EDIT: components/agent/TranscriptChart.tsx
+[18:12:56] BASH: cd /Users/allierays/Sites/ethos/academy && pgrep -f "next dev" | head -3
+[18:13:05] BASH: npx next build 2>&1 | tail -20
+[18:13:09] READ: components/agent/TranscriptChart.tsx
+[18:13:13] READ: components/agent/TranscriptChart.tsx
+[18:14:35] EDIT: app/how-it-works/page.tsx
+[18:16:48] READ: app/how-it-works/page.tsx
+[18:16:49] READ: components/how-it-works/SurfaceTabs.tsx
+[18:16:49] READ: components/how-it-works/CharacterLoop.tsx
+[18:16:50] READ: components/how-it-works/EvidenceStats.tsx
+[18:16:55] READ: components/how-it-works/FacultyFlow.tsx
+[18:17:12] READ: /Users/allierays/Sites/ethos/how-it-works-full.png
+[18:18:51] READ: app/page.tsx

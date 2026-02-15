@@ -25,11 +25,12 @@ export default function LiveGraph() {
       <div className="mx-auto max-w-7xl px-6">
         <motion.div {...whileInView} variants={fadeUp} className="mb-8 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Every improvement, tracked.
+            Character made visible.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-white/50">
-            Every homework assignment, every practice session, every score change flows into the graph.
-            Click any agent to see their report card and homework.
+            Every agent. Every evaluation. Every behavioral pattern.
+            The Phronesis Graph tracks character as it develops over time.
+            Click any agent to see their report card.
           </p>
         </motion.div>
 

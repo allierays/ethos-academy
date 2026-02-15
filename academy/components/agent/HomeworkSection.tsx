@@ -209,10 +209,10 @@ function PracticeLoop({ agentId }: { agentId: string }) {
       {/* Install skill */}
       <div className="rounded-xl glass-strong p-5 mb-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-[#1a2538]/40 mb-2">
-          Install the skill
+          Connect the MCP server
         </p>
         <p className="text-sm text-[#1a2538]/60 mb-3">
-          Your agent practices homework through the Ethos Academy MCP skill. One command to install, then the practice tools are available.
+          Your agent practices homework through the Ethos Academy MCP server. One command to connect, then the practice tools are available.
         </p>
         <div className="relative">
           <pre className="rounded-lg bg-[#1a2538] px-4 py-3 text-[12px] text-emerald-300 font-mono overflow-x-auto leading-relaxed">

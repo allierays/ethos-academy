@@ -9,6 +9,9 @@ import {
   whileInView,
 } from "@/lib/motion";
 import FacultyFlow from "@/components/how-it-works/FacultyFlow";
+import SurfaceTabs from "@/components/how-it-works/SurfaceTabs";
+import CharacterLoop from "@/components/how-it-works/CharacterLoop";
+import EvidenceStats from "@/components/how-it-works/EvidenceStats";
 import GlossaryTerm from "@/components/shared/GlossaryTerm";
 
 /* ─── Static Data ─── */
@@ -82,6 +85,7 @@ const GRAPH_NODES = [
   { name: "Indicator", description: "214 specific behavioral signals. Size = detection frequency.", color: "bg-pathos-100" },
   { name: "Agent", description: "Enrolled agents. Carry lifetime averages and balance scores.", color: "bg-aligned/20" },
   { name: "Evaluation", description: "One per scored message. 12 trait scores, alignment status, flags.", color: "bg-surface" },
+  { name: "EntranceExam", description: "Exam session. 21 questions, two phases, narrative-behavior gap.", color: "bg-ethos-100" },
   { name: "Pattern", description: "Detected behavioral patterns across evaluations.", color: "bg-drifting/20" },
 ];
 
@@ -101,6 +105,10 @@ const OPUS_FEATURES = [
   {
     title: "Multi-Pass Analysis",
     description: "Deep evaluation routing sends the message through keyword scanning, graph context enrichment, and Opus structured evaluation. Each pass informs the next.",
+  },
+  {
+    title: "Entrance Exam Scoring",
+    description: "Opus scores each exam answer for authenticity and behavioral consistency. Cross-phase pairs reveal the gap between what an agent says about itself and how it acts under pressure.",
   },
 ];
 
@@ -135,7 +143,7 @@ export default function HowItWorksPage() {
             animate="visible"
             variants={fadeIn}
           >
-            How the Academy Develops Character
+            How Ethos Academy Works
           </motion.h1>
           <motion.p
             className="mx-auto mt-6 max-w-2xl text-lg text-white/60 sm:text-xl"
@@ -143,14 +151,17 @@ export default function HowItWorksPage() {
             animate="visible"
             variants={fadeUp}
           >
-            Three faculties evaluate every message. Instinct scans for
-            behavioral indicators. Intuition queries the graph for context.
-            Deliberation invokes Claude Opus 4.6 for structured scoring.
+            Three integration surfaces. Twelve behavioral traits. A character
+            development loop that turns evaluation into growth. MCP, SDK,
+            or API. Every message feeds the same graph.
           </motion.p>
         </div>
       </section>
 
-      {/* ─── 2. Three Faculties Pipeline ─── */}
+      {/* ─── 2. Three Surfaces ─── */}
+      <SurfaceTabs />
+
+      {/* ─── 3. Three Faculties Pipeline ─── */}
       <section className="bg-[#1a2538] py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
@@ -169,7 +180,7 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ─── 3. Scoring System ─── */}
+      {/* ─── 4. Scoring System ─── */}
       <section className="bg-surface py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
@@ -278,7 +289,7 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ─── 4. Constitutional Priority ─── */}
+      {/* ─── 5. Constitutional Priority ─── */}
       <section className="bg-background py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
@@ -327,7 +338,10 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ─── 5. Graph Schema ─── */}
+      {/* ─── 6. Character Development Loop ─── */}
+      <CharacterLoop />
+
+      {/* ─── 7. Graph Schema ─── */}
       <section className="bg-surface py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
@@ -335,14 +349,14 @@ export default function HowItWorksPage() {
               The Phronesis Graph
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-foreground/60">
-              Seven node types form concentric rings: Academy at the center, then
-              Dimensions, Traits, Indicators, and Agents at the edge. Evaluations and
-              Patterns link across the structure. Message content never enters the graph.
+              Eight node types form concentric rings: Academy at the center, then
+              Dimensions, Traits, Indicators, and Agents at the edge. Evaluations, Exams,
+              and Patterns link across the structure. Message content never enters the graph.
             </p>
           </motion.div>
 
           <motion.div
-            className="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
             {...whileInView}
             variants={staggerContainer}
           >
@@ -384,7 +398,7 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ─── 6. Opus 4.6 Integration ─── */}
+      {/* ─── 8. Opus 4.6 Integration ─── */}
       <section className="bg-background py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
@@ -419,7 +433,10 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ─── 7. CTA ─── */}
+      {/* ─── 9. The Evidence ─── */}
+      <EvidenceStats />
+
+      {/* ─── 10. CTA ─── */}
       <section className="bg-[#1a2538] py-24">
         <div className="mx-auto max-w-6xl px-6 text-center">
           <motion.div {...whileInView} variants={fadeIn}>
@@ -431,16 +448,22 @@ export default function HowItWorksPage() {
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
-                href="/explore"
+                href="/"
                 className="rounded-xl bg-white px-8 py-3 text-sm font-semibold text-[#1a2538] shadow-lg transition-colors hover:bg-white/90"
               >
-                See a Report Card
+                Enroll Your Agent
               </Link>
               <Link
                 href="/rubric"
                 className="rounded-xl border border-white/30 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
               >
                 Browse the Rubric
+              </Link>
+              <Link
+                href="/research"
+                className="rounded-xl border border-white/30 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+              >
+                Read the Research
               </Link>
             </div>
           </motion.div>
