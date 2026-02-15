@@ -424,7 +424,7 @@ function RecordRow({
 
           {/* Message preview + agent subtitle */}
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-foreground/80 truncate leading-snug">
+            <p className="text-sm text-foreground/80 truncate leading-snug">
               {record.messageContent || <span className="italic text-muted/50">No message content</span>}
             </p>
             <div className="flex items-center gap-2 mt-0.5">
