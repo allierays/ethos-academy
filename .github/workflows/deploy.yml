@@ -95,17 +95,25 @@ jobs:
 
             # Wait for MCP
             echo "Waiting for MCP..."
-            for i in $(seq 1 15); do
-              if docker compose -f docker-compose.prod.yml exec -T mcp python -c "import socket; s=socket.create_connection(('localhost',8888),timeout=5); s.close()" > /dev/null 2>&1; then
+            for i in $(seq 1 20); do
+              MCP_STATE=$(docker inspect --format='{{.State.Status}}' ethos-mcp-1 2>/dev/null || echo "missing")
+              MCP_HEALTH=$(docker inspect --format='{{.State.Health.Status}}' ethos-mcp-1 2>/dev/null || echo "none")
+              echo "  attempt $i: state=$MCP_STATE health=$MCP_HEALTH"
+              if [ "$MCP_HEALTH" = "healthy" ]; then
                 echo "MCP healthy"
                 break
               fi
-              if [ "$i" -eq 15 ]; then
-                echo "MCP failed to start"
+              if [ "$MCP_STATE" != "running" ]; then
+                echo "MCP container not running (state=$MCP_STATE)"
                 docker compose -f docker-compose.prod.yml logs mcp --tail=50
                 exit 1
               fi
-              sleep 2
+              if [ "$i" -eq 20 ]; then
+                echo "MCP failed health check after 20 attempts"
+                docker compose -f docker-compose.prod.yml logs mcp --tail=50
+                exit 1
+              fi
+              sleep 3
             done
 
             # Prune old images
