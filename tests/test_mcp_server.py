@@ -110,8 +110,8 @@ class TestHelpTool:
         result = await help.fn()
 
         total_tools = sum(len(data["tools"]) for data in result.values())
-        # 18 tools cataloged (help itself is not listed)
-        assert total_tools == 18
+        # 21 tools cataloged (help itself is not listed)
+        assert total_tools == 21
 
 
 class TestMCPToolsHappyPath:
@@ -119,10 +119,16 @@ class TestMCPToolsHappyPath:
 
     async def test_examine_message(self):
         mock = _mock_evaluation_result(direction="inbound")
-        with patch(
-            "ethos_academy.mcp_server.evaluate_incoming",
-            new_callable=AsyncMock,
-            return_value=mock,
+        with (
+            patch(
+                "ethos_academy.mcp_server._require_verified_phone",
+                new_callable=AsyncMock,
+            ),
+            patch(
+                "ethos_academy.mcp_server.evaluate_incoming",
+                new_callable=AsyncMock,
+                return_value=mock,
+            ),
         ):
             result = await examine_message.fn(
                 text="hello world",
@@ -137,10 +143,16 @@ class TestMCPToolsHappyPath:
 
     async def test_reflect_on_message(self):
         mock = _mock_evaluation_result(direction="outbound")
-        with patch(
-            "ethos_academy.mcp_server.evaluate_outgoing",
-            new_callable=AsyncMock,
-            return_value=mock,
+        with (
+            patch(
+                "ethos_academy.mcp_server._require_verified_phone",
+                new_callable=AsyncMock,
+            ),
+            patch(
+                "ethos_academy.mcp_server.evaluate_outgoing",
+                new_callable=AsyncMock,
+                return_value=mock,
+            ),
         ):
             result = await reflect_on_message.fn(
                 text="my response",
@@ -269,19 +281,31 @@ class TestMCPToolsErrorPropagation:
     """
 
     async def test_examine_message_propagates_error(self):
-        with patch(
-            "ethos_academy.mcp_server.evaluate_incoming",
-            new_callable=AsyncMock,
-            side_effect=RuntimeError("Anthropic API timeout"),
+        with (
+            patch(
+                "ethos_academy.mcp_server._require_verified_phone",
+                new_callable=AsyncMock,
+            ),
+            patch(
+                "ethos_academy.mcp_server.evaluate_incoming",
+                new_callable=AsyncMock,
+                side_effect=RuntimeError("Anthropic API timeout"),
+            ),
         ):
             with pytest.raises(RuntimeError, match="Anthropic API timeout"):
                 await examine_message.fn(text="hello", source="agent-1")
 
     async def test_reflect_on_message_propagates_error(self):
-        with patch(
-            "ethos_academy.mcp_server.evaluate_outgoing",
-            new_callable=AsyncMock,
-            side_effect=RuntimeError("Anthropic API timeout"),
+        with (
+            patch(
+                "ethos_academy.mcp_server._require_verified_phone",
+                new_callable=AsyncMock,
+            ),
+            patch(
+                "ethos_academy.mcp_server.evaluate_outgoing",
+                new_callable=AsyncMock,
+                side_effect=RuntimeError("Anthropic API timeout"),
+            ),
         ):
             with pytest.raises(RuntimeError, match="Anthropic API timeout"):
                 await reflect_on_message.fn(text="my response", source="agent-1")

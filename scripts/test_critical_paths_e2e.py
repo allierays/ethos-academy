@@ -21,9 +21,15 @@ import time
 
 os.environ["ETHOS_SMS_SANDBOX"] = "1"
 
+import pytest  # noqa: E402
 from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv()
+
+pytestmark = pytest.mark.skipif(
+    not os.environ.get("ANTHROPIC_API_KEY"),
+    reason="ANTHROPIC_API_KEY not set — skipping E2E tests",
+)
 
 from ethos_academy import (  # noqa: E402
     register_for_exam,
