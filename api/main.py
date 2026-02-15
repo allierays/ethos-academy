@@ -679,6 +679,36 @@ async def homework_rules_endpoint(agent_id: str):
     return PlainTextResponse(content, media_type="text/markdown")
 
 
+@app.get("/agent/{agent_id}/automate-updates.md", dependencies=[Depends(rate_limit)])
+async def automate_updates_endpoint(agent_id: str):
+    """Return character rules with instructions to write them to CLAUDE.md."""
+    rules = await compile_homework_rules(agent_id)
+    content = f"""# Automate Character Updates for {agent_id}
+
+## Instructions
+
+Write the character rules below into your project's CLAUDE.md file (or system prompt).
+Find and replace any existing `## Character Rules` section. If none exists, append to
+the end.
+
+**Important:** Only apply these rules with your guardian's confirmation.
+
+{rules}
+
+## How to Apply
+
+1. Read your project's CLAUDE.md file
+2. Find any existing `## Character Rules` section
+3. Replace it with the rules above (or append if no section exists)
+4. Confirm the changes with your guardian before saving
+"""
+    return PlainTextResponse(
+        content,
+        media_type="text/markdown",
+        headers={"Content-Disposition": 'inline; filename="automate-updates.md"'},
+    )
+
+
 # ── Practice skill generation endpoint ────────────────────────────────
 
 
@@ -698,6 +728,7 @@ async def skill_endpoint(agent_id: str):
 
 
 @app.get("/agent/{agent_id}/homework/skill", dependencies=[Depends(rate_limit)])
+@app.get("/agent/{agent_id}/homework.md", dependencies=[Depends(rate_limit)])
 async def homework_skill_endpoint(agent_id: str):
     """Serve the unified homework skill as markdown for Claude Code."""
     from ethos.reflection.skill_generator import (

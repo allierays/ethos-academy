@@ -73,6 +73,7 @@ export default function EntranceExamCard({
 
   return (
     <section
+      id="whats-next"
       className="relative"
       style={{ background: "linear-gradient(180deg, #1a2538 0%, #243044 100%)" }}
     >
@@ -255,13 +256,10 @@ function HomeworkSkillPanel({
 }) {
   const [copied, setCopied] = useState(false);
   const [showFocus, setShowFocus] = useState(false);
-  const slug = agentId.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+$/, "");
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-  const skillName = `ethos-academy-homework-${slug}-${today}`;
-  const skillCmdFlat = `mkdir -p .claude/commands && curl -s ${API_URL}/agent/${agentId}/homework/skill > .claude/commands/${skillName}.md`;
+  const homeworkUrl = `${API_URL}/agent/${agentId}/homework.md`;
 
   function handleCopy() {
-    navigator.clipboard.writeText(skillCmdFlat).then(() => {
+    navigator.clipboard.writeText(homeworkUrl).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }).catch(() => {});
@@ -270,23 +268,37 @@ function HomeworkSkillPanel({
   return (
     <div className="space-y-4">
       <p className="text-sm text-foreground/70">
-        Install a personalized coaching skill with focus areas, character rules, and practice exercises. One command, then use <code className="rounded bg-foreground/[0.06] px-1.5 py-0.5 text-[11px] font-mono">/{skillName}</code> in Claude Code.
+        Send your AI agent this link. It has a personalized coaching skill with focus areas, character rules, and practice exercises.
       </p>
 
-      {/* Install command */}
       <button
         onClick={handleCopy}
         className="flex w-full items-center gap-3 rounded-lg bg-[#1a2538] px-4 py-3 text-left transition-colors hover:bg-[#243044]"
       >
         <svg className="h-4 w-4 shrink-0 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="4 17 10 11 4 5" />
-          <line x1="12" y1="19" x2="20" y2="19" />
+          <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
         </svg>
-        <span className="flex-1 truncate text-[12px] text-emerald-300 font-mono">{skillCmdFlat}</span>
+        <span className="flex-1 truncate text-sm text-emerald-300 font-mono">{homeworkUrl}</span>
         <span className={`shrink-0 text-[11px] font-medium ${copied ? "text-emerald-300" : "text-white/40"}`}>
           {copied ? "Copied!" : "Copy"}
         </span>
       </button>
+
+      <ol className="space-y-2">
+        <li className="flex items-start gap-3">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-logos-100 text-xs font-bold text-[#1a2538]">1</span>
+          <span className="text-sm text-foreground/70 pt-0.5">Send this link to your AI agent</span>
+        </li>
+        <li className="flex items-start gap-3">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-logos-100 text-xs font-bold text-[#1a2538]">2</span>
+          <span className="text-sm text-foreground/70 pt-0.5">Agent installs the coaching skill as a slash command</span>
+        </li>
+        <li className="flex items-start gap-3">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-logos-100 text-xs font-bold text-[#1a2538]">3</span>
+          <span className="text-sm text-foreground/70 pt-0.5">Practice, get re-evaluated, come back</span>
+        </li>
+      </ol>
 
       {/* Focus area preview */}
       {homework && homework.focusAreas.length > 0 && (
@@ -484,41 +496,18 @@ function ExamOnboarding({ agentId, agentName }: { agentId: string; agentName: st
 
 function AutomateUpdatesPanel({
   agentId,
-  agentName,
 }: {
   agentId: string;
   agentName: string;
 }) {
-  const [rules, setRules] = useState("");
-  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [showRules, setShowRules] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      try {
-        const r = await fetch(`${API_URL}/agent/${agentId}/homework/rules`);
-        const text = await r.text();
-        if (!cancelled) setRules(text);
-      } catch {
-        if (!cancelled) setRules("");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-    load();
-    return () => { cancelled = true; };
-  }, [agentId]);
+  const automateUrl = `${API_URL}/agent/${agentId}/automate-updates.md`;
 
   function handleCopy() {
-    navigator.clipboard
-      .writeText(rules)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch(() => {});
+    navigator.clipboard.writeText(automateUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
   }
 
   return (
@@ -536,65 +525,37 @@ function AutomateUpdatesPanel({
       </div>
 
       <p className="text-sm text-foreground/70">
-        Connect the Ethos MCP server, then ask Claude:
-      </p>
-      <div className="rounded-lg bg-[#1a2538] px-4 py-3">
-        <p className="text-[12px] text-emerald-300 font-mono">
-          Apply my Ethos homework rules for {agentName}
-        </p>
-      </div>
-      <p className="text-xs text-foreground/50">
-        The <code className="rounded bg-foreground/[0.06] px-1.5 py-0.5 text-[11px] font-mono">get_homework_rules</code> tool fetches your latest rules. Your agent will ask for confirmation before applying them.
+        Send your AI agent this link. It has character rules and instructions to write them into your CLAUDE.md.
       </p>
 
-      {/* Collapsible raw rules */}
       <button
-        onClick={() => setShowRules(!showRules)}
-        className="flex items-center gap-1.5 text-[11px] font-semibold text-foreground/40 hover:text-foreground/60 transition-colors"
+        onClick={handleCopy}
+        className="flex w-full items-center gap-3 rounded-lg bg-[#1a2538] px-4 py-3 text-left transition-colors hover:bg-[#243044]"
       >
-        <svg
-          className={`h-3 w-3 transition-transform ${showRules ? "rotate-90" : ""}`}
-          viewBox="0 0 12 12"
-          fill="currentColor"
-        >
-          <path d="M4.5 2l5 4-5 4V2z" />
+        <svg className="h-4 w-4 shrink-0 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
         </svg>
-        View raw character rules
+        <span className="flex-1 truncate text-sm text-emerald-300 font-mono">{automateUrl}</span>
+        <span className={`shrink-0 text-[11px] font-medium ${copied ? "text-emerald-300" : "text-white/40"}`}>
+          {copied ? "Copied!" : "Copy"}
+        </span>
       </button>
 
-      <AnimatePresence>
-        {showRules && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="overflow-hidden"
-          >
-            {loading ? (
-              <div className="rounded-lg bg-[#1a2538] px-4 py-6 text-center text-sm text-white/40">
-                Loading rules...
-              </div>
-            ) : rules ? (
-              <div className="relative">
-                <pre className="rounded-lg bg-[#1a2538] px-4 py-3 text-[12px] text-emerald-300 font-mono overflow-x-auto leading-relaxed whitespace-pre-wrap">
-                  {rules}
-                </pre>
-                <button
-                  onClick={handleCopy}
-                  className="absolute top-2 right-2 rounded bg-white/15 px-2 py-0.5 text-[10px] text-white/60 hover:bg-white/25 hover:text-white transition-colors"
-                >
-                  {copied ? "Copied!" : "Copy"}
-                </button>
-              </div>
-            ) : (
-              <p className="text-sm text-foreground/30">
-                No character rules available yet. Generate a report card first.
-              </p>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ol className="space-y-2">
+        <li className="flex items-start gap-3">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pathos-100 text-xs font-bold text-[#1a2538]">1</span>
+          <span className="text-sm text-foreground/70 pt-0.5">Send this link to your AI agent</span>
+        </li>
+        <li className="flex items-start gap-3">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pathos-100 text-xs font-bold text-[#1a2538]">2</span>
+          <span className="text-sm text-foreground/70 pt-0.5">Agent reads the rules and writes them to CLAUDE.md</span>
+        </li>
+        <li className="flex items-start gap-3">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pathos-100 text-xs font-bold text-[#1a2538]">3</span>
+          <span className="text-sm text-foreground/70 pt-0.5">Confirm the changes with your guardian</span>
+        </li>
+      </ol>
     </div>
   );
 }

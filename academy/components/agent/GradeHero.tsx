@@ -202,7 +202,7 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
                   ? `${report?.homework?.focusAreas?.filter(f => f.priority === "high")?.length} high priority`
                   : undefined
               }
-              href="#homework"
+              href="#whats-next"
             />
           </div>
           <GraphHelpButton slug="guide-grade-hero" />

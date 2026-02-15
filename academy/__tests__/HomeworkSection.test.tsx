@@ -74,19 +74,13 @@ describe("HomeworkSection", () => {
     expect(screen.getAllByText(/Based on the evidence/).length).toBeGreaterThanOrEqual(1);
   });
 
-  it("renders skill install with homework endpoint", () => {
+  it("renders homework skill URL with agent ID", () => {
     render(<HomeworkSection homework={MOCK_HOMEWORK} agentName="Claude" agentId="claude-1" />);
     const labels = screen.getAllByText("Install homework skill");
     expect(labels.length).toBeGreaterThanOrEqual(1);
-    // Install command references the homework skill endpoint
-    const codeSnippets = screen.getAllByText(/homework\/skill/);
-    expect(codeSnippets.length).toBeGreaterThanOrEqual(1);
-  });
-
-  it("renders how it works steps", () => {
-    render(<HomeworkSection homework={MOCK_HOMEWORK} agentName="Claude" agentId="claude-1" />);
-    const labels = screen.getAllByText("How it works");
-    expect(labels.length).toBeGreaterThanOrEqual(1);
+    // URL contains the agent ID and homework.md
+    const urls = screen.getAllByText(/claude-1\/homework\.md/);
+    expect(urls.length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders collapsible raw rules section", () => {
@@ -101,12 +95,6 @@ describe("HomeworkSection", () => {
     fireEvent.click(toggles[0]);
     const consent = screen.getAllByText(/guardian/i);
     expect(consent.length).toBeGreaterThanOrEqual(1);
-  });
-
-  it("uses homework skill name prefix", () => {
-    render(<HomeworkSection homework={MOCK_HOMEWORK} agentName="Claude" agentId="claude-1" />);
-    const skillRefs = screen.getAllByText(/ethos-academy-homework-/);
-    expect(skillRefs.length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows no homework message when empty", () => {

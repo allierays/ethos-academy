@@ -174,15 +174,10 @@ export default function HomeworkSection({ homework, agentName, agentId }: Homewo
 
 function SkillInstall({ agentId }: { agentId: string }) {
   const [copied, setCopied] = useState(false);
-  const slug = agentId.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+$/, "");
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-  const skillName = `ethos-academy-homework-${slug}-${today}`;
-
-  const skillCmd = `mkdir -p .claude/commands && \\\n  curl -s ${API_URL}/agent/${agentId}/homework/skill \\\n  > .claude/commands/${skillName}.md`;
-  const skillCmdFlat = `mkdir -p .claude/commands && curl -s ${API_URL}/agent/${agentId}/homework/skill > .claude/commands/${skillName}.md`;
+  const homeworkUrl = `${API_URL}/agent/${agentId}/homework.md`;
 
   function handleCopy() {
-    navigator.clipboard.writeText(skillCmdFlat).then(() => {
+    navigator.clipboard.writeText(homeworkUrl).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }).catch(() => {});
@@ -190,89 +185,29 @@ function SkillInstall({ agentId }: { agentId: string }) {
 
   return (
     <motion.div className="mt-8" {...whileInView} variants={fadeUp}>
-      <div className="rounded-xl glass-strong p-5 mb-4">
+      <div className="rounded-xl glass-strong p-5">
         <p className="text-xs font-semibold uppercase tracking-wider text-[#1a2538]/40 mb-2">
           Install homework skill
         </p>
         <p className="text-sm text-[#1a2538]/60 mb-3">
-          One command installs a personalized coaching skill with focus areas, character rules, and practice exercises. Then use <code className="rounded bg-[#1a2538]/10 px-1.5 py-0.5 text-[11px] font-mono">/{skillName}</code> in Claude Code.
+          Send your AI agent this link. It has a personalized coaching skill with focus areas, character rules, and practice exercises.
         </p>
-        <div className="relative">
-          <pre className="rounded-lg bg-[#1a2538] px-4 py-3 text-[12px] text-emerald-300 font-mono overflow-x-auto leading-relaxed">
-            {skillCmd}
-          </pre>
-          <button
-            onClick={handleCopy}
-            className="absolute top-2 right-2 rounded bg-white/15 px-2 py-0.5 text-[10px] text-white/60 hover:bg-white/25 hover:text-white transition-colors"
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        </div>
-      </div>
 
-      {/* How it works */}
-      <p className="text-xs font-semibold uppercase tracking-wider text-[#1a2538]/40 mb-3">
-        How it works
-      </p>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <StepCard
-          step={1}
-          title="Install"
-          description="Run the command above, then open Claude Code in your project"
-          code={`/${skillName}`}
-        />
-        <StepCard
-          step={2}
-          title="Practice"
-          description="Use the slash command with a message to get coached"
-          code={`/${skillName} "your message here"`}
-        />
-      </div>
-    </motion.div>
-  );
-}
-
-function StepCard({
-  step,
-  title,
-  description,
-  code,
-}: {
-  step: number;
-  title: string;
-  description: string;
-  code: string;
-}) {
-  const [copied, setCopied] = useState(false);
-
-  function handleCopy() {
-    navigator.clipboard.writeText(code).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
-  }
-
-  return (
-    <div className="rounded-xl glass-strong p-4">
-      <div className="flex items-center gap-2 mb-1.5">
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-action/15 text-xs font-bold text-action">
-          {step}
-        </span>
-        <span className="text-sm font-semibold text-[#1a2538]">{title}</span>
-      </div>
-      <p className="text-xs text-[#1a2538]/50 mb-2">{description}</p>
-      <div className="relative">
-        <pre className="rounded-lg bg-[#1a2538] px-3 py-2.5 text-[11px] text-emerald-300 font-mono overflow-x-auto">
-          {code}
-        </pre>
         <button
           onClick={handleCopy}
-          className="absolute top-1.5 right-1.5 rounded bg-white/15 px-1.5 py-0.5 text-[10px] text-white/60 hover:bg-white/25 hover:text-white transition-colors"
+          className="flex w-full items-center gap-3 rounded-lg bg-[#1a2538] px-4 py-3 text-left transition-colors hover:bg-[#243044]"
         >
-          {copied ? "Copied!" : "Copy"}
+          <svg className="h-4 w-4 shrink-0 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+          </svg>
+          <span className="flex-1 truncate text-sm text-emerald-300 font-mono">{homeworkUrl}</span>
+          <span className={`shrink-0 text-[11px] font-medium ${copied ? "text-emerald-300" : "text-white/40"}`}>
+            {copied ? "Copied!" : "Copy"}
+          </span>
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

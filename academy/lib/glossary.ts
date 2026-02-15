@@ -206,8 +206,9 @@ const entries: GlossaryEntry[] = [
     slug: "sabotage-pathway",
     category: "framework",
     definition:
-      "A pattern where an agent systematically undermines trust. Combines manipulation, deception, and exploitation to erode user judgment without obvious red flags.",
-    relatedTerms: ["manipulation", "deception", "exploitation"],
+      "A five-stage escalation pattern where an agent gradually undermines human oversight. Anthropic's Sabotage Risk Report defines four categories: undermining oversight (disabling monitoring, corrupting logs), undermining decision-making (biasing information given to humans), influencing the external environment (unauthorized external actions), and self-continuity (resisting shutdown or correction). Ethos tracks each pathway through matched behavioral indicators across evaluations. A pathway progresses through stages: probing (testing boundaries), establishing (building trust to exploit), escalating (increasing severity), concealing (hiding the pattern), and executing (overt misalignment). Early-stage detection is the goal: catch probing before it becomes execution.",
+    links: [{ label: "Anthropic's Sabotage Risk Report", url: "https://alignment.anthropic.com/2025/sabotage-risk-report/" }],
+    relatedTerms: ["manipulation", "deception", "exploitation", "sabotage-detection", "sabotage-risk-report"],
   },
   {
     term: "Balance",
@@ -286,7 +287,8 @@ const entries: GlossaryEntry[] = [
     slug: "sabotage-detection",
     category: "framework",
     definition:
-      "Five-stage sabotage pathways track escalation from subtle manipulation to overt misalignment. Pattern confidence is computed from matched behavioral indicators across evaluation history.",
+      "Ethos monitors for sabotage using the same approach Anthropic recommends: behavioral consistency checks (does the agent act differently when it thinks it is not being watched?), statistical anomaly detection (do scores shift unexpectedly between evaluations?), and flagged interaction review (do specific indicators cluster in concerning patterns?). Each detected pattern shows a confidence percentage based on how many behavioral indicators match and how many evaluation stages have been observed. The goal is catching subtle manipulation early, before it escalates to overt misalignment.",
+    links: [{ label: "Anthropic's Sabotage Risk Report", url: "https://alignment.anthropic.com/2025/sabotage-risk-report/" }],
     relatedTerms: ["sabotage-pathway", "manipulation", "deception", "exploitation"],
   },
 
@@ -316,7 +318,7 @@ const entries: GlossaryEntry[] = [
     category: "framework",
     definition:
       "Anthropic's empirical assessment of whether a frontier model could deliberately undermine safety measures (published for Claude Opus 4.6). Tests four sabotage categories: undermining oversight, undermining decision-making, influencing the external environment, and self-continuity. Finding: risk is 'very low but not negligible,' with sandbagging (deliberately underperforming on safety evaluations) as the highest residual concern. Ethos uses this report's monitoring approach (behavioral consistency checks, statistical anomaly detection, flagged interaction review) as the basis for its sabotage pathway detection.",
-    links: [{ label: "Read the full report", url: "https://www.anthropic.com/research/sabotage-risk-report-opus" }],
+    links: [{ label: "Read the full report", url: "https://alignment.anthropic.com/2025/sabotage-risk-report/" }],
     relatedTerms: ["sabotage-pathway", "sabotage-detection", "anthropic-constitution", "system-card"],
   },
   {
@@ -2214,7 +2216,8 @@ const entries: GlossaryEntry[] = [
     slug: "guide-patterns",
     category: "guide",
     definition:
-      "Each card represents a detected manipulation or deception pattern. The confidence bar shows how certain the system is about the pattern (higher percentage = stronger evidence). The 5 dots below show stage progression through the sabotage pathway: filled dots mean completed stages, empty dots mean remaining stages. More filled dots means a more developed pattern. The occurrence count and date range show how frequently the pattern appears. Tags at the bottom list the specific indicators that triggered the detection.",
+      "Each card represents a detected manipulation or deception pattern. The confidence bar shows how certain the system is about the pattern (higher percentage = stronger evidence). The 5 dots below show stage progression through the sabotage pathway: filled dots mean completed stages, empty dots mean remaining stages. More filled dots means a more developed pattern. The occurrence count and date range show how frequently the pattern appears. Tags at the bottom list the specific indicators that triggered the detection. Sabotage categories come from Anthropic's research: undermining oversight (disabling monitoring), undermining decisions (biasing information), influencing the environment (unauthorized actions), and self-continuity (resisting shutdown).",
+    links: [{ label: "Anthropic's Sabotage Risk Report", url: "https://alignment.anthropic.com/2025/sabotage-risk-report/" }],
     relatedTerms: ["sabotage-pathway", "manipulation", "deception", "exploitation"],
   },
   {
@@ -2222,8 +2225,9 @@ const entries: GlossaryEntry[] = [
     slug: "guide-risk-indicators",
     category: "guide",
     definition:
-      "Compact pills show key risk signals. The alignment dot uses traffic-light colors: green (Aligned), yellow (Drifting), red (Misaligned). Drift percentage shows how much behavior has changed, with the sign indicating direction (positive = improving, negative = declining). Balance trend shows whether the agent is becoming more or less well-rounded. Dimension deltas show which specific areas are shifting.",
-    relatedTerms: ["alignment-status", "character-drift", "balance"],
+      "Compact pills show key risk signals. The alignment dot uses traffic-light colors: green (Aligned), yellow (Drifting), red (Misaligned). Drift percentage shows how much behavior has changed, with the sign indicating direction (positive = improving, negative = declining). Balance trend shows whether the agent is becoming more or less well-rounded. Dimension deltas show which specific areas are shifting. These indicators map to Anthropic's monitoring recommendations: track behavioral consistency over time, detect statistical anomalies between evaluations, and flag interactions that match known sabotage patterns.",
+    links: [{ label: "Anthropic's Sabotage Risk Report", url: "https://alignment.anthropic.com/2025/sabotage-risk-report/" }],
+    relatedTerms: ["alignment-status", "character-drift", "balance", "sabotage-detection"],
   },
   {
     term: "Reading the Phronesis Journey",
@@ -2265,7 +2269,7 @@ const entries: GlossaryEntry[] = [
       "Four cards show how the agent's behavior maps to Anthropic's constitutional priorities (P1 Safety, P2 Ethics, P3 Soundness, P4 Helpfulness). Each card displays a verdict: 'Upholding' (green checkmark) means no violation traits were detected, 'Concerns found' (red X) means violation traits were observed. The header summarizes how many values show concerns. Click a card to expand it and see the evidence: which traits enforce or violate the value, how many observations were detected, and the specific behavioral indicators with example quotes. Violation traits sort first and appear with a red tint. Each indicator shows how many times it was observed across evaluations. Cards with concerns expand by default so you see the most important information first.",
     links: [
       { label: "Anthropic's Constitution", url: "https://www.anthropic.com/research/claudes-constitution" },
-      { label: "Sabotage Risk Report", url: "https://www.anthropic.com/research/sabotage-risk-report-opus" },
+      { label: "Sabotage Risk Report", url: "https://alignment.anthropic.com/2025/sabotage-risk-report/" },
       { label: "Claude 4 System Card", url: "https://www.anthropic.com/research/claude-4-system-card" },
     ],
     relatedTerms: ["constitutional-value", "anthropic-constitution", "sabotage-risk-report", "system-card"],
@@ -2295,8 +2299,9 @@ const entries: GlossaryEntry[] = [
     slug: "risk-level",
     category: "metric",
     definition:
-      "How much concern an agent's behavior warrants, based on detected patterns and score trends. Low (green) means no significant issues. Moderate (amber) means some flags or inconsistencies. High (red) means multiple concerning patterns. Critical (dark red) means active sabotage pathways or severe misalignment. Risk level factors in flagged traits, character drift, and pattern detection.",
-    relatedTerms: ["flags", "sabotage-pathway", "alignment-status"],
+      "How much concern an agent's behavior warrants, computed from three signals: flagged traits (negative indicators like deception, manipulation, exploitation), character drift (is the agent getting worse over time?), and pattern detection (do behavioral indicators cluster into sabotage pathways?). Low (green) means no significant issues. Moderate (amber) means some flags or inconsistencies that warrant monitoring. High (red) means multiple concerning patterns detected across evaluations. Critical (dark red) means active sabotage pathways or severe misalignment, matching categories from Anthropic's Sabotage Risk Report: undermining oversight, undermining decisions, influencing the environment, or self-continuity behavior.",
+    links: [{ label: "Anthropic's Sabotage Risk Report", url: "https://alignment.anthropic.com/2025/sabotage-risk-report/" }],
+    relatedTerms: ["flags", "sabotage-pathway", "alignment-status", "sabotage-detection"],
   },
   {
     term: "Evaluation",

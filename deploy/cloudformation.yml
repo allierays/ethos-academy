@@ -76,6 +76,13 @@ Resources:
                 Condition:
                   StringEquals:
                     "sns:Protocol": "sms"
+        - PolicyName: ethos-secrets-read
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:ethos/production-*"
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
