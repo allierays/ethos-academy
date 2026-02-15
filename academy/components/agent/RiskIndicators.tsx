@@ -17,7 +17,12 @@ export default function RiskIndicators({ report, agentName }: RiskIndicatorsProp
     Math.abs(report.characterDrift) > 0.05 ||
     report.balanceTrend !== "stable";
 
-  const deltas = Object.entries(report.dimensionDeltas || {});
+  // Only show deltas that exceed 5% — smaller changes are normal variance
+  const significantDeltas = Object.entries(report.dimensionDeltas || {}).filter(
+    ([, d]) => Math.abs(d) > 0.05
+  );
+
+  const allClear = !hasFlags && significantDeltas.length === 0;
 
   return (
     <div>
@@ -26,7 +31,7 @@ export default function RiskIndicators({ report, agentName }: RiskIndicatorsProp
       </h3>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        {!hasFlags && deltas.length === 0 && (
+        {allClear && (
           <Pill dot="bg-aligned" label={`All clear for ${name}`} />
         )}
 
@@ -59,7 +64,7 @@ export default function RiskIndicators({ report, agentName }: RiskIndicatorsProp
           />
         )}
 
-        {deltas.map(([dim, delta]) => (
+        {significantDeltas.map(([dim, delta]) => (
           <Pill
             key={`delta-${dim}`}
             dot={delta >= 0 ? "bg-aligned" : "bg-misaligned"}
