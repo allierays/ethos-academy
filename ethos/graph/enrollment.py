@@ -6,6 +6,8 @@ CREATE for EntranceExam (always new). Returns graceful defaults when Neo4j is do
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import logging
 
 from ethos.graph.service import GraphService
@@ -699,4 +701,75 @@ async def clear_guardian_phone(
         return bool(records)
     except Exception as exc:
         logger.warning("Failed to clear guardian phone: %s", exc)
+        return False
+
+
+# ── Per-Agent API Key Queries ────────────────────────────────────────
+
+_CHECK_AGENT_HAS_KEY = """
+MATCH (a:Agent {agent_id: $agent_id})
+WHERE a.api_key_hash IS NOT NULL
+RETURN true AS has_key
+"""
+
+_GET_AGENT_KEY_HASH = """
+MATCH (a:Agent {agent_id: $agent_id})
+RETURN a.api_key_hash AS key_hash
+"""
+
+_SET_AGENT_KEY = """
+MATCH (a:Agent {agent_id: $agent_id})
+WHERE a.api_key_hash IS NULL
+SET a.api_key_hash = $key_hash
+RETURN a.agent_id AS agent_id
+"""
+
+
+async def agent_has_key(service: GraphService, agent_id: str) -> bool:
+    """Check if an agent has an API key hash stored."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _CHECK_AGENT_HAS_KEY,
+            {"agent_id": agent_id},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to check agent key: %s", exc)
+        return False
+
+
+async def verify_agent_key(
+    service: GraphService, agent_id: str, plaintext_key: str
+) -> bool:
+    """Verify a plaintext key against the stored hash using constant-time comparison."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _GET_AGENT_KEY_HASH,
+            {"agent_id": agent_id},
+        )
+        if not records or not records[0].get("key_hash"):
+            return False
+        provided_hash = hashlib.sha256(plaintext_key.encode()).hexdigest()
+        return hmac.compare_digest(provided_hash, records[0]["key_hash"])
+    except Exception as exc:
+        logger.warning("Failed to verify agent key: %s", exc)
+        return False
+
+
+async def store_agent_key(service: GraphService, agent_id: str, key_hash: str) -> bool:
+    """Store an API key hash on the Agent node."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _SET_AGENT_KEY,
+            {"agent_id": agent_id, "key_hash": key_hash},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to store agent key: %s", exc)
         return False

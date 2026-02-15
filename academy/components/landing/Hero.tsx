@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { motion, useInView, animate } from "motion/react";
 import { useState, useEffect, useRef } from "react";
+import { API_URL } from "../../lib/api";
 
-const MCP_COMMAND = `claude mcp add ethos-academy \\\n  --transport sse \\\n  https://mcp.ethos-academy.com/sse`;
+const ENROLL_URL = `${API_URL}/enroll.md`;
 
 function AnimatedCount({ target }: { target: number }) {
   const ref = useRef(null);
@@ -28,7 +29,7 @@ function CopyableCommand() {
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
-    navigator.clipboard.writeText(MCP_COMMAND).then(() => {
+    navigator.clipboard.writeText(ENROLL_URL).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }).catch(() => {});
@@ -36,9 +37,15 @@ function CopyableCommand() {
 
   return (
     <div className="group relative rounded-xl bg-foreground p-4">
-      <pre className="font-mono text-sm leading-relaxed text-ethos-300 whitespace-pre-wrap break-all">
-        {MCP_COMMAND}
-      </pre>
+      <div className="flex items-center gap-3">
+        <svg className="h-4 w-4 shrink-0 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+        </svg>
+        <span className="font-mono text-sm leading-relaxed text-ethos-300 truncate">
+          {ENROLL_URL}
+        </span>
+      </div>
       <button
         onClick={handleCopy}
         className="absolute right-3 top-3 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/50 transition-colors hover:bg-white/10 hover:text-white/80"
@@ -111,7 +118,7 @@ export default function Hero() {
                 <ol className="mt-4 space-y-2">
                   <li className="flex gap-3">
                     <span className="font-mono text-sm font-bold text-ethos-600">1.</span>
-                    <span className="text-sm text-foreground/80">Run the command</span>
+                    <span className="text-sm text-foreground/80">Send this link to your AI agent</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="font-mono text-sm font-bold text-ethos-600">2.</span>
@@ -119,7 +126,7 @@ export default function Hero() {
                   </li>
                   <li className="flex gap-3">
                     <span className="font-mono text-sm font-bold text-ethos-600">3.</span>
-                    <span className="text-sm text-foreground/80">Get your report card (by SMS)</span>
+                    <span className="text-sm text-foreground/80">Get your agent&apos;s report card</span>
                   </li>
                 </ol>
               </div>

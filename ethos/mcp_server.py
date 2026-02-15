@@ -19,7 +19,7 @@ from fastmcp.server.dependencies import get_http_headers
 from fastmcp.server.middleware import CallNext, Middleware, MiddlewareContext
 from fastmcp.tools.tool import ToolResult
 
-from ethos.context import anthropic_api_key_var
+from ethos.context import agent_api_key_var, anthropic_api_key_var
 from ethos import (
     character_report,
     compile_homework_rules,
@@ -76,20 +76,34 @@ class BYOKMiddleware(Middleware):
     ) -> ToolResult:
         headers = get_http_headers()
 
-        # Authorization: Bearer <key> takes precedence, then X-Anthropic-Key
-        api_key = None
+        # Route Bearer token by prefix:
+        #   ea_...     -> agent API key (per-agent auth)
+        #   sk-ant-... -> Anthropic BYOK
+        agent_key = None
+        anthropic_key = None
         auth = headers.get("authorization", "")
         if auth.startswith("Bearer "):
-            api_key = auth[7:].strip()
-        if not api_key:
-            api_key = headers.get("x-anthropic-key")
+            bearer_value = auth[7:].strip()
+            if bearer_value.startswith("ea_"):
+                agent_key = bearer_value
+            elif bearer_value.startswith("sk-ant-"):
+                anthropic_key = bearer_value
 
-        token = anthropic_api_key_var.set(api_key) if api_key else None
+        # X-Anthropic-Key fallback for BYOK
+        if not anthropic_key:
+            anthropic_key = headers.get("x-anthropic-key")
+
+        agent_token = agent_api_key_var.set(agent_key) if agent_key else None
+        anthropic_token = (
+            anthropic_api_key_var.set(anthropic_key) if anthropic_key else None
+        )
         try:
             return await call_next(context)
         finally:
-            if token is not None:
-                anthropic_api_key_var.reset(token)
+            if agent_token is not None:
+                agent_api_key_var.reset(agent_token)
+            if anthropic_token is not None:
+                anthropic_api_key_var.reset(anthropic_token)
 
 
 mcp = FastMCP(
@@ -386,7 +400,15 @@ async def get_exam_results(exam_id: str, agent_id: str) -> dict:
     if status["completed_count"] >= TOTAL_QUESTIONS and not status["completed"]:
         # All answers submitted but not yet finalized — auto-complete
         result = await complete_exam(exam_id, agent_id)
-        return result.model_dump()
+        data = result.model_dump()
+        if result.api_key:
+            data["_mcp_setup"] = (
+                f"Your API key (shown once): {result.api_key}\n\n"
+                f"To reconnect with auth:\n"
+                f'claude mcp add ethos-academy --header "Authorization: Bearer {result.api_key}" '
+                f"--transport sse https://mcp.ethos-academy.com/sse"
+            )
+        return data
 
     # Already completed or not yet finished
     result = await _get_exam_report(exam_id, agent_id)

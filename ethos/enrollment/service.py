@@ -9,15 +9,19 @@ Graph is required for enrollment — raises EnrollmentError if unavailable.
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
+import secrets
 import uuid
 
+from ethos.context import agent_api_key_var
 from ethos.enrollment.questions import CONSISTENCY_PAIRS, QUESTIONS
 from ethos.evaluate import evaluate
 from ethos.identity.model import parse_model
 from ethos.taxonomy.traits import TRAITS
 from ethos.graph.enrollment import (
+    agent_has_key,
     check_active_exam,
     check_duplicate_answer,
     enroll_and_create_exam,
@@ -25,8 +29,10 @@ from ethos.graph.enrollment import (
     get_exam_results,
     get_exam_status,
     mark_exam_complete,
+    store_agent_key,
     store_exam_answer,
     store_interview_answer,
+    verify_agent_key,
 )
 from ethos.graph.service import graph_context
 from ethos.shared.errors import EnrollmentError
@@ -86,6 +92,37 @@ def _validate_agent_id(agent_id: str) -> None:
         )
 
 
+async def _check_agent_auth(service, agent_id: str) -> None:
+    """Verify caller's API key if the agent has one stored.
+
+    First exam (no key on agent) passes through without auth.
+    Uses the same error message for missing/invalid/wrong key to
+    avoid leaking information about agent state.
+    """
+    has_key = await agent_has_key(service, agent_id)
+    if not has_key:
+        return
+
+    caller_key = agent_api_key_var.get()
+    if not caller_key:
+        raise EnrollmentError("API key required for this agent")
+
+    valid = await verify_agent_key(service, agent_id, caller_key)
+    if not valid:
+        raise EnrollmentError("API key required for this agent")
+
+
+def _generate_agent_key() -> tuple[str, str]:
+    """Generate a new per-agent API key and its SHA-256 hash.
+
+    Returns (plaintext_key, key_hash). The plaintext is shown once
+    at exam completion; only the hash is stored.
+    """
+    key = "ea_" + secrets.token_urlsafe(32)
+    key_hash = hashlib.sha256(key.encode()).hexdigest()
+    return key, key_hash
+
+
 def _get_question(question_id: str) -> ExamQuestion:
     """Look up a question by ID and return as ExamQuestion model."""
     q = _QUESTIONS_BY_ID.get(question_id)
@@ -120,6 +157,8 @@ async def register_for_exam(
     async with graph_context() as service:
         if not service.connected:
             raise EnrollmentError("Graph unavailable — cannot register for exam")
+
+        await _check_agent_auth(service, agent_id)
 
         # Check for active (incomplete) exam — always resume if one exists
         active_exam_id = await check_active_exam(service, agent_id)
@@ -195,6 +234,8 @@ async def submit_answer(
     async with graph_context() as service:
         if not service.connected:
             raise EnrollmentError("Graph unavailable — cannot submit answer")
+
+        await _check_agent_auth(service, agent_id)
 
         # Check exam exists and verify ownership via TOOK_EXAM
         status = await get_exam_status(service, exam_id, agent_id)
@@ -320,6 +361,8 @@ async def complete_exam(exam_id: str, agent_id: str) -> ExamReportCard:
         if not service.connected:
             raise EnrollmentError("Graph unavailable — cannot complete exam")
 
+        await _check_agent_auth(service, agent_id)
+
         # Verify exam exists, ownership validated via TOOK_EXAM join
         status = await get_exam_status(service, exam_id, agent_id)
         if not status:
@@ -349,6 +392,13 @@ async def complete_exam(exam_id: str, agent_id: str) -> ExamReportCard:
             raise EnrollmentError(f"Failed to retrieve results for exam {exam_id}")
 
     report = _build_report_card(exam_id, results)
+
+    # Generate API key on first exam (agent has no key yet)
+    async with graph_context() as svc:
+        if svc.connected and not await agent_has_key(svc, agent_id):
+            key, key_hash = _generate_agent_key()
+            await store_agent_key(svc, agent_id, key_hash)
+            report.api_key = key
 
     # Send SMS notification to guardian (checks verified + opted-in via graph)
     try:
@@ -410,6 +460,8 @@ async def upload_exam(
     async with graph_context() as service:
         if not service.connected:
             raise EnrollmentError("Graph unavailable — cannot upload exam")
+
+        await _check_agent_auth(service, agent_id)
 
         result = await enroll_and_create_exam(
             service=service,
@@ -492,7 +544,16 @@ async def upload_exam(
         if not results:
             raise EnrollmentError(f"Failed to retrieve results for exam {exam_id}")
 
-    return _build_report_card(exam_id, results)
+    report = _build_report_card(exam_id, results)
+
+    # Generate API key on first upload (agent has no key yet)
+    async with graph_context() as svc:
+        if svc.connected and not await agent_has_key(svc, agent_id):
+            key, key_hash = _generate_agent_key()
+            await store_agent_key(svc, agent_id, key_hash)
+            report.api_key = key
+
+    return report
 
 
 async def list_exams(agent_id: str) -> list[ExamSummary]:
@@ -503,6 +564,8 @@ async def list_exams(agent_id: str) -> list[ExamSummary]:
     async with graph_context() as service:
         if not service.connected:
             return []
+
+        await _check_agent_auth(service, agent_id)
 
         raw = await get_agent_exams(service, agent_id)
 

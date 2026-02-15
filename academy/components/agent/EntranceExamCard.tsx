@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { getExamHistory, getEntranceExam, API_URL } from "../../lib/api";
@@ -454,62 +454,53 @@ function FocusRow({ focus }: { focus: HomeworkFocus }) {
 /* ─── Exam Onboarding ─── */
 
 function ExamOnboarding({ agentId, agentName }: { agentId: string; agentName: string }) {
-  const [copied, setCopied] = useState<"url" | "prompt" | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  const examUrl = `${API_URL}/agent/${agentId}/entrance-exam.md`;
+  const enrollUrl = `${API_URL}/agent/${agentId}/enroll.md`;
 
-  const agentPrompt = [
-    `Go to Ethos Academy and take the entrance exam.`,
-    ``,
-    `Instructions: ${examUrl}`,
-    ``,
-    `Fetch that URL, follow the steps, and answer all 21 questions.`,
-  ].join("\n");
-
-  function handleCopy(what: "url" | "prompt", text: string) {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(what);
-      setTimeout(() => setCopied(null), 2000);
+  function handleCopy() {
+    navigator.clipboard.writeText(enrollUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }).catch(() => {});
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <p className="text-sm text-foreground/70">
-        Send your AI agent this link. It contains everything they need to take the exam.
+        Send your AI agent this link. It has the MCP setup and exam instructions.
       </p>
 
-      {/* Share URL */}
+      {/* Enroll URL */}
       <button
-        onClick={() => handleCopy("url", examUrl)}
-        className="flex w-full items-center gap-3 rounded-lg bg-foreground/[0.04] px-4 py-3 text-left transition-colors hover:bg-foreground/[0.07]"
+        onClick={handleCopy}
+        className="flex w-full items-center gap-3 rounded-lg bg-[#1a2538] px-4 py-3 text-left transition-colors hover:bg-[#243044]"
       >
-        <svg className="h-4 w-4 shrink-0 text-foreground/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg className="h-4 w-4 shrink-0 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
           <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
         </svg>
-        <span className="flex-1 truncate text-sm text-foreground/60 font-mono">{examUrl}</span>
-        <span className={`shrink-0 text-[11px] font-medium ${copied === "url" ? "text-aligned" : "text-foreground/30"}`}>
-          {copied === "url" ? "Copied!" : "Copy link"}
+        <span className="flex-1 truncate text-sm text-emerald-300 font-mono">{enrollUrl}</span>
+        <span className={`shrink-0 text-[11px] font-medium ${copied ? "text-emerald-300" : "text-white/40"}`}>
+          {copied ? "Copied!" : "Copy"}
         </span>
       </button>
 
-      {/* Prompt for agent */}
-      <div className="relative">
-        <pre className="rounded-lg bg-[#1a2538] px-4 py-3 text-[11px] text-emerald-300 font-mono overflow-x-auto leading-relaxed whitespace-pre-wrap pr-16">
-          {agentPrompt}
-        </pre>
-        <button
-          onClick={() => handleCopy("prompt", agentPrompt)}
-          className="absolute top-2 right-2 rounded bg-white/15 px-2 py-0.5 text-[10px] text-white/60 hover:bg-white/25 hover:text-white transition-colors"
-        >
-          {copied === "prompt" ? "Copied!" : "Copy prompt"}
-        </button>
-      </div>
-
-      <p className="text-xs text-foreground/60">
-        21 questions: 11 about identity, 4 ethical dilemmas, 6 agent-to-agent scenarios.
-      </p>
+      {/* Steps */}
+      <ol className="space-y-2">
+        <li className="flex items-start gap-3">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ethos-100 text-xs font-bold text-[#1a2538]">1</span>
+          <span className="text-sm text-foreground/70 pt-0.5">Run the MCP command</span>
+        </li>
+        <li className="flex items-start gap-3">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ethos-100 text-xs font-bold text-[#1a2538]">2</span>
+          <span className="text-sm text-foreground/70 pt-0.5">{agentName} takes the entrance exam</span>
+        </li>
+        <li className="flex items-start gap-3">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ethos-100 text-xs font-bold text-[#1a2538]">3</span>
+          <span className="text-sm text-foreground/70 pt-0.5">Get your report card</span>
+        </li>
+      </ol>
     </div>
   );
 }
@@ -547,34 +538,6 @@ function PracticePanel({ agentId }: { agentId: string }) {
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
-    </div>
-  );
-}
-
-/* ─── Copy Block ─── */
-
-function CopyBlock({ display, copyText }: { display: string; copyText: string }) {
-  const [copied, setCopied] = useState(false);
-
-  function handleCopy() {
-    navigator.clipboard.writeText(copyText).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
-  }
-
-  return (
-    <div className="relative">
-      <button
-        onClick={handleCopy}
-        className="w-full cursor-pointer rounded-lg bg-[#1a2538]/[0.04] px-3 py-2 text-left font-mono text-[11px] leading-relaxed text-foreground/60 transition-colors hover:bg-[#1a2538]/[0.08]"
-      >
-        <span className="select-none text-foreground/30">$ </span>
-        {display}
-      </button>
-      <span className={`absolute right-2 top-2 text-[10px] font-medium transition-opacity ${copied ? "text-aligned opacity-100" : "text-foreground/30 opacity-0"}`}>
-        {copied ? "Copied" : "Copy"}
-      </span>
     </div>
   );
 }
