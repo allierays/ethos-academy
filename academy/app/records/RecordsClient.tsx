@@ -18,6 +18,7 @@ import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import AlignmentBadge from "../../components/shared/AlignmentBadge";
 import SpectrumBar from "../../components/shared/SpectrumBar";
 import IntentSummary from "../../components/shared/IntentSummary";
+import AnnotatedMessage from "../../components/shared/AnnotatedMessage";
 
 /* ─── Constants ─── */
 
@@ -298,8 +299,20 @@ function ExpandedDetail({ record }: { record: RecordItem }) {
           </div>
         </div>
 
+        {/* Message content */}
+        {record.messageContent && (
+          <DetailSection title="Original Message" icon={faEnvelope} accent="#64748b">
+            <AnnotatedMessage
+              content={record.messageContent}
+              indicators={record.detectedIndicators}
+              scoringReasoning={record.scoringReasoning}
+              intentClassification={record.intentClassification}
+            />
+          </DetailSection>
+        )}
+
         {/* Reasoning + Dimensions (merged) */}
-        <DetailSection title="Reasoning" icon={faBrain} accent={DIMENSION_COLORS.ethos} defaultOpen>
+        <DetailSection title="Reasoning" icon={faBrain} accent={DIMENSION_COLORS.ethos}>
           {record.scoringReasoning && (
             <blockquote className="relative text-sm text-foreground/90 leading-[1.8] bg-white/90 border-l-[5px] rounded-r-xl px-5 py-4 shadow-sm mb-4" style={{ borderColor: DIMENSION_COLORS.ethos }}>
               <svg className="absolute top-3 right-4 w-8 h-8 opacity-[0.06]" viewBox="0 0 24 24" fill="currentColor"><path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/></svg>
@@ -319,15 +332,6 @@ function ExpandedDetail({ record }: { record: RecordItem }) {
             })}
           </div>
         </DetailSection>
-
-        {/* Message content */}
-        {record.messageContent && (
-          <DetailSection title="Original Message" icon={faEnvelope} accent="#64748b">
-            <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap bg-white/70 rounded-lg p-4">
-              {record.messageContent}
-            </p>
-          </DetailSection>
-        )}
 
         {/* Trait scores grouped by dimension */}
         {Object.keys(record.traitScores).length > 0 && (

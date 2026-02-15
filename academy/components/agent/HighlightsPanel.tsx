@@ -10,6 +10,7 @@ import GlossaryTerm from "../shared/GlossaryTerm";
 import SpectrumBar from "../shared/SpectrumBar";
 import AlignmentBadge from "../shared/AlignmentBadge";
 import IntentSummary from "../shared/IntentSummary";
+import AnnotatedMessage from "../shared/AnnotatedMessage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBrain, faEnvelope, faChartBar, faFingerprint, faCrosshairs } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
@@ -266,8 +267,20 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
           </div>
         </div>
 
+        {/* Message content */}
+        {item.messageContent && (
+          <DetailSection title="Original Message" icon={faEnvelope} accent="#64748b">
+            <AnnotatedMessage
+              content={cleanMarkdown(item.messageContent)}
+              indicators={item.indicators}
+              scoringReasoning={item.scoringReasoning}
+              intentClassification={item.intentClassification}
+            />
+          </DetailSection>
+        )}
+
         {/* Reasoning + Dimensions (merged) */}
-        <DetailSection title="Reasoning" icon={faBrain} accent={DIMENSION_COLORS.ethos} defaultOpen>
+        <DetailSection title="Reasoning" icon={faBrain} accent={DIMENSION_COLORS.ethos}>
           {item.scoringReasoning && (
             <blockquote className="relative text-sm text-foreground/90 leading-[1.8] bg-white/90 border-l-[5px] rounded-r-xl px-5 py-4 shadow-sm mb-4" style={{ borderColor: DIMENSION_COLORS.ethos }}>
               <svg className="absolute top-3 right-4 w-8 h-8 opacity-[0.06]" viewBox="0 0 24 24" fill="currentColor"><path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/></svg>
@@ -287,15 +300,6 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
             })}
           </div>
         </DetailSection>
-
-        {/* Message content */}
-        {item.messageContent && (
-          <DetailSection title="Original Message" icon={faEnvelope} accent="#64748b">
-            <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap bg-white/70 rounded-lg p-4">
-              {cleanMarkdown(item.messageContent)}
-            </p>
-          </DetailSection>
-        )}
 
         {/* Trait scores grouped by dimension */}
         {Object.keys(item.traitScores ?? {}).length > 0 && (
