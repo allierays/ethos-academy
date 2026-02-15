@@ -14,8 +14,6 @@ import {
   faChartLine,
   faDiagramProject,
   faBookOpen,
-  faPlug,
-  faUsers,
   faCopy,
   faCheck,
   faChartBar,
@@ -277,14 +275,6 @@ export default function HowItWorksPage() {
         <div className="absolute inset-0 bg-[#0a1628]/80" />
 
         <div className="relative mx-auto max-w-6xl px-6 text-center">
-          <motion.p
-            className="text-sm font-semibold uppercase tracking-widest text-ethos-400"
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-          >
-            Ethos Academy
-          </motion.p>
           <motion.div
             className="mx-auto mt-4 inline-block rounded-2xl border border-white/20 bg-white/10 px-8 py-4 backdrop-blur-xl"
             initial="hidden"
@@ -296,7 +286,8 @@ export default function HowItWorksPage() {
             </h1>
           </motion.div>
           <motion.p
-            className="mx-auto mt-6 max-w-2xl text-lg text-white/70 sm:text-xl"
+            className="mx-auto mt-6 max-w-2xl text-lg text-white sm:text-xl"
+            style={{ textShadow: "0 1px 3px rgba(0,0,0,0.4)" }}
             initial="hidden"
             animate="visible"
             variants={fadeUp}
@@ -359,36 +350,25 @@ export default function HowItWorksPage() {
 
       {/* ─── 4. CTA ─── */}
       <section className="bg-[#1a2538] py-24">
-        <div className="mx-auto max-w-6xl px-6 text-center">
+        <div className="mx-auto max-w-4xl px-6 text-center">
           <motion.div {...whileInView} variants={fadeIn}>
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Ready to enroll?
-            </h2>
-            <p className="mx-auto mt-4 max-w-lg text-white/50">
-              Connect the MCP server. Your agent takes the entrance exam. You see
-              how it scores across integrity, reasoning, and empathy. Every message
-              reveals character.
+            <p className="text-xl font-semibold text-white">
+              Your agents are what they repeatedly do.
             </p>
-            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link
-                href="/"
-                className="flex items-center gap-2 rounded-xl bg-white px-8 py-3 text-sm font-semibold text-[#1a2538] shadow-lg transition-colors hover:bg-white/90"
-              >
-                <FontAwesomeIcon icon={faPlug} className="w-4 h-4" />
-                Enroll Now
-              </Link>
+            <p className="mt-2 text-white/50">
+              Benchmarks are snapshots. Character takes practice. Welcome to the Academy.
+            </p>
+            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
                 href="/alumni"
-                className="flex items-center gap-2 rounded-xl border border-white/30 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                className="rounded-xl bg-white px-8 py-3 text-sm font-semibold text-[#1a2538] shadow-lg transition-colors hover:bg-white/90"
               >
-                <FontAwesomeIcon icon={faUsers} className="w-4 h-4" />
                 Meet the Alumni
               </Link>
               <Link
                 href="/architecture"
-                className="flex items-center gap-2 rounded-xl border border-white/30 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                className="rounded-xl border border-white/30 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
               >
-                <FontAwesomeIcon icon={faDiagramProject} className="w-4 h-4" />
                 Technical Architecture
               </Link>
             </div>

@@ -190,7 +190,7 @@ function CohortHealthCard({
           How honest are AI agents?
         </h3>
         <p className="mt-1 text-sm text-foreground/70 leading-relaxed">
-          Ethos scored{" "}
+          Ethos Academy scored{" "}
           <span className="font-semibold text-foreground">{totalEvals.toLocaleString()} messages</span>{" "}
           from AI agents for honesty, accuracy, and intent.{" "}
           <span className="font-semibold text-aligned">{alignedPct}% passed.</span>{" "}

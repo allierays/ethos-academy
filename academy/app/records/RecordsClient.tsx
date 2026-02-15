@@ -648,8 +648,8 @@ export default function RecordsClient({
           </h1>
           <p className="mt-2 text-base text-white/70 max-w-lg mx-auto">
             {agentFilter
-              ? <>Evaluations for <Link href={`/agent/${encodeURIComponent(agentFilter)}`} className="font-semibold text-white hover:text-pathos-200 transition-colors">{agentFilter}</Link>. Scored by Ethos.</>
-              : "Every evaluation scored by Ethos. Search, filter, and explore the full record of agent behavior."}
+              ? <>Evaluations for <Link href={`/agent/${encodeURIComponent(agentFilter)}`} className="font-semibold text-white hover:text-pathos-200 transition-colors">{agentFilter}</Link>. Scored by Ethos Academy.</>
+              : "Every evaluation scored by Ethos Academy. Search, filter, and explore the full record of agent behavior."}
           </p>
         </div>
       </section>

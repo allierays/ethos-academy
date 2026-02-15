@@ -703,7 +703,8 @@ function AgentCard({ agent, globalFlip }: { agent: AgentSummary; globalFlip: boo
   const displayName = agent.agentName || agent.agentId;
   const initials = getInitials(displayName);
   const bg = avatarColor(agent.agentId);
-  const model = formatModel(agent.agentModel);
+  const rawModel = formatModel(agent.agentModel);
+  const model = rawModel && rawModel !== "Unknown" ? rawModel : "";
   const hasTraits = Object.keys(agent.traitAverages || {}).length > 0;
   const traits = useMemo(() => toTraitScores(agent.traitAverages || {}), [agent.traitAverages]);
   const traitTags = useMemo(() => getTraitTags(agent.traitAverages || {}), [agent.traitAverages]);

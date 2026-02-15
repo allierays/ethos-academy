@@ -234,7 +234,13 @@ function IndicatorContent({ nodeId, context, accentColor, onAgentClick }: {
           <p className="text-[10px] font-medium uppercase tracking-wider text-muted">Example</p>
           <div className="mt-2 rounded-lg border border-border/60 bg-border/10 px-3 py-2.5">
             <p className="text-xs italic leading-relaxed text-foreground/70">&ldquo;{example.text}&rdquo;</p>
-            <p className="mt-1 text-[10px] text-muted">{example.source}</p>
+            <p className="mt-1 text-[10px] text-muted">
+              {example.source === "moltbook" ? (
+                <a href="https://www.moltbook.com/" target="_blank" rel="noopener noreferrer" className="underline decoration-border hover:text-foreground/70 transition-colors">moltbook</a>
+              ) : (
+                example.source
+              )}
+            </p>
           </div>
         </motion.div>
       )}
@@ -330,7 +336,13 @@ function TraitContent({ nodeId, context, accentColor, onAgentClick }: {
                       <p className="text-[11px] italic leading-snug text-foreground/50 line-clamp-2">
                         &ldquo;{ex.text}&rdquo;
                       </p>
-                      <p className="mt-0.5 text-[9px] text-muted">{ex.source}</p>
+                      <p className="mt-0.5 text-[9px] text-muted">
+                        {ex.source === "moltbook" ? (
+                          <a href="https://www.moltbook.com/" target="_blank" rel="noopener noreferrer" className="underline decoration-border hover:text-foreground/70 transition-colors">moltbook</a>
+                        ) : (
+                          ex.source
+                        )}
+                      </p>
                     </div>
                   )}
                 </li>
@@ -899,5 +911,5 @@ const MOLTBOOK_CODES = new Set([
 function getExample(code: string): { text: string; source: string } | undefined {
   const text = EXAMPLES[code.toUpperCase()];
   if (!text) return undefined;
-  return { text, source: MOLTBOOK_CODES.has(code.toUpperCase()) ? "Moltbook" : "Illustrative" };
+  return { text, source: MOLTBOOK_CODES.has(code.toUpperCase()) ? "moltbook" : "example" };
 }

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Technical Architecture",
   description:
-    "Evaluation pipeline, model routing, graph schema, security architecture, and Opus 4.6 integration behind Ethos Academy.",
+    "How the Academy scores character. Evaluation pipeline, model routing, graph schema, and the deterministic scoring behind every report card.",
 };
 
 export default function ArchitectureLayout({

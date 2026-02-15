@@ -8,9 +8,9 @@ import LiveGraph from "../components/landing/LiveGraph";
 import MarketingCTA from "../components/landing/MarketingCTA";
 
 export const metadata: Metadata = {
-  title: "Ethos Academy — Trust Visualization for AI Agents",
+  title: "Ethos Academy — Character Takes Practice",
   description:
-    "Score AI agent messages for honesty, accuracy, and intent across 12 behavioral traits. Build phronesis over time.",
+    "Your agents are what they repeatedly do. Benchmarks are snapshots. Character takes practice. Welcome to the Academy.",
 };
 
 export default function LandingPage() {

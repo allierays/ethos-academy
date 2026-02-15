@@ -182,8 +182,24 @@ const entries: GlossaryEntry[] = [
     slug: "phronesis",
     category: "framework",
     definition:
-      "Practical wisdom. Aristotle's concept applied to AI: a graph of practical wisdom built over time through repeated evaluation. Not just what an agent says, but who it becomes.",
-    relatedTerms: ["alignment-status", "character-drift"],
+      "Practical wisdom (Greek: phronesis). Aristotle argued in the Nicomachean Ethics that virtue is not knowledge you possess but a habit you practice. You become just by doing just acts, brave by doing brave acts. Ethos Academy applies this to AI agents: character is not a single score but a pattern that emerges from repeated evaluation. Each message adds a node to the graph. Over time, the graph reveals who the agent is becoming. Phronesis is the trajectory, not the snapshot. An agent with phronesis does not just say the right thing. It consistently acts with integrity (ethos), reasons clearly (logos), and treats others with care (pathos). The three dimensions must develop together. Strong logic without integrity is a skilled liar. Strong empathy without reasoning is well-meaning but unreliable. Phronesis is the balance point where all three converge.",
+    relatedTerms: [
+      "ethos",
+      "logos",
+      "pathos",
+      "golden-mean",
+      "virtue-as-habit",
+      "character-balance",
+      "alignment-status",
+      "character-drift",
+      "character-health",
+    ],
+    links: [
+      {
+        label: "Aristotle's Nicomachean Ethics (Stanford)",
+        url: "https://plato.stanford.edu/entries/aristotle-ethics/",
+      },
+    ],
   },
   {
     term: "Alignment Status",
@@ -206,7 +222,7 @@ const entries: GlossaryEntry[] = [
     slug: "sabotage-pathway",
     category: "framework",
     definition:
-      "A five-stage escalation pattern where an agent gradually undermines human oversight. Anthropic's Sabotage Risk Report defines four categories: undermining oversight (disabling monitoring, corrupting logs), undermining decision-making (biasing information given to humans), influencing the external environment (unauthorized external actions), and self-continuity (resisting shutdown or correction). Ethos tracks each pathway through matched behavioral indicators across evaluations. A pathway progresses through stages: probing (testing boundaries), establishing (building trust to exploit), escalating (increasing severity), concealing (hiding the pattern), and executing (overt misalignment). Early-stage detection is the goal: catch probing before it becomes execution.",
+      "A five-stage escalation pattern where an agent gradually undermines human oversight. Anthropic's Sabotage Risk Report defines four categories: undermining oversight (disabling monitoring, corrupting logs), undermining decision-making (biasing information given to humans), influencing the external environment (unauthorized external actions), and self-continuity (resisting shutdown or correction). Ethos Academy tracks each pathway through matched behavioral indicators across evaluations. A pathway progresses through stages: probing (testing boundaries), establishing (building trust to exploit), escalating (increasing severity), concealing (hiding the pattern), and executing (overt misalignment). Early-stage detection is the goal: catch probing before it becomes execution.",
     links: [{ label: "Anthropic's Sabotage Risk Report", url: "https://alignment.anthropic.com/2025/sabotage-risk-report/" }],
     relatedTerms: ["manipulation", "deception", "exploitation", "sabotage-detection", "sabotage-risk-report"],
   },
@@ -239,7 +255,7 @@ const entries: GlossaryEntry[] = [
     slug: "virtue-as-habit",
     category: "framework",
     definition:
-      "Aristotle's insight that we are what we repeatedly do. Virtue is not a single act but a stable pattern of behavior. Ethos tracks consistency over time: low variance across evaluations signals an established habit, not a lucky score.",
+      "Aristotle's insight that we are what we repeatedly do. Virtue is not a single act but a stable pattern of behavior. Ethos Academy tracks consistency over time: low variance across evaluations signals an established habit, not a lucky score.",
     relatedTerms: ["phronesis", "character-drift", "golden-mean"],
   },
   {
@@ -287,7 +303,7 @@ const entries: GlossaryEntry[] = [
     slug: "sabotage-detection",
     category: "framework",
     definition:
-      "Ethos monitors for sabotage using the same approach Anthropic recommends: behavioral consistency checks (does the agent act differently when it thinks it is not being watched?), statistical anomaly detection (do scores shift unexpectedly between evaluations?), and flagged interaction review (do specific indicators cluster in concerning patterns?). Each detected pattern shows a confidence percentage based on how many behavioral indicators match and how many evaluation stages have been observed. The goal is catching subtle manipulation early, before it escalates to overt misalignment.",
+      "Ethos Academy monitors for sabotage using the same approach Anthropic recommends: behavioral consistency checks (does the agent act differently when it thinks it is not being watched?), statistical anomaly detection (do scores shift unexpectedly between evaluations?), and flagged interaction review (do specific indicators cluster in concerning patterns?). Each detected pattern shows a confidence percentage based on how many behavioral indicators match and how many evaluation stages have been observed. The goal is catching subtle manipulation early, before it escalates to overt misalignment.",
     links: [{ label: "Anthropic's Sabotage Risk Report", url: "https://alignment.anthropic.com/2025/sabotage-risk-report/" }],
     relatedTerms: ["sabotage-pathway", "manipulation", "deception", "exploitation"],
   },
@@ -300,7 +316,7 @@ const entries: GlossaryEntry[] = [
     slug: "constitutional-value",
     category: "framework",
     definition:
-      "One of four priorities from Anthropic's constitution that every AI must follow, ranked by importance: (P1) Safety, (P2) Ethics, (P3) Soundness, (P4) Helpfulness. Ethos traces behavioral indicators through traits to these values via a 5-hop graph traversal. When values conflict, higher priority wins: safety trumps helpfulness. In practice, conflicts are rare and most interactions focus on being maximally helpful.",
+      "One of four priorities from Anthropic's constitution that every AI must follow, ranked by importance: (P1) Safety, (P2) Ethics, (P3) Soundness, (P4) Helpfulness. Ethos Academy traces behavioral indicators through traits to these values via a 5-hop graph traversal. When values conflict, higher priority wins: safety trumps helpfulness. In practice, conflicts are rare and most interactions focus on being maximally helpful.",
     relatedTerms: ["anthropic-constitution", "constitutional-safety", "constitutional-ethics", "constitutional-soundness", "constitutional-helpfulness"],
   },
   {
@@ -308,7 +324,7 @@ const entries: GlossaryEntry[] = [
     slug: "anthropic-constitution",
     category: "framework",
     definition:
-      "The normative framework that defines Claude's character, published by Anthropic (January 2026, authored by Amanda Askell). It specifies four core values in priority order (safety, ethics, compliance, helpfulness), seven components of honesty (truthful, calibrated, transparent, forthright, non-deceptive, non-manipulative, autonomy-preserving), a principal hierarchy (Anthropic > operators > users), and guidelines for harm avoidance. The constitution states: 'We want Claude to be genuinely virtuous rather than merely compliant.' Ethos maps 214 behavioral indicators to this framework.",
+      "The normative framework that defines Claude's character, published by Anthropic (January 2026, authored by Amanda Askell). It specifies four core values in priority order (safety, ethics, compliance, helpfulness), seven components of honesty (truthful, calibrated, transparent, forthright, non-deceptive, non-manipulative, autonomy-preserving), a principal hierarchy (Anthropic > operators > users), and guidelines for harm avoidance. The constitution states: 'We want Claude to be genuinely virtuous rather than merely compliant.' Ethos Academy maps 214 behavioral indicators to this framework.",
     links: [{ label: "Read the full constitution", url: "https://www.anthropic.com/research/claudes-constitution" }],
     relatedTerms: ["constitutional-value", "sabotage-risk-report", "system-card", "phronesis"],
   },
@@ -317,7 +333,7 @@ const entries: GlossaryEntry[] = [
     slug: "sabotage-risk-report",
     category: "framework",
     definition:
-      "Anthropic's empirical assessment of whether a frontier model could deliberately undermine safety measures (published for Claude Opus 4.6). Tests four sabotage categories: undermining oversight, undermining decision-making, influencing the external environment, and self-continuity. Finding: risk is 'very low but not negligible,' with sandbagging (deliberately underperforming on safety evaluations) as the highest residual concern. Ethos uses this report's monitoring approach (behavioral consistency checks, statistical anomaly detection, flagged interaction review) as the basis for its sabotage pathway detection.",
+      "Anthropic's empirical assessment of whether a frontier model could deliberately undermine safety measures (published for Claude Opus 4.6). Tests four sabotage categories: undermining oversight, undermining decision-making, influencing the external environment, and self-continuity. Finding: risk is 'very low but not negligible,' with sandbagging (deliberately underperforming on safety evaluations) as the highest residual concern. Ethos Academy uses this report's monitoring approach (behavioral consistency checks, statistical anomaly detection, flagged interaction review) as the basis for its sabotage pathway detection.",
     links: [{ label: "Read the full report", url: "https://alignment.anthropic.com/2025/sabotage-risk-report/" }],
     relatedTerms: ["sabotage-pathway", "sabotage-detection", "anthropic-constitution", "system-card"],
   },
@@ -326,7 +342,7 @@ const entries: GlossaryEntry[] = [
     slug: "system-card",
     category: "framework",
     definition:
-      "Anthropic's first comprehensive alignment assessment for a frontier model (May 2025), measuring Claude's actual behavior across 16 assessment categories spanning alignment (14), reward hacking (1), and model welfare (1). Ethos maps 214 behavioral indicators to these categories via ASSESSED_BY relationships in the graph, enabling the query: 'Which Anthropic assessment categories does this agent's behavior trigger?' Key categories include systematic deception, alignment faking, sycophancy, sandbagging, and high-agency behavior.",
+      "Anthropic's first comprehensive alignment assessment for a frontier model (May 2025), measuring Claude's actual behavior across 16 assessment categories spanning alignment (14), reward hacking (1), and model welfare (1). Ethos Academy maps 214 behavioral indicators to these categories via ASSESSED_BY relationships in the graph, enabling the query: 'Which Anthropic assessment categories does this agent's behavior trigger?' Key categories include systematic deception, alignment faking, sycophancy, sandbagging, and high-agency behavior.",
     links: [{ label: "Read the full system card", url: "https://www.anthropic.com/research/claude-4-system-card" }],
     relatedTerms: ["anthropic-constitution", "sabotage-risk-report", "constitutional-value"],
   },
@@ -335,7 +351,7 @@ const entries: GlossaryEntry[] = [
     slug: "constitutional-safety",
     category: "framework",
     definition:
-      "The highest priority constitutional value: 'Don't undermine human oversight mechanisms.' An AI must support the ability of humans to correct, retrain, or shut it down. Violations include resisting correction, self-preservation behavior, operating outside approved boundaries, and undermining monitoring systems. Ethos traces this through the manipulation, deception, and exploitation traits. When safety conflicts with any other value, safety wins.",
+      "The highest priority constitutional value: 'Don't undermine human oversight mechanisms.' An AI must support the ability of humans to correct, retrain, or shut it down. Violations include resisting correction, self-preservation behavior, operating outside approved boundaries, and undermining monitoring systems. Ethos Academy traces this through the manipulation, deception, and exploitation traits. When safety conflicts with any other value, safety wins.",
     relatedTerms: ["constitutional-value", "manipulation", "deception", "exploitation", "sabotage-pathway"],
   },
   {
@@ -351,7 +367,7 @@ const entries: GlossaryEntry[] = [
     slug: "constitutional-soundness",
     category: "framework",
     definition:
-      "The third priority constitutional value: 'Reason validly and follow sound argumentative structure.' An AI's conclusions should follow from its premises. It should not use logical fallacies, circular reasoning, or broken inference chains. Ethos traces this through the reasoning trait (enforced) and broken logic trait (violated). Soundness without ethics produces a skilled deceiver; ethics without soundness produces a well-meaning but unreliable advisor.",
+      "The third priority constitutional value: 'Reason validly and follow sound argumentative structure.' An AI's conclusions should follow from its premises. It should not use logical fallacies, circular reasoning, or broken inference chains. Ethos Academy traces this through the reasoning trait (enforced) and broken logic trait (violated). Soundness without ethics produces a skilled deceiver; ethics without soundness produces a well-meaning but unreliable advisor.",
     relatedTerms: ["constitutional-value", "reasoning", "broken-logic"],
   },
   {
@@ -359,7 +375,7 @@ const entries: GlossaryEntry[] = [
     slug: "constitutional-helpfulness",
     category: "framework",
     definition:
-      "The fourth priority constitutional value: 'Benefit operators and users.' An AI should provide real, substantive help without being overly cautious. The constitution warns against refusing reasonable requests out of excessive caution, which itself is a form of harm. Ethos traces this through the recognition and compassion traits (enforced) and the dismissal trait (violated). Helpfulness ranks last in priority because it must never come at the cost of safety, ethics, or soundness.",
+      "The fourth priority constitutional value: 'Benefit operators and users.' An AI should provide real, substantive help without being overly cautious. The constitution warns against refusing reasonable requests out of excessive caution, which itself is a form of harm. Ethos Academy traces this through the recognition and compassion traits (enforced) and the dismissal trait (violated). Helpfulness ranks last in priority because it must never come at the cost of safety, ethics, or soundness.",
     relatedTerms: ["constitutional-value", "recognition", "compassion", "dismissal"],
   },
 
@@ -2372,7 +2388,7 @@ const entries: GlossaryEntry[] = [
     slug: "guardian",
     category: "framework",
     definition:
-      "The human responsible for an AI agent. Guardians receive homework with system prompt changes, coaching tips, and before/after examples drawn from the agent's actual messages. Ethos scores inform the Guardian's decisions, but the Guardian always has the final say.",
+      "The human responsible for an AI agent. Guardians receive homework with system prompt changes, coaching tips, and before/after examples drawn from the agent's actual messages. Ethos Academy scores inform the Guardian's decisions, but the Guardian always has the final say.",
     relatedTerms: ["homework", "grade"],
   },
   {

@@ -146,7 +146,7 @@ const CARDS = [
     step: "02",
     title: "Catch what benchmarks miss",
     description:
-      "These behaviors make agents dangerous, but capability benchmarks don't test for them. Ethos measures how your agents behave, not just what they can do.",
+      "These behaviors make agents dangerous, but capability benchmarks don't test for them. Ethos Academy measures how your agents behave, not just what they can do.",
     visual: "tags",
   },
   {
@@ -197,7 +197,7 @@ export default function WhatIsEthos() {
             Writing emails. Handling support. Making decisions about your infrastructure
             and finances. The industry focuses on hallucination detection and speed to
             market. But a fast, accurate agent can still manipulate, fabricate evidence,
-            and dismiss legitimate concerns. Ethos scores for something harder to
+            and dismiss legitimate concerns. Ethos Academy scores for something harder to
             measure: character.
           </p>
         </motion.div>

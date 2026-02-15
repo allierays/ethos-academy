@@ -85,9 +85,6 @@ export default function Footer() {
               <Link href="/architecture" className="text-sm text-white/70 transition-colors hover:text-white">
                 Architecture
               </Link>
-              <Link href="/architecture" className="text-sm text-white/70 transition-colors hover:text-white">
-                Technical Architecture
-              </Link>
             </nav>
           </div>
 
