@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/explore`, changeFrequency: "daily", priority: 0.8 },
     { url: `${BASE_URL}/records`, changeFrequency: "daily", priority: 0.7 },
     { url: `${BASE_URL}/how-it-works`, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${BASE_URL}/framework`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/rubric`, changeFrequency: "monthly", priority: 0.5 },
   ];
 
   const agentRoutes: MetadataRoute.Sitemap = agentIds.map((id) => ({

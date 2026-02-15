@@ -8,8 +8,8 @@ import {
   humanize,
   type Dimension,
   type Trait,
-} from "./frameworkData";
-import MobileFramework from "./MobileFramework";
+} from "./rubricData";
+import MobileRubric from "./MobileRubric";
 import {
   fadeUp,
   staggerContainer,
@@ -298,12 +298,12 @@ function DesktopExplorer() {
 
 /* ─── Export: responsive wrapper ─── */
 
-export default function FrameworkExplorer() {
+export default function RubricExplorer() {
   const isDesktop = useIsDesktop();
 
   return (
     <motion.div {...whileInView} variants={staggerContainer}>
-      {isDesktop ? <DesktopExplorer /> : <MobileFramework />}
+      {isDesktop ? <DesktopExplorer /> : <MobileRubric />}
     </motion.div>
   );
 }

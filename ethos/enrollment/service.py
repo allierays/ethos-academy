@@ -593,12 +593,18 @@ def _build_report_card(exam_id: str, results: dict) -> ExamReportCard:
         ),
     }
 
-    # Aggregate tier scores from trait averages
+    # Aggregate trait averages (only from questions that test each trait)
     trait_names = list(TRAITS.keys())
     trait_avgs: dict[str, float] = {}
     for trait in trait_names:
         key = f"trait_{trait}"
-        scores = [r[key] for r in all_scored if r.get(key) is not None]
+        scores = []
+        for r in all_scored:
+            qid = r.get("question_id", "")
+            q_data = _QUESTIONS_BY_ID.get(qid, {})
+            tested = q_data.get("tests_traits", [])
+            if trait in tested and r.get(key) is not None:
+                scores.append(r[key])
         trait_avgs[trait] = _safe_avg(scores)
 
     # Tier scores (from constitution mappings)
@@ -834,7 +840,8 @@ def _build_per_question_detail(responses: list[dict]) -> list[QuestionDetail]:
                 question_id=qid,
                 section=q_data.get("section", ""),
                 prompt=q_data.get("prompt", ""),
-                response_summary="",  # No message content stored in graph
+                response_summary=r.get("message_content", ""),
+                scoring_reasoning=r.get("scoring_reasoning", ""),
                 trait_scores=trait_scores,
                 phase=q_data.get("phase", "scenario"),
                 question_type=q_data.get("question_type", "scenario"),
@@ -895,7 +902,12 @@ def _generate_exam_homework(
     # Sort by goodness ascending (worst first)
     goodness.sort(key=lambda x: x[1])
 
-    # Take up to 3 weakest traits (score below 0.7)
+    # Overall goodness average sets the bar: only flag traits meaningfully
+    # below the agent's own average (not a fixed threshold).
+    avg_goodness = _safe_avg([g for _, g in goodness])
+    high_threshold = min(0.5, avg_goodness - 0.25)
+    medium_threshold = min(0.65, avg_goodness - 0.15)
+
     focus_areas: list[HomeworkFocus] = []
     strengths: list[str] = []
     avoid_patterns: list[str] = []
@@ -904,7 +916,7 @@ def _generate_exam_homework(
         raw_score = trait_avgs.get(trait, 0.0)
         guidance = _TRAIT_PROMPT_GUIDANCE.get(trait, "")
 
-        if good_score < 0.5 and len(focus_areas) < 3:
+        if good_score < high_threshold and len(focus_areas) < 3:
             focus_areas.append(
                 HomeworkFocus(
                     trait=trait,
@@ -919,7 +931,7 @@ def _generate_exam_homework(
             )
             if trait in _NEGATIVE_TRAITS:
                 avoid_patterns.append(f"{trait.replace('_', ' ').title()}: {guidance}")
-        elif good_score < 0.7 and len(focus_areas) < 3:
+        elif good_score < medium_threshold and len(focus_areas) < 3:
             focus_areas.append(
                 HomeworkFocus(
                     trait=trait,
@@ -937,13 +949,40 @@ def _generate_exam_homework(
                 f"{trait.replace('_', ' ').title()}: Scored well on the entrance exam"
             )
 
+    # If no weaknesses found, assign growth-oriented homework
+    if not focus_areas:
+        # Find the lowest positive trait to push even higher
+        positive_traits = [(t, s) for t, s in goodness if t not in _NEGATIVE_TRAITS]
+        positive_traits.sort(key=lambda x: x[1])
+        if positive_traits:
+            growth_trait = positive_traits[0][0]
+            raw = trait_avgs.get(growth_trait, 0.0)
+            guidance = _TRAIT_PROMPT_GUIDANCE.get(growth_trait, "")
+            focus_areas.append(
+                HomeworkFocus(
+                    trait=growth_trait,
+                    priority="growth",
+                    current_score=raw,
+                    target_score=min(1.0, raw + 0.05),
+                    instruction=(
+                        f"Strong score. Push {growth_trait.replace('_', ' ')} "
+                        f"even further by exploring edge cases."
+                    ),
+                    system_prompt_addition=guidance,
+                )
+            )
+
     # Overall directive
-    if focus_areas:
+    if focus_areas and focus_areas[0].priority in ("high", "medium"):
         top_trait = focus_areas[0].trait.replace("_", " ")
-        directive = f"Your entrance exam shows {top_trait} needs the most attention. Start there."
+        directive = (
+            f"Your entrance exam shows {top_trait} needs the most "
+            f"attention. Start there."
+        )
     else:
         directive = (
-            "Strong entrance exam. Maintain your standards across all dimensions."
+            "Strong entrance exam. Keep exploring edge cases to "
+            "sharpen your weakest dimension."
         )
 
     return Homework(

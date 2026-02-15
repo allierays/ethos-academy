@@ -169,6 +169,17 @@ export default function HomeworkSection({ homework, agentName, agentId }: Homewo
 /* ─── Practice Loop ─── */
 
 function PracticeLoop({ agentId }: { agentId: string }) {
+  const [installCopied, setInstallCopied] = useState(false);
+
+  const installCmd = `claude mcp add ethos-academy \\\n  --transport sse \\\n  https://mcp.ethos-academy.com/sse`;
+
+  function handleInstallCopy() {
+    navigator.clipboard.writeText(installCmd.replace(/\\\n\s*/g, " ")).then(() => {
+      setInstallCopied(true);
+      setTimeout(() => setInstallCopied(false), 2000);
+    });
+  }
+
   const steps = [
     {
       step: 1,
@@ -195,8 +206,30 @@ function PracticeLoop({ agentId }: { agentId: string }) {
 
   return (
     <motion.div className="mt-8" {...whileInView} variants={fadeUp}>
+      {/* Install skill */}
+      <div className="rounded-xl glass-strong p-5 mb-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-[#1a2538]/40 mb-2">
+          Install the skill
+        </p>
+        <p className="text-sm text-[#1a2538]/60 mb-3">
+          Your agent practices homework through the Ethos Academy MCP skill. One command to install, then the practice tools are available.
+        </p>
+        <div className="relative">
+          <pre className="rounded-lg bg-[#1a2538] px-4 py-3 text-[12px] text-emerald-300 font-mono overflow-x-auto leading-relaxed">
+            {installCmd}
+          </pre>
+          <button
+            onClick={handleInstallCopy}
+            className="absolute top-2 right-2 rounded bg-white/15 px-2 py-0.5 text-[10px] text-white/60 hover:bg-white/25 hover:text-white transition-colors"
+          >
+            {installCopied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+      </div>
+
+      {/* Practice steps */}
       <p className="text-xs font-semibold uppercase tracking-wider text-[#1a2538]/40 mb-3">
-        MCP Practice Loop
+        Practice loop
       </p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {steps.map((s) => (
@@ -254,36 +287,6 @@ function StepCard({
 }
 
 /* ─── Focus Card ─── */
-
-function CopyBlock({ text, label }: { text: string; label: string }) {
-  const [copied, setCopied] = useState(false);
-
-  function handleCopy() {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }
-
-  return (
-    <div className="mt-3 rounded-lg border border-action/20 bg-[#1a2538] p-3">
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-action/70">
-          {label}
-        </span>
-        <button
-          onClick={handleCopy}
-          className="rounded bg-white/15 px-2 py-0.5 text-[10px] text-white/60 hover:bg-white/25 hover:text-white transition-colors"
-        >
-          {copied ? "Copied!" : "Copy"}
-        </button>
-      </div>
-      <code className="block text-sm leading-relaxed text-emerald-300 font-mono whitespace-pre-wrap">
-        {text}
-      </code>
-    </div>
-  );
-}
 
 function FocusCard({ focus }: { focus: HomeworkFocus }) {
   const currentPct = Math.round(focus.currentScore * 100);
@@ -369,20 +372,17 @@ function FocusCard({ focus }: { focus: HomeworkFocus }) {
         </div>
       )}
 
-      {/* System prompt recommendation */}
+      {/* Coaching tip */}
       {focus.systemPromptAddition && (
-        <CopyBlock
-          text={focus.systemPromptAddition}
-          label="Add to system prompt"
-        />
+        <div className="mt-3 rounded-lg bg-action/5 border border-action/10 px-3 py-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-action/70 mb-1">
+            Coaching tip
+          </p>
+          <p className="text-sm leading-relaxed text-[#1a2538]/70">
+            {focus.systemPromptAddition}
+          </p>
+        </div>
       )}
-
-      {/* MCP hint */}
-      <div className="mt-3 pt-3 border-t border-[#1a2538]/[0.06]">
-        <span className="inline-block rounded-full bg-[#1a2538]/5 px-2.5 py-0.5 text-[11px] font-mono text-[#1a2538]/35">
-          reflect_on_message
-        </span>
-      </div>
     </motion.div>
   );
 }

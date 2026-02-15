@@ -44,7 +44,11 @@ export default function ScaleStatement() {
             <CountUp target={3} /> dimensions.
           </p>
           <p className="mt-2 text-4xl font-bold tracking-tight text-muted/50 sm:text-5xl">
-            <CountUp target={208} /> behavioral indicators.
+            <CountUp target={214} /> behavioral indicators.
+          </p>
+          <p className="mx-auto mt-6 max-w-lg text-sm text-muted">
+            Mapped to Anthropic&apos;s constitutional value hierarchy:
+            Safety &gt; Ethics &gt; Soundness &gt; Helpfulness.
           </p>
         </motion.div>
 

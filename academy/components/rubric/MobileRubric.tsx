@@ -8,7 +8,7 @@ import {
   humanize,
   type Dimension,
   type Trait,
-} from "./frameworkData";
+} from "./rubricData";
 import {
   fadeUp,
   staggerContainer,
@@ -198,7 +198,7 @@ function DimensionAccordion({ dimension }: { dimension: Dimension }) {
 
 /* ─── Export ─── */
 
-export default function MobileFramework() {
+export default function MobileRubric() {
   return (
     <div className="px-4 py-8">
       <motion.div

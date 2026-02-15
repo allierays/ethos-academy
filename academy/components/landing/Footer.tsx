@@ -70,14 +70,17 @@ export default function Footer() {
               <Link href="/how-it-works" className="text-sm text-white/70 transition-colors hover:text-white">
                 How It Works
               </Link>
-              <Link href="/framework" className="text-sm text-white/70 transition-colors hover:text-white">
-                Framework
+              <Link href="/rubric" className="text-sm text-white/70 transition-colors hover:text-white">
+                Rubric
               </Link>
               <Link href="/explore" className="text-sm text-white/70 transition-colors hover:text-white">
                 Explore
               </Link>
               <Link href="/alumni" className="text-sm text-white/70 transition-colors hover:text-white">
                 Alumni
+              </Link>
+              <Link href="/research" className="text-sm text-white/70 transition-colors hover:text-white">
+                Research
               </Link>
             </nav>
           </div>

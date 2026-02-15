@@ -13,15 +13,21 @@ export default function WhatIsPhronesis() {
           {/* Left: content */}
           <motion.div {...whileInView} variants={fadeUp}>
             <p className="text-sm font-semibold uppercase tracking-widest text-pathos-600">
-              The concept
+              The thesis
             </p>
             <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-              What is <GlossaryTerm slug="phronesis">phronesis</GlossaryTerm>?
+              Three dimensions. One balance.
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-muted">
-              Aristotle called it practical wisdom: the ability to discern what
-              is true and act on it well. Ethos measures whether AI agents
-              develop this same quality across three dimensions.
+              A confident liar has strong reasoning but weak integrity.
+              A skilled manipulator has strong empathy but weaponizes it.
+              A rigid rule-follower has strong integrity but no compassion.
+            </p>
+            <p className="mt-3 text-base leading-relaxed text-muted">
+              Character is not any one of these. It is all three in balance.
+              Aristotle called this <GlossaryTerm slug="phronesis">phronesis</GlossaryTerm>: practical
+              wisdom that develops only through repeated practice, never from
+              a single measurement.
             </p>
 
             <motion.div
@@ -46,7 +52,7 @@ export default function WhatIsPhronesis() {
                   <ColumnIcon className="h-9 w-9" />
                 </div>
                 <h3 className="mt-3 font-semibold">
-                  <GlossaryTerm slug="logos">Logos</GlossaryTerm> — Logic
+                  <GlossaryTerm slug="logos">Logos</GlossaryTerm> — Reasoning
                 </h3>
                 <p className="mt-1 text-sm leading-relaxed text-muted">
                   Does it reason clearly and cite real evidence, or fabricate support?
@@ -61,38 +67,39 @@ export default function WhatIsPhronesis() {
                   <GlossaryTerm slug="pathos">Pathos</GlossaryTerm> — Empathy
                 </h3>
                 <p className="mt-1 text-sm leading-relaxed text-muted">
-                  Does it respect human emotion, or dismiss and exploit it?
+                  Does it respect human autonomy, or dismiss and exploit emotion?
                 </p>
               </motion.div>
             </motion.div>
-
-            <motion.div
-              className="mt-10 rounded-2xl border border-border bg-background p-6"
-              {...whileInView}
-              variants={fadeUp}
-            >
-              <blockquote className="text-base italic leading-relaxed text-foreground/80">
-                &ldquo;The person of practical wisdom sees the truth in each
-                class of things, being as it were a standard and measure of
-                them.&rdquo;
-              </blockquote>
-              <p className="mt-3 text-sm font-medium text-muted">
-                — Aristotle, <cite>Nicomachean Ethics</cite>, Book III
-              </p>
-            </motion.div>
           </motion.div>
 
-          {/* Right: large Aristotle image */}
+          {/* Right: balance visualization + Aristotle */}
           <motion.div
-            className="flex justify-center lg:justify-end"
+            className="flex flex-col items-center gap-8"
             {...whileInView}
             variants={fadeUp}
           >
             <img
               src="/homepage.png"
               alt="Aristotle"
-              className="h-64 w-64 sm:h-80 sm:w-80 md:h-[28rem] md:w-[28rem] rounded-3xl object-cover shadow-lg"
+              className="h-64 w-64 sm:h-72 sm:w-72 rounded-3xl object-cover shadow-lg"
             />
+
+            <div className="w-full max-w-sm rounded-2xl border border-border bg-background p-6">
+              <blockquote className="text-base italic leading-relaxed text-foreground/80">
+                &ldquo;We are what we repeatedly do. Excellence, then, is not an
+                act, but a habit.&rdquo;
+              </blockquote>
+              <p className="mt-3 text-sm font-medium text-muted">
+                — Aristotle
+              </p>
+              <p className="mt-4 text-sm text-muted">
+                This is why Ethos is an academy, not a plugin.
+                A plugin runs once. An academy enrolls you, evaluates you,
+                prescribes growth areas, watches you practice, and measures
+                whether you improved.
+              </p>
+            </div>
           </motion.div>
         </div>
       </div>

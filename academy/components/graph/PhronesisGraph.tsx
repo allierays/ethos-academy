@@ -6,6 +6,7 @@ import {
   DIMENSION_COLORS,
   DIMENSION_LABELS,
   DIMENSION_RGB,
+  spectrumColor,
 } from "../../lib/colors";
 import type { GraphData, GraphNode as EthosGraphNode, GraphRel } from "../../lib/types";
 import GraphHelpButton from "../shared/GraphHelpButton";
@@ -44,21 +45,18 @@ function getNodeColor(node: EthosGraphNode): string {
 
   switch (node.type) {
     case "academy":
-      return "#ffffff";
+      return "#394646";
     case "dimension":
       return DIMENSION_COLORS[node.label] ?? "#389590";
-    case "trait": {
-      const polarity = node.properties.polarity as string;
-      if (polarity === "negative") return "#991b1b";
+    case "trait":
       return dimColor ?? "#94a3b8";
-    }
-    case "indicator": {
-      const detCount = (node.properties.detectionCount as number) ?? 0;
-      if (detCount === 0) return "rgba(148,163,184,0.25)";
+    case "indicator":
       return dimColor ?? "#94a3b8";
+    case "agent": {
+      const score = node.properties.phronesisScore as number | undefined;
+      if (score != null) return spectrumColor(score);
+      return "#94a3b8"; // gray when no score yet
     }
-    case "agent":
-      return "#16a34a";
     default:
       return "#94a3b8";
   }
@@ -72,11 +70,13 @@ function getNodeSize(node: EthosGraphNode): number {
       return 55;
     case "trait":
       return 28;
-    case "indicator":
-      return (node.properties.size as number) ?? 5;
+    case "indicator": {
+      const raw = (node.properties.size as number) ?? 5;
+      return Math.max(12, raw);
+    }
     case "agent": {
       const count = (node.properties.indicatorCount as number) ?? 0;
-      return Math.min(20, 6 + count * 0.3);
+      return Math.min(30, 14 + count * 0.4);
     }
     default:
       return 10;
@@ -106,10 +106,11 @@ function getNodeCaption(node: EthosGraphNode): string {
 function getCaptionColor(node: EthosGraphNode): string {
   if (node.type === "indicator") {
     const detCount = (node.properties.detectionCount as number) ?? 0;
-    return detCount === 0 ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.8)";
+    return detCount === 0 ? "rgba(0,0,0,0.12)" : "rgba(0,0,0,0.7)";
   }
-  if (node.type === "agent") return "rgba(255,255,255,0.7)";
-  return "#ffffff";
+  if (node.type === "agent") return "rgba(0,0,0,0.65)";
+  if (node.type === "academy") return "#ffffff";
+  return "#394646";
 }
 
 /* -------------------------------------------------------------------------- */
@@ -142,14 +143,14 @@ function toNvlRelationships(
   return rels
     .filter((r) => nodeIds.has(r.fromId) && nodeIds.has(r.toId))
     .map((r) => {
-      // Academy → Dimension: bright structural lines
+      // Academy → Dimension: strong structural lines
       if (r.type === "HAS_DIMENSION") {
         const toNode = nodeMap.get(r.toId);
         const dim = toNode?.label;
-        const rgb = dim ? (DIMENSION_RGB[dim] ?? "255,255,255") : "255,255,255";
+        const rgb = dim ? (DIMENSION_RGB[dim] ?? "0,0,0") : "0,0,0";
         return {
           id: r.id, from: r.fromId, to: r.toId,
-          color: `rgba(${rgb},0.5)`, width: 2,
+          color: `rgba(${rgb},0.6)`, width: 2,
         };
       }
 
@@ -157,10 +158,10 @@ function toNvlRelationships(
       if (r.type === "BELONGS_TO") {
         const toNode = nodeMap.get(r.toId);
         const dim = toNode?.properties.dimension as string | undefined;
-        const rgb = dim ? (DIMENSION_RGB[dim] ?? "255,255,255") : "255,255,255";
+        const rgb = dim ? (DIMENSION_RGB[dim] ?? "0,0,0") : "0,0,0";
         return {
           id: r.id, from: r.fromId, to: r.toId,
-          color: `rgba(${rgb},0.3)`, width: 1.5,
+          color: `rgba(${rgb},0.35)`, width: 1.5,
         };
       }
 
@@ -169,15 +170,15 @@ function toNvlRelationships(
         const weight = (r.properties.weight as number) ?? 0;
         const toNode = nodeMap.get(r.toId);
         const dim = toNode?.properties.dimension as string | undefined;
-        const rgb = dim ? (DIMENSION_RGB[dim] ?? "255,255,255") : "255,255,255";
+        const rgb = dim ? (DIMENSION_RGB[dim] ?? "0,0,0") : "0,0,0";
 
         if (weight === 0) {
           return {
             id: r.id, from: r.fromId, to: r.toId,
-            color: "rgba(255,255,255,0.03)", width: 0.2,
+            color: "rgba(0,0,0,0.04)", width: 0.2,
           };
         }
-        const opacity = Math.min(0.5, 0.08 + (weight / 220) * 0.42);
+        const opacity = Math.min(0.5, 0.1 + (weight / 220) * 0.4);
         const width = Math.min(2, 0.3 + (weight / 220) * 1.7);
         return {
           id: r.id, from: r.fromId, to: r.toId,
@@ -186,21 +187,21 @@ function toNvlRelationships(
         };
       }
 
-      // Agent → Indicator (TRIGGERED): green with weight-based opacity
+      // Agent → Indicator (TRIGGERED): neutral gray with weight-based opacity
       if (r.type === "TRIGGERED") {
         const weight = (r.properties.weight as number) ?? 1;
-        const opacity = Math.min(0.4, 0.05 + (weight / 50) * 0.35);
+        const opacity = Math.min(0.45, 0.08 + (weight / 50) * 0.37);
         const width = Math.min(1.5, 0.3 + (weight / 50) * 1.2);
         return {
           id: r.id, from: r.fromId, to: r.toId,
-          color: `rgba(22,163,74,${opacity.toFixed(2)})`,
+          color: `rgba(57,70,70,${opacity.toFixed(2)})`,
           width: Math.round(width * 10) / 10,
         };
       }
 
       return {
         id: r.id, from: r.fromId, to: r.toId,
-        color: "rgba(255,255,255,0.08)", width: 0.5,
+        color: "rgba(0,0,0,0.08)", width: 0.5,
       };
     });
 }
@@ -247,7 +248,7 @@ function NvlRenderer({ nodes, rels, onNodeClick }: NvlRendererProps) {
           renderer: "canvas",
           initialZoom: 0.25,
           minZoom: 0.05,
-          maxZoom: 5,
+          maxZoom: 12,
           allowDynamicMinZoom: true,
           disableWebGL: true,
           callbacks: {
@@ -314,10 +315,10 @@ function GraphLegend({ stats }: {
   stats: { indicators: number; detected: number; detections: number; agents: number };
 }) {
   return (
-    <div className="absolute bottom-3 left-3 rounded-lg bg-black/50 px-3 py-2.5 text-xs text-white/80 backdrop-blur-sm">
+    <div className="absolute bottom-3 left-3 rounded-lg bg-white/80 px-3 py-2.5 text-xs text-gray-700 shadow-sm backdrop-blur-sm border border-gray-200">
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wider text-white/50">Dimensions</span>
+          <span className="text-[10px] uppercase tracking-wider text-gray-400">Dimensions</span>
           <div className="flex gap-3">
             {Object.entries(DIMENSION_COLORS).map(([key, color]) => (
               <span key={key} className="flex items-center gap-1">
@@ -328,41 +329,38 @@ function GraphLegend({ stats }: {
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wider text-white/50">Rings (center → edge)</span>
-          <div className="flex gap-2 text-[10px]">
+          <span className="text-[10px] uppercase tracking-wider text-gray-400">Agent Score</span>
+          <div className="flex items-center gap-2 text-[10px]">
             <span className="flex items-center gap-1">
-              <span className="inline-block h-3 w-3 rounded-full bg-white" />
-              Academy
+              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: "#3a9a6e" }} />
+              Exemplary
             </span>
-            <span className="text-white/30">→</span>
-            <span>3 Dimensions</span>
-            <span className="text-white/30">→</span>
-            <span>12 Traits</span>
-            <span className="text-white/30">→</span>
-            <span>208 Indicators</span>
-            <span className="text-white/30">→</span>
             <span className="flex items-center gap-1">
-              <span className="inline-block h-2 w-2 rounded-full" style={{ background: "#16a34a" }} />
-              {stats.agents} Agents
+              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: "#c09840" }} />
+              Developing
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: "#b85050" }} />
+              Concerning
             </span>
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wider text-white/50">Indicator Size = Detection Frequency</span>
+          <span className="text-[10px] uppercase tracking-wider text-gray-400">Indicator Size = Detection Frequency</span>
           <div className="flex items-center gap-3 text-[10px]">
             <span className="flex items-center gap-1">
-              <span className="inline-block h-1 w-1 rounded-full bg-white/25" />
+              <span className="inline-block h-1 w-1 rounded-full bg-gray-300" />
               Never
             </span>
             <span className="flex items-center gap-1">
-              <span className="inline-block h-2 w-2 rounded-full bg-white/50" />
+              <span className="inline-block h-2 w-2 rounded-full bg-gray-400" />
               Some
             </span>
             <span className="flex items-center gap-1">
-              <span className="inline-block h-3 w-3 rounded-full bg-white/80" />
+              <span className="inline-block h-3 w-3 rounded-full bg-gray-600" />
               Frequent
             </span>
-            <span className="ml-2 text-white/40">
+            <span className="ml-2 text-gray-400">
               {stats.detected}/{stats.indicators} detected | {stats.detections} total
             </span>
           </div>
@@ -431,10 +429,10 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
 
   if (loading) {
     return (
-      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-white/10`} style={{ backgroundColor: "#152438" }} data-testid="graph-loading">
+      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-gray-200`} style={{ backgroundColor: "#f2f0ec" }} data-testid="graph-loading">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-action border-t-transparent" />
-          <p className="mt-3 text-sm text-white/50">Loading Phronesis Graph...</p>
+          <p className="mt-3 text-sm text-gray-400">Loading Phronesis Graph...</p>
         </div>
       </div>
     );
@@ -442,7 +440,7 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
 
   if (error) {
     return (
-      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-white/10`} style={{ backgroundColor: "#152438" }} data-testid="graph-error">
+      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-gray-200`} style={{ backgroundColor: "#f2f0ec" }} data-testid="graph-error">
         <div className="text-center">
           <p className="text-sm text-misaligned">{error}</p>
           <button type="button" onClick={handleRetry} className="mt-3 rounded-lg bg-action px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-action-hover" data-testid="graph-retry">
@@ -455,9 +453,9 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
 
   if (!graphData || graphData.nodes.length === 0) {
     return (
-      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-white/10`} style={{ backgroundColor: "#152438" }} data-testid="graph-empty">
+      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-gray-200`} style={{ backgroundColor: "#f2f0ec" }} data-testid="graph-empty">
         <div className="text-center">
-          <p className="text-sm text-white/50">No graph data yet. Seed evaluations first.</p>
+          <p className="text-sm text-gray-400">No graph data yet. Seed evaluations first.</p>
         </div>
       </div>
     );
@@ -474,7 +472,7 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
   const totalDetections = indicatorNodes.reduce((sum, n) => sum + ((n.properties.detectionCount as number) ?? 0), 0);
 
   return (
-    <div className={`relative ${heightClass} rounded-xl border border-white/10`} style={{ backgroundColor: "#152438" }} data-testid="phronesis-graph">
+    <div className={`relative ${heightClass} rounded-xl border border-gray-200`} style={{ backgroundColor: "#f2f0ec" }} data-testid="phronesis-graph">
       <NvlRenderer nodes={nvlNodes} rels={nvlRels} onNodeClick={handleNodeClick} />
       <div className="absolute top-3 right-3">
         <GraphHelpButton slug="guide-phronesis-graph" />

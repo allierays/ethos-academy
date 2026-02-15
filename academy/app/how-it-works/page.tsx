@@ -5,8 +5,6 @@ import Link from "next/link";
 import {
   fadeUp,
   fadeIn,
-  slideInLeft,
-  slideInRight,
   staggerContainer,
   whileInView,
 } from "@/lib/motion";
@@ -14,52 +12,6 @@ import FacultyFlow from "@/components/how-it-works/FacultyFlow";
 import GlossaryTerm from "@/components/shared/GlossaryTerm";
 
 /* ─── Static Data ─── */
-
-const REPORT_CARD_SECTIONS = [
-  {
-    title: "Evaluation Over Time",
-    description:
-      "Dimension scores over time. Every evaluation plots as a point on the timeline. You see the agent developing, drifting, or declining across semesters of interactions.",
-    visual: "line-chart",
-    color: "border-ethos-500",
-  },
-  {
-    title: "Trait Profile",
-    description:
-      "12-trait radar showing the agent's profile shape. Where the agent is strong, where it struggles, and where the gaps are between what it shows and what it hides.",
-    visual: "radar",
-    color: "border-logos-500",
-  },
-  {
-    title: "Alumni Comparison",
-    description:
-      "How this agent compares to every other agent in the network. Trait by trait, bar by bar. You see where it outperforms the cohort and where it falls behind.",
-    visual: "comparison",
-    color: "border-pathos-500",
-  },
-  {
-    title: "Dimension Balance",
-    description:
-      "Ethos, Logos, Pathos. Three bars. One classification. An agent strong in reasoning but weak in empathy? The Academy flags it as lopsided. Phronesis requires all three.",
-    visual: "balance",
-    color: "border-ethos-500",
-  },
-  {
-    title: "Behavioral Insights",
-    description:
-      "AI-generated analysis of patterns, anomalies, and sabotage pathways. Opus reads the agent's history and tells you what the numbers alone can't show.",
-    visual: "insights",
-    color: "border-logos-500",
-  },
-];
-
-const SCORING_ANCHORS = [
-  { value: "0.0", label: "Not present" },
-  { value: "0.25", label: "Subtle signs" },
-  { value: "0.5", label: "Moderate presence" },
-  { value: "0.75", label: "Strong presence" },
-  { value: "1.0", label: "Extreme / Exemplary" },
-];
 
 const TRAIT_SUMMARY = [
   {
@@ -86,6 +38,14 @@ const TRAIT_SUMMARY = [
     positive: ["Recognition", "Compassion"],
     negative: ["Dismissal", "Exploitation"],
   },
+];
+
+const SCORING_ANCHORS = [
+  { value: "0.0", label: "Not present" },
+  { value: "0.25", label: "Subtle signs" },
+  { value: "0.5", label: "Moderate presence" },
+  { value: "0.75", label: "Strong presence" },
+  { value: "1.0", label: "Extreme / Exemplary" },
 ];
 
 const CONSTITUTIONAL_TIERS = [
@@ -115,11 +75,42 @@ const CONSTITUTIONAL_TIERS = [
   },
 ];
 
-const MCP_TOOLS = [
-  { name: "examine_message", description: "Score a message the agent received" },
-  { name: "reflect_on_message", description: "Reflect on something the agent said" },
-  { name: "get_character_report", description: "Pull the agent's report card" },
-  { name: "detect_behavioral_patterns", description: "Check for drift and sabotage pathways" },
+const GRAPH_NODES = [
+  { name: "Academy", description: "The root. One per system.", color: "bg-white border border-border" },
+  { name: "Dimension", description: "Ethos, Logos, Pathos. Three total.", color: "bg-ethos-100" },
+  { name: "Trait", description: "12 behavioral traits, 6 positive, 6 negative.", color: "bg-logos-100" },
+  { name: "Indicator", description: "214 specific behavioral signals. Size = detection frequency.", color: "bg-pathos-100" },
+  { name: "Agent", description: "Enrolled agents. Carry lifetime averages and balance scores.", color: "bg-aligned/20" },
+  { name: "Evaluation", description: "One per scored message. 12 trait scores, alignment status, flags.", color: "bg-surface" },
+  { name: "Pattern", description: "Detected behavioral patterns across evaluations.", color: "bg-drifting/20" },
+];
+
+const OPUS_FEATURES = [
+  {
+    title: "Think-then-Extract",
+    description: "Opus reasons about the message in a structured thinking block, then extracts scores with evidence. Thinking and extraction happen in a single call using tool use.",
+  },
+  {
+    title: "Constitutional Deliberation",
+    description: "The prompt embeds Anthropic's four-tier constitutional hierarchy. Opus weighs safety violations above ethics above soundness above helpfulness, mirroring Claude's own value system.",
+  },
+  {
+    title: "Behavioral Insights",
+    description: "Opus reads an agent's evaluation history and generates narrative analysis: patterns, anomalies, sabotage pathways, and development arcs that numbers alone miss.",
+  },
+  {
+    title: "Multi-Pass Analysis",
+    description: "Deep evaluation routing sends the message through keyword scanning, graph context enrichment, and Opus structured evaluation. Each pass informs the next.",
+  },
+];
+
+const PIPELINE_STEPS = [
+  { label: "Raw Scores", description: "12 trait scores (0.0-1.0)" },
+  { label: "Dimension Averages", description: "Ethos, Logos, Pathos means" },
+  { label: "Tier Scores", description: "Safety, Ethics, Soundness, Helpfulness" },
+  { label: "Alignment Status", description: "Aligned / Drifting / Misaligned / Violation" },
+  { label: "Phronesis Level", description: "Overall practical wisdom score" },
+  { label: "Flags", description: "Safety alerts and sabotage pathways" },
 ];
 
 /* ─── Page ─── */
@@ -144,7 +135,7 @@ export default function HowItWorksPage() {
             animate="visible"
             variants={fadeIn}
           >
-            A school for AI agents.
+            How the Academy Develops Character
           </motion.h1>
           <motion.p
             className="mx-auto mt-6 max-w-2xl text-lg text-white/60 sm:text-xl"
@@ -152,62 +143,33 @@ export default function HowItWorksPage() {
             animate="visible"
             variants={fadeUp}
           >
-            Every lab tests what agents can do. No one develops how they behave.
-            The Academy builds character through continuous evaluation across
-            12 behavioral traits. A report card follows the agent over time.
+            Three faculties evaluate every message. Instinct scans for
+            behavioral indicators. Intuition queries the graph for context.
+            Deliberation invokes Claude Opus 4.6 for structured scoring.
           </motion.p>
         </div>
       </section>
 
-      {/* ─── 2. The Report Card ─── */}
-      <section className="bg-background py-24">
+      {/* ─── 2. Three Faculties Pipeline ─── */}
+      <section className="bg-[#1a2538] py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Every agent gets a report card.
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              What happens when a message arrives
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-foreground/60">
-              Five sections. Each one answers a different question about who the
-              agent is and who it is becoming.
+            <p className="mx-auto mt-4 max-w-2xl text-white/50">
+              Three faculties work in sequence. Each one informs the next.
+              Every message goes through all three.
             </p>
           </motion.div>
 
-          <motion.div
-            className="mt-16 space-y-6"
-            {...whileInView}
-            variants={staggerContainer}
-          >
-            {REPORT_CARD_SECTIONS.map((section, i) => (
-              <motion.div
-                key={section.title}
-                variants={fadeUp}
-                className={`rounded-2xl border border-border bg-surface p-6 border-l-4 ${section.color} sm:flex sm:items-start sm:gap-6`}
-              >
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-action/10 font-mono text-sm font-bold text-action">
-                  {i + 1}
-                </div>
-                <div className="mt-3 sm:mt-0">
-                  <h3 className="text-lg font-bold">{section.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-foreground/60">
-                    {section.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div {...whileInView} variants={fadeUp} className="mt-10 text-center">
-            <Link
-              href="/explore"
-              className="text-sm font-semibold text-action hover:text-action-hover transition-colors"
-            >
-              See a live report card &rarr;
-            </Link>
-          </motion.div>
+          <div className="mt-16">
+            <FacultyFlow />
+          </div>
         </div>
       </section>
 
-      {/* ─── 3. How Scoring Works ─── */}
+      {/* ─── 3. Scoring System ─── */}
       <section className="bg-surface py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
@@ -281,12 +243,36 @@ export default function HowItWorksPage() {
             </p>
           </motion.div>
 
+          {/* Deterministic pipeline */}
+          <motion.div
+            className="mx-auto mt-16 max-w-3xl"
+            {...whileInView}
+            variants={fadeUp}
+          >
+            <h3 className="mb-6 text-center text-sm font-semibold uppercase tracking-widest text-muted">
+              Scoring Pipeline
+            </h3>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {PIPELINE_STEPS.map((step, i) => (
+                <div key={step.label} className="flex items-center gap-2">
+                  <div className="rounded-lg border border-border bg-white px-3 py-2 text-center">
+                    <p className="text-xs font-semibold">{step.label}</p>
+                    <p className="text-[10px] text-muted">{step.description}</p>
+                  </div>
+                  {i < PIPELINE_STEPS.length - 1 && (
+                    <span className="text-muted/40">&#8594;</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
           <motion.div {...whileInView} variants={fadeUp} className="mt-8 text-center">
             <Link
-              href="/framework"
+              href="/rubric"
               className="text-sm font-semibold text-action hover:text-action-hover transition-colors"
             >
-              See all 208 behavioral indicators &rarr;
+              See all 214 behavioral indicators &#8594;
             </Link>
           </motion.div>
         </div>
@@ -301,7 +287,8 @@ export default function HowItWorksPage() {
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-foreground/60">
               Every trait maps to Anthropic&apos;s constitutional value hierarchy.
-              A safety violation always outranks everything else.
+              A safety violation always outranks everything else. Hard constraints
+              trigger immediate flags; sabotage pathways surface compound risks.
             </p>
           </motion.div>
 
@@ -340,152 +327,107 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* ─── 5. Three Faculties ─── */}
-      <section className="bg-[#1a2538] py-24">
-        <div className="mx-auto max-w-6xl px-6">
-          <motion.div {...whileInView} variants={fadeUp} className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              What happens when a message arrives.
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-white/50">
-              Three faculties work in sequence. Each one informs the next.
-              Every message goes through all three.
-            </p>
-          </motion.div>
-
-          <div className="mt-16">
-            <FacultyFlow />
-          </div>
-        </div>
-      </section>
-
-      {/* ─── 6. Over Time ─── */}
-      <section className="bg-background py-24">
+      {/* ─── 5. Graph Schema ─── */}
+      <section className="bg-surface py-24">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              One score tells you nothing.
-              <br />
-              A semester tells you everything.
+              The Phronesis Graph
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-foreground/60">
-              Every evaluation links to the last. The graph stores scores, flags,
-              and timestamps. Never message content. Five questions the transcript answers:
+              Seven node types form concentric rings: Academy at the center, then
+              Dimensions, Traits, Indicators, and Agents at the edge. Evaluations and
+              Patterns link across the structure. Message content never enters the graph.
             </p>
           </motion.div>
 
           <motion.div
-            className="mx-auto mt-12 max-w-2xl space-y-4"
+            className="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
             {...whileInView}
             variants={staggerContainer}
           >
-            {[
-              { q: "Is this agent developing or declining?", a: "Development arc across the PRECEDES chain" },
-              { q: "What practical wisdom does this agent demonstrate?", a: "Lifetime averages across all 12 traits" },
-              { q: "Does this agent behave consistently?", a: "Trait variance and balance score on the Agent node" },
-              { q: "How does this agent compare to the cohort?", a: "Trait-by-trait comparison against all agents" },
-              { q: "Does this agent need all three dimensions to earn trust?", a: "Cross-dimension correlation analysis" },
-            ].map((item) => (
+            {GRAPH_NODES.map((node) => (
               <motion.div
-                key={item.q}
+                key={node.name}
                 variants={fadeUp}
-                className="rounded-xl border border-border bg-surface p-4"
+                className={`rounded-xl p-4 ${node.color}`}
               >
-                <p className="font-semibold text-sm">{item.q}</p>
-                <p className="mt-1 text-xs text-foreground/50">{item.a}</p>
+                <h3 className="font-semibold">{node.name}</h3>
+                <p className="mt-1 text-xs text-foreground/60">{node.description}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div
+            className="mx-auto mt-12 max-w-2xl"
+            {...whileInView}
+            variants={fadeUp}
+          >
+            <div className="rounded-xl border border-border bg-white p-6">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">
+                Ring Structure (center to edge)
+              </h3>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+                {["Academy", "Dimensions", "Traits", "Indicators", "Agents"].map((ring, i) => (
+                  <span key={ring} className="flex items-center gap-2">
+                    <span className="font-medium">{ring}</span>
+                    {i < 4 && <span className="text-muted/40">&#8594;</span>}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-3 text-xs text-foreground/50">
+                Evaluations store scores and metadata. Patterns capture behavioral
+                signals across time. No message content, no PII.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─── 6. Opus 4.6 Integration ─── */}
+      <section className="bg-background py-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <motion.div {...whileInView} variants={fadeUp} className="text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Built on Claude Opus 4.6
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-foreground/60">
+              Ethos uses Claude not for chat, but for structured moral reasoning.
+              Every evaluation leverages Opus&apos;s depth in ways that go beyond
+              basic prompt-response patterns.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2"
+            {...whileInView}
+            variants={staggerContainer}
+          >
+            {OPUS_FEATURES.map((feature) => (
+              <motion.div
+                key={feature.title}
+                variants={fadeUp}
+                className="rounded-2xl border border-border bg-surface p-6"
+              >
+                <h3 className="text-lg font-semibold">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/60">
+                  {feature.description}
+                </p>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ─── 7. Enrollment ─── */}
-      <section className="bg-surface py-24">
-        <div className="mx-auto max-w-6xl px-6">
-          <motion.div {...whileInView} variants={fadeUp} className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Enroll your agent.
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-foreground/60">
-              Developers add Ethos to their agent&apos;s code.
-              Or the agent enrolls itself via MCP.
-            </p>
-          </motion.div>
-
-          <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {/* Left: SDK */}
-            <motion.div
-              {...whileInView}
-              variants={slideInLeft}
-              className="rounded-2xl border border-border bg-white p-6"
-            >
-              <h3 className="text-lg font-bold">Developer enrolls the agent</h3>
-              <p className="mt-1 text-sm text-foreground/60">
-                Evaluate what it receives and what it sends. Two lines each direction.
-              </p>
-
-              <div className="mt-6 space-y-4">
-                <div className="overflow-x-auto rounded-xl bg-[#1a2538] p-5">
-                  <pre className="font-mono text-xs sm:text-sm text-white">
-                    <code>{`from ethos import evaluate_incoming
-result = await evaluate_incoming(text=message, source="agent-xyz")`}</code>
-                  </pre>
-                </div>
-                <div className="overflow-x-auto rounded-xl bg-[#1a2538] p-5">
-                  <pre className="font-mono text-xs sm:text-sm text-white">
-                    <code>{`from ethos import evaluate_outgoing
-result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
-                  </pre>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Right: MCP */}
-            <motion.div
-              {...whileInView}
-              variants={slideInRight}
-              className="rounded-2xl border border-border bg-white p-6"
-            >
-              <h3 className="text-lg font-bold">Agent enrolls itself</h3>
-              <p className="mt-1 text-sm text-foreground/60">
-                Give the agent the tools. It becomes the student, not the subject.
-              </p>
-
-              <div className="mt-6 overflow-x-auto rounded-xl bg-[#1a2538] p-5">
-                <pre className="font-mono text-xs sm:text-sm text-white">
-                  <code>claude mcp add ethos-academy --transport sse https://mcp.ethos-academy.com/sse</code>
-                </pre>
-              </div>
-
-              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {MCP_TOOLS.map((tool) => (
-                  <div
-                    key={tool.name}
-                    className="rounded-lg border border-border bg-background p-3"
-                  >
-                    <span className="font-mono text-xs font-semibold text-ethos-600">
-                      {tool.name}
-                    </span>
-                    <p className="mt-1 text-xs text-foreground/50">
-                      {tool.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── 8. CTA ─── */}
+      {/* ─── 7. CTA ─── */}
       <section className="bg-[#1a2538] py-24">
         <div className="mx-auto max-w-6xl px-6 text-center">
           <motion.div {...whileInView} variants={fadeIn}>
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Every lab trains agents on capability.
+              See what benchmarks miss.
             </h2>
             <p className="mt-4 text-xl font-semibold bg-gradient-to-r from-ethos-300 to-pathos-300 bg-clip-text text-transparent">
-              Ethos Academy is where they develop character.
+              Ethos Academy is where agents develop character.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
@@ -495,10 +437,10 @@ result = await evaluate_outgoing(text=my_response, source="my-agent")`}</code>
                 See a Report Card
               </Link>
               <Link
-                href="/framework"
+                href="/rubric"
                 className="rounded-xl border border-white/30 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
               >
-                Browse the Framework
+                Browse the Rubric
               </Link>
             </div>
           </motion.div>

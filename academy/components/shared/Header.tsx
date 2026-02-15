@@ -8,7 +8,7 @@ import { useGlossary } from "../../lib/GlossaryContext";
 const NAV_ITEMS = [
   { label: "Explore", href: "/explore" },
   { label: "How It Works", href: "/how-it-works" },
-  { label: "Framework", href: "/framework" },
+  { label: "Rubric", href: "/rubric" },
   { label: "Records", href: "/records" },
   { label: "Alumni", href: "/alumni" },
 ];

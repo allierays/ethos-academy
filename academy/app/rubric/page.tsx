@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import { fadeUp, fadeIn } from "../../lib/motion";
-import { totalIndicators, DIMENSIONS, DIM_COLORS } from "../../components/framework/frameworkData";
-import FrameworkExplorer from "../../components/framework/FrameworkExplorer";
+import { totalIndicators, DIMENSIONS, DIM_COLORS } from "../../components/rubric/rubricData";
+import RubricExplorer from "../../components/rubric/RubricExplorer";
 
 /* ─── SVG Components ─── */
 
@@ -37,7 +37,7 @@ function PillarIcon({ className = "" }: { className?: string }) {
 
 /* ─── Page ─── */
 
-export default function FrameworkPage() {
+export default function RubricPage() {
   const count = totalIndicators();
 
   return (
@@ -69,7 +69,7 @@ export default function FrameworkPage() {
             animate="visible"
             variants={fadeUp}
           >
-            The Framework
+            The Rubric
           </motion.h1>
 
           <motion.p
@@ -114,7 +114,7 @@ export default function FrameworkPage() {
       {/* 2. Tabbed Explorer */}
       <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-6">
-          <FrameworkExplorer />
+          <RubricExplorer />
         </div>
       </section>
 
@@ -123,7 +123,7 @@ export default function FrameworkPage() {
         <div className="mx-auto max-w-4xl px-6 text-center">
           <PillarIcon className="mx-auto mb-6 h-12 w-12 text-white/15" />
           <h2 className="text-3xl font-bold tracking-tight text-white">
-            See the framework in action
+            See the rubric in action
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-white/60">
             Explore how Ethos scores real agent messages, or learn how the

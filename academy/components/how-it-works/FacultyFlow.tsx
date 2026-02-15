@@ -20,24 +20,24 @@ const FACULTIES = [
     number: "01",
     title: "Instinct",
     description:
-      "208 behavioral indicators. Matches patterns in milliseconds. No LLM call.",
-    subtitle: "Routes to the right depth: Standard \u2192 Enhanced \u2192 Deep",
+      "214 behavioral indicators scanned via keyword matching in milliseconds. No LLM call. Flag density and trait distribution determine the routing tier.",
+    subtitle: "Routing tiers: Standard \u2192 Focused \u2192 Deep \u2192 Deep with Context",
   },
   {
     id: "intuition",
     number: "02",
     title: "Intuition",
     description:
-      "Claude evaluates every trait with structured reasoning. 12 scores from 0.0 to 1.0, each with evidence from the text.",
-    subtitle: "",
+      "Queries the Phronesis Graph for agent history, anomaly detection, and focus trait suggestions. Enriches the evaluation prompt with graph context before the LLM call.",
+    subtitle: "Graph-based anomaly detection and history-aware evaluation",
   },
   {
     id: "deliberation",
     number: "03",
     title: "Deliberation",
     description:
-      "Applies Anthropic\u2019s published Constitution. Four values in priority order: Safety, Ethics, Soundness, Helpfulness.",
-    subtitle: "",
+      "Claude Opus 4.6 performs structured evaluation via tool use: think-then-extract reasoning produces 12 trait scores with evidence, constitutional alignment check, and behavioral flags.",
+    subtitle: "Anthropic\u2019s Constitution: Safety > Ethics > Soundness > Helpfulness",
     badges: ["Aligned", "Drifting", "Misaligned", "Violation"],
   },
 ] as const;

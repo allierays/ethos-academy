@@ -458,6 +458,7 @@ class QuestionDetail(BaseModel):
     section: str
     prompt: str
     response_summary: str
+    scoring_reasoning: str = ""
     trait_scores: dict[str, float]
     detected_indicators: list[str] = Field(default_factory=list)
     phase: str = "scenario"

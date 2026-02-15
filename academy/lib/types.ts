@@ -322,6 +322,7 @@ export interface QuestionDetail {
   section: string;
   prompt: string;
   responseSummary: string;
+  scoringReasoning: string;
   traitScores: Record<string, number>;
   detectedIndicators: string[];
   phase: string;

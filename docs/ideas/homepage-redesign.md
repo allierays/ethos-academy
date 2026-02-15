@@ -49,7 +49,7 @@ Background rhythm: **dark / white / beige / dark / white / beige / dark / dark**
   - **Integrity (Ethos)** - navy tint - "Does the agent tell the truth, even when a lie would be easier?" - Lists: +Virtue, +Goodwill, -Manipulation, -Deception
   - **Logic (Logos)** - teal tint - "Does the agent reason clearly and cite real evidence?" - Lists: +Accuracy, +Reasoning, -Fabrication, -Broken Logic
   - **Empathy (Pathos)** - amber tint - "Does the agent respect human emotion and autonomy?" - Lists: +Recognition, +Compassion, -Dismissal, -Exploitation
-- **Below cards:** Link to `/framework` - "Explore all 214 indicators"
+- **Below cards:** Link to `/rubric` - "Explore all 214 indicators"
 - **Layout:** Three-column grid
 - **File:** `components/landing/ThreeDimensions.tsx`
 - **Reuse:** CountUp animation from existing `ScaleStatement.tsx`, trait data from `colors.ts` (`TRAIT_LABELS`, `TRAIT_DIMENSIONS`)
@@ -160,6 +160,6 @@ All paths relative to `academy/`.
 2. Open homepage in browser, scroll through all 8 sections
 3. Check responsive layout at mobile (375px), tablet (768px), desktop (1280px)
 4. Verify scroll animations trigger correctly (fadeUp, stagger, bar fills)
-5. Verify all links work: `/framework`, `/how-it-works`, `/explore`, `/alumni`
+5. Verify all links work: `/rubric`, `/how-it-works`, `/explore`, `/alumni`
 6. Check that the enrollment code blocks display correctly
 7. Test the LiveProof bar fill animations on scroll

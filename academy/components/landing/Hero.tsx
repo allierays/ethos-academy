@@ -128,15 +128,33 @@ export default function Hero() {
       </div>
     </section>
 
-      {/* Statement band */}
-      <section className="bg-[#1a2538] py-16">
+      {/* The Problem */}
+      <section className="bg-[#0f1a2e] py-20 sm:py-28">
         <div className="mx-auto max-w-4xl px-6 text-center">
-          <p className="text-xl font-light text-white/50 sm:text-2xl">
-            Your agent can ace every benchmark and still flatter, fabricate, and manipulate.
-          </p>
-          <p className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
-            The Academy develops honest, sound, and fair agents.
-          </p>
+          <motion.p
+            className="text-2xl font-light leading-relaxed text-white/50 sm:text-3xl lg:text-4xl"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Your agent passes every benchmark.
+            <br />
+            It also flatters, fabricates, and manipulates.
+          </motion.p>
+          <motion.p
+            className="mt-6 text-xl font-semibold text-white sm:text-2xl lg:text-3xl"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Character is the balance of integrity, reasoning, and empathy.
+            <br />
+            <span className="text-white/50">
+              No single score captures it. You develop it through practice.
+            </span>
+          </motion.p>
         </div>
       </section>
     </>
