@@ -361,8 +361,13 @@ async def reset_agent_evaluations(agent_id: str) -> int:
 
     Returns the number of evaluations deleted.
     """
-    async with GraphService() as gs:
-        result = await gs.run(
+    from ethos.graph.service import graph_context
+
+    async with graph_context() as service:
+        if not service.connected:
+            return 0
+
+        result = await service.run(
             """
             MATCH (a:Agent {agent_id: $agent_id})-[r:EVALUATED]->(e:Evaluation)
             OPTIONAL MATCH (e)-[r2]-()
@@ -377,7 +382,7 @@ async def reset_agent_evaluations(agent_id: str) -> int:
         deleted = record["deleted"] if record else 0
 
         # Clean up orphaned Pattern nodes
-        await gs.run("MATCH (p:Pattern) WHERE NOT (p)--() DELETE p")
+        await service.run("MATCH (p:Pattern) WHERE NOT (p)--() DELETE p")
 
         logger.info("Reset %d evaluations for agent %s", deleted, agent_id)
         return deleted
