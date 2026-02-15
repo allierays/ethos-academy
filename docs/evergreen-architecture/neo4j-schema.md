@@ -1106,4 +1106,4 @@ ORDER BY member_count DESC
 | ASSESSED_BY relationships | ~55 | ~55+ |
 | DETECTED relationships | 5,000-50,000 | 50,000,000+ |
 
-Neo4j Aura Free tier: 200K nodes, 400K relationships. Sufficient through early growth. Professional tier for scale.
+Self-hosted Neo4j 5 via Docker. Production deployment on AWS EC2 (ARM64) with Caddy reverse proxy.

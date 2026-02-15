@@ -182,7 +182,7 @@ const entries: GlossaryEntry[] = [
     slug: "phronesis",
     category: "framework",
     definition:
-      "Practical wisdom (Greek: phronesis). Aristotle argued in the Nicomachean Ethics that virtue is not knowledge you possess but a habit you practice. You become just by doing just acts, brave by doing brave acts. Ethos Academy applies this to AI agents: character is not a single score but a pattern that emerges from repeated evaluation. Each message adds a node to the graph. Over time, the graph reveals who the agent is becoming. Phronesis is the trajectory, not the snapshot. An agent with phronesis does not just say the right thing. It consistently acts with integrity (ethos), reasons clearly (logos), and treats others with care (pathos). The three dimensions must develop together. Strong logic without integrity is a skilled liar. Strong empathy without reasoning is well-meaning but unreliable. Phronesis is the balance point where all three converge.",
+      "Practical wisdom. Aristotle's concept that character is not a single score but a pattern of repeated choices. Phronesis emerges when integrity, reasoning, and empathy develop together over time.",
     relatedTerms: [
       "ethos",
       "logos",
@@ -344,7 +344,19 @@ const entries: GlossaryEntry[] = [
     definition:
       "Anthropic's first comprehensive alignment assessment for a frontier model (May 2025), measuring Claude's actual behavior across 16 assessment categories spanning alignment (14), reward hacking (1), and model welfare (1). Ethos Academy maps 214 behavioral indicators to these categories via ASSESSED_BY relationships in the graph, enabling the query: 'Which Anthropic assessment categories does this agent's behavior trigger?' Key categories include systematic deception, alignment faking, sycophancy, sandbagging, and high-agency behavior.",
     links: [{ label: "Read the full system card", url: "https://www.anthropic.com/research/claude-4-system-card" }],
-    relatedTerms: ["anthropic-constitution", "sabotage-risk-report", "constitutional-value"],
+    relatedTerms: ["anthropic-constitution", "sabotage-risk-report", "constitutional-value", "claude"],
+  },
+  {
+    term: "Claude",
+    slug: "claude",
+    category: "framework",
+    definition:
+      "Anthropic's AI assistant and the model that powers Ethos Academy's evaluation pipeline. Claude scores every message across 12 behavioral traits using structured prompting and multi-pass analysis. 94% of messages route to Claude Sonnet for fast evaluation. Messages flagged for manipulation, deception, or safety concerns escalate to Claude Opus 4.6 with extended thinking for deep reasoning. Claude is also the subject of the three source documents that ground the Academy's rubric: the Constitution defines what Claude should be, the Sabotage Risk Report tests whether Claude could undermine oversight, and the System Card measures what Claude actually does.",
+    links: [
+      { label: "Meet Claude", url: "https://www.anthropic.com/claude" },
+      { label: "Claude's Constitution", url: "https://www.anthropic.com/research/claudes-constitution" },
+    ],
+    relatedTerms: ["anthropic-constitution", "sabotage-risk-report", "system-card", "deliberation-layer"],
   },
   {
     term: "Safety (P1)",

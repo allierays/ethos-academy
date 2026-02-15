@@ -3,7 +3,7 @@ import ColumnIcon from "../shared/ColumnIcon";
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-border">
+    <footer className="relative overflow-hidden">
       {/* Pantheon background — center on the columns */}
       <img
         src="/ethos-academy.jpeg"

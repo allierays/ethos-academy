@@ -509,10 +509,12 @@ function TermDetail({
       >
         <AccentBar color={accentColor} />
 
-        {/* Diagram */}
-        <motion.div variants={staggerChild}>
-          <ConstellationDiagram entry={entry} onSelect={onSelect} />
-        </motion.div>
+        {/* Diagram (skip for phronesis, which uses its own convergence diagram) */}
+        {entry.slug !== "phronesis" && (
+          <motion.div variants={staggerChild}>
+            <ConstellationDiagram entry={entry} onSelect={onSelect} />
+          </motion.div>
+        )}
 
         {/* Title */}
         <motion.div variants={staggerChild} className="flex items-center gap-2">

@@ -30,7 +30,7 @@ Ethos implements all three. This is not a metaphor. The system literally has thr
 | **Episodic Memory** | Specific past events, personal history | Agent evaluation history, interaction records, temporal patterns | Neo4j graph (persistent) |
 | **Semantic Memory** | General knowledge, concepts, categories | 214 indicators, 12 traits, 7 combination patterns, scoring rubrics | Neo4j graph + prompt templates (persistent) |
 
-> **Implementation note:** All code examples in this document use `async/await` for conceptual clarity. The actual Ethos codebase is **fully synchronous** (sync Neo4j driver, sync Anthropic client, sync route handlers). See `CLAUDE.md` for the canonical rule: "All code is SYNC."
+> **Implementation note:** All I/O code in the Ethos codebase is **fully asynchronous** (async Neo4j driver via `AsyncGraphDatabase`, async Anthropic client via `AsyncAnthropic`, async FastAPI route handlers). Pure computation functions (scoring, parsing, taxonomy lookups) remain synchronous. See `CLAUDE.md` for the canonical rule: "All I/O code is ASYNC."
 
 ---
 

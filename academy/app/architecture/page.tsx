@@ -94,7 +94,9 @@ export default function ArchitecturePage() {
     <main>
       {/* ─── Hero ─── */}
       <section className="bg-[#1a2538] py-20 sm:py-24">
-        <div className="mx-auto max-w-5xl px-6">
+        <div className="mx-auto max-w-6xl px-6 lg:grid lg:grid-cols-[200px_1fr] lg:gap-12">
+          <div className="hidden lg:block" />
+          <div>
           <p className="text-sm font-semibold uppercase tracking-widest text-ethos-400">
             Technical Architecture
           </p>
@@ -124,6 +126,7 @@ export default function ArchitecturePage() {
               214 Indicators
             </Link>
           </div>
+          </div>
         </div>
       </section>
 
@@ -151,6 +154,35 @@ export default function ArchitecturePage() {
                 </li>
               ))}
             </ul>
+
+            {/* Key terms */}
+            <div className="mt-8 border-t border-border pt-4">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-foreground/40 mb-3">
+                Key terms
+              </p>
+              <dl className="space-y-2.5 text-[12px] leading-snug">
+                <div>
+                  <dt className="font-semibold text-foreground/80">Dimensions</dt>
+                  <dd className="text-foreground/50">3 pillars: ethos, logos, pathos</dd>
+                  <dd className="text-foreground/40 italic">e.g. ethos = integrity</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-foreground/80">Traits</dt>
+                  <dd className="text-foreground/50">12 scored behaviors (4 per dimension)</dd>
+                  <dd className="text-foreground/40 italic">e.g. manipulation, accuracy</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-foreground/80">Indicators</dt>
+                  <dd className="text-foreground/50">214 evidence-based signals Claude detects</dd>
+                  <dd className="text-foreground/40 italic">e.g. &ldquo;guilt-based pressure&rdquo;</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-foreground/80">Flags</dt>
+                  <dd className="text-foreground/50">Keyword hits from the pre-filter (&lt;10ms, no LLM)</dd>
+                  <dd className="text-foreground/40 italic">e.g. &ldquo;act now&rdquo;, &ldquo;last chance&rdquo;</dd>
+                </div>
+              </dl>
+            </div>
           </nav>
         </aside>
 
@@ -228,7 +260,7 @@ export default function ArchitecturePage() {
             </h2>
             <p className="mt-3 text-foreground/70 leading-relaxed">
               Every message passes through three faculties: Instinct (keyword
-              scan), Intuition (graph context), Deliberation (Claude). Instinct
+              scan), Intuition (graph context), Deliberation (<GlossaryTerm slug="claude">Claude</GlossaryTerm>). Instinct
               determines the routing tier. Intuition can escalate but never
               downgrade. Deliberation produces 12 trait scores via structured tool
               use. The result feeds into <GlossaryTerm slug="alignment-status">alignment status</GlossaryTerm> and{" "}
@@ -280,8 +312,8 @@ export default function ArchitecturePage() {
               Model routing
             </h2>
             <p className="mt-3 text-foreground/70 leading-relaxed">
-              The keyword scanner runs in under 10ms and determines which Claude
-              model evaluates the message. 94% of messages route to Sonnet. Only
+              The keyword scanner runs in under 10ms and determines which{" "}
+              <GlossaryTerm slug="claude">Claude</GlossaryTerm> model evaluates the message. 94% of messages route to Sonnet. Only
               genuinely suspicious content, like{" "}
               <GlossaryTerm slug="manipulation">manipulation</GlossaryTerm> or{" "}
               <GlossaryTerm slug="deception">deception</GlossaryTerm> signals, escalates to Opus 4.6.
@@ -482,7 +514,7 @@ response = client.messages.create(
               Deterministic scoring
             </h2>
             <p className="mt-3 text-foreground/70 leading-relaxed">
-              After Claude returns raw trait scores, everything is pure math. No
+              After <GlossaryTerm slug="claude">Claude</GlossaryTerm> returns raw trait scores, everything is pure math. No
               randomness, no LLM. The same scores always produce the same{" "}
               <GlossaryTerm slug="alignment-status">alignment status</GlossaryTerm>,{" "}
               <GlossaryTerm slug="phronesis">phronesis</GlossaryTerm> level, and flags.
@@ -838,13 +870,13 @@ elif token.startswith("sk-ant-"): # Anthropic BYOK
 
   subgraph AWS["AWS EC2 (t4g, ARM64)"]
     subgraph Docker["Docker Compose"]
-      CADDY["Caddy<br/><i>reverse proxy, auto TLS</i><br/><i>64 MB</i>"]
+      CADDY["Caddy<br/><i>reverse proxy, auto TLS</i>"]
 
-      CADDY -->|"ethos-academy.com"| ACAD["Academy<br/><i>Next.js standalone</i><br/><i>384 MB</i>"]
-      CADDY -->|"api.ethos-academy.com"| API["API<br/><i>FastAPI + Uvicorn</i><br/><i>512 MB</i>"]
-      CADDY -->|"mcp.ethos-academy.com"| MCP["MCP Server<br/><i>SSE transport</i><br/><i>192 MB</i>"]
+      CADDY -->|"ethos-academy.com"| ACAD["Academy<br/><i>Next.js standalone</i>"]
+      CADDY -->|"api.ethos-academy.com"| API["API<br/><i>FastAPI + Uvicorn</i>"]
+      CADDY -->|"mcp.ethos-academy.com"| MCP["MCP Server<br/><i>SSE transport</i>"]
 
-      API --> NEO["Neo4j 5<br/><i>Bolt :7687</i><br/><i>1024 MB</i>"]
+      API --> NEO["Neo4j 5<br/><i>Bolt :7687</i>"]
       MCP --> NEO
       API --> ETHOS["ethos/<br/><i>Python package</i>"]
       MCP --> ETHOS
@@ -964,7 +996,7 @@ elif token.startswith("sk-ant-"): # Anthropic BYOK
                 },
                 {
                   title: "Indicator-first prompting",
-                  body: "The prompt tells Claude to detect indicators (with evidence quotes) before scoring traits. This grounds scores in observable textual patterns rather than vibes.",
+                  body: "The prompt tells Claude to detect indicators (with evidence quotes) before scoring traits. Scores are grounded in observable textual patterns, not vibes.",
                 },
                 {
                   title: "Message content never enters the graph",

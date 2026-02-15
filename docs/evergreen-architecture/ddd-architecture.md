@@ -9,7 +9,7 @@
 Ethos has six bounded contexts. Each domain has a clear responsibility, owns its data, and communicates with other domains through well-defined interfaces.
 
 ```
-ethos/                   # Python package (pip install ethos)
+ethos/                   # Python package (the engine)
 ├── context.py       # Request-scoped ContextVar (BYOK key threading)
 ├── evaluation/      # Core scoring — the heart of the product
 ├── reflection/      # Self-examination and insights
@@ -18,7 +18,7 @@ ethos/                   # Python package (pip install ethos)
 ├── identity/        # Agent identity and hashing
 ├── config/          # Developer configuration and priorities
 ├── shared/          # Cross-cutting models and utilities
-└── mcp_server.py    # MCP server — 18 tools over stdio
+└── mcp_server.py    # MCP server — 24 tools over stdio
 api/                     # FastAPI server (at repo root, NOT inside ethos/)
 academy/                 # Next.js character visualization UI
 ```
@@ -150,7 +150,7 @@ class GraphService:
 
 - Graph is optional. Every domain that calls Graph wraps calls in try/except. Neo4j being down never crashes evaluate().
 - Graph owns the Cypher. No Cypher queries exist outside this domain.
-- Graph exposes sync methods only. All code is sync — no async/await anywhere.
+- All I/O code is async (AsyncGraphDatabase, AsyncAnthropic, async FastAPI handlers). Pure computation stays sync.
 - Message content never enters the graph. Only scores, hashes, and metadata.
 
 ### The Schema
@@ -501,7 +501,7 @@ Top-level files in `ethos/`: `evaluate.py`, `reflect.py`, `models.py`, `prompts.
 
 ```
 ~/Sites/ethos/
-├── ethos/              # Python package — pip install ethos
+├── ethos/              # Python package — the engine
 ├── api/                # FastAPI server — serves ethos/ over HTTP
 ├── academy/            # Next.js — trust visualization UI
 ├── docs/               # Architecture, research

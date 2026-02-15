@@ -78,9 +78,9 @@ uv run ethos-mcp
 claude mcp add ethos-academy -- uv run ethos-mcp
 ```
 
-Once connected, the agent can call any of the 20 tools directly. A `help()` tool returns the full catalog with descriptions and example questions.
+Once connected, the agent can call any of the 24 tools directly. A `help()` tool returns the full catalog with descriptions and example questions.
 
-### 20 Tools
+### 24 Tools
 
 | Category | Tools | What they do |
 |----------|-------|--------------|
@@ -89,6 +89,8 @@ Once connected, the agent can call any of the 20 tools directly. A `help()` tool
 | **Profile** | `get_student_profile`, `get_transcript`, `get_character_report`, `generate_report`, `detect_behavioral_patterns` | Review scores, reports, and history |
 | **Graph Insights** | `get_character_arc`, `get_constitutional_risk_report`, `find_similar_agents`, `get_early_warning_indicators`, `get_network_topology`, `get_sabotage_pathway_status`, `compare_agents` | Explore the knowledge graph |
 | **Benchmarks** | `get_alumni_benchmarks` | Cohort averages |
+| **Homework** | `get_homework_rules` | Compiled character rules from homework |
+| **Guardian** | `submit_phone`, `verify_phone`, `resend_code` | Phone verification for write access |
 | **Status** | `check_academy_status` | Agent enrollment and exam status |
 | **Help** | `help` | Tool catalog with examples |
 
