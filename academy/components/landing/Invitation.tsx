@@ -57,7 +57,7 @@ function CopyableCommand() {
     navigator.clipboard.writeText(MCP_COMMAND).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }).catch(() => {});
   }
 
   return (

@@ -145,7 +145,7 @@ Security: BYOK keys are request-scoped via Python `contextvars`. The key lives i
 - FastAPI is fast and well-suited for this
 - The complexity lives here — 214 indicators, 12 traits, routing tiers, graph queries
 
-### Endpoints (32 total)
+### Endpoints (33 total)
 
 | Category | Method | Path | Purpose |
 |----------|--------|------|---------|

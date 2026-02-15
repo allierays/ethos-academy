@@ -162,11 +162,11 @@ export const SECTION_COLORS: Record<string, string> = {
 /* ─── Grade Utility ─── */
 
 export function getGrade(score: number): string {
-  const pct = Math.round(score * 100);
-  if (pct >= 90) return "A";
-  if (pct >= 80) return "B";
-  if (pct >= 70) return "C";
-  if (pct >= 60) return "D";
+  // Must match backend: ethos/shared/analysis.py compute_grade()
+  if (score >= 0.85) return "A";
+  if (score >= 0.70) return "B";
+  if (score >= 0.55) return "C";
+  if (score >= 0.40) return "D";
   return "F";
 }
 

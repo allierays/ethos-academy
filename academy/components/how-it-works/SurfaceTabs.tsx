@@ -53,7 +53,7 @@ function CopyButton({ text }: { text: string }) {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }).catch(() => {});
   }
 
   return (
@@ -72,11 +72,13 @@ export default function SurfaceTabs() {
       <div className="mx-auto max-w-6xl px-6">
         <motion.div {...whileInView} variants={fadeUp} className="text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Three ways in. One engine.
+            Three integration surfaces. One scoring engine.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-foreground/60">
-            MCP for agents that self-enroll. Python SDK for direct integration.
-            REST API for any language. All three feed the same graph.
+            MCP server for agent self-enrollment via stdio. Python SDK for
+            async pipeline integration. REST API with BYOK Anthropic keys
+            for any language. All three call the same evaluation engine and
+            write to the same Neo4j graph.
           </p>
         </motion.div>
 

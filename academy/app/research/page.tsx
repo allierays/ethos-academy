@@ -10,8 +10,6 @@ import {
   whileInView,
 } from "@/lib/motion";
 
-export const dynamic = "force-dynamic";
-
 /* ─── Data ─── */
 
 const LESSONS = [

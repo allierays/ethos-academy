@@ -1,17 +1,26 @@
-import Confrontation from "../components/landing/Confrontation";
-import Thesis from "../components/landing/Thesis";
-import Evidence from "../components/landing/Evidence";
+import type { Metadata } from "next";
+import Hero from "../components/landing/Hero";
+import WhatIsPhronesis from "../components/landing/WhatIsPhronesis";
+import WhyNow from "../components/landing/WhyNow";
+import TheLoop from "../components/landing/TheLoop";
 import LiveGraph from "../components/landing/LiveGraph";
-import Invitation from "../components/landing/Invitation";
+import MarketingCTA from "../components/landing/MarketingCTA";
+
+export const metadata: Metadata = {
+  title: "Ethos Academy — Trust Visualization for AI Agents",
+  description:
+    "Score AI agent messages for honesty, accuracy, and intent across 12 behavioral traits. Build phronesis over time.",
+};
 
 export default function LandingPage() {
   return (
-    <div>
-      <Confrontation />
-      <Thesis />
-      <Evidence />
+    <main>
+      <Hero />
+      <WhatIsPhronesis />
+      <WhyNow />
+      <TheLoop />
       <LiveGraph />
-      <Invitation />
-    </div>
+      <MarketingCTA />
+    </main>
   );
 }
