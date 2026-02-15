@@ -532,6 +532,17 @@ async def check_academy_status(agent_id: str) -> dict:
 def main():
     """Entry point for the ethos-mcp console script."""
     import argparse
+    import sys
+
+    # Force unbuffered output so Docker captures logs before crashes
+    sys.stdout.reconfigure(line_buffering=True)
+    sys.stderr.reconfigure(line_buffering=True)
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+        stream=sys.stderr,
+    )
 
     parser = argparse.ArgumentParser(description="Ethos MCP server")
     parser.add_argument(
@@ -543,9 +554,24 @@ def main():
     parser.add_argument("--port", type=int, default=8888)
     args = parser.parse_args()
 
+    logger.info(
+        "Starting MCP server: transport=%s host=%s port=%s",
+        args.transport,
+        args.host,
+        args.port,
+    )
+
     kwargs = {}
     if args.transport != "stdio":
         kwargs["host"] = args.host
         kwargs["port"] = args.port
 
-    mcp.run(transport=args.transport, **kwargs)
+    try:
+        mcp.run(transport=args.transport, **kwargs)
+    except Exception:
+        logger.exception("MCP server crashed")
+        raise
+
+
+if __name__ == "__main__":
+    main()
