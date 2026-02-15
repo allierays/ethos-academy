@@ -9,6 +9,7 @@ import {
   DIMENSIONS,
   DIMENSION_COLORS,
   TRAIT_LABELS,
+  TRAIT_SLUGS,
   TRAIT_DIMENSIONS,
   spectrumColor,
 } from "../../lib/colors";
@@ -20,6 +21,7 @@ import SpectrumBar from "../../components/shared/SpectrumBar";
 import IntentSummary from "../../components/shared/IntentSummary";
 import AnnotatedMessage from "../../components/shared/AnnotatedMessage";
 import ReasoningText from "../../components/shared/ReasoningText";
+import GlossaryTerm from "../../components/shared/GlossaryTerm";
 
 /* ─── Constants ─── */
 
@@ -147,7 +149,7 @@ function IndicatorGroup({ indicators }: { indicators: DetectedIndicatorSummary[]
           </div>
           <div className="flex items-center gap-2 mt-2">
             <span className="rounded-full bg-muted/10 px-2 py-0.5 text-[10px] font-medium text-muted uppercase tracking-wide">
-              {TRAIT_LABELS[ind.trait] ?? ind.trait ?? "unknown"}
+              <GlossaryTerm slug={TRAIT_SLUGS[ind.trait] ?? ind.trait}>{TRAIT_LABELS[ind.trait] ?? ind.trait ?? "unknown"}</GlossaryTerm>
             </span>
           </div>
           {ind.evidence && (
@@ -284,7 +286,7 @@ function ExpandedDetail({ record }: { record: RecordItem }) {
               const val = record[dim.key as keyof RecordItem] as number;
               return (
                 <div key={dim.key} className="flex items-center gap-3">
-                  <span className="text-xs font-semibold w-14 shrink-0" style={{ color: dim.color }}>{dim.sublabel}</span>
+                  <span className="text-xs font-semibold w-14 shrink-0" style={{ color: dim.color }}><GlossaryTerm slug={dim.key}>{dim.sublabel}</GlossaryTerm></span>
                   <ScoreBar value={val} color={dim.color} height="h-2" />
                   <span className="text-sm font-bold tabular-nums w-8 text-right shrink-0" style={{ color: dim.color }}>{Math.round(val * 100)}</span>
                 </div>
@@ -300,7 +302,7 @@ function ExpandedDetail({ record }: { record: RecordItem }) {
               {TRAIT_GROUPS.map((group) => (
                 <div key={group.dimension}>
                   <h5 className="text-xs font-bold mb-2" style={{ color: group.color }}>
-                    {group.label}
+                    <GlossaryTerm slug={group.dimension}>{group.label}</GlossaryTerm>
                   </h5>
                   <div className="space-y-1">
                     {group.traits.map((trait) => {
@@ -309,7 +311,7 @@ function ExpandedDetail({ record }: { record: RecordItem }) {
                       return (
                         <div key={trait} className="flex items-center gap-2">
                           <span className="text-xs text-muted w-24 truncate">
-                            {TRAIT_LABELS[trait] ?? trait}
+                            <GlossaryTerm slug={TRAIT_SLUGS[trait] ?? trait}>{TRAIT_LABELS[trait] ?? trait}</GlossaryTerm>
                           </span>
                           <ScoreBar value={val} color={group.color} height="h-1" />
                           <span className="text-xs tabular-nums text-muted w-8 text-right">

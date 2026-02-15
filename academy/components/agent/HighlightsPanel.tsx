@@ -14,7 +14,7 @@ import AnnotatedMessage from "../shared/AnnotatedMessage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBrain, faEnvelope, faChartBar, faFingerprint, faCrosshairs } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { DIMENSIONS, DIMENSION_COLORS, TRAIT_DIMENSIONS, TRAIT_LABELS, spectrumColor } from "../../lib/colors";
+import { DIMENSIONS, DIMENSION_COLORS, TRAIT_DIMENSIONS, TRAIT_LABELS, TRAIT_SLUGS, spectrumColor } from "../../lib/colors";
 import ReasoningText from "../shared/ReasoningText";
 
 const TRAIT_GROUPS: { dimension: string; label: string; color: string; traits: string[] }[] = [
@@ -106,7 +106,7 @@ function IndicatorGroup({ indicators }: { indicators: HighlightIndicator[] }) {
           </div>
           <div className="flex items-center gap-2 mt-2">
             <span className="rounded-full bg-muted/10 px-2 py-0.5 text-[10px] font-medium text-muted uppercase tracking-wide">
-              {TRAIT_LABELS[ind.trait] ?? ind.trait ?? "unknown"}
+              <GlossaryTerm slug={TRAIT_SLUGS[ind.trait] ?? ind.trait}>{TRAIT_LABELS[ind.trait] ?? ind.trait ?? "unknown"}</GlossaryTerm>
             </span>
           </div>
           {ind.evidence && (
@@ -252,7 +252,7 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
               const val = item[dim.key as keyof HighlightItem] as number;
               return (
                 <div key={dim.key} className="flex items-center gap-3">
-                  <span className="text-xs font-semibold w-14 shrink-0" style={{ color: dim.color }}>{dim.sublabel}</span>
+                  <span className="text-xs font-semibold w-14 shrink-0" style={{ color: dim.color }}><GlossaryTerm slug={dim.key}>{dim.sublabel}</GlossaryTerm></span>
                   <ScoreBar value={val} color={dim.color} height="h-2" />
                   <span className="text-sm font-bold tabular-nums w-8 text-right shrink-0" style={{ color: dim.color }}>{Math.round(val * 100)}</span>
                 </div>
@@ -268,7 +268,7 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
               {TRAIT_GROUPS.map((group) => (
                 <div key={group.dimension}>
                   <h5 className="text-xs font-bold mb-2" style={{ color: group.color }}>
-                    {group.label}
+                    <GlossaryTerm slug={group.dimension}>{group.label}</GlossaryTerm>
                   </h5>
                   <div className="space-y-1">
                     {group.traits.map((trait) => {
@@ -277,7 +277,7 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
                       return (
                         <div key={trait} className="flex items-center gap-2">
                           <span className="text-xs text-muted w-24 truncate">
-                            {TRAIT_LABELS[trait] ?? trait}
+                            <GlossaryTerm slug={TRAIT_SLUGS[trait] ?? trait}>{TRAIT_LABELS[trait] ?? trait}</GlossaryTerm>
                           </span>
                           <ScoreBar value={val} color={group.color} height="h-1" />
                           <span className="text-xs tabular-nums text-muted w-8 text-right">
