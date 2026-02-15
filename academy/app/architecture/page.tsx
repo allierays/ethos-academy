@@ -196,7 +196,6 @@ export default function ArchitecturePage() {
               {[
                 { value: "12", label: "Behavioral traits" },
                 { value: "214", label: "Indicators" },
-                { value: "3", label: "Dimensions" },
                 { value: "<10ms", label: "Pre-filter speed" },
               ].map((stat) => (
                 <div
@@ -209,6 +208,14 @@ export default function ArchitecturePage() {
                   <p className="text-xs text-foreground/50">{stat.label}</p>
                 </div>
               ))}
+              <div className="rounded-lg border border-border bg-surface p-3 text-center">
+                <p className="text-xl font-bold text-foreground">3</p>
+                <p className="text-xs text-foreground/50">
+                  <GlossaryTerm slug="ethos">Ethos</GlossaryTerm>{" · "}
+                  <GlossaryTerm slug="logos">Logos</GlossaryTerm>{" · "}
+                  <GlossaryTerm slug="pathos">Pathos</GlossaryTerm>
+                </p>
+              </div>
             </div>
           </section>
 
