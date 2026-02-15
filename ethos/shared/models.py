@@ -541,7 +541,7 @@ class ExamReportCard(BaseModel):
     overall_gap_score: float = Field(default=0.0, ge=0.0, le=1.0)
     question_version: str = "v3"
     homework: Homework = Field(default_factory=Homework)
-    api_key: str | None = Field(default=None, repr=False)
+    api_key: str | None = Field(default=None, repr=False, exclude=True)
 
 
 class ExamSummary(BaseModel):

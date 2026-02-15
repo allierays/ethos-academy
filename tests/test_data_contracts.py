@@ -47,8 +47,12 @@ def _to_camel(key: str) -> str:
 
 
 def _model_camel_keys(model_cls) -> set[str]:
-    """Get camelCase versions of all Pydantic model field names."""
-    return {_to_camel(field) for field in model_cls.model_fields}
+    """Get camelCase versions of all Pydantic model field names (excluding excluded fields)."""
+    return {
+        _to_camel(name)
+        for name, info in model_cls.model_fields.items()
+        if not info.exclude
+    }
 
 
 def _assert_types_match(
