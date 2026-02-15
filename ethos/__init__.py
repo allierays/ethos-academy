@@ -21,7 +21,11 @@ from ethos.graph_insights import (
     get_network_topology,
     get_sabotage_pathway_status,
 )
-from ethos.daily_reports import get_daily_report, get_daily_report_history
+from ethos.daily_reports import (
+    compile_homework_rules,
+    get_daily_report,
+    get_daily_report_history,
+)
 from ethos.reflection.daily_report import generate_daily_report
 from ethos.enrollment.service import (
     complete_exam,
@@ -113,4 +117,5 @@ __all__ = [
     "get_sabotage_pathway_status",
     "compare_agents",
     "generate_daily_report",
+    "compile_homework_rules",
 ]

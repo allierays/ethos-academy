@@ -129,6 +129,8 @@ async def generate_daily_report(agent_id: str) -> DailyReportCard:
                 instinct=instinct_result,
                 intuition=intuition_result,
                 previous_report=prev_raw if prev_raw else None,
+                agent_specialty=profile.get("agent_specialty", ""),
+                agent_name=profile.get("agent_name", ""),
             )
 
             # Parse Claude response

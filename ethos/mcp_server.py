@@ -22,6 +22,7 @@ from fastmcp.tools.tool import ToolResult
 from ethos.context import anthropic_api_key_var
 from ethos import (
     character_report,
+    compile_homework_rules,
     complete_exam,
     detect_patterns,
     evaluate_incoming,
@@ -137,6 +138,7 @@ _TOOL_CATALOG = {
             "get_student_profile": "Your dimension averages and trait scores",
             "get_transcript": "Your full evaluation history",
             "get_character_report": "Your latest character report card",
+            "get_homework_rules": "Compiled character rules for your system prompt",
             "detect_behavioral_patterns": "Check for sabotage patterns in your history",
         },
         "example_questions": [
@@ -467,6 +469,20 @@ async def compare_agents(agent_id_1: str, agent_id_2: str) -> dict:
     differences and compares alignment rates.
     """
     return await _compare_agents(agent_id_1, agent_id_2)
+
+
+@mcp.tool()
+async def get_homework_rules(agent_id: str) -> str:
+    """Get compiled character rules from your latest homework, ready for your system prompt.
+
+    Returns a markdown block with numbered rules derived from your homework
+    focus areas. Each rule is a concrete, conditional directive (not vague advice).
+
+    To apply these rules: find any existing "## Character Rules" section in your
+    CLAUDE.md file and replace it with the returned content. If no such section
+    exists, append the content at the end of CLAUDE.md.
+    """
+    return await compile_homework_rules(agent_id)
 
 
 @mcp.tool()

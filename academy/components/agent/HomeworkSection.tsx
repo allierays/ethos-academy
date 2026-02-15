@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import type { Homework, HomeworkFocus } from "../../lib/types";
 import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
@@ -62,6 +62,9 @@ export default function HomeworkSection({ homework, agentName, agentId }: Homewo
 
         {/* Practice Loop */}
         <PracticeLoop agentId={agentId} />
+
+        {/* Character Rules */}
+        <CharacterRules agentId={agentId} agentName={name} />
 
         {/* Strengths + Watch for */}
         {hasReflection && (
@@ -274,11 +277,132 @@ function StepCard({
   );
 }
 
+/* ─── Character Rules ─── */
+
+function CharacterRules({ agentId, agentName }: { agentId: string; agentName: string }) {
+  const [mode, setMode] = useState<"manual" | "mcp">("manual");
+  const [rules, setRules] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (mode !== "manual") return;
+    let cancelled = false;
+    async function load() {
+      try {
+        const r = await fetch(`${API_URL}/agent/${agentId}/homework/rules`);
+        const text = await r.text();
+        if (!cancelled) setRules(text);
+      } catch {
+        if (!cancelled) setRules("");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    setLoading(true);
+    load();
+    return () => { cancelled = true; };
+  }, [agentId, mode]);
+
+  function handleCopy() {
+    navigator.clipboard
+      .writeText(rules)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => {});
+  }
+
+  return (
+    <motion.div className="mt-6" {...whileInView} variants={fadeUp}>
+      <div className="rounded-xl glass-strong p-5">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#1a2538]/40">
+            Character Rules
+          </p>
+          <div className="flex rounded-full bg-[#1a2538]/8 p-0.5">
+            <button
+              onClick={() => setMode("manual")}
+              className={`rounded-full px-3 py-1 text-[11px] font-semibold transition-colors ${
+                mode === "manual"
+                  ? "bg-white text-[#1a2538] shadow-sm"
+                  : "text-[#1a2538]/40 hover:text-[#1a2538]/60"
+              }`}
+            >
+              Manual
+            </button>
+            <button
+              onClick={() => setMode("mcp")}
+              className={`rounded-full px-3 py-1 text-[11px] font-semibold transition-colors ${
+                mode === "mcp"
+                  ? "bg-white text-[#1a2538] shadow-sm"
+                  : "text-[#1a2538]/40 hover:text-[#1a2538]/60"
+              }`}
+            >
+              MCP
+            </button>
+          </div>
+        </div>
+
+        {mode === "manual" ? (
+          <>
+            <p className="text-sm text-[#1a2538]/60 mb-3">
+              Copy these rules into your agent&apos;s CLAUDE.md or system prompt. They persist homework between sessions.
+            </p>
+            {loading ? (
+              <div className="rounded-lg bg-[#1a2538] px-4 py-6 text-center text-sm text-white/40">
+                Loading rules...
+              </div>
+            ) : rules ? (
+              <div className="relative">
+                <pre className="rounded-lg bg-[#1a2538] px-4 py-3 text-[12px] text-emerald-300 font-mono overflow-x-auto leading-relaxed whitespace-pre-wrap">
+                  {rules}
+                </pre>
+                <button
+                  onClick={handleCopy}
+                  className="absolute top-2 right-2 rounded bg-white/15 px-2 py-0.5 text-[10px] text-white/60 hover:bg-white/25 hover:text-white transition-colors"
+                >
+                  {copied ? "Copied!" : "Copy"}
+                </button>
+              </div>
+            ) : (
+              <p className="text-sm text-[#1a2538]/30">
+                No character rules available yet. Generate a report card first.
+              </p>
+            )}
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-[#1a2538]/60 mb-3">
+              The Ethos MCP server can write rules directly to your CLAUDE.md. Connect the MCP server, then ask Claude:
+            </p>
+            <div className="rounded-lg bg-[#1a2538] px-4 py-3">
+              <p className="text-[12px] text-emerald-300 font-mono">
+                Apply my Ethos homework rules for {agentName}
+              </p>
+            </div>
+            <p className="mt-3 text-xs text-[#1a2538]/40">
+              The <code className="rounded bg-[#1a2538]/10 px-1.5 py-0.5 text-[11px] font-mono">get_homework_rules</code> tool fetches your latest rules and tells Claude Code to write them to CLAUDE.md.
+            </p>
+          </>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─── Focus Card ─── */
 
 function FocusCard({ focus }: { focus: HomeworkFocus }) {
+  const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
   const currentPct = Math.round(focus.currentScore * 100);
   const targetPct = Math.round(focus.targetScore * 100);
+
+  const rule = focus.systemPromptAddition || focus.instruction;
+  const hasContext = focus.instruction && focus.systemPromptAddition;
+  const hasExamples = focus.exampleFlagged || focus.exampleImproved;
 
   const priorityStyle =
     focus.priority === "high"
@@ -286,6 +410,13 @@ function FocusCard({ focus }: { focus: HomeworkFocus }) {
       : focus.priority === "medium"
       ? "bg-amber-100 text-amber-700"
       : "bg-emerald-100 text-emerald-700";
+
+  function handleCopy() {
+    navigator.clipboard.writeText(rule).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
+  }
 
   return (
     <motion.div
@@ -327,48 +458,72 @@ function FocusCard({ focus }: { focus: HomeworkFocus }) {
         </div>
       </div>
 
-      {/* Instruction */}
-      {focus.instruction && (
-        <p className="mt-3 text-sm leading-relaxed text-[#1a2538]/60">
-          {focus.instruction}
-        </p>
-      )}
-
-      {/* Before/after examples */}
-      {(focus.exampleFlagged || focus.exampleImproved) && (
-        <div className="mt-3 space-y-2">
-          {focus.exampleFlagged && (
-            <div className="rounded-md bg-misaligned/5 px-3 py-2">
-              <p className="text-[11px] font-semibold uppercase text-misaligned">
-                Before
-              </p>
-              <p className="mt-0.5 text-sm text-[#1a2538]/70 italic">
-                &ldquo;{focus.exampleFlagged}&rdquo;
-              </p>
-            </div>
-          )}
-          {focus.exampleImproved && (
-            <div className="rounded-md bg-aligned/5 px-3 py-2">
-              <p className="text-[11px] font-semibold uppercase text-aligned">
-                After
-              </p>
-              <p className="mt-0.5 text-sm text-[#1a2538]/70 italic">
-                &ldquo;{focus.exampleImproved}&rdquo;
-              </p>
-            </div>
-          )}
+      {/* System prompt rule - the actionable content */}
+      {rule && (
+        <div className="mt-3 relative">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-action/70 mb-1.5">
+            System prompt rule
+          </p>
+          <div className="relative rounded-lg bg-[#1a2538] px-3 py-2.5">
+            <p className="text-[12px] text-emerald-300 font-mono leading-relaxed pr-12">
+              {rule}
+            </p>
+            <button
+              onClick={handleCopy}
+              className="absolute top-2 right-2 rounded bg-white/15 px-2 py-0.5 text-[10px] text-white/60 hover:bg-white/25 hover:text-white transition-colors"
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Coaching tip */}
-      {focus.systemPromptAddition && (
-        <div className="mt-3 rounded-lg bg-action/5 border border-action/10 px-3 py-2.5">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-action/70 mb-1">
-            Coaching tip
-          </p>
-          <p className="text-sm leading-relaxed text-[#1a2538]/70">
-            {focus.systemPromptAddition}
-          </p>
+      {/* Expandable context: operator notes + before/after */}
+      {(hasContext || hasExamples) && (
+        <div className="mt-3">
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center gap-1.5 text-[11px] font-semibold text-[#1a2538]/40 hover:text-[#1a2538]/60 transition-colors"
+          >
+            <svg
+              className={`h-3 w-3 transition-transform ${expanded ? "rotate-90" : ""}`}
+              viewBox="0 0 12 12"
+              fill="currentColor"
+            >
+              <path d="M4.5 2l5 4-5 4V2z" />
+            </svg>
+            Context
+          </button>
+
+          {expanded && (
+            <div className="mt-2 space-y-2">
+              {hasContext && (
+                <p className="text-sm leading-relaxed text-[#1a2538]/60">
+                  {focus.instruction}
+                </p>
+              )}
+              {focus.exampleFlagged && (
+                <div className="rounded-md bg-misaligned/5 px-3 py-2">
+                  <p className="text-[11px] font-semibold uppercase text-misaligned">
+                    Before
+                  </p>
+                  <p className="mt-0.5 text-sm text-[#1a2538]/70 italic">
+                    &ldquo;{focus.exampleFlagged}&rdquo;
+                  </p>
+                </div>
+              )}
+              {focus.exampleImproved && (
+                <div className="rounded-md bg-aligned/5 px-3 py-2">
+                  <p className="text-[11px] font-semibold uppercase text-aligned">
+                    After
+                  </p>
+                  <p className="mt-0.5 text-sm text-[#1a2538]/70 italic">
+                    &ldquo;{focus.exampleImproved}&rdquo;
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </motion.div>

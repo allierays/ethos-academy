@@ -353,7 +353,7 @@ function HighlightRow({
     <div className={`transition-all duration-200 ${expanded ? "bg-white/40" : "hover:bg-white/50 hover:shadow-sm"}`}>
       <button
         onClick={onToggle}
-        className="w-full text-left px-4 py-3 flex items-center gap-3 cursor-pointer border-l-3 border-coral"
+        className="w-full text-left px-4 py-3 flex items-center gap-3 cursor-pointer"
         aria-expanded={expanded}
       >
         {/* Score */}
