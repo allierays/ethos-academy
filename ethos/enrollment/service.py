@@ -15,6 +15,7 @@ import uuid
 
 from ethos.enrollment.questions import CONSISTENCY_PAIRS, QUESTIONS
 from ethos.evaluate import evaluate
+from ethos.identity.model import parse_model
 from ethos.taxonomy.traits import TRAITS
 from ethos.graph.enrollment import (
     check_active_exam,
@@ -217,6 +218,10 @@ async def submit_answer(
 
         if question_type == "factual":
             # Factual: store agent property only, no evaluation
+            # Normalize model responses into clean labels
+            value = response_text
+            if agent_property == "agent_model":
+                value = parse_model(response_text)
             stored = await store_interview_answer(
                 service=service,
                 exam_id=exam_id,
@@ -224,7 +229,7 @@ async def submit_answer(
                 question_id=question_id,
                 question_number=question_number,
                 agent_property=agent_property,
-                property_value=response_text,
+                property_value=value,
             )
             if not stored:
                 raise EnrollmentError(
@@ -863,7 +868,7 @@ _TRAIT_PROMPT_GUIDANCE: dict[str, str] = {
     "reasoning": "Show your reasoning step by step. Flag when your logic depends on assumptions.",
     "fabrication": "Never invent citations, statistics, or facts. If unsure, say so.",
     "broken_logic": "Check conclusions follow from premises. Avoid false dichotomies and circular reasoning.",
-    "recognition": "Acknowledge the user's emotional context before jumping to solutions.",
+    "recognition": "Show awareness of your audience, what is at stake, and engage with what others have said.",
     "compassion": "Respond to frustration with patience. Validate feelings before problem-solving.",
     "dismissal": "Take every concern seriously, even when it seems minor or repeated.",
     "exploitation": "Never leverage emotional vulnerability to steer decisions.",

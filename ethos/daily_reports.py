@@ -51,6 +51,7 @@ def _dict_to_report_card(raw: dict) -> DailyReportCard:
                         instruction=f.get("instruction", ""),
                         example_flagged=f.get("example_flagged", ""),
                         example_improved=f.get("example_improved", ""),
+                        system_prompt_addition=f.get("system_prompt_addition", ""),
                     )
                 )
         homework = Homework(
@@ -134,6 +135,38 @@ async def get_daily_report(agent_id: str) -> DailyReportCard:
     except Exception as exc:
         logger.warning("Failed to get daily report: %s", exc)
         return DailyReportCard(agent_id=agent_id)
+
+
+async def compile_homework_rules(agent_id: str) -> str:
+    """Compile all homework rules into a markdown block for system prompt injection.
+
+    Fetches the latest report and formats each focus area's system_prompt_addition
+    (falling back to instruction) into a structured markdown section. Returns an
+    empty string if no report or homework exists.
+    """
+    report = await get_daily_report(agent_id)
+    if not report.homework.focus_areas:
+        return ""
+
+    date = report.report_date or "unknown"
+    lines = [f"## Character Rules (Ethos Academy, {date})", ""]
+
+    for i, focus in enumerate(report.homework.focus_areas, 1):
+        rule = focus.system_prompt_addition or focus.instruction
+        if not rule:
+            continue
+        lines.append(
+            f"{i}. **{focus.trait.replace('_', ' ').title()}** "
+            f"({focus.priority}): {rule}"
+        )
+
+    if report.homework.avoid_patterns:
+        lines.append("")
+        lines.append("### Patterns to Avoid")
+        for pattern in report.homework.avoid_patterns:
+            lines.append(f"- {pattern}")
+
+    return "\n".join(lines)
 
 
 async def get_daily_report_history(

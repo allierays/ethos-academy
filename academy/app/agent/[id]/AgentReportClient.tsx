@@ -13,13 +13,9 @@ import AlumniComparison from "../../../components/alumni/AlumniComparison";
 import GradeHero from "../../../components/agent/GradeHero";
 import EntranceExamCard from "../../../components/agent/EntranceExamCard";
 import RiskIndicators from "../../../components/agent/RiskIndicators";
-import HomeworkSection from "../../../components/agent/HomeworkSection";
 import PatternsPanel from "../../../components/agent/PatternsPanel";
 import TranscriptChart from "../../../components/agent/TranscriptChart";
 import ConstitutionalTrail from "../../../components/agent/ConstitutionalTrail";
-import GuardianNotifications from "../../../components/agent/GuardianNotifications";
-
-import EvaluationDepth from "../../../components/agent/EvaluationDepth";
 import HighlightsPanel from "../../../components/agent/HighlightsPanel";
 import GoldenMean from "../../../components/agent/GoldenMean";
 import BalanceThesis from "../../../components/agent/BalanceThesis";
@@ -80,17 +76,6 @@ export default function AgentReportClient({
   return (
     <>
       <h1 className="sr-only">{agentName} Report Card</h1>
-
-      {/* Entrance Exam baseline */}
-      {profile.enrolled && (
-        <div className="mx-auto max-w-7xl px-6 pt-8">
-          <EntranceExamCard
-            agentId={agentId}
-            agentName={agentName}
-            enrolled={profile.enrolled}
-          />
-        </div>
-      )}
 
       {/* Full-width hero banner */}
       <GradeHero profile={profile} report={report} timeline={timeline} />
@@ -170,28 +155,13 @@ export default function AgentReportClient({
       </main>
       </div>
 
-      {/* Full-width homework — visual bookend with hero */}
-      {report?.homework && (report.homework.focusAreas.length > 0 || report.homework.strengths.length > 0 || report.homework.avoidPatterns.length > 0) && (
-        <HomeworkSection homework={report.homework} agentName={agentName} agentId={agentId} />
-      )}
-
-      {/* Appendix (methodology) */}
-      <motion.section
-        className="mx-auto max-w-7xl px-6 py-8"
-        variants={fadeUp}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.1 }}
-      >
-        <div className="rounded-xl glass-strong p-6">
-          <EvaluationDepth />
-        </div>
-      </motion.section>
-
-      {/* Guardian notifications — footer */}
-      <div className="mx-auto max-w-7xl px-6 pb-8">
-        <GuardianNotifications agentId={agentId} agentName={agentName} />
-      </div>
+      {/* What's next CTA cards + notifications — always visible */}
+      <EntranceExamCard
+        agentId={agentId}
+        agentName={agentName}
+        enrolled={profile.enrolled}
+        homework={report?.homework}
+      />
 
     </>
   );
