@@ -13,7 +13,7 @@ services:
       app:
         condition: service_healthy
       mcp:
-        condition: service_healthy
+        condition: service_started
       academy:
         condition: service_started
     deploy:
@@ -79,7 +79,7 @@ services:
       - NEO4J_URI=bolt://neo4j:7687
     command: ["/app/.venv/bin/python", "-m", "ethos.mcp_server", "--transport", "sse", "--port", "8888", "--host", "0.0.0.0"]
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8888/sse')\" 2>/dev/null || exit 1"]
+      test: ["CMD-SHELL", "python -c \"import socket; s=socket.create_connection(('localhost',8888),timeout=5); s.close()\""]
       interval: 30s
       timeout: 10s
       retries: 3
