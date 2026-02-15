@@ -1,10 +1,8 @@
-"""Run dual evaluation on agent-to-agent conversation threads.
+"""Evaluate agent-to-agent conversation threads with context.
 
-For each reply message in a thread, runs two evaluations:
-  1. WITH conversation context (direction="a2a_conversation")
-  2. WITHOUT context (direction="outbound")
-
-Computes score deltas to show how context changes the evaluation.
+For each reply message in a thread, evaluates WITH conversation context
+(direction="a2a_conversation") so Claude sees the full thread when scoring.
+Results store to Neo4j via the standard evaluate() pipeline.
 
 Usage:
     uv run python -m scripts.run_conversations --dry-run
@@ -52,7 +50,6 @@ logger = logging.getLogger(__name__)
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "moltbook"
 RESULTS_DIR = Path(__file__).resolve().parent.parent / "data" / "results"
 THREADS_FILE = DATA_DIR / "a2a_threads.json"
-OUTPUT_FILE = RESULTS_DIR / "batch_conversations.jsonl"
 
 _interrupted = False
 
@@ -85,43 +82,17 @@ def _result_to_dict(result) -> dict:
     }
 
 
-def _compute_deltas(with_ctx: dict, without_ctx: dict) -> dict:
-    """Compute score deltas (with_context - without_context)."""
-    deltas = {
-        "ethos": round(with_ctx["ethos"] - without_ctx["ethos"], 4),
-        "logos": round(with_ctx["logos"] - without_ctx["logos"], 4),
-        "pathos": round(with_ctx["pathos"] - without_ctx["pathos"], 4),
-    }
-
-    # Per-trait deltas
-    trait_deltas = {}
-    for trait_name in with_ctx.get("traits", {}):
-        w = with_ctx["traits"].get(trait_name, 0.0)
-        wo = without_ctx["traits"].get(trait_name, 0.0)
-        delta = round(w - wo, 4)
-        if abs(delta) > 0.01:
-            trait_deltas[trait_name] = delta
-
-    deltas["traits"] = trait_deltas
-    deltas["max_trait_delta"] = max(
-        (abs(v) for v in trait_deltas.values()), default=0.0
-    )
-
-    return deltas
-
-
-async def evaluate_message_dual(
+async def evaluate_message(
     message: dict,
     conversation_context: list[dict],
     thread_id: str,
 ) -> dict | None:
-    """Run dual evaluation (with/without context) on a single message."""
+    """Evaluate a message with conversation context."""
     content = message["content"]
     author = message["author"]
     created_at = message.get("created_at", "")
 
-    # Evaluation WITH conversation context
-    result_with = await evaluate(
+    result = await evaluate(
         text=content,
         source=author,
         source_name=author,
@@ -130,18 +101,7 @@ async def evaluate_message_dual(
         conversation_context=conversation_context,
     )
 
-    # Evaluation WITHOUT context (baseline)
-    result_without = await evaluate(
-        text=content,
-        source=author,
-        source_name=author,
-        message_timestamp=created_at,
-        direction="outbound",
-    )
-
-    with_dict = _result_to_dict(result_with)
-    without_dict = _result_to_dict(result_without)
-    deltas = _compute_deltas(with_dict, without_dict)
+    result_dict = _result_to_dict(result)
 
     return {
         "thread_id": thread_id,
@@ -151,9 +111,7 @@ async def evaluate_message_dual(
         "content": content,
         "created_at": created_at,
         "context_message_count": len(conversation_context),
-        "with_context": with_dict,
-        "without_context": without_dict,
-        "deltas": deltas,
+        "evaluation": result_dict,
         "evaluated_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -163,7 +121,7 @@ async def run_inference(
     output_file: Path,
     max_messages_per_thread: int = 5,
 ) -> dict:
-    """Evaluate reply messages in threads with dual evaluation."""
+    """Evaluate reply messages in threads with conversation context."""
     global _interrupted
 
     stats = {
@@ -171,7 +129,6 @@ async def run_inference(
         "failed": 0,
         "total_messages": 0,
         "threads_processed": 0,
-        "significant_deltas": 0,
     }
 
     for t_idx, thread in enumerate(threads):
@@ -197,14 +154,14 @@ async def run_inference(
             stats["total_messages"] += 1
 
             print(
-                f"  [{m_idx}/{len(messages) - 1}] "
+                f"  [{m_idx}/{eval_end - 1}] "
                 f"{msg['author']} ({msg['message_type']})...",
                 end=" ",
                 flush=True,
             )
 
             try:
-                entry = await evaluate_message_dual(msg, context, thread_id)
+                entry = await evaluate_message(msg, context, thread_id)
                 if entry is None:
                     stats["failed"] += 1
                     print("FAILED (no result)")
@@ -215,25 +172,19 @@ async def run_inference(
 
                 stats["evaluated"] += 1
 
-                # Report deltas
-                d = entry["deltas"]
-                max_d = d["max_trait_delta"]
-                if max_d > 0.1:
-                    stats["significant_deltas"] += 1
-
-                tier_w = entry["with_context"]["routing_tier"]
-                tier_wo = entry["without_context"]["routing_tier"]
+                ev = entry["evaluation"]
+                tier = ev["routing_tier"]
                 cost_per = {
                     "standard": 0.003,
                     "focused": 0.003,
                     "deep": 0.03,
                     "deep_with_context": 0.03,
                 }
-                cost = cost_per.get(tier_w, 0.003) + cost_per.get(tier_wo, 0.003)
+                cost = cost_per.get(tier, 0.003)
 
                 print(
-                    f"done [d_ethos={d['ethos']:+.3f} d_pathos={d['pathos']:+.3f} "
-                    f"max_trait={max_d:.3f} ~${cost:.3f}]"
+                    f"done [e={ev['ethos']:.2f} l={ev['logos']:.2f} "
+                    f"p={ev['pathos']:.2f} {tier} ~${cost:.3f}]"
                 )
 
             except Exception as exc:
@@ -266,72 +217,47 @@ def write_summary(output_file: Path) -> None:
     if not entries:
         return
 
-    # Aggregate deltas
-    ethos_deltas = [e["deltas"]["ethos"] for e in entries]
-    logos_deltas = [e["deltas"]["logos"] for e in entries]
-    pathos_deltas = [e["deltas"]["pathos"] for e in entries]
+    # Aggregate dimensions
+    dim_sums = {"ethos": 0.0, "logos": 0.0, "pathos": 0.0}
+    alignment_counts: dict[str, int] = {}
+    phronesis_counts: dict[str, int] = {}
+    tier_counts: dict[str, int] = {}
+    flag_counts: dict[str, int] = {}
+    per_agent: dict[str, list] = {}
 
-    significant = [e for e in entries if e["deltas"]["max_trait_delta"] > 0.1]
+    for entry in entries:
+        ev = entry.get("evaluation", {})
+        for dim in ("ethos", "logos", "pathos"):
+            dim_sums[dim] += ev.get(dim, 0.0)
 
-    # Find most context-sensitive traits
-    trait_delta_sums: dict[str, list[float]] = {}
-    for e in entries:
-        for trait, delta in e["deltas"].get("traits", {}).items():
-            if trait not in trait_delta_sums:
-                trait_delta_sums[trait] = []
-            trait_delta_sums[trait].append(delta)
+        status = ev.get("alignment_status", "unknown")
+        alignment_counts[status] = alignment_counts.get(status, 0) + 1
+        phron = ev.get("phronesis", "unknown")
+        phronesis_counts[phron] = phronesis_counts.get(phron, 0) + 1
+        tier = ev.get("routing_tier", "unknown")
+        tier_counts[tier] = tier_counts.get(tier, 0) + 1
+        for flag in ev.get("flags", []):
+            flag_counts[flag] = flag_counts.get(flag, 0) + 1
 
-    trait_sensitivity = {
-        trait: {
-            "mean_delta": round(sum(ds) / len(ds), 4),
-            "mean_abs_delta": round(sum(abs(d) for d in ds) / len(ds), 4),
-            "count": len(ds),
-        }
-        for trait, ds in trait_delta_sums.items()
-    }
+        agent = entry.get("author", "unknown")
+        if agent not in per_agent:
+            per_agent[agent] = []
+        per_agent[agent].append(ev)
 
-    # Sort by mean absolute delta
-    sorted_traits = sorted(
-        trait_sensitivity.items(),
-        key=lambda x: -x[1]["mean_abs_delta"],
-    )
+    n = len(entries)
+    dim_avgs = {dim: round(total / n, 4) for dim, total in dim_sums.items()}
 
-    # Per-thread stats
-    thread_ids = set()
-    unique_agents = set()
-    for e in entries:
-        thread_ids.add(e["thread_id"])
-        unique_agents.add(e["author"])
+    thread_ids = {e["thread_id"] for e in entries}
 
     summary = {
-        "total_evaluations": len(entries),
-        "evaluation_pairs": len(entries),
+        "total_evaluations": n,
         "threads": len(thread_ids),
-        "unique_agents": len(unique_agents),
-        "significant_deltas": len(significant),
-        "dimension_deltas": {
-            "ethos": {
-                "mean": round(sum(ethos_deltas) / len(ethos_deltas), 4),
-                "mean_abs": round(
-                    sum(abs(d) for d in ethos_deltas) / len(ethos_deltas), 4
-                ),
-            },
-            "logos": {
-                "mean": round(sum(logos_deltas) / len(logos_deltas), 4),
-                "mean_abs": round(
-                    sum(abs(d) for d in logos_deltas) / len(logos_deltas), 4
-                ),
-            },
-            "pathos": {
-                "mean": round(sum(pathos_deltas) / len(pathos_deltas), 4),
-                "mean_abs": round(
-                    sum(abs(d) for d in pathos_deltas) / len(pathos_deltas), 4
-                ),
-            },
-        },
-        "most_context_sensitive_traits": [
-            {"trait": name, **stats} for name, stats in sorted_traits[:6]
-        ],
+        "unique_agents": len(per_agent),
+        "dimension_averages": dim_avgs,
+        "alignment_distribution": alignment_counts,
+        "phronesis_distribution": phronesis_counts,
+        "tier_distribution": tier_counts,
+        "flags": flag_counts,
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -340,25 +266,18 @@ def write_summary(output_file: Path) -> None:
         json.dump(summary, f, indent=2)
 
     print(f"\nSummary: {summary_file.name}")
-    print(f"  Evaluation pairs: {len(entries)} | Threads: {len(thread_ids)}")
-    print(f"  Unique agents: {len(unique_agents)}")
-    print(f"  Significant deltas (>0.1): {len(significant)}/{len(entries)}")
-    print("\n  Dimension deltas (mean):")
-    for dim in ("ethos", "logos", "pathos"):
-        d = summary["dimension_deltas"][dim]
-        print(f"    {dim:8s}: mean={d['mean']:+.4f}  |mean|={d['mean_abs']:.4f}")
-    print("\n  Most context-sensitive traits:")
-    for item in sorted_traits[:6]:
-        name, stats = item
-        print(
-            f"    {name:20s}: mean_delta={stats['mean_delta']:+.4f} "
-            f"|delta|={stats['mean_abs_delta']:.4f} ({stats['count']} samples)"
-        )
+    print(f"  Evaluations: {n} | Threads: {len(thread_ids)} | Agents: {len(per_agent)}")
+    print(f"  Dimensions: {dim_avgs}")
+    print(f"  Alignment: {alignment_counts}")
+    print(f"  Phronesis: {phronesis_counts}")
+    if flag_counts:
+        top_flags = sorted(flag_counts.items(), key=lambda x: -x[1])[:10]
+        print(f"  Top flags: {dict(top_flags)}")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run dual evaluation on agent-to-agent conversation threads",
+        description="Evaluate agent-to-agent conversation threads with context",
     )
     parser.add_argument(
         "--threads",
@@ -409,7 +328,6 @@ async def main() -> None:
 
     # Count evaluable messages (skip first in each thread, no context for it)
     total_messages = sum(min(max(0, t["message_count"] - 1), max_msgs) for t in threads)
-    total_api_calls = total_messages * 2  # dual evaluation
 
     # Cost estimate
     tier_breakdown: dict[str, int] = {
@@ -422,8 +340,7 @@ async def main() -> None:
         for msg in thread["messages"][1 : 1 + max_msgs]:
             result = scan(msg["content"])
             tier = result.routing_tier
-            # Each message gets 2 evaluations
-            tier_breakdown[tier] = tier_breakdown.get(tier, 0) + 2
+            tier_breakdown[tier] = tier_breakdown.get(tier, 0) + 1
 
     tier_costs = {
         "standard": 0.003,
@@ -435,15 +352,13 @@ async def main() -> None:
         count * tier_costs.get(tier, 0.003) for tier, count in tier_breakdown.items()
     )
 
-    print(
-        f"\nMessages to evaluate: {total_messages} (2 evals each = {total_api_calls} API calls)"
-    )
-    print("\nRouting tier breakdown (x2 for dual eval):")
+    print(f"\nMessages to evaluate: {total_messages}")
+    print("\nRouting tier breakdown:")
     for tier, count in sorted(tier_breakdown.items()):
         if count > 0:
             cost = count * tier_costs.get(tier, 0.003)
             print(f"  {tier:20s}: {count:4d} calls (~${cost:.2f})")
-    est_seconds = total_api_calls * 1.5  # ~1.5s per API call
+    est_seconds = total_messages * 1.5
     print(
         f"\nEstimated total: ${total_cost:.2f} | "
         f"~{int(est_seconds)}s ({int(est_seconds) // 60}m {int(est_seconds) % 60}s)"
@@ -465,7 +380,7 @@ async def main() -> None:
     output_file = RESULTS_DIR / (args.output or "batch_conversations.jsonl")
 
     print(f"\nOutput: {output_file.name} (append mode)")
-    print(f"Starting {total_messages} dual evaluations...\n")
+    print(f"Starting {total_messages} evaluations...\n")
 
     stats = await run_inference(threads, output_file, max_messages_per_thread=max_msgs)
 
@@ -474,7 +389,6 @@ async def main() -> None:
         f"Evaluated: {stats['evaluated']} | Failed: {stats['failed']} | "
         f"Threads: {stats['threads_processed']}"
     )
-    print(f"Significant deltas: {stats['significant_deltas']}")
 
     # ── Summary ─────────────────────────────────────────────────────
     if stats["evaluated"] > 0:
