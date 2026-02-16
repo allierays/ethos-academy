@@ -35,6 +35,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
 asyncio_mode = "auto"
 markers = [
     "integration: tests that require live services (Neo4j, Anthropic API)",

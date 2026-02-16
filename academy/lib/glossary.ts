@@ -279,7 +279,7 @@ const entries: GlossaryEntry[] = [
     slug: "instinct-layer",
     category: "framework",
     definition:
-      "The first evaluation layer (~50ms). Keyword scan across 208 behavioral indicators. Detects manipulation signals, deception markers, and safety flags at machine speed. Each indicator maps to one of 12 traits.",
+      "The first evaluation layer (~50ms). Keyword scan across 214 behavioral indicators. Detects manipulation signals, deception markers, and safety flags at machine speed. Each indicator maps to one of 12 traits.",
     relatedTerms: ["intuition-layer", "deliberation-layer"],
   },
   {

@@ -24,7 +24,11 @@ os.environ["ETHOS_SMS_SANDBOX"] = "1"
 import pytest  # noqa: E402
 from dotenv import load_dotenv  # noqa: E402
 
-load_dotenv()
+# Only load .env when run directly (not when collected by pytest from tests/).
+# load_dotenv() at module level pollutes os.environ for all subsequent tests,
+# e.g. ETHOS_API_KEY bleeds in and causes 401s in unit tests.
+if os.environ.get("_ETHOS_E2E_LOAD_DOTENV", "1") == "1":
+    load_dotenv()
 
 pytestmark = pytest.mark.skipif(
     not os.environ.get("ANTHROPIC_API_KEY"),

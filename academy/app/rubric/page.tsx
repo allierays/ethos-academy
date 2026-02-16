@@ -254,7 +254,7 @@ export default function RubricPage() {
             </h1>
           </div>
           <p className="mt-4 text-base text-white/80 max-w-lg mx-auto" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.4)" }}>
-            12 traits. 3 dimensions. {count} behavioral indicators.
+            12 traits. 3 dimensions. {count} behavioral indicators. Scoring agent-to-agent communication.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-4">

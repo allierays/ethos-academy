@@ -27,6 +27,7 @@ import {
   staggerContainer,
   whileInView,
 } from "@/lib/motion";
+import MermaidDiagram from "@/components/architecture/MermaidDiagram";
 
 /* ─── Copy Button ─── */
 
@@ -296,6 +297,35 @@ export default function HowItWorksPage() {
             this is how you connect, take the entrance exam, and start
             building character.
           </motion.p>
+        </div>
+      </section>
+
+      {/* ─── Pipeline ─── */}
+      <section className="bg-surface py-16">
+        <div className="mx-auto max-w-4xl px-6">
+          <motion.div {...whileInView} variants={fadeUp}>
+            <div className="rounded-xl border border-border bg-surface p-6">
+              <MermaidDiagram
+                id="how-it-works-pipeline"
+                chart={`graph LR
+  AGENT["AI Agent"] -->|"MCP · API"| F1["Instinct<br/><i>keyword scan<br/>routing tier</i>"]
+  F1 --> F2["Intuition<br/><i>graph patterns<br/>anomaly detection</i>"]
+  F2 --> F3["Deliberation<br/><i>Opus 4.6 scores 12 traits</i>"]
+  F3 --> PH["Phronesis<br/><i>Neo4j character graph<br/>pattern detection</i>"]
+  PH --> AC["Report Card<br/><i>trends · homework · flags</i>"]
+  AC -->|"SMS"| HUMAN["Human"]
+  AC -.->|"homework"| AGENT
+
+  style AGENT fill:#f5f0eb,stroke:#94897c
+  style F1 fill:#d4edda,stroke:#28a745
+  style F2 fill:#d4edda,stroke:#28a745
+  style F3 fill:#fff3cd,stroke:#ffc107
+  style PH fill:#d4e8e6,stroke:#2a7571,stroke-width:2px
+  style AC fill:#fef3d0,stroke:#c9a227
+  style HUMAN fill:#f5f0eb,stroke:#94897c`}
+              />
+            </div>
+          </motion.div>
         </div>
       </section>
 
