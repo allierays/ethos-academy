@@ -394,6 +394,112 @@ export default function StyleguidePage() {
         </div>
       </section>
 
+      {/* ─── Dark Glow Mode ─── */}
+      <section className="space-y-6">
+        <SectionHeader
+          title="Dark Glow Mode"
+          description="The Phronesis graph aesthetic. Navy backgrounds, luminous nodes, scholarly atmosphere."
+        />
+
+        <div className="rounded-2xl bg-[#0d1520] p-8 space-y-8">
+          {/* Dark palette */}
+          <div className="space-y-3">
+            <p className="text-xs font-mono text-white/40 uppercase tracking-wider">Dark Palette</p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <DarkSwatch name="Canvas" hex="#0d1520" />
+              <DarkSwatch name="Surface" hex="#1a2538" />
+              <DarkSwatch name="Elevated" hex="#243347" />
+              <DarkSwatch name="Border" hex="rgba(255,255,255,0.08)" />
+            </div>
+          </div>
+
+          {/* Glow nodes */}
+          <div className="space-y-3">
+            <p className="text-xs font-mono text-white/40 uppercase tracking-wider">Glow Nodes</p>
+            <div className="flex flex-wrap gap-6 items-center">
+              <GlowNode color="var(--ethos-400)" label="Ethos" />
+              <GlowNode color="var(--logos-400)" label="Logos" />
+              <GlowNode color="var(--pathos-400)" label="Pathos" />
+              <GlowNode color="var(--aligned)" label="Aligned" />
+              <GlowNode color="var(--misaligned)" label="Risk" />
+            </div>
+          </div>
+
+          {/* Glow text */}
+          <div className="space-y-4">
+            <p className="text-xs font-mono text-white/40 uppercase tracking-wider">Typography on Dark</p>
+            <h2 className="text-3xl font-bold text-white tracking-tight">
+              <span className="italic font-serif" style={{ color: "var(--pathos-400)" }}>Phronesis</span>{" "}
+              Graph Topology
+            </h2>
+            <p className="text-xs font-mono text-white/40 uppercase tracking-widest">
+              Ethos Academy Knowledge Graph
+            </p>
+            <p className="text-sm text-white/60 max-w-lg">
+              Body text on dark uses white at 60% opacity. Links and interactive elements use dimension colors at full saturation for that luminous glow.
+            </p>
+          </div>
+
+          {/* Dark cards */}
+          <div className="space-y-3">
+            <p className="text-xs font-mono text-white/40 uppercase tracking-wider">Dark Cards</p>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="rounded-xl border border-white/8 bg-white/5 p-5 space-y-2">
+                <h3 className="text-sm font-semibold text-white">Subtle card</h3>
+                <p className="text-xs text-white/50">bg-white/5 border-white/8. Default dark card.</p>
+                <code className="block text-[10px] font-mono text-white/30">bg-white/5 border-white/[0.08]</code>
+              </div>
+              <div className="rounded-xl bg-[#1a2538] border border-white/10 p-5 space-y-2">
+                <h3 className="text-sm font-semibold text-white">Surface card</h3>
+                <p className="text-xs text-white/50">Ethos-800 surface. For panels and sidebars.</p>
+                <code className="block text-[10px] font-mono text-white/30">bg-[#1a2538]</code>
+              </div>
+              <div
+                className="rounded-xl p-5 space-y-2"
+                style={{
+                  background: "linear-gradient(135deg, rgba(79,177,170,0.15), rgba(63,95,154,0.15))",
+                  border: "1px solid rgba(79,177,170,0.2)",
+                  boxShadow: "0 0 30px rgba(79,177,170,0.08)",
+                }}
+              >
+                <h3 className="text-sm font-semibold text-white">Glow card</h3>
+                <p className="text-xs text-white/50">Dimension tint with outer glow. For featured content.</p>
+                <code className="block text-[10px] font-mono text-white/30">box-shadow: 0 0 30px color/0.08</code>
+              </div>
+            </div>
+          </div>
+
+          {/* Dark data bars */}
+          <div className="space-y-4">
+            <p className="text-xs font-mono text-white/40 uppercase tracking-wider">Data Bars on Dark</p>
+            <DarkBar label="DETECTED" value={13800} max={14000} color="var(--logos-400)" />
+            <DarkBar label="EVALUATED" value={2081} max={14000} color="var(--ethos-400)" />
+            <DarkBar label="PRECEDES" value={1726} max={14000} color="var(--logos-500)" />
+          </div>
+
+          {/* Dark badges */}
+          <div className="space-y-3">
+            <p className="text-xs font-mono text-white/40 uppercase tracking-wider">Badges on Dark</p>
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-full px-3 py-1 text-xs font-semibold bg-logos-400/15 text-logos-300">Agents</span>
+              <span className="rounded-full px-3 py-1 text-xs font-semibold bg-ethos-400/15 text-ethos-300">Evaluations</span>
+              <span className="rounded-full px-3 py-1 text-xs font-semibold bg-pathos-400/15 text-pathos-300">Indicators</span>
+              <span className="rounded-full px-3 py-1 text-xs font-semibold bg-misaligned/15 text-red-300">Constitutional</span>
+            </div>
+          </div>
+
+          {/* Code block */}
+          <div className="space-y-3">
+            <p className="text-xs font-mono text-white/40 uppercase tracking-wider">Code Blocks</p>
+            <div className="rounded-lg bg-[#0f1a2e] p-4">
+              <code className="text-sm font-mono text-ethos-300">
+                https://mcp.ethos-academy.com/mcp
+              </code>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── CSS Variables Reference ─── */}
       <section className="space-y-6">
         <SectionHeader
@@ -612,6 +718,66 @@ function GradientSample({
       <div className="bg-surface border border-border border-t-0 rounded-b-xl px-4 py-2.5">
         <p className="text-sm font-medium">{name}</p>
         <p className="text-xs font-mono text-muted">{css}</p>
+      </div>
+    </div>
+  );
+}
+
+function DarkSwatch({ name, hex }: { name: string; hex: string }) {
+  return (
+    <div>
+      <div
+        className="h-16 rounded-xl border border-white/10"
+        style={{ backgroundColor: hex }}
+      />
+      <p className="mt-2 text-xs font-medium text-white/70">{name}</p>
+      <p className="text-xs font-mono text-white/30">{hex}</p>
+    </div>
+  );
+}
+
+function GlowNode({ color, label }: { color: string; label: string }) {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div
+        className="h-10 w-10 rounded-full"
+        style={{
+          backgroundColor: color,
+          boxShadow: `0 0 20px ${color}, 0 0 40px ${color}40`,
+        }}
+      />
+      <span className="text-[10px] font-mono text-white/50">{label}</span>
+    </div>
+  );
+}
+
+function DarkBar({
+  label,
+  value,
+  max,
+  color,
+}: {
+  label: string;
+  value: number;
+  max: number;
+  color: string;
+}) {
+  const pct = Math.round((value / max) * 100);
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between text-sm">
+        <span className="font-mono text-xs text-white/50">{label}</span>
+        <span className="font-mono text-xs tabular-nums text-white/40">{value.toLocaleString()}</span>
+      </div>
+      <div className="h-2 rounded-full bg-white/5">
+        <div
+          className="h-2 rounded-full"
+          style={{
+            width: `${pct}%`,
+            backgroundColor: color,
+            boxShadow: `0 0 8px ${color}60`,
+          }}
+        />
       </div>
     </div>
   );

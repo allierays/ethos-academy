@@ -4878,3 +4878,7 @@ import json
 
 from ethos_academy.grap
 [22:01:55] READ: app/how-it-works/page.tsx
+[22:07:46] READ: app/how-it-works/page.tsx
+[22:08:09] EDIT: app/how-it-works/page.tsx
+[22:08:20] BASH: npx tsc --noEmit --pretty 2>&1 | grep "how-it-works"
+[22:15:43] BASH: cd /Users/allierays/Sites/ethos/academy && npx tsc --noEmit --pretty 2>&1 | head
