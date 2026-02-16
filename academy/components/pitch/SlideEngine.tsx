@@ -1,111 +1,169 @@
 "use client";
 
-import { type ReactNode, useCallback, useEffect, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import {
+  type ReactNode,
+  Children,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
+import { motion, useScroll, useSpring } from "motion/react";
 import { useRouter } from "next/navigation";
 
-const slideVariants = {
-  enter: (dir: number) => ({
-    x: dir > 0 ? "100%" : "-100%",
-    opacity: 0,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-  },
-  exit: (dir: number) => ({
-    x: dir > 0 ? "-100%" : "100%",
-    opacity: 0,
-  }),
-};
+/**
+ * Lazy-mounts children when the user scrolls near this scene.
+ * Uses manual scroll tracking instead of IntersectionObserver
+ * because IO doesn't reliably detect elements inside fixed + overflow-y-auto containers.
+ */
+function Scene({
+  children,
+  index,
+  containerRef,
+}: {
+  children: ReactNode;
+  index: number;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const [mounted, setMounted] = useState(false);
 
-const transition = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30,
-};
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    function check() {
+      if (!container) return;
+      const viewH = container.clientHeight;
+      const scrollTop = container.scrollTop;
+      const sceneTop = index * viewH;
+      const sceneBottom = sceneTop + viewH;
+      // Mount when the scene is within 20% buffer of the visible viewport
+      const buffer = viewH * 0.2;
+      if (
+        sceneBottom > scrollTop - buffer &&
+        sceneTop < scrollTop + viewH + buffer
+      ) {
+        setMounted(true);
+      }
+    }
+
+    check(); // Check immediately (scene 0 should mount on load)
+    if (!mounted) {
+      container.addEventListener("scroll", check, { passive: true });
+      return () => container.removeEventListener("scroll", check);
+    }
+  }, [containerRef, index, mounted]);
+
+  return mounted ? <>{children}</> : <div className="h-screen" />;
+}
 
 interface SlideEngineProps {
   children: ReactNode[];
 }
 
 export default function SlideEngine({ children }: SlideEngineProps) {
-  const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const total = children.length;
+  const { scrollYProgress } = useScroll({ container: containerRef });
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
+  const [showScrollHint, setShowScrollHint] = useState(true);
 
-  const goNext = useCallback(() => {
-    if (index < total - 1) {
-      setDirection(1);
-      setIndex((i) => i + 1);
-    }
-  }, [index, total]);
-
-  const goPrev = useCallback(() => {
-    if (index > 0) {
-      setDirection(-1);
-      setIndex((i) => i - 1);
-    }
-  }, [index]);
-
+  // Escape key returns home
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "ArrowRight" || e.key === " ") {
-        e.preventDefault();
-        goNext();
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        goPrev();
-      } else if (e.key === "Escape") {
+      if (e.key === "Escape") {
         router.push("/");
       }
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [goNext, goPrev, router]);
+  }, [router]);
+
+  // Hide scroll hint after first meaningful scroll
+  const onScroll = useCallback(() => {
+    const el = containerRef.current;
+    if (el && el.scrollTop > 80) setShowScrollHint(false);
+  }, []);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [onScroll]);
+
+  const slides = Children.toArray(children);
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-foreground">
-      <AnimatePresence initial={false} custom={direction} mode="wait">
-        <motion.div
-          key={index}
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={transition}
-          className="absolute inset-0"
+    <div ref={containerRef} className="h-full overflow-y-auto bg-foreground">
+      {/* Video-style progress bar */}
+      <motion.div
+        className="fixed left-0 right-0 top-0 z-50 h-[2px] origin-left"
+        style={{
+          scaleX,
+          background:
+            "linear-gradient(90deg, var(--ethos-500), var(--logos-500), var(--pathos-500))",
+        }}
+      />
+
+      {/* Back button */}
+      <button
+        onClick={() => router.push("/")}
+        className="fixed left-6 top-5 z-40 flex items-center gap-2 rounded-full bg-white/5 px-3 py-1.5 text-xs text-white/40 backdrop-blur-sm transition-colors hover:bg-white/10 hover:text-white/70"
+      >
+        <svg
+          className="h-3 w-3"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="2"
         >
-          {children[index]}
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Slide counter */}
-      <div className="absolute right-6 top-6 z-20 font-mono text-sm text-white/40">
-        {index + 1} / {total}
-      </div>
-
-      {/* Progress dots */}
-      <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-        {Array.from({ length: total }).map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => {
-              setDirection(i > index ? 1 : -1);
-              setIndex(i);
-            }}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === index
-                ? "w-6 bg-ethos-400"
-                : "w-2 bg-white/30 hover:bg-white/50"
-            }`}
-            aria-label={`Go to slide ${i + 1}`}
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 19l-7-7 7-7"
           />
-        ))}
-      </div>
+        </svg>
+        Home
+      </button>
+
+      {/* Scenes */}
+      {slides.map((slide, i) => (
+        <Scene key={i} index={i} containerRef={containerRef}>
+          {slide}
+        </Scene>
+      ))}
+
+      {/* Scroll hint on first scene */}
+      <motion.div
+        className="fixed bottom-8 left-1/2 z-40 flex -translate-x-1/2 flex-col items-center gap-1"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showScrollHint ? 1 : 0 }}
+        transition={{ duration: 0.4, delay: showScrollHint ? 2 : 0 }}
+      >
+        <span className="font-mono text-[10px] uppercase tracking-widest text-white/30">
+          Scroll
+        </span>
+        <motion.svg
+          className="h-4 w-4 text-white/30"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="2"
+          animate={{ y: [0, 4, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19 14l-7 7m0 0l-7-7"
+          />
+        </motion.svg>
+      </motion.div>
     </div>
   );
 }

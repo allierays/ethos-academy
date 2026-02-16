@@ -22,9 +22,13 @@ export default function Header() {
     <header className="relative z-10 border-b border-white/20 bg-white/60 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-action text-white text-sm font-bold">
-            E
-          </div>
+          <svg className="h-8 w-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="7" fill="#1c2e47"/>
+            <path d="M16 9 L9 23 L23 23 Z" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"/>
+            <circle cx="16" cy="9" r="4" fill="#5c7cb3"/>
+            <circle cx="9" cy="23" r="4" fill="#4fb1aa"/>
+            <circle cx="23" cy="23" r="4" fill="#e0a53c"/>
+          </svg>
           <span className="text-lg font-semibold tracking-tight text-foreground">
             Ethos Academy
           </span>

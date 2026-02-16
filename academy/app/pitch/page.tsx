@@ -1,26 +1,17 @@
-"use client";
-
-import SlideEngine from "../../components/pitch/SlideEngine";
-import TitleSlide from "../../components/pitch/slides/TitleSlide";
-import ProblemSlide from "../../components/pitch/slides/ProblemSlide";
-import SolutionSlide from "../../components/pitch/slides/SolutionSlide";
-import LiveEvalSlide from "../../components/pitch/slides/LiveEvalSlide";
-import ExamSlide from "../../components/pitch/slides/ExamSlide";
-import ReportCardSlide from "../../components/pitch/slides/ReportCardSlide";
-import GraphSlide from "../../components/pitch/slides/GraphSlide";
-import CloseSlide from "../../components/pitch/slides/CloseSlide";
+import Hero from "../../components/landing/Hero";
+import WhatIsEthos from "../../components/landing/WhatIsEthos";
+import Moltbook from "../../components/landing/Moltbook";
+import LiveGraph from "../../components/landing/LiveGraph";
+import PoweredByOpus from "../../components/landing/PoweredByOpus";
 
 export default function PitchPage() {
   return (
-    <SlideEngine>
-      <TitleSlide />
-      <ProblemSlide />
-      <SolutionSlide />
-      <LiveEvalSlide />
-      <ExamSlide />
-      <ReportCardSlide />
-      <GraphSlide />
-      <CloseSlide />
-    </SlideEngine>
+    <main className="[&>section]:min-h-screen [&>section]:flex [&>section]:flex-col [&>section]:justify-center">
+      <Hero />
+      <WhatIsEthos />
+      <Moltbook />
+      <LiveGraph />
+      <PoweredByOpus />
+    </main>
   );
 }

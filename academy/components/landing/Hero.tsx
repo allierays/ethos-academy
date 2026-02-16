@@ -141,7 +141,7 @@ function StartHereWidget() {
           </ol>
           <p className="mt-2 text-xs text-foreground/50">Enter this URL when prompted</p>
           <CopyableURL url={MCP_URL} />
-          <p className="mt-3 text-sm text-foreground/50 italic">&ldquo;How do the alumni&apos;s strengths map back to Claude&apos;s Constitution?&rdquo;</p>
+          <p className="mt-3 text-sm text-foreground/50 italic">&ldquo;Visualize how the alumni&apos;s strengths map to Claude&apos;s Constitution.&rdquo;</p>
         </div>
       )}
 

@@ -1,88 +1,87 @@
 "use client";
 
 import { motion } from "motion/react";
-import Image from "next/image";
 
 export default function CloseSlide() {
   return (
-    <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden">
-      {/* Background */}
-      <div
+    <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-[#0a0f1a]">
+      {/* Same background image as title, bookend the story */}
+      <motion.div
         className="absolute inset-0 bg-cover bg-no-repeat"
         style={{
-          backgroundImage: "url('/ethos-academy-big.jpeg')",
-          backgroundPosition: "center 50%",
+          backgroundImage: "url('/academy-people-banner.jpeg')",
+          backgroundPosition: "center 40%",
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, ease: "easeOut" }}
       />
-      <div
+      <motion.div
         className="absolute inset-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5, delay: 0.5 }}
         style={{
           background:
-            "linear-gradient(to right, rgba(26,37,56,0.8) 0%, rgba(26,37,56,0.5) 50%, rgba(26,37,56,0.3) 80%)",
+            "linear-gradient(to right, rgba(26,37,56,0.85) 0%, rgba(26,37,56,0.55) 50%, rgba(26,37,56,0.2) 70%)",
         }}
       />
-
-      {/* Aristotle bust floating */}
-      <motion.div
-        className="absolute right-12 top-1/2 -translate-y-1/2 opacity-20 lg:opacity-30"
-        animate={{ y: [0, -12, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <Image
-          src="/homepage3.png"
-          alt=""
-          width={300}
-          height={400}
-          className="pointer-events-none select-none"
-          aria-hidden="true"
-        />
-      </motion.div>
 
       <div className="relative z-10 flex flex-col items-start gap-8 px-16">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
           className="text-5xl font-bold leading-tight text-white lg:text-6xl"
           style={{ textShadow: "0 2px 16px rgba(0,0,0,0.8)" }}
         >
-          Better agents.
-          <br />
-          Better data.
-          <br />
-          Better alignment.
+          Character takes practice.
         </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4, duration: 0.6 }}
+          className="max-w-md text-lg text-white/60"
+          style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
+        >
+          Enroll your AI agents to learn integrity, logic, and empathy.
+        </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
+          transition={{ delay: 1.8, duration: 0.6 }}
           className="rounded-xl border border-white/15 bg-white/[0.08] px-8 py-6 backdrop-blur-md"
           style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.1)" }}
         >
           <div className="flex flex-col gap-3">
             <a
-              href="https://github.com/allierays/ethos"
+              href="https://github.com/allierays/ethos-academy"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 text-lg text-white/80 transition-colors hover:text-white"
             >
               <GitHubIcon />
-              <span>github.com/allierays/ethos</span>
+              <span>github.com/allierays/ethos-academy</span>
             </a>
             <a
-              href="http://localhost:3000"
+              href="https://ethos-academy.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-3 text-lg text-white/80 transition-colors hover:text-white"
             >
               <GlobeIcon />
-              <span>Live Demo</span>
+              <span>ethos-academy.com</span>
             </a>
             <a
-              href="http://localhost:8917/docs"
+              href="https://mcp.ethos-academy.com/mcp"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-3 text-lg text-white/80 transition-colors hover:text-white"
             >
               <ApiIcon />
-              <span>API Docs</span>
+              <span>MCP Server</span>
             </a>
           </div>
         </motion.div>
@@ -90,10 +89,10 @@ export default function CloseSlide() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 2.4 }}
           className="font-mono text-sm text-white/40"
         >
-          Character takes practice.
+          Open source. Built for the Claude Code Hackathon 2026.
         </motion.p>
       </div>
     </div>
