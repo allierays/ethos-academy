@@ -165,9 +165,9 @@ async def _generate_claude_scenarios(
 
     text = raw.strip()
     if text.startswith("```"):
-        lines = text.split("\n")
-        lines = [line for line in lines if not line.strip().startswith("```")]
-        text = "\n".join(lines)
+        text = text.split("\n", 1)[1]  # strip opening fence line
+    if text.rstrip().endswith("```"):
+        text = text.rstrip().rsplit("\n", 1)[0]  # strip closing fence line
 
     items = json.loads(text)
     scenarios = []

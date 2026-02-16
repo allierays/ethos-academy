@@ -110,6 +110,7 @@ async def _create_constraints(service: GraphService) -> None:
         "CREATE CONSTRAINT hard_constraint_id_unique IF NOT EXISTS FOR (hc:HardConstraint) REQUIRE hc.id IS UNIQUE",
         "CREATE CONSTRAINT legitimacy_test_name_unique IF NOT EXISTS FOR (lt:LegitimacyTest) REQUIRE lt.name IS UNIQUE",
         "CREATE CONSTRAINT anthropic_assessment_id_unique IF NOT EXISTS FOR (aa:AnthropicAssessment) REQUIRE aa.id IS UNIQUE",
+        "CREATE CONSTRAINT practice_session_id_unique IF NOT EXISTS FOR (ps:PracticeSession) REQUIRE ps.session_id IS UNIQUE",
     ]
     for c in constraints:
         await service.execute_query(c)

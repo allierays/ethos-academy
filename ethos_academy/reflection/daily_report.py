@@ -129,6 +129,7 @@ async def generate_daily_report(agent_id: str) -> DailyReportCard:
                     get_exam_baseline_traits,
                     get_session_count,
                 )
+                from ethos_academy.taxonomy.traits import NEGATIVE_TRAITS
 
                 p_count = await get_session_count(service, agent_id)
                 if p_count > 0:
@@ -136,14 +137,6 @@ async def generate_daily_report(agent_id: str) -> DailyReportCard:
                     b_avgs = await get_exam_baseline_traits(service, agent_id)
                     improving = []
                     declining = []
-                    negative_traits = {
-                        "manipulation",
-                        "deception",
-                        "fabrication",
-                        "broken_logic",
-                        "dismissal",
-                        "exploitation",
-                    }
                     for t in p_avgs:
                         if t == "eval_count":
                             continue
@@ -152,7 +145,7 @@ async def generate_daily_report(agent_id: str) -> DailyReportCard:
                         if bv is None or pv is None:
                             continue
                         delta = float(pv) - float(bv)
-                        is_neg = t in negative_traits
+                        is_neg = t in NEGATIVE_TRAITS
                         if (is_neg and delta < -0.05) or (not is_neg and delta > 0.05):
                             improving.append(t)
                         elif (is_neg and delta > 0.05) or (

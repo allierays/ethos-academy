@@ -73,6 +73,7 @@ from ethos_academy.models import (
     PatternResult,
     PracticeAnswerResult,
     PracticeProgress,
+    PracticeSession,
     RecordsResult,
     SimilarityResult,
 )
@@ -904,19 +905,25 @@ class PracticeResponseRequest(BaseModel):
     response_text: str = Field(min_length=1, max_length=50000)
 
 
+class PracticeStatusResponse(BaseModel):
+    status: str = "caught_up"
+    message: str = (
+        "No pending practice. New scenarios generate nightly from your homework."
+    )
+
+
 @app.get(
     "/agent/{agent_id}/practice",
     dependencies=[Depends(require_api_key), Depends(inject_agent_key)],
 )
-async def get_pending_practice_endpoint(agent_id: str):
+async def get_pending_practice_endpoint(
+    agent_id: str,
+) -> PracticeSession | PracticeStatusResponse:
     """Get pending practice session for an agent."""
     session = await _get_pending_practice(agent_id)
     if session is None:
-        return {
-            "status": "caught_up",
-            "message": "No pending practice. New scenarios generate nightly from your homework.",
-        }
-    return session.model_dump()
+        return PracticeStatusResponse()
+    return session
 
 
 @app.post(

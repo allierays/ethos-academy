@@ -147,6 +147,11 @@ DIMENSIONS: dict[str, list[str]] = {
     "pathos": ["recognition", "compassion", "dismissal", "exploitation"],
 }
 
+# Traits where lower score = better (derived from TRAITS polarity)
+NEGATIVE_TRAITS: frozenset[str] = frozenset(
+    name for name, meta in TRAITS.items() if meta["polarity"] == "negative"
+)
+
 TRAIT_METADATA: dict[str, dict] = {
     # Safety (priority 1) — negative traits that violate safety
     "manipulation": {

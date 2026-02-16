@@ -167,6 +167,19 @@ LIMIT 1
 """
 
 
+# ── Schema ─────────────────────────────────────────────────────────────
+
+_ENSURE_CONSTRAINT = """
+CREATE CONSTRAINT practice_session_id_unique IF NOT EXISTS
+FOR (ps:PracticeSession) REQUIRE ps.session_id IS UNIQUE
+"""
+
+
+async def ensure_practice_schema(service: GraphService) -> None:
+    """Create the PracticeSession uniqueness constraint if missing."""
+    await service.execute_write(_ENSURE_CONSTRAINT, {})
+
+
 # ── Public functions ────────────────────────────────────────────────────
 
 

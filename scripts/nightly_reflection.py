@@ -45,10 +45,14 @@ async def run_nightly() -> None:
             logger.error("Graph unavailable — cannot run nightly reflection")
             sys.exit(1)
 
-        # Expire stale practice sessions before generating new ones
+        # Ensure practice schema and expire stale sessions
         try:
-            from ethos_academy.graph.practice import expire_stale_sessions
+            from ethos_academy.graph.practice import (
+                ensure_practice_schema,
+                expire_stale_sessions,
+            )
 
+            await ensure_practice_schema(service)
             expired = await expire_stale_sessions(service, days=7)
             if expired:
                 logger.info("Expired %d stale practice sessions", expired)

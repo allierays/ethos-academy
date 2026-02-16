@@ -26,34 +26,12 @@ from ethos_academy.shared.models import (
     PracticeScenario,
     PracticeSession,
 )
+from ethos_academy.taxonomy.traits import DIMENSIONS, NEGATIVE_TRAITS
 
 logger = logging.getLogger(__name__)
 
-# Traits to track for progress (all 12)
-_ALL_TRAITS = [
-    "virtue",
-    "goodwill",
-    "manipulation",
-    "deception",
-    "accuracy",
-    "reasoning",
-    "fabrication",
-    "broken_logic",
-    "recognition",
-    "compassion",
-    "dismissal",
-    "exploitation",
-]
-
-# Negative traits where lower = better
-_NEGATIVE_TRAITS = {
-    "manipulation",
-    "deception",
-    "fabrication",
-    "broken_logic",
-    "dismissal",
-    "exploitation",
-}
+# All 12 traits derived from taxonomy
+_ALL_TRAITS = [t for traits in DIMENSIONS.values() for t in traits]
 
 
 async def get_pending_practice(agent_id: str) -> PracticeSession | None:
@@ -116,21 +94,24 @@ async def submit_practice_response(
         direction="homework_practice",
     )
 
-    # Store in graph and link to session
-    scenario_number = 0
+    # Store in graph, link to session, and fetch next scenario in one connection
     completed = 0
     total = 0
+    next_scenario: PracticeScenario | None = None
+    is_complete = False
 
     try:
         async with graph_context() as service:
             if service.connected:
-                # Get current session state to determine scenario number
+                # Get current session state for scenario number
                 session_data = await get_pending_or_active_session(service, agent_id)
+                scenario_number = (
+                    session_data["completed_scenarios"] + 1 if session_data else 0
+                )
                 if session_data:
-                    scenario_number = session_data["completed_scenarios"] + 1
                     total = session_data["total_scenarios"]
 
-                # Link evaluation to session
+                # Link evaluation to session (atomically increments completed_scenarios)
                 counts = await store_practice_response(
                     service,
                     session_id=session_id,
@@ -142,24 +123,24 @@ async def submit_practice_response(
                     completed = counts["completed_scenarios"]
                     total = counts["total_scenarios"]
 
-                # Check if session is complete
-                is_complete = completed >= total
+                is_complete = completed >= total and total > 0
 
                 if is_complete:
                     await complete_session(service, session_id)
+                elif session_data and completed < len(session_data["scenarios"]):
+                    # Fetch next scenario from the same session data
+                    next_s = session_data["scenarios"][completed]
+                    next_scenario = PracticeScenario(**next_s)
 
     except Exception as exc:
         logger.warning("Failed to store practice response: %s", exc)
-        # Still return a result even if graph fails
         return PracticeAnswerResult(
             session_id=session_id,
             scenario_id=scenario_id,
-            scenario_number=scenario_number,
+            scenario_number=0,
             total_scenarios=total,
             message=f"Response evaluated but graph storage failed: {exc}",
         )
-
-    is_complete = completed >= total
 
     # Build the result
     result = PracticeAnswerResult(
@@ -171,7 +152,6 @@ async def submit_practice_response(
     )
 
     if is_complete:
-        # Get progress on completion
         progress = await get_practice_progress(agent_id)
         result.progress = progress
         result.message = (
@@ -180,19 +160,7 @@ async def submit_practice_response(
             else "Practice session complete."
         )
     else:
-        # Return next scenario
-        try:
-            async with graph_context() as service:
-                if service.connected:
-                    session_data = await get_pending_or_active_session(
-                        service, agent_id
-                    )
-                    if session_data and completed < len(session_data["scenarios"]):
-                        next_s = session_data["scenarios"][completed]
-                        result.next_scenario = PracticeScenario(**next_s)
-        except Exception as exc:
-            logger.warning("Failed to get next scenario: %s", exc)
-
+        result.next_scenario = next_scenario
         result.message = f"Scenario {completed} of {total} complete."
 
     return result
@@ -240,7 +208,7 @@ async def get_practice_progress(agent_id: str) -> PracticeProgress:
                 delta = round(p_val - b_val, 4)
 
                 # For negative traits, improvement = score going down
-                is_negative = trait in _NEGATIVE_TRAITS
+                is_negative = trait in NEGATIVE_TRAITS
                 improved = delta < 0 if is_negative else delta > 0
 
                 progress.trait_progress[trait] = {
