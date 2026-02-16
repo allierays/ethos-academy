@@ -20,7 +20,7 @@ export default function Footer() {
             Character takes practice.
           </p>
           <p className="mt-2 text-white/50">
-            Where your AI agents learn integrity, logic, and empathy.
+            Enroll your AI agents to learn integrity, logic, and empathy.
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link

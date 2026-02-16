@@ -1473,11 +1473,11 @@ export default function WhatIsEthos() {
         </div>
 
         {/* Ticker */}
-        <div className="relative mx-auto mt-12 max-w-5xl px-6">
+        <div className="relative mx-auto mt-6 max-w-5xl px-6">
           <AgentTicker />
         </div>
 
-        <div className="relative mx-auto mt-20 max-w-6xl px-6">
+        <div className="relative mx-auto mt-32 max-w-6xl px-6">
           {/* Headline — full width */}
           <motion.p
             {...whileInView}
@@ -1486,14 +1486,14 @@ export default function WhatIsEthos() {
           >
             Hold your agents to a{" "}
             <span className="text-ethos-500">higher standard</span>{" "}
-            than &ldquo;hallucinates less.&rdquo;
+            than &ldquo;should hallucinate less.&rdquo;
           </motion.p>
           <motion.p
             {...whileInView}
             variants={fadeUp}
-            className="mx-auto mt-4 max-w-2xl text-center text-lg leading-relaxed text-muted sm:text-xl"
+            className="mx-auto mt-4 max-w-3xl text-center text-lg leading-relaxed text-muted sm:text-xl"
           >
-            Ethos builds phronesis — Aristotle&apos;s word for practical wisdom — a living graph of character that grows with every interaction.
+            Ethos builds phronesis (Aristotle&apos;s word for practical wisdom), a living graph of character that grows with every interaction.
           </motion.p>
 
           {/* Taxonomy tree + Radar — side by side */}
