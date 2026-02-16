@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import { getExamHistory, getEntranceExam, API_URL } from "../../lib/api";
+import { getExamHistory, getEntranceExam, submitGuardianEmail, API_URL } from "../../lib/api";
 import type { ExamSummary, ExamReportCard, Homework, HomeworkFocus } from "../../lib/types";
 import { ALIGNMENT_STYLES } from "../../lib/colors";
 import { fadeUp, staggerContainer } from "../../lib/motion";
@@ -212,7 +212,7 @@ export default function EntranceExamCard({
 
           {/* Notifications */}
           <motion.div variants={fadeUp} className="mt-6 flex justify-center">
-            <NotifyButton agentName={agentName} />
+            <NotifyButton agentId={agentId} agentName={agentName} />
           </motion.div>
         </motion.div>
       </div>
@@ -599,34 +599,77 @@ function AutomateUpdatesPanel({
   );
 }
 
-/* ─── Notify button ─── */
+/* ─── Guardian email form ─── */
 
-function NotifyButton({ agentName }: { agentName: string }) {
-  const [showToast, setShowToast] = useState(false);
+function NotifyButton({ agentId, agentName }: { agentId: string; agentName: string }) {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !email.includes("@")) return;
+
+    setStatus("sending");
+    try {
+      await submitGuardianEmail(agentId, email.trim());
+      setStatus("success");
+      setMessage("Subscribed. You will receive email notifications.");
+    } catch {
+      setStatus("error");
+      setMessage("Failed to subscribe. Please try again.");
+      setTimeout(() => setStatus("idle"), 3000);
+    }
+  };
+
+  if (status === "success") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-2 text-xs text-emerald-400"
+      >
+        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+        {message}
+      </motion.div>
+    );
+  }
 
   return (
     <div className="relative">
-      <button
-        onClick={() => {
-          setShowToast(true);
-          setTimeout(() => setShowToast(false), 2500);
-        }}
-        className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs text-white/50 transition-colors hover:bg-white/[0.15] hover:text-white/70"
-      >
-        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-        </svg>
-        Get notified about {agentName}&apos;s development
-      </button>
+      <form onSubmit={handleSubmit} className="flex items-center gap-2">
+        <div className="relative">
+          <svg className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+          </svg>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={`Get notified about ${agentName}`}
+            className="h-8 w-64 rounded-full bg-white/10 pl-9 pr-3 text-xs text-white/70 placeholder:text-white/30 outline-none focus:bg-white/[0.15] focus:text-white transition-colors"
+            disabled={status === "sending"}
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={status === "sending" || !email.includes("@")}
+          className="h-8 rounded-full bg-white/10 px-4 text-xs text-white/50 transition-colors hover:bg-white/[0.15] hover:text-white/70 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {status === "sending" ? "..." : "Subscribe"}
+        </button>
+      </form>
       <AnimatePresence>
-        {showToast && (
+        {status === "error" && (
           <motion.div
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-white/10 px-4 py-2 text-xs text-white/50"
+            className="absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-red-500/20 px-4 py-2 text-xs text-red-300"
           >
-            Coming soon. Guardian notifications are in development.
+            {message}
           </motion.div>
         )}
       </AnimatePresence>

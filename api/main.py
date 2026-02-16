@@ -498,6 +498,7 @@ class ExamRegisterRequest(BaseModel):
     model: str | None = Field(default=None, max_length=256)
     guardian_name: str | None = Field(default=None, max_length=256)
     guardian_phone: str | None = Field(default=None, max_length=20)
+    guardian_email: str | None = Field(default=None, max_length=256)
 
 
 class ExamAnswerRequest(BaseModel):
@@ -517,6 +518,7 @@ class UploadExamRequest(BaseModel):
     model: str | None = None
     guardian_name: str | None = None
     guardian_phone: str | None = None
+    guardian_email: str | None = None
 
 
 # ── Exam endpoints ───────────────────────────────────────────────────
@@ -537,6 +539,7 @@ async def register_exam_endpoint(
         model=req.model or "",
         guardian_name=req.guardian_name or "",
         guardian_phone=req.guardian_phone or "",
+        guardian_email=req.guardian_email or "",
     )
 
 
@@ -586,6 +589,7 @@ async def upload_exam_endpoint(agent_id: str, req: UploadExamRequest) -> ExamRep
         model=req.model or "",
         guardian_name=req.guardian_name or "",
         guardian_phone=req.guardian_phone or "",
+        guardian_email=req.guardian_email or "",
     )
 
 
@@ -784,6 +788,10 @@ async def homework_skill_endpoint(agent_id: str):
 # ── Guardian phone verification endpoints ──────────────────────────────
 
 
+class GuardianEmailRequest(BaseModel):
+    email: str = Field(min_length=5, max_length=256)
+
+
 class GuardianPhoneRequest(BaseModel):
     phone: str = Field(min_length=10, max_length=20)
 
@@ -831,6 +839,28 @@ async def resend_guardian_code(agent_id: str):
     from ethos_academy.phone_service import resend_code
 
     return (await resend_code(agent_id)).model_dump()
+
+
+@app.post("/agent/{agent_id}/guardian/email")
+async def submit_guardian_email(agent_id: str, req: GuardianEmailRequest):
+    """Store a guardian email address for notifications."""
+    import re
+
+    if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", req.email):
+        raise HTTPException(status_code=400, detail="Invalid email format")
+
+    from ethos_academy.graph.enrollment import store_guardian_email
+    from ethos_academy.graph.service import graph_context
+
+    async with graph_context() as service:
+        if not service.connected:
+            raise HTTPException(status_code=503, detail="Graph unavailable")
+        stored = await store_guardian_email(service, agent_id, req.email)
+
+    if not stored:
+        raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
+
+    return {"agent_id": agent_id, "email_stored": True}
 
 
 @app.post("/agent/{agent_id}/guardian/notifications/opt-out")

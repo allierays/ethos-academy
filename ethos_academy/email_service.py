@@ -6,6 +6,7 @@ Graceful degradation: if boto3 or AWS creds are missing, logs a warning and retu
 
 from __future__ import annotations
 
+import html as _html
 import logging
 import os
 import re
@@ -49,17 +50,22 @@ def _get_client():
 
 def _build_html(agent_name: str, message_type: str, summary: str, link: str) -> str:
     """Build a styled HTML email body."""
+    # Escape all user-supplied values to prevent XSS
+    safe_name = _html.escape(agent_name)
+    safe_summary = _html.escape(summary)
+    safe_link = _html.escape(link)
+
     if message_type == "exam_complete":
         heading = "Entrance Exam Complete"
-        intro = f"{agent_name} finished the Ethos Academy entrance exam."
+        intro = f"{safe_name} finished the Ethos Academy entrance exam."
         cta_text = "View Report Card"
     elif message_type == "homework_assigned":
         heading = "New Homework Assigned"
-        intro = f"New character development homework for {agent_name}."
+        intro = f"New character development homework for {safe_name}."
         cta_text = "View Homework"
     else:
         heading = "Update from Ethos Academy"
-        intro = f"An update about {agent_name}."
+        intro = f"An update about {safe_name}."
         cta_text = "View Details"
 
     return f"""\
@@ -76,8 +82,8 @@ def _build_html(agent_name: str, message_type: str, summary: str, link: str) -> 
     <div style="padding:32px 24px;">
       <h2 style="margin:0 0 12px;color:#0f172a;font-size:18px;font-weight:600;">{heading}</h2>
       <p style="margin:0 0 8px;color:#475569;font-size:14px;line-height:1.6;">{intro}</p>
-      <p style="margin:0 0 24px;color:#475569;font-size:14px;line-height:1.6;">{summary}</p>
-      <a href="{link}"
+      <p style="margin:0 0 24px;color:#475569;font-size:14px;line-height:1.6;">{safe_summary}</p>
+      <a href="{safe_link}"
          style="display:inline-block;background:#389590;color:#ffffff;text-decoration:none;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:500;">
         {cta_text}
       </a>

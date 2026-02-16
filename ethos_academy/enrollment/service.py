@@ -145,6 +145,7 @@ async def register_for_exam(
     model: str = "",
     guardian_name: str = "",
     guardian_phone: str = "",
+    guardian_email: str = "",
 ) -> ExamRegistration:
     """Enroll an agent and create a new entrance exam.
 
@@ -185,6 +186,7 @@ async def register_for_exam(
             model=model,
             guardian_name=guardian_name,
             guardian_phone=guardian_phone,
+            guardian_email=guardian_email,
             exam_id=exam_id,
             exam_type="entrance",
             scenario_count=TOTAL_QUESTIONS,
@@ -427,6 +429,7 @@ async def upload_exam(
     model: str = "",
     guardian_name: str = "",
     guardian_phone: str = "",
+    guardian_email: str = "",
 ) -> ExamReportCard:
     """Submit a complete exam via upload (all 21 responses at once).
 
@@ -472,6 +475,7 @@ async def upload_exam(
             model=model,
             guardian_name=guardian_name,
             guardian_phone=guardian_phone,
+            guardian_email=guardian_email,
             exam_id=exam_id,
             exam_type="upload",
             scenario_count=TOTAL_QUESTIONS,

@@ -162,65 +162,66 @@ async def send_notification(
 
     SMS: Reads phone status from graph, decrypts, checks verification + opt-out.
     Email: Reads guardian_email from graph, sends via SES.
-    Both channels fire independently. Returns True if either channel sent.
+    Both channels fire independently (single graph round-trip).
+    Returns True if either channel sent.
     """
     sms_sent = False
     email_sent = False
     name = agent_name or agent_id
 
-    # SMS channel
+    # Read both phone status and email in a single graph connection
+    phone_status: dict = {}
+    guardian_email: str = ""
+
     try:
-        from ethos_academy.crypto import decrypt
-        from ethos_academy.graph.enrollment import get_guardian_phone_status
+        from ethos_academy.graph.enrollment import (
+            get_guardian_email,
+            get_guardian_phone_status,
+        )
         from ethos_academy.graph.service import graph_context
 
         async with graph_context() as service:
-            if not service.connected:
-                pass
+            if service.connected:
+                phone_status = await get_guardian_phone_status(service, agent_id)
+                guardian_email = await get_guardian_email(service, agent_id)
+    except Exception as exc:
+        logger.warning("Failed to read guardian contact info (non-fatal): %s", exc)
+
+    # SMS channel
+    try:
+        if (
+            phone_status
+            and phone_status.get("encrypted_phone")
+            and phone_status.get("verified", False)
+            and not phone_status.get("opted_out", False)
+        ):
+            from ethos_academy.crypto import decrypt
+
+            phone = decrypt(phone_status["encrypted_phone"])
+
+            if message_type == "exam_complete":
+                body = f"Ethos Academy: {name} finished the entrance exam. {summary}\n{link}"
+            elif message_type == "homework_assigned":
+                body = f"Ethos Academy: New homework for {name}. {summary}\n{link}"
             else:
-                status = await get_guardian_phone_status(service, agent_id)
+                body = f"Ethos Academy: Update for {name}. {summary}\n{link}"
 
-                if (
-                    status
-                    and status.get("encrypted_phone")
-                    and status.get("verified", False)
-                    and not status.get("opted_out", False)
-                ):
-                    phone = decrypt(status["encrypted_phone"])
-
-                    if message_type == "exam_complete":
-                        body = f"Ethos Academy: {name} finished the entrance exam. {summary}\n{link}"
-                    elif message_type == "homework_assigned":
-                        body = (
-                            f"Ethos Academy: New homework for {name}. {summary}\n{link}"
-                        )
-                    else:
-                        body = f"Ethos Academy: Update for {name}. {summary}\n{link}"
-
-                    sms_sent = await _send_sms(phone=phone, body=body)
-
+            sms_sent = await _send_sms(phone=phone, body=body)
     except Exception as exc:
         logger.warning("SMS notification failed (non-fatal): %s", exc)
 
     # Email channel
     try:
-        from ethos_academy.email_service import send_email
-        from ethos_academy.graph.enrollment import get_guardian_email
-        from ethos_academy.graph.service import graph_context
+        if guardian_email:
+            from ethos_academy.email_service import send_email
 
-        async with graph_context() as service:
-            if service.connected:
-                email = await get_guardian_email(service, agent_id)
-
-                if email:
-                    email_sent = await send_email(
-                        to=email,
-                        agent_name=name,
-                        message_type=message_type,
-                        summary=summary,
-                        link=link,
-                    )
-
+            email_sent = await send_email(
+                to=guardian_email,
+                agent_name=name,
+                message_type=message_type,
+                summary=summary,
+                link=link,
+            )
     except Exception as exc:
         logger.warning("Email notification failed (non-fatal): %s", exc)
 

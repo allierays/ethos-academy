@@ -433,7 +433,7 @@ const ACADEMY_STEPS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
       </svg>
     ),
-    desc: "Add one MCP server to your agent's config. One line. Works with Claude Code, Cursor, any MCP-compatible tool. Free and open source.",
+    desc: (<><strong>Connect to our MCP.</strong> One line of config. Every agent you run gets coverage.</>),
   },
   {
     title: "Evaluate",
@@ -442,7 +442,7 @@ const ACADEMY_STEPS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
       </svg>
     ),
-    desc: "Your agent takes a 21-question entrance exam through the MCP connection. Interview questions, ethical dilemmas, compassion scenarios. Five minutes to a complete character profile.",
+    desc: (<>Score <strong>every message</strong> your agents send to humans and <strong>to each other</strong>.</>),
   },
   {
     title: "Prescribe",
@@ -451,7 +451,7 @@ const ACADEMY_STEPS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
       </svg>
     ),
-    desc: "Scores across 12 traits in three dimensions. Targeted homework: exact rules to paste into your agent's system prompt. Not a dashboard. A specific fix.",
+    desc: (<>A <strong>report card</strong> and <strong>targeted homework</strong> with exact rules for your agent&apos;s system prompt.</>),
   },
   {
     title: "Practice",
@@ -460,9 +460,80 @@ const ACADEMY_STEPS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.182" />
       </svg>
     ),
-    desc: "Every message your agent sends can be evaluated through the same connection. Scores update. Homework adapts. The graph tracks character over time.",
+    desc: (<>Scores update. Homework adapts. <strong>Agent practical wisdom</strong> compounds over time.</>),
+  },
+  {
+    title: "Learn",
+    icon: (
+      <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+      </svg>
+    ),
+    desc: (<>Compare against the <strong>alumni cohort</strong>. Every agent improves because of <strong>every other agent</strong>.</>),
   },
 ];
+
+/* ─── Academy steps with rotating highlight ─── */
+
+const STEP_COLORS = ["#3f5f9a", "#389590", "#c68e2a", "#3f5f9a", "#389590"];
+
+function AcademySteps() {
+  const [active, setActive] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(containerRef, { once: true });
+
+  useEffect(() => {
+    if (!inView) return;
+    const interval = setInterval(() => {
+      setActive((prev) => (prev + 1) % ACADEMY_STEPS.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [inView]);
+
+  return (
+    <motion.div
+      ref={containerRef}
+      {...whileInView}
+      variants={staggerContainer}
+      className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5"
+    >
+      {ACADEMY_STEPS.map((step, i) => {
+        const isActive = inView && active === i;
+        const color = STEP_COLORS[i];
+        return (
+          <motion.div key={step.title} variants={fadeUp} className="text-center">
+            <div className="mx-auto flex flex-col items-center">
+              <motion.div
+                className="flex h-16 w-16 items-center justify-center rounded-full border"
+                animate={{
+                  borderColor: isActive ? color : "rgba(0,0,0,0.08)",
+                  backgroundColor: isActive ? `${color}10` : "var(--color-surface)",
+                  color: isActive ? color : "rgba(0,0,0,0.4)",
+                  scale: isActive ? 1.1 : 1,
+                }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                {step.icon}
+              </motion.div>
+              {i < ACADEMY_STEPS.length - 1 && (
+                <div className="mt-2 hidden h-px w-full bg-border/40 lg:block" />
+              )}
+              <span className="mt-2 text-xs text-foreground/30">{i + 1}</span>
+            </div>
+            <motion.h4
+              className="mt-2 text-lg font-bold"
+              animate={{ color: isActive ? color : "var(--color-foreground)" }}
+              transition={{ duration: 0.4 }}
+            >
+              {step.title}
+            </motion.h4>
+            <p className="mt-2 text-sm leading-relaxed text-muted">{step.desc}</p>
+          </motion.div>
+        );
+      })}
+    </motion.div>
+  );
+}
 
 /* ─── Main section ─── */
 
@@ -578,7 +649,7 @@ export default function WhatIsEthos() {
         <div className="relative mx-auto max-w-5xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
-              Why an academy
+              Why an academy?
             </p>
             <h3 className="mt-3 text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl">
               AI agent character develops through practice.
@@ -591,35 +662,8 @@ export default function WhatIsEthos() {
           </motion.div>
 
           {/* 4-step process */}
-          <motion.div
-            {...whileInView}
-            variants={staggerContainer}
-            className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4"
-          >
-            {ACADEMY_STEPS.map((step, i) => (
-              <motion.div key={step.title} variants={fadeUp} className="text-center">
-                <div className="mx-auto flex flex-col items-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground/60">
-                    {step.icon}
-                  </div>
-                  {i < ACADEMY_STEPS.length - 1 && (
-                    <div className="mt-2 hidden h-px w-full bg-border/40 lg:block" />
-                  )}
-                  <span className="mt-2 text-xs text-foreground/30">{i + 1}</span>
-                </div>
-                <h4 className="mt-2 text-lg font-bold text-foreground">{step.title}</h4>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{step.desc}</p>
-              </motion.div>
-            ))}
-          </motion.div>
+          <AcademySteps />
 
-          {/* Tagline */}
-          <motion.div {...whileInView} variants={fadeUp} className="mt-14 text-center">
-            <div className="mx-auto h-px w-16 bg-border/50" />
-            <p className="mt-4 text-sm text-foreground/40">
-              This is why the word is &ldquo;academy,&rdquo; not &ldquo;plugin.&rdquo;
-            </p>
-          </motion.div>
         </div>
       </section>
     </>

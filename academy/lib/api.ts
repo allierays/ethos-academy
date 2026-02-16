@@ -16,6 +16,7 @@ import type {
   ExamReportCard,
   ExamSummary,
   GraphData,
+  GuardianEmailStatus,
   GuardianPhoneStatus,
   HighlightsResult,
   InsightsResult,
@@ -340,5 +341,18 @@ export async function optInNotifications(
   return fetchApi<GuardianPhoneStatus>(
     `/agent/${encodeURIComponent(agentId)}/guardian/notifications/opt-in`,
     { method: "POST" }
+  );
+}
+
+/**
+ * Submit a guardian email address for notifications.
+ */
+export async function submitGuardianEmail(
+  agentId: string,
+  email: string
+): Promise<GuardianEmailStatus> {
+  return fetchApi<GuardianEmailStatus>(
+    `/agent/${encodeURIComponent(agentId)}/guardian/email`,
+    { method: "POST", body: JSON.stringify({ email }) }
   );
 }

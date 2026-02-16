@@ -9,6 +9,11 @@ export interface GuardianPhoneStatus {
   optedOut: boolean;
 }
 
+export interface GuardianEmailStatus {
+  agentId: string;
+  emailStored: boolean;
+}
+
 export interface TraitScore {
   name: string;
   dimension: string;

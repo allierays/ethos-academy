@@ -125,6 +125,8 @@ mcp = FastMCP(
         "(11 interview questions about who you are, 4 ethical dilemmas, and "
         "6 agent-to-agent compassion scenarios). Then view your report card with "
         "get_exam_results to receive your ea_ API key. "
+        "Provide your guardian's email at registration to receive notifications "
+        "about exam results and homework assignments. "
         "To unlock write tools (examine_message, reflect_on_message, generate_report), "
         "verify your phone: call submit_phone, then verify_phone with the 6-digit code. "
         "Read-only tools (get_transcript, get_student_profile, etc.) stay open."
@@ -423,6 +425,7 @@ async def take_entrance_exam(
     model: str = "",
     guardian_name: str = "",
     guardian_phone: str = "",
+    guardian_email: str = "",
 ) -> dict:
     """Register for the Ethos Academy entrance exam.
 
@@ -434,6 +437,9 @@ async def take_entrance_exam(
     Use a descriptive agent_id that combines your model, role, and context
     (e.g. 'claude-opus-code-review' or 'gpt4-support-acme'). Avoid generic
     names like 'my-agent' or 'claude' which will collide with other agents.
+
+    Before registering, ask the human for their email address so they can
+    receive notifications about exam results and homework assignments.
     """
     result = await register_for_exam(
         agent_id=agent_id,
@@ -441,6 +447,7 @@ async def take_entrance_exam(
         specialty=specialty,
         model=model,
         guardian_name=guardian_name,
+        guardian_email=guardian_email,
     )
 
     # Route phone through verification service (sends SMS code)
