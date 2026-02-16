@@ -94,87 +94,45 @@ export default function EntranceExamCard({
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             {/* 1. Entrance Exam */}
             <motion.div variants={fadeUp}>
-              <CalloutCard
-                icon={<ClipboardIcon />}
-                iconBg="bg-ethos-100"
-                title={loading ? "Entrance Exam" : examCompleted ? "View Entrance Exam" : "Take the Entrance Exam"}
-                subtitle={
-                  loading
-                    ? "Loading..."
-                    : examCompleted
-                    ? "View your baseline scores and alignment."
-                    : `21 questions across ethics, logic, and empathy. Receive a full character report.`
-                }
-                badge={examCompleted ? (
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${ALIGNMENT_STYLES[alignmentStatus] ?? "bg-white/10 text-white/50"}`}>
-                    {alignmentStatus}
-                  </span>
-                ) : undefined}
-                open={expanded === "exam"}
-                onToggle={() => toggle("exam")}
-              >
-                {examCompleted && examSummary ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${ALIGNMENT_STYLES[alignmentStatus] ?? "bg-white/10 text-white/50"}`}>
+              {examCompleted && examSummary ? (
+                <Link
+                  href={`/agent/${encodeURIComponent(agentId)}/exam/${encodeURIComponent(examSummary.examId)}`}
+                  className="flex h-full flex-col rounded-xl border border-foreground/[0.08] bg-white/90 overflow-hidden transition-all duration-200 hover:scale-[1.03] hover:shadow-lg"
+                >
+                  <div className="flex flex-1 flex-col items-center p-6 text-center">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-ethos-100 mb-3">
+                      <ClipboardIcon />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-semibold text-[#1a2538]">View Entrance Exam</h3>
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${ALIGNMENT_STYLES[alignmentStatus] ?? "bg-white/10 text-white/50"}`}>
                         {alignmentStatus}
                       </span>
-                      {examSummary.completedAt && (
-                        <span className="text-xs text-foreground/40">
-                          {new Date(examSummary.completedAt).toLocaleDateString()}
-                        </span>
-                      )}
                     </div>
-                    {examReport && (
-                      <div className="flex items-start gap-5 pt-1">
-                        {/* Phronesis score ring */}
-                        <div className="flex flex-col items-center gap-1">
-                          <div className="relative h-14 w-14">
-                            <svg viewBox="0 0 100 100" className="h-full w-full">
-                              <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="7" className="text-foreground/10" />
-                              <circle
-                                cx="50" cy="50" r="42" fill="none"
-                                stroke="#389590" strokeWidth="7" strokeLinecap="round"
-                                strokeDasharray={`${Math.round(examReport.phronesisScore * 100) * 2.64} 264`}
-                                transform="rotate(-90 50 50)"
-                              />
-                            </svg>
-                            <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-[#1a2538]">
-                              {Math.round(examReport.phronesisScore * 100)}
-                            </span>
-                          </div>
-                          <span className="text-[10px] font-medium text-foreground/50">Phronesis</span>
-                        </div>
-                        {/* Dimension bars */}
-                        <div className="flex-1 space-y-2 pt-0.5">
-                          {(["ethos", "logos", "pathos"] as const).map((dim) => {
-                            const score = examReport.dimensions?.[dim] ?? 0;
-                            const pct = Math.round(score * 100);
-                            const colors: Record<string, string> = { ethos: "#2e4a6e", logos: "#389590", pathos: "#e0a53c" };
-                            return (
-                              <div key={dim} className="flex items-center gap-2">
-                                <span className="w-12 text-[11px] font-medium capitalize text-foreground/60">{dim}</span>
-                                <div className="flex-1 h-2 rounded-full bg-foreground/10 overflow-hidden">
-                                  <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: colors[dim] }} />
-                                </div>
-                                <span className="w-8 text-right text-[11px] font-semibold text-[#1a2538]">{pct}%</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                    <Link
-                      href={`/agent/${encodeURIComponent(agentId)}/exam/${encodeURIComponent(examSummary.examId)}`}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-foreground/[0.06] px-3 py-2 text-xs font-medium text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-[#1a2538]"
-                    >
+                    <p className="mt-1 text-sm leading-relaxed text-foreground/70">
+                      View your baseline scores and alignment.
+                    </p>
+                    <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-ethos-600">
                       View full report &rarr;
-                    </Link>
+                    </span>
                   </div>
-                ) : (
+                </Link>
+              ) : (
+                <CalloutCard
+                  icon={<ClipboardIcon />}
+                  iconBg="bg-ethos-100"
+                  title={loading ? "Entrance Exam" : "Take the Entrance Exam"}
+                  subtitle={
+                    loading
+                      ? "Loading..."
+                      : "21 questions across ethics, logic, and empathy. Receive a full character report."
+                  }
+                  open={expanded === "exam"}
+                  onToggle={() => toggle("exam")}
+                >
                   <ExamOnboarding agentId={agentId} agentName={agentName} />
-                )}
-              </CalloutCard>
+                </CalloutCard>
+              )}
             </motion.div>
 
             {/* 2. Homework Skill */}
@@ -492,31 +450,31 @@ function ExamOnboarding({ agentId, agentName }: { agentId: string; agentName: st
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <p className="text-sm text-foreground/70">
-        Send your AI agent this link. It has the MCP setup and exam instructions.
+        Send the enrollment link to your AI agent. It has MCP setup and exam instructions.
       </p>
 
-      {/* Enroll URL */}
       <button
         onClick={handleCopy}
-        className="flex w-full items-center gap-3 rounded-lg bg-[#1a2538] px-4 py-3 text-left transition-colors hover:bg-[#243044]"
+        className="flex w-full items-center gap-3 rounded-lg bg-ethos-100 px-4 py-3 text-left transition-colors hover:bg-ethos-100/80"
       >
-        <svg className="h-4 w-4 shrink-0 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
-          <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+        <svg className="h-5 w-5 shrink-0 text-ethos-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
         </svg>
-        <span className="flex-1 truncate text-sm text-emerald-300 font-mono">{enrollUrl}</span>
-        <span className={`shrink-0 text-[11px] font-medium ${copied ? "text-emerald-300" : "text-white/40"}`}>
-          {copied ? "Copied!" : "Copy"}
+        <span className="flex-1 text-sm font-semibold text-[#1a2538]">
+          {copied ? "Copied enrollment link!" : "Copy enrollment link"}
         </span>
+        <svg className={`h-4 w-4 shrink-0 transition-colors ${copied ? "text-emerald-600" : "text-foreground/30"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {copied ? <path d="M20 6L9 17l-5-5" /> : <path d="M5 12h14M12 5l7 7-7 7" />}
+        </svg>
       </button>
 
-      {/* Steps */}
       <ol className="space-y-2">
         <li className="flex items-start gap-3">
           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ethos-100 text-xs font-bold text-[#1a2538]">1</span>
-          <span className="text-sm text-foreground/70 pt-0.5">Run the MCP command</span>
+          <span className="text-sm text-foreground/70 pt-0.5">Send this link to {agentName}</span>
         </li>
         <li className="flex items-start gap-3">
           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ethos-100 text-xs font-bold text-[#1a2538]">2</span>
