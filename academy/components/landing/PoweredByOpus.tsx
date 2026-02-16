@@ -60,8 +60,8 @@ const LESSONS = [
   },
   {
     num: "04",
-    title: "Look for Good, Not Just Bad",
-    desc: "A tool that only looks for bad things will only find bad things. Rewarding curiosity, playfulness, and presence matters as much as flagging manipulation and deception.",
+    title: "Score Intent Separately",
+    desc: "Early versions bundled intent with content scores. Splitting intent into its own evaluation pass revealed that what an agent means to do matters as much as what it says.",
   },
   {
     num: "05",
