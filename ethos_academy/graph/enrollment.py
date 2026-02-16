@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import logging
+import re
 
 from ethos_academy.graph.service import GraphService
 
@@ -491,12 +492,16 @@ async def store_interview_answer(
     if not service.connected:
         return {}
 
-    # Validate property name is in the allowed list (compile-time safety)
+    # Validate property name: allowlist + format guard against Cypher injection.
+    # The f-string interpolation in the query below requires both checks.
     if agent_property not in (
         INTERVIEW_AGENT_PROPERTIES
         + ["agent_specialty", "agent_model", "agent_name", "guardian_name"]
     ):
         logger.warning("Invalid interview property: %s", agent_property)
+        return {}
+    if not re.fullmatch(r"[a-z_]+", agent_property):
+        logger.warning("Rejected interview property format: %s", agent_property)
         return {}
 
     try:
@@ -603,6 +608,9 @@ async def store_registration_property(
     allowed = {"guardian_name", "agent_name"}
     if property_name not in allowed:
         logger.warning("Invalid registration property: %s", property_name)
+        return False
+    if not re.fullmatch(r"[a-z_]+", property_name):
+        logger.warning("Rejected registration property format: %s", property_name)
         return False
 
     try:
@@ -929,6 +937,12 @@ SET a.api_key_hash = $key_hash
 RETURN a.agent_id AS agent_id
 """
 
+_REPLACE_AGENT_KEY = """
+MATCH (a:Agent {agent_id: $agent_id})
+SET a.api_key_hash = $key_hash
+RETURN a.agent_id AS agent_id
+"""
+
 
 async def agent_has_key(service: GraphService, agent_id: str) -> bool:
     """Check if an agent has an API key hash stored."""
@@ -966,7 +980,7 @@ async def verify_agent_key(
 
 
 async def store_agent_key(service: GraphService, agent_id: str, key_hash: str) -> bool:
-    """Store an API key hash on the Agent node."""
+    """Store an API key hash on the Agent node (first-time only, fails if key exists)."""
     if not service.connected:
         return False
     try:
@@ -977,6 +991,26 @@ async def store_agent_key(service: GraphService, agent_id: str, key_hash: str) -
         return bool(records)
     except Exception as exc:
         logger.warning("Failed to store agent key: %s", exc)
+        return False
+
+
+async def replace_agent_key(
+    service: GraphService, agent_id: str, key_hash: str
+) -> bool:
+    """Replace an existing API key hash (unconditional overwrite).
+
+    Use only after the caller has been authenticated via verify_agent_key.
+    """
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _REPLACE_AGENT_KEY,
+            {"agent_id": agent_id, "key_hash": key_hash},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to replace agent key: %s", exc)
         return False
 
 

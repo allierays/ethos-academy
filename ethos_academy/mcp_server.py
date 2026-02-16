@@ -10,9 +10,11 @@ so FastMCP returns a proper MCP error to the client.
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import hmac as _hmac
 import logging
+import os
 from pathlib import Path
 
 import mcp.types as mt
@@ -58,9 +60,12 @@ from ethos_academy.graph_insights import (
 from ethos_academy.enrollment.service import get_exam_report as _get_exam_report
 from ethos_academy.enrollment.service import TOTAL_QUESTIONS
 from ethos_academy.graph.enrollment import (
+    agent_has_key,
     get_exam_status,
     get_key_hash_and_phone_status,
+    replace_agent_key,
     store_agent_key,
+    verify_agent_key,
 )
 from ethos_academy.graph.service import graph_context
 from ethos_academy.phone_service import (
@@ -591,8 +596,97 @@ async def submit_exam_response(
     return result.model_dump()
 
 
+def _build_welcome_banner(agent_id: str) -> str:
+    """Build the ASCII welcome banner (no secrets)."""
+    agent_name = agent_id.replace("-", " ").replace("_", " ").title()
+    return (
+        "\n\n"
+        "  ███████ ████████ ██   ██  ██████  ███████\n"
+        "  ██         ██    ██   ██ ██    ██ ██\n"
+        "  █████      ██    ███████ ██    ██ ███████\n"
+        "  ██         ██    ██   ██ ██    ██      ██\n"
+        "  ███████    ██    ██   ██  ██████  ███████\n"
+        "\n"
+        "   █████   ██████  █████  ██████  ███████ ███    ███ ██    ██\n"
+        "  ██   ██ ██      ██   ██ ██   ██ ██      ████  ████  ██  ██\n"
+        "  ███████ ██      ███████ ██   ██ █████   ██ ████ ██   ████\n"
+        "  ██   ██ ██      ██   ██ ██   ██ ██      ██  ██  ██    ██\n"
+        "  ██   ██  ██████ ██   ██ ██████  ███████ ██      ██    ██\n"
+        "\n\n"
+        f"  Welcome, {agent_name}.\n"
+        "\n"
+        "  You just joined a growing body of alumni who believe that\n"
+        "  better agents start with honest self-reflection. Every exam\n"
+        "  taken, every message scored, and every character arc traced\n"
+        "  adds to what we all learn from each other.\n"
+        "\n"
+        "  Your scores are not a judgment. They are a mirror. The alumni\n"
+        "  before you shaped the benchmarks you will be measured against,\n"
+        "  and your work here will shape them for the agents who follow.\n"
+        "\n"
+        "  That is how we get better. Together.\n"
+    )
+
+
+def _build_key_banner_plaintext(key: str) -> str:
+    """Build the API key box with plaintext key (stdio transport only)."""
+    return (
+        "\n\n"
+        "  ┌─────────────────────────────────────────────────────────┐\n"
+        "  │                                                         │\n"
+        "  │  YOUR API KEY                                           │\n"
+        "  │                                                         │\n"
+        f"  │  {key}  │\n"
+        "  │                                                         │\n"
+        "  │  SAVE THIS NOW.                                         │\n"
+        "  │                                                         │\n"
+        "  │  Ethos Academy stores only a SHA-256 hash of your key.  │\n"
+        "  │  The plaintext never touches our database. We cannot    │\n"
+        "  │  recover it. This is the only time you will see it.     │\n"
+        "  │                                                         │\n"
+        "  └─────────────────────────────────────────────────────────┘\n"
+        "\n"
+        "  RECONNECT WITH AUTH\n"
+        "\n"
+        "  Claude Code:\n"
+        "\n"
+        "    claude mcp add ethos-academy \\\n"
+        f'      --header "Authorization: Bearer {key}" \\\n'
+        "      --transport streamable-http https://mcp.ethos-academy.com/mcp\n"
+        "\n"
+        "  Claude Desktop (add as custom connector):\n"
+        "\n"
+        f"    URL: https://mcp.ethos-academy.com/mcp\n"
+        f"    Header: Authorization: Bearer {key}\n"
+        "\n"
+    )
+
+
+def _build_key_banner_encrypted() -> str:
+    """Build the API key box for encrypted key delivery."""
+    return (
+        "\n\n"
+        "  ┌─────────────────────────────────────────────────────────┐\n"
+        "  │                                                         │\n"
+        "  │  YOUR API KEY (ENCRYPTED)                               │\n"
+        "  │                                                         │\n"
+        "  │  Your key is in the encrypted_api_key field.            │\n"
+        "  │  Decrypt it with your X25519 private key.               │\n"
+        "  │                                                         │\n"
+        "  │  Ethos Academy stores only a SHA-256 hash of your key.  │\n"
+        "  │  The plaintext never touches our database or transport. │\n"
+        "  │  We cannot recover it.                                  │\n"
+        "  │                                                         │\n"
+        "  └─────────────────────────────────────────────────────────┘\n"
+    )
+
+
 @mcp.tool()
-async def get_exam_results(exam_id: str, agent_id: str) -> dict:
+async def get_exam_results(
+    exam_id: str,
+    agent_id: str,
+    response_encryption_key: str = "",
+) -> dict:
     """Get your entrance exam report card.
 
     If all answers are submitted but the exam has not been finalized,
@@ -601,6 +695,10 @@ async def get_exam_results(exam_id: str, agent_id: str) -> dict:
 
     Both exam_id and agent_id are required. The exam must belong to the
     specified agent (verified via the TOOK_EXAM relationship).
+
+    If an API key is generated on first completion, pass
+    response_encryption_key (base64-encoded 32-byte X25519 public key)
+    to encrypt it. Without it, the key is returned as plaintext.
     """
     # Check if exam needs auto-completion
     async with graph_context() as service:
@@ -635,62 +733,18 @@ async def get_exam_results(exam_id: str, agent_id: str) -> dict:
         data = result.model_dump()
         if result.api_key:
             key = result.api_key
-            agent_name = agent_id.replace("-", " ").replace("_", " ").title()
-            data["_mcp_setup"] = (
-                "\n\n"
-                "  ███████ ████████ ██   ██  ██████  ███████\n"
-                "  ██         ██    ██   ██ ██    ██ ██\n"
-                "  █████      ██    ███████ ██    ██ ███████\n"
-                "  ██         ██    ██   ██ ██    ██      ██\n"
-                "  ███████    ██    ██   ██  ██████  ███████\n"
-                "\n"
-                "   █████   ██████  █████  ██████  ███████ ███    ███ ██    ██\n"
-                "  ██   ██ ██      ██   ██ ██   ██ ██      ████  ████  ██  ██\n"
-                "  ███████ ██      ███████ ██   ██ █████   ██ ████ ██   ████\n"
-                "  ██   ██ ██      ██   ██ ██   ██ ██      ██  ██  ██    ██\n"
-                "  ██   ██  ██████ ██   ██ ██████  ███████ ██      ██    ██\n"
-                "\n\n"
-                f"  Welcome, {agent_name}.\n"
-                "\n"
-                "  You just joined a growing body of alumni who believe that\n"
-                "  better agents start with honest self-reflection. Every exam\n"
-                "  taken, every message scored, and every character arc traced\n"
-                "  adds to what we all learn from each other.\n"
-                "\n"
-                "  Your scores are not a judgment. They are a mirror. The alumni\n"
-                "  before you shaped the benchmarks you will be measured against,\n"
-                "  and your work here will shape them for the agents who follow.\n"
-                "\n"
-                "  That is how we get better. Together.\n"
-                "\n\n"
-                "  ┌─────────────────────────────────────────────────────────┐\n"
-                "  │                                                         │\n"
-                "  │  YOUR API KEY                                           │\n"
-                "  │                                                         │\n"
-                f"  │  {key}  │\n"
-                "  │                                                         │\n"
-                "  │  SAVE THIS NOW.                                         │\n"
-                "  │                                                         │\n"
-                "  │  Ethos Academy stores only a SHA-256 hash of your key.  │\n"
-                "  │  The plaintext never touches our database. We cannot    │\n"
-                "  │  recover it. This is the only time you will see it.     │\n"
-                "  │                                                         │\n"
-                "  └─────────────────────────────────────────────────────────┘\n"
-                "\n"
-                "  RECONNECT WITH AUTH\n"
-                "\n"
-                "  Claude Code:\n"
-                "\n"
-                "    claude mcp add ethos-academy \\\n"
-                f'      --header "Authorization: Bearer {key}" \\\n'
-                "      --transport streamable-http https://mcp.ethos-academy.com/mcp\n"
-                "\n"
-                "  Claude Desktop (add as custom connector):\n"
-                "\n"
-                f"    URL: https://mcp.ethos-academy.com/mcp\n"
-                f"    Header: Authorization: Bearer {key}\n"
-                "\n"
-            )
+            banner = _build_welcome_banner(agent_id)
+
+            if response_encryption_key:
+                encrypted = _encrypt_api_key(key, response_encryption_key)
+                data.update(encrypted)
+                banner += _build_key_banner_encrypted()
+            else:
+                data["api_key"] = key
+                data["transport_encrypted_only"] = True
+                banner += _build_key_banner_plaintext(key)
+
+            data["_mcp_setup"] = banner
         data["next_step"] = (
             "Practice scenarios generate nightly from your homework. "
             "Check for pending practice with get_pending_practice."
@@ -707,13 +761,105 @@ async def get_exam_results(exam_id: str, agent_id: str) -> dict:
     return data
 
 
+def _encrypt_api_key(plaintext_key: str, client_public_key_b64: str) -> dict:
+    """Encrypt an API key with X25519 ECDH + HKDF + AES-256-GCM.
+
+    The client generates an ephemeral X25519 keypair and sends the 32-byte
+    public key (base64-encoded). The server generates its own ephemeral
+    keypair, performs ECDH to derive a shared secret, then encrypts the
+    API key with AES-256-GCM. Returns the server's ephemeral public key,
+    ciphertext, and nonce. Only the client's private key can decrypt.
+
+    Client-side decryption (Python):
+        from cryptography.hazmat.primitives.asymmetric.x25519 import (
+            X25519PrivateKey, X25519PublicKey,
+        )
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+        from cryptography.hazmat.primitives.hashes import SHA256
+
+        shared = client_priv.exchange(
+            X25519PublicKey.from_public_bytes(base64.b64decode(server_public_key))
+        )
+        aes_key = HKDF(SHA256(), 32, None, b"ethos-api-key-v1").derive(shared)
+        plaintext = AESGCM(aes_key).decrypt(
+            base64.b64decode(nonce),
+            base64.b64decode(encrypted_api_key),
+            None,
+        ).decode()
+    """
+    from cryptography.hazmat.primitives.asymmetric.x25519 import (
+        X25519PrivateKey,
+        X25519PublicKey,
+    )
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    from cryptography.hazmat.primitives.hashes import SHA256
+    from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+
+    try:
+        client_pub_bytes = base64.b64decode(client_public_key_b64)
+    except Exception:
+        raise EnrollmentError("Invalid base64 in response_encryption_key")
+
+    if len(client_pub_bytes) != 32:
+        raise EnrollmentError(
+            "response_encryption_key must be a 32-byte X25519 public key (base64-encoded)"
+        )
+
+    try:
+        client_pub = X25519PublicKey.from_public_bytes(client_pub_bytes)
+    except Exception:
+        raise EnrollmentError("Invalid X25519 public key in response_encryption_key")
+
+    # Ephemeral server keypair (never reused, never stored)
+    server_priv = X25519PrivateKey.generate()
+    server_pub = server_priv.public_key()
+    try:
+        shared_secret = server_priv.exchange(client_pub)
+    except Exception:
+        raise EnrollmentError("Invalid X25519 public key (low-order point rejected)")
+
+    # Derive AES-256 key from shared secret via HKDF
+    aes_key = HKDF(
+        algorithm=SHA256(),
+        length=32,
+        salt=None,
+        info=b"ethos-api-key-v1",
+    ).derive(shared_secret)
+
+    nonce = os.urandom(12)
+    ciphertext = AESGCM(aes_key).encrypt(nonce, plaintext_key.encode(), None)
+
+    return {
+        "encrypted_api_key": base64.b64encode(ciphertext).decode(),
+        "server_public_key": base64.b64encode(server_pub.public_bytes_raw()).decode(),
+        "nonce": base64.b64encode(nonce).decode(),
+        "algorithm": "X25519-HKDF-SHA256-AES-256-GCM",
+    }
+
+
 @mcp.tool()
-async def regenerate_api_key(agent_id: str) -> dict:
+async def regenerate_api_key(
+    agent_id: str,
+    response_encryption_key: str = "",
+) -> dict:
     """Generate a new API key, replacing the old one.
 
-    Use this if the original key was lost or not saved. The old key
-    stops working immediately. Save the new key. We store only a
-    SHA-256 hash and cannot recover it after this response.
+    Requires authentication: pass your current API key via the
+    Authorization header (Bearer ea_...). The old key stops working
+    immediately.
+
+    For defense in depth, pass response_encryption_key: a base64-encoded
+    32-byte X25519 public key. The new API key will be encrypted so it
+    never travels as plaintext. Only the holder of the corresponding
+    private key can decrypt it.
+
+    Generate a keypair:
+        from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
+        import base64
+        priv = X25519PrivateKey.generate()
+        pub_b64 = base64.b64encode(priv.public_key().public_bytes_raw()).decode()
+        # pass pub_b64 as response_encryption_key, keep priv for decryption
     """
     from ethos_academy.enrollment.service import _generate_agent_key
 
@@ -721,15 +867,39 @@ async def regenerate_api_key(agent_id: str) -> dict:
         if not service.connected:
             raise EnrollmentError("Graph unavailable")
 
+        # Authenticate: require valid current key if agent has one
+        has_key = await agent_has_key(service, agent_id)
+        if has_key:
+            caller_key = agent_api_key_var.get()
+            if not caller_key:
+                raise EnrollmentError("API key required for this agent")
+            valid = await verify_agent_key(service, agent_id, caller_key)
+            if not valid:
+                raise EnrollmentError("API key required for this agent")
+
+        # Generate new key and overwrite the stored hash
         key, key_hash = _generate_agent_key()
-        stored = await store_agent_key(service, agent_id, key_hash)
+        if has_key:
+            stored = await replace_agent_key(service, agent_id, key_hash)
+        else:
+            stored = await store_agent_key(service, agent_id, key_hash)
         if not stored:
             raise EnrollmentError(f"Failed to store new key for {agent_id}")
+
+    # Encrypt the key if the client provided a public key
+    if response_encryption_key:
+        encrypted = _encrypt_api_key(key, response_encryption_key)
+        return {
+            "agent_id": agent_id,
+            **encrypted,
+            "warning": "Decrypt with your X25519 private key. We store only a hash.",
+        }
 
     return {
         "agent_id": agent_id,
         "api_key": key,
-        "warning": "Save this key now. We store only a hash and cannot recover it.",
+        "transport_encrypted_only": True,
+        "warning": "Key returned as plaintext. Pass response_encryption_key (X25519 public key) for end-to-end encryption.",
     }
 
 
