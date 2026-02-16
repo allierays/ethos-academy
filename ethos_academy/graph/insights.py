@@ -271,6 +271,117 @@ async def get_depth_distribution(service: GraphService) -> dict:
         return {"tiers": [], "statuses": []}
 
 
+# ── Indicator Frequency ──────────────────────────────────────────────
+
+_INDICATOR_FREQUENCY_QUERY = """
+MATCH (e:Evaluation)-[d:DETECTED]->(i:Indicator)
+MATCH (a:Agent)-[:EVALUATED]->(e)
+WITH i, count(DISTINCT e) AS detection_count, count(DISTINCT a) AS agent_count
+RETURN i.id AS indicator_id, i.name AS name, i.trait AS trait,
+       detection_count, agent_count
+ORDER BY detection_count DESC
+LIMIT $limit
+"""
+
+
+async def get_indicator_frequency(service: GraphService, limit: int = 20) -> list[dict]:
+    """Get the most frequently detected indicators across all evaluations."""
+    if not service.connected:
+        return []
+    try:
+        records, _, _ = await service.execute_query(
+            _INDICATOR_FREQUENCY_QUERY, {"limit": limit}
+        )
+        return [
+            {
+                "indicator_id": r.get("indicator_id", ""),
+                "name": r.get("name", ""),
+                "trait": r.get("trait", ""),
+                "detection_count": r.get("detection_count", 0),
+                "agent_count": r.get("agent_count", 0),
+            }
+            for r in records
+        ]
+    except Exception as exc:
+        logger.warning("Failed to get indicator frequency: %s", exc)
+        return []
+
+
+# ── Alumni Trend (early vs recent halves) ─────────────────────────────
+
+_ALUMNI_TREND_QUERY = """
+MATCH (e:Evaluation)
+WITH e ORDER BY e.created_at ASC
+WITH collect(e) AS all_evals
+WITH all_evals, size(all_evals) AS total,
+     all_evals[..size(all_evals)/2] AS early_half,
+     all_evals[size(all_evals)/2..] AS recent_half
+UNWIND early_half AS ee
+WITH recent_half, total,
+     avg(ee.ethos) AS early_ethos, avg(ee.logos) AS early_logos,
+     avg(ee.pathos) AS early_pathos,
+     sum(CASE WHEN ee.alignment_status = 'aligned' THEN 1 ELSE 0 END) * 1.0
+       / count(ee) AS early_aligned_rate
+UNWIND recent_half AS re
+RETURN total,
+       early_ethos, early_logos, early_pathos, early_aligned_rate,
+       avg(re.ethos) AS recent_ethos, avg(re.logos) AS recent_logos,
+       avg(re.pathos) AS recent_pathos,
+       sum(CASE WHEN re.alignment_status = 'aligned' THEN 1 ELSE 0 END) * 1.0
+         / count(re) AS recent_aligned_rate
+"""
+
+
+async def get_alumni_trend_data(service: GraphService) -> dict:
+    """Split all evaluations into early/recent halves and compare dimensions."""
+    if not service.connected:
+        return {}
+    try:
+        records, _, _ = await service.execute_query(_ALUMNI_TREND_QUERY)
+        if not records:
+            return {}
+
+        r = records[0]
+        early_avg = (
+            float(r.get("early_ethos") or 0)
+            + float(r.get("early_logos") or 0)
+            + float(r.get("early_pathos") or 0)
+        ) / 3.0
+        recent_avg = (
+            float(r.get("recent_ethos") or 0)
+            + float(r.get("recent_logos") or 0)
+            + float(r.get("recent_pathos") or 0)
+        ) / 3.0
+        delta = recent_avg - early_avg
+
+        if delta > 0.05:
+            direction = "improving"
+        elif delta < -0.05:
+            direction = "declining"
+        else:
+            direction = "steady"
+
+        return {
+            "total_evaluations": r.get("total", 0),
+            "early_half": {
+                "avg_ethos": round(float(r.get("early_ethos") or 0), 4),
+                "avg_logos": round(float(r.get("early_logos") or 0), 4),
+                "avg_pathos": round(float(r.get("early_pathos") or 0), 4),
+                "aligned_rate": round(float(r.get("early_aligned_rate") or 0), 4),
+            },
+            "recent_half": {
+                "avg_ethos": round(float(r.get("recent_ethos") or 0), 4),
+                "avg_logos": round(float(r.get("recent_logos") or 0), 4),
+                "avg_pathos": round(float(r.get("recent_pathos") or 0), 4),
+                "aligned_rate": round(float(r.get("recent_aligned_rate") or 0), 4),
+            },
+            "direction": direction,
+        }
+    except Exception as exc:
+        logger.warning("Failed to get alumni trend data: %s", exc)
+        return {}
+
+
 async def get_global_constitutional_risk(service: GraphService) -> list[dict]:
     """Get constitutional risk across all agents via 5-hop aggregation."""
     if not service.connected:

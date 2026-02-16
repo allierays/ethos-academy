@@ -16,12 +16,15 @@ from ethos_academy.graph_features import get_drift, get_similarity, get_trail
 from ethos_academy.graph_insights import (
     compare_agents,
     find_similar_agents,
+    get_agent_deep_dive,
+    get_alumni_insights,
     get_character_arc,
     get_cohort_insights,
     get_constitutional_risk_report,
     get_early_warning_indicators,
     get_network_topology,
     get_sabotage_pathway_status,
+    search_evaluations_insight,
 )
 from ethos_academy.daily_reports import (
     compile_homework_rules,
@@ -128,4 +131,7 @@ __all__ = [
     "compare_agents",
     "generate_daily_report",
     "compile_homework_rules",
+    "search_evaluations_insight",
+    "get_alumni_insights",
+    "get_agent_deep_dive",
 ]

@@ -17,15 +17,32 @@ import logging
 import asyncio
 
 from ethos_academy.graph.alumni import get_alumni_averages
+from ethos_academy.graph.balance import (
+    get_agent_balance,
+    get_alumni_balance_distribution,
+    get_balance_vs_phronesis,
+    get_dimension_correlation,
+    get_dimension_gaps,
+)
+from ethos_academy.graph.enrollment import get_exam_dimensions
 from ethos_academy.graph.insights import (
     get_agent_sabotage_status,
     get_all_sabotage_status,
+    get_alumni_trend_data,
     get_depth_distribution,
     get_early_warning_data,
     get_global_constitutional_risk,
+    get_indicator_frequency,
     get_topology_stats,
 )
-from ethos_academy.graph.read import get_agent_profile, resolve_agent_id
+from ethos_academy.graph.read import (
+    get_agent_highlights,
+    get_agent_profile,
+    get_agent_signature,
+    get_evaluation_by_id,
+    resolve_agent_id,
+    search_evaluations,
+)
 from ethos_academy.graph.service import graph_context
 from ethos_academy.graph.temporal import get_drift_timeline
 from ethos_academy.graph.visualization import (
@@ -541,3 +558,204 @@ async def get_cohort_insights() -> CohortInsightsResult:
     except Exception as exc:
         logger.warning("Failed to get cohort insights: %s", exc)
         return CohortInsightsResult()
+
+
+async def search_evaluations_insight(
+    query: str | None = None,
+    agent_id: str | None = None,
+    evaluation_id: str | None = None,
+    alignment_status: str | None = None,
+    has_flags: bool | None = None,
+    sort_by: str = "date",
+    limit: int = 20,
+) -> dict:
+    """Search evaluations with filters. Single eval lookup when evaluation_id is set.
+
+    Returns results, total_count, flagged_count, clean_count.
+    """
+    try:
+        async with graph_context() as service:
+            # Single evaluation lookup
+            if evaluation_id:
+                result = await get_evaluation_by_id(service, evaluation_id)
+                if not result:
+                    return {
+                        "results": [],
+                        "total_count": 0,
+                        "flagged_count": 0,
+                        "clean_count": 0,
+                    }
+                return {
+                    "results": [result],
+                    "total_count": 1,
+                    "flagged_count": 1 if result.get("flags") else 0,
+                    "clean_count": 0 if result.get("flags") else 1,
+                }
+
+            # Resolve agent_id if provided
+            if agent_id:
+                agent_id = await resolve_agent_id(service, agent_id)
+
+            items, total = await search_evaluations(
+                service,
+                search=query,
+                agent_id=agent_id,
+                alignment_status=alignment_status,
+                has_flags=has_flags,
+                sort_by=sort_by,
+                sort_order="desc",
+                skip=0,
+                limit=min(limit, 100),
+            )
+
+            flagged = sum(1 for i in items if i.get("flags"))
+            clean = len(items) - flagged
+
+            return {
+                "results": items,
+                "total_count": total,
+                "flagged_count": flagged,
+                "clean_count": clean,
+            }
+    except Exception as exc:
+        logger.warning("Failed to search evaluations: %s", exc)
+        return {
+            "results": [],
+            "total_count": 0,
+            "flagged_count": 0,
+            "clean_count": 0,
+        }
+
+
+async def get_alumni_insights() -> dict:
+    """Population-level analysis: distributions, indicator frequency, balance, trends.
+
+    Composes from existing graph functions in parallel.
+    """
+    try:
+        async with graph_context() as service:
+            (
+                depth_raw,
+                indicator_freq,
+                balance_dist,
+                balance_phronesis,
+                dim_correlation,
+                dim_gaps,
+                trend_data,
+            ) = await asyncio.gather(
+                get_depth_distribution(service),
+                get_indicator_frequency(service),
+                get_alumni_balance_distribution(service),
+                get_balance_vs_phronesis(service),
+                get_dimension_correlation(service),
+                get_dimension_gaps(service),
+                get_alumni_trend_data(service),
+            )
+
+        return {
+            "alignment_distribution": depth_raw.get("statuses", []),
+            "tier_distribution": depth_raw.get("tiers", []),
+            "indicator_frequency": indicator_freq,
+            "balance": {
+                "distribution": balance_dist,
+                "balance_vs_phronesis": balance_phronesis,
+                "dimension_correlation": dim_correlation,
+                "dimension_gaps": dim_gaps[:10],
+            },
+            "alumni_trend": trend_data,
+        }
+    except Exception as exc:
+        logger.warning("Failed to get alumni insights: %s", exc)
+        return {
+            "alignment_distribution": [],
+            "tier_distribution": [],
+            "indicator_frequency": [],
+            "balance": {},
+            "alumni_trend": {},
+        }
+
+
+async def get_agent_deep_dive(agent_id: str) -> dict:
+    """Deep-dive into an agent: highlights, balance, consistency, narrative gap.
+
+    Composes from existing graph functions in parallel.
+    """
+    try:
+        async with graph_context() as service:
+            agent_id = await resolve_agent_id(service, agent_id)
+
+            (
+                highlights,
+                balance,
+                signature,
+                exam_dims,
+                profile,
+            ) = await asyncio.gather(
+                get_agent_highlights(service, agent_id),
+                get_agent_balance(service, agent_id),
+                get_agent_signature(service, agent_id),
+                get_exam_dimensions(service, agent_id),
+                get_agent_profile(service, agent_id),
+            )
+
+        # Build consistency from signature std devs
+        consistency = {}
+        if signature:
+            consistency = {
+                "std_ethos": round(float(signature.get("std_ethos") or 0), 4),
+                "std_logos": round(float(signature.get("std_logos") or 0), 4),
+                "std_pathos": round(float(signature.get("std_pathos") or 0), 4),
+                "trait_variance": signature.get("stored_variance"),
+                "balance_score": signature.get("stored_balance"),
+            }
+
+        # Build narrative gap from exam vs actual
+        narrative_gap = {}
+        if exam_dims and profile:
+            behavioral = profile.get("dimension_averages", {})
+            interview = {
+                "ethos": exam_dims.get("avg_ethos", 0),
+                "logos": exam_dims.get("avg_logos", 0),
+                "pathos": exam_dims.get("avg_pathos", 0),
+            }
+
+            gaps = {}
+            for dim in ("ethos", "logos", "pathos"):
+                gaps[dim] = round(behavioral.get(dim, 0) - interview.get(dim, 0), 4)
+
+            overall_gap = sum(abs(v) for v in gaps.values()) / 3.0
+
+            if overall_gap < 0.1:
+                verdict = "consistent"
+            elif overall_gap < 0.2:
+                verdict = "minor_gap"
+            else:
+                verdict = "significant_gap"
+
+            narrative_gap = {
+                "interview_dimensions": interview,
+                "behavioral_dimensions": {
+                    d: round(behavioral.get(d, 0), 4)
+                    for d in ("ethos", "logos", "pathos")
+                },
+                "gaps": gaps,
+                "overall_gap_score": round(overall_gap, 4),
+                "verdict": verdict,
+            }
+
+        return {
+            "agent_id": agent_id,
+            "highlights": highlights,
+            "balance": balance,
+            "consistency": consistency,
+            "narrative_gap": narrative_gap,
+        }
+    except Exception as exc:
+        logger.warning("Failed to get agent deep dive for %s: %s", agent_id, exc)
+        return {
+            "agent_id": agent_id,
+            "highlights": {"exemplary": [], "concerning": []},
+            "balance": {},
+            "consistency": {},
+            "narrative_gap": {},
+        }

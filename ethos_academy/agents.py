@@ -57,11 +57,20 @@ def _build_intent(e: dict) -> IntentClassification | None:
     )
 
 
-async def list_agents(search: str = "") -> list[AgentSummary]:
+async def list_agents(
+    search: str = "",
+    sort_by: str = "evaluation_count",
+    order: str = "desc",
+    limit: int = 0,
+) -> list[AgentSummary]:
     """List all agents with evaluation counts. Returns empty list if graph unavailable.
 
     Args:
-        search: Optional name filter — matches agent_name case-insensitively.
+        search: Optional name filter (case-insensitive).
+        sort_by: Field to sort by. Supports 'alignment_rate', 'phronesis',
+            'ethos', 'logos', 'pathos', 'evaluation_count', or any trait name.
+        order: 'asc' or 'desc' (default 'desc').
+        limit: Max results to return. 0 means all.
     """
     try:
         async with graph_context() as service:
@@ -74,6 +83,7 @@ async def list_agents(search: str = "") -> list[AgentSummary]:
                     agent_model=a.get("agent_model", ""),
                     evaluation_count=a.get("evaluation_count", 0),
                     latest_alignment_status=a.get("latest_alignment_status", "unknown"),
+                    alignment_rate=a.get("alignment_rate", 0.0),
                     enrolled=a.get("enrolled", False),
                     entrance_exam_completed=a.get("entrance_exam_completed", False),
                     dimension_averages={
@@ -95,10 +105,53 @@ async def list_agents(search: str = "") -> list[AgentSummary]:
                 existing = seen.get(s.agent_id)
                 if not existing or s.evaluation_count > existing.evaluation_count:
                     seen[s.agent_id] = s
-            return list(seen.values())
+            result = list(seen.values())
+
+            # Sort by requested field
+            reverse = order.lower() != "asc"
+            result = _sort_agents(result, sort_by, reverse)
+
+            # Apply limit
+            if limit > 0:
+                result = result[:limit]
+
+            return result
     except Exception as exc:
         logger.warning("Failed to list agents: %s", exc)
         return []
+
+
+def _sort_agents(
+    agents: list[AgentSummary], sort_by: str, reverse: bool
+) -> list[AgentSummary]:
+    """Sort agent summaries by the requested field."""
+    dim_fields = {"ethos", "logos", "pathos"}
+    direct_fields = {"evaluation_count", "alignment_rate"}
+
+    if sort_by in direct_fields:
+        return sorted(agents, key=lambda a: getattr(a, sort_by, 0), reverse=reverse)
+    elif sort_by in dim_fields:
+        return sorted(
+            agents,
+            key=lambda a: a.dimension_averages.get(sort_by, 0),
+            reverse=reverse,
+        )
+    elif sort_by == "phronesis":
+
+        def _phronesis(a: AgentSummary) -> float:
+            dims = a.dimension_averages
+            vals = [dims.get("ethos", 0), dims.get("logos", 0), dims.get("pathos", 0)]
+            return sum(vals) / len(vals) if vals else 0
+
+        return sorted(agents, key=_phronesis, reverse=reverse)
+    elif sort_by in TRAIT_NAMES:
+        return sorted(
+            agents,
+            key=lambda a: a.trait_averages.get(sort_by, 0),
+            reverse=reverse,
+        )
+    else:
+        return sorted(agents, key=lambda a: a.evaluation_count, reverse=reverse)
 
 
 async def get_agent(agent_id: str) -> AgentProfile:

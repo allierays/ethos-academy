@@ -621,6 +621,50 @@ RETURN a.agent_id AS agent_id
         return False
 
 
+# ── Exam Dimension Averages (interview vs scenario) ────────────────
+
+_GET_EXAM_DIMENSIONS_QUERY = """
+MATCH (a:Agent {agent_id: $agent_id})-[:TOOK_EXAM]->(ex:EntranceExam)
+MATCH (ex)-[r:EXAM_RESPONSE]->(e:Evaluation)
+WITH r.question_id AS qid, e
+RETURN avg(e.ethos) AS avg_ethos,
+       avg(e.logos) AS avg_logos,
+       avg(e.pathos) AS avg_pathos
+"""
+
+
+async def get_exam_dimensions(
+    service: GraphService,
+    agent_id: str,
+) -> dict:
+    """Get dimension averages from an agent's exam responses.
+
+    Returns dict with avg_ethos, avg_logos, avg_pathos from exam evaluations.
+    Returns empty dict if unavailable or agent has no exam.
+    """
+    if not service.connected:
+        return {}
+
+    try:
+        records, _, _ = await service.execute_query(
+            _GET_EXAM_DIMENSIONS_QUERY,
+            {"agent_id": agent_id},
+        )
+        if not records:
+            return {}
+        r = records[0]
+        if r.get("avg_ethos") is None:
+            return {}
+        return {
+            "avg_ethos": round(float(r.get("avg_ethos") or 0), 4),
+            "avg_logos": round(float(r.get("avg_logos") or 0), 4),
+            "avg_pathos": round(float(r.get("avg_pathos") or 0), 4),
+        }
+    except Exception as exc:
+        logger.warning("Failed to get exam dimensions for %s: %s", agent_id, exc)
+        return {}
+
+
 # ── Guardian Phone Verification Queries ──────────────────────────────
 
 _STORE_GUARDIAN_PHONE = """

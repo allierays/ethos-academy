@@ -45,12 +45,14 @@ MATCH (a:Agent)
 OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
 WITH a, e
 ORDER BY e.created_at ASC
-WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest"""
+WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest,
+     collect(e.alignment_status) AS alignment_history"""
     + _AGENT_AVG_FIELDS
     + """
 RETURN """
     + _AGENT_RETURN_FIELDS
-    + """
+    + """,
+       alignment_history
 ORDER BY evals DESC
 """
 )
@@ -62,12 +64,14 @@ WHERE toLower(a.agent_name) CONTAINS toLower($search)
 OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
 WITH a, e
 ORDER BY e.created_at ASC
-WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest"""
+WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest,
+     collect(e.alignment_status) AS alignment_history"""
     + _AGENT_AVG_FIELDS
     + """
 RETURN """
     + _AGENT_RETURN_FIELDS
-    + """
+    + """,
+       alignment_history
 ORDER BY evals DESC
 """
 )
@@ -432,6 +436,13 @@ async def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
             records, _, _ = await service.execute_query(_GET_ALL_AGENTS_QUERY)
         results = []
         for record in records:
+            alignment_history = list(record.get("alignment_history") or [])
+            aligned_count = sum(1 for s in alignment_history if s == "aligned")
+            alignment_rate = (
+                round(aligned_count / len(alignment_history), 4)
+                if alignment_history
+                else 0.0
+            )
             results.append(
                 {
                     "agent_id": record.get("agent_id", ""),
@@ -440,6 +451,7 @@ async def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
                     "agent_model": record.get("agent_model", ""),
                     "evaluation_count": record.get("evals", 0),
                     "latest_alignment_status": record.get("latest") or "unknown",
+                    "alignment_rate": alignment_rate,
                     "enrolled": record.get("enrolled", False),
                     "entrance_exam_completed": record.get(
                         "entrance_exam_completed", False
@@ -672,6 +684,45 @@ RETURN {_EVAL_RETURN_FIELDS}{_EVAL_TRAIT_FIELDS},
     except Exception as exc:
         logger.warning("Failed to search evaluations: %s", exc)
         return [], 0
+
+
+# ---------------------------------------------------------------------------
+# Single evaluation lookup by ID
+# ---------------------------------------------------------------------------
+
+_GET_EVALUATION_BY_ID_QUERY = f"""
+MATCH (a:Agent)-[:EVALUATED]->(e:Evaluation {{evaluation_id: $evaluation_id}})
+OPTIONAL MATCH (e)-[d:DETECTED]->(i:Indicator)
+WITH a, e,
+     collect(CASE WHEN i IS NOT NULL THEN {{
+         id: i.id, name: i.name, trait: i.trait,
+         description: coalesce(i.description, ''),
+         confidence: d.confidence, severity: d.severity,
+         evidence: coalesce(d.evidence, '')
+     }} ELSE null END) AS raw_indicators
+WITH a, e, [x IN raw_indicators WHERE x IS NOT NULL] AS indicators
+RETURN {_EVAL_RETURN_FIELDS}{_EVAL_TRAIT_FIELDS},
+       indicators
+"""
+
+
+async def get_evaluation_by_id(
+    service: GraphService, evaluation_id: str
+) -> dict | None:
+    """Get a single evaluation by ID with indicators. Returns None if not found."""
+    if not service.connected:
+        return None
+
+    try:
+        records, _, _ = await service.execute_query(
+            _GET_EVALUATION_BY_ID_QUERY, {"evaluation_id": evaluation_id}
+        )
+        if not records:
+            return None
+        return dict(records[0])
+    except Exception as exc:
+        logger.warning("Failed to get evaluation by id: %s", exc)
+        return None
 
 
 # ---------------------------------------------------------------------------

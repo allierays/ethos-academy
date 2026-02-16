@@ -238,6 +238,7 @@ class AgentSummary(BaseModel):
     agent_model: str = ""
     evaluation_count: int = 0
     latest_alignment_status: str = "unknown"
+    alignment_rate: float = 0.0
     enrolled: bool = False
     entrance_exam_completed: bool = False
     dimension_averages: dict[str, float] = Field(default_factory=dict)

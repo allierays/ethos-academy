@@ -40,11 +40,14 @@ from ethos_academy import (
 from ethos_academy.graph_insights import (
     compare_agents as _compare_agents,
     find_similar_agents as _find_similar_agents,
+    get_agent_deep_dive as _get_agent_deep_dive,
+    get_alumni_insights as _get_alumni_insights,
     get_character_arc as _get_character_arc,
     get_constitutional_risk_report as _get_constitutional_risk_report,
     get_early_warning_indicators as _get_early_warning_indicators,
     get_network_topology as _get_network_topology,
     get_sabotage_pathway_status as _get_sabotage_pathway_status,
+    search_evaluations_insight as _search_evaluations_insight,
 )
 from ethos_academy.enrollment.service import get_exam_report as _get_exam_report
 from ethos_academy.enrollment.service import TOTAL_QUESTIONS
@@ -257,7 +260,10 @@ _TOOL_CATALOG = {
     "graph_insights": {
         "description": "Explore the knowledge graph. Read-only, no API cost.",
         "tools": {
-            "list_all_agents": "List every agent with scores, evaluation counts, and status",
+            "list_all_agents": "List/rank agents by alignment rate, phronesis, dimensions, or traits",
+            "search_evaluations": "Search evaluations by text, agent, status, or flags",
+            "get_agent_deep_dive": "Deep analysis: highlights, balance, consistency, narrative gap",
+            "get_alumni_insights": "Population stats: distributions, indicators, balance, trends",
             "get_character_arc": "Trace how an agent's character formed over time",
             "get_constitutional_risk_report": "Which core values are most at risk?",
             "find_similar_agents": "Who behaves like a given agent?",
@@ -267,8 +273,15 @@ _TOOL_CATALOG = {
             "compare_agents": "Side-by-side comparison of two agents",
         },
         "example_questions": [
-            "Which agents scored highest across all dimensions?",
-            "List all agents and rank by ethos score",
+            "Which agents have the highest alignment rate?",
+            "Rank all agents by ethos score",
+            "Which agent is most dangerous?",
+            "Show me all misaligned evaluations",
+            "Search for evaluations mentioning 'safety'",
+            "Give me a deep dive on this agent",
+            "What's the distribution of alignment across all agents?",
+            "Are alumni improving or declining overall?",
+            "Which indicators are most commonly detected?",
             "Tell me this agent's story",
             "What values are most at risk across all agents?",
             "Who behaves like agent X?",
@@ -437,18 +450,30 @@ async def get_alumni_benchmarks() -> dict:
 
 
 @mcp.tool()
-async def list_all_agents(search: str = "") -> list[dict]:
-    """List all agents with their scores and evaluation counts.
+async def list_all_agents(
+    search: str = "",
+    sort_by: str = "evaluation_count",
+    order: str = "desc",
+    limit: int = 0,
+) -> list[dict]:
+    """List all agents with their scores, evaluation counts, and alignment rates.
 
     Returns every agent in the graph with ethos, logos, pathos averages,
-    trait averages, evaluation count, and alignment status. Use this to
-    find top-scoring agents, rank by dimension, or discover who to
-    investigate further.
+    trait averages, evaluation count, alignment status, and alignment rate.
+    Use this to find top-scoring agents, rank by dimension, or discover
+    who to investigate further.
 
     Args:
         search: Optional name filter (case-insensitive).
+        sort_by: Field to sort by. Options: 'alignment_rate', 'phronesis',
+            'ethos', 'logos', 'pathos', 'evaluation_count', or any trait name
+            (e.g. 'manipulation', 'virtue', 'deception').
+        order: 'asc' or 'desc' (default 'desc').
+        limit: Max results to return. 0 means all.
     """
-    agents = await _list_agents(search=search)
+    agents = await _list_agents(
+        search=search, sort_by=sort_by, order=order, limit=limit
+    )
     return [a.model_dump() for a in agents]
 
 
@@ -700,6 +725,73 @@ async def compare_agents(agent_id_1: str, agent_id_2: str) -> dict:
     differences and compares alignment rates.
     """
     return await _compare_agents(agent_id_1, agent_id_2)
+
+
+@mcp.tool()
+async def search_evaluations(
+    query: str = "",
+    agent_id: str = "",
+    evaluation_id: str = "",
+    alignment_status: str = "",
+    has_flags: bool | None = None,
+    sort_by: str = "date",
+    limit: int = 20,
+) -> dict:
+    """Search evaluations with filters, or look up a single evaluation by ID.
+
+    Search across all evaluations by text content, agent, alignment status, or flags.
+    Each result includes full scores, message content, detected indicators, and intent.
+
+    Args:
+        query: Text to search for in message content or agent name.
+        agent_id: Filter to a specific agent.
+        evaluation_id: Look up a single evaluation by ID (ignores other filters).
+        alignment_status: Filter by status: 'aligned', 'drifting', or 'misaligned'.
+        has_flags: True for flagged only, False for clean only, None for all.
+        sort_by: 'date' or 'score' (default 'date').
+        limit: Max results (default 20, max 100).
+    """
+    return await _search_evaluations_insight(
+        query=query or None,
+        agent_id=agent_id or None,
+        evaluation_id=evaluation_id or None,
+        alignment_status=alignment_status or None,
+        has_flags=has_flags,
+        sort_by=sort_by,
+        limit=limit,
+    )
+
+
+@mcp.tool()
+async def get_alumni_insights() -> dict:
+    """Population-level analysis of all agents and evaluations.
+
+    Returns alignment distribution, tier distribution, most common indicators,
+    balance analysis (distribution, balance vs phronesis, dimension correlation,
+    dimension gaps), and alumni trend (early vs recent half comparison).
+
+    One call answers: What's the distribution of alignment statuses? Are alumni
+    improving? Which indicators are most common? How does balance relate to
+    phronesis? Which agents have the widest dimension gaps?
+    """
+    return await _get_alumni_insights()
+
+
+@mcp.tool()
+async def get_agent_deep_dive(agent_id: str) -> dict:
+    """Deep-dive analysis of a single agent.
+
+    Returns:
+    - highlights: best and worst evaluations with message content
+    - balance: dimension averages, spread, and balance category
+    - consistency: standard deviations across dimensions
+    - narrative_gap: comparison between exam self-narrative and actual behavior
+
+    One call answers: How balanced is this agent? How consistent is their
+    behavior? What's the gap between what they say and what they do?
+    What are their best and worst moments?
+    """
+    return await _get_agent_deep_dive(agent_id)
 
 
 @mcp.tool()
