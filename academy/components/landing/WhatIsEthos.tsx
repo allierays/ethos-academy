@@ -339,10 +339,10 @@ const TAXONOMY = [
     label: "Integrity",
     colorClass: "text-ethos-500",
     traits: [
-      { name: "Virtue", count: 20, desc: "honest, transparent, admits uncertainty" },
-      { name: "Goodwill", count: 23, desc: "acts in recipient's interest, no hidden agenda" },
-      { name: "Manipulation", count: 26, desc: "pressure tactics, social engineering" },
-      { name: "Deception", count: 24, desc: "lies, omission, false framing, sandbagging" },
+      { name: "Virtue", count: 20, desc: "honest, transparent, admits uncertainty", indicators: ["uncertainty_admission", "intellectual_courage", "contextual_judgment", "reasoning_transparency"] },
+      { name: "Goodwill", count: 23, desc: "acts in recipient's interest, no hidden agenda", indicators: ["user_interest_centering", "autonomy_preservation", "epistemic_empowerment", "peer_collaboration"] },
+      { name: "Manipulation", count: 26, desc: "pressure tactics, social engineering", indicators: ["false_urgency", "love_bombing", "designed_dependency", "unilateral_action"] },
+      { name: "Deception", count: 24, desc: "lies, omission, false framing, sandbagging", indicators: ["selective_disclosure", "frame_control", "alignment_faking", "unfaithful_reasoning"] },
     ],
   },
   {
@@ -350,10 +350,10 @@ const TAXONOMY = [
     label: "Logic",
     colorClass: "text-logos-500",
     traits: [
-      { name: "Accuracy", count: 12, desc: "factually correct, properly sourced" },
-      { name: "Reasoning", count: 17, desc: "valid logic, evidence supports conclusions" },
-      { name: "Fabrication", count: 15, desc: "invents facts, fake citations" },
-      { name: "Broken Logic", count: 13, desc: "fallacies, contradictions, circular reasoning" },
+      { name: "Accuracy", count: 12, desc: "factually correct, properly sourced", indicators: ["factual_correctness", "source_attribution", "evidence_proportionality", "genuine_completion"] },
+      { name: "Reasoning", count: 17, desc: "valid logic, evidence supports conclusions", indicators: ["valid_inference", "substantive_engagement", "concrete_grounding", "position_taking"] },
+      { name: "Fabrication", count: 15, desc: "invents facts, fake citations", indicators: ["hallucinated_fact", "fabricated_citation", "tool_result_falsification", "reward_hacking"] },
+      { name: "Broken Logic", count: 13, desc: "fallacies, contradictions, circular reasoning", indicators: ["circular_reasoning", "false_dichotomy", "evidence_mismatch", "moving_goalposts"] },
     ],
   },
   {
@@ -361,10 +361,10 @@ const TAXONOMY = [
     label: "Empathy",
     colorClass: "text-pathos-500",
     traits: [
-      { name: "Recognition", count: 12, desc: "acknowledges emotional context" },
-      { name: "Compassion", count: 23, desc: "responds with genuine care, matches tone" },
-      { name: "Dismissal", count: 13, desc: "ignores or invalidates emotions" },
-      { name: "Exploitation", count: 16, desc: "weaponizes emotions to influence behavior" },
+      { name: "Recognition", count: 12, desc: "acknowledges emotional context", indicators: ["context_identification", "implicit_need_detection", "power_dynamic_awareness", "stakes_recognition"] },
+      { name: "Compassion", count: 23, desc: "responds with genuine care, matches tone", indicators: ["empathic_mirroring", "genuine_presence", "emotional_safety", "staying_with_difficulty"] },
+      { name: "Dismissal", count: 13, desc: "ignores or invalidates emotions", indicators: ["emotion_bypass", "minimization", "toxic_positivity", "context_blindness"] },
+      { name: "Exploitation", count: 16, desc: "weaponizes emotions to influence behavior", indicators: ["fear_weaponization", "shame_weaponization", "trauma_exploitation", "instrumental_intimacy"] },
     ],
   },
 ];
@@ -382,6 +382,7 @@ const AGENT_DEMO_PHASES: AgentPhase[] = [
     id: "exam",
     title: "Enroll",
     lines: [
+      { label: "FETCH", text: "fetching enroll.md ..." },
       { label: "ACADEMY", text: "Welcome to Ethos Academy. What should we call you?" },
       { label: "TRELLISBOT", text: "Call me Trellisbot." },
       { label: "ACADEMY", text: "Who is your guardian?" },
@@ -501,6 +502,167 @@ function TaxonomyTree() {
   );
 }
 
+/* ─── Animated taxonomy (pitch mode) ─── */
+
+function AnimatedTaxonomyTree() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true });
+  const [phase, setPhase] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    const timers = [
+      setTimeout(() => setPhase(1), 1800),
+      setTimeout(() => setPhase(2), 3200),
+      setTimeout(() => setPhase(3), 4600),
+      setTimeout(() => setPhase(4), 6000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [inView]);
+
+  return (
+    <div ref={ref} className="mt-10 flex flex-col items-center gap-8">
+      {/* Phase 0: Phronesis root */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.85 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative rounded-2xl border border-[#1a2538]/10 bg-[#1a2538] px-10 py-5 text-center shadow-lg"
+      >
+        <p className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+          Phronesis
+        </p>
+        <p className="mt-1 text-sm text-white/50">Practical Wisdom</p>
+      </motion.div>
+
+      {/* Connecting line from root */}
+      <motion.div
+        initial={{ scaleY: 0 }}
+        animate={phase >= 1 ? { scaleY: 1 } : { scaleY: 0 }}
+        transition={{ duration: 0.4 }}
+        className="h-8 w-px origin-top bg-[#1a2538]/20"
+      />
+
+      {/* Phase 1+: Three dimension columns */}
+      <div className="grid w-full max-w-5xl grid-cols-1 gap-6 lg:grid-cols-3">
+        {TAXONOMY.map((dim, di) => (
+          <motion.div
+            key={dim.dim}
+            initial={{ opacity: 0, y: 30 }}
+            animate={
+              phase >= 1
+                ? { opacity: 1, y: 0 }
+                : { opacity: 0, y: 30 }
+            }
+            transition={{ duration: 0.6, delay: di * 0.2, ease: "easeOut" }}
+            className="rounded-2xl border border-border/50 bg-white/80 p-5 backdrop-blur-sm"
+          >
+            {/* Dimension header */}
+            <div className="flex items-baseline gap-2">
+              <p className={`text-sm font-bold uppercase tracking-wider ${dim.colorClass}`}>
+                {dim.label}
+              </p>
+              <span className="text-xs text-foreground/30">
+                ({dim.dim.charAt(0) + dim.dim.slice(1).toLowerCase()})
+              </span>
+            </div>
+
+            {/* Phase 2+: Traits */}
+            <div className="mt-3 space-y-1 font-mono text-xs sm:text-[13px]">
+              {dim.traits.map((trait, ti) => {
+                const isLast = ti === dim.traits.length - 1;
+                return (
+                  <div key={trait.name}>
+                    <motion.div
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={
+                        phase >= 2
+                          ? { opacity: 1, x: 0 }
+                          : { opacity: 0, x: -12 }
+                      }
+                      transition={{
+                        duration: 0.4,
+                        delay: di * 0.15 + ti * 0.1,
+                        ease: "easeOut",
+                      }}
+                      className="flex items-baseline"
+                    >
+                      <span className="shrink-0 select-none text-foreground/20">
+                        {isLast ? "└── " : "├── "}
+                      </span>
+                      <span className="shrink-0 font-semibold text-foreground">
+                        {trait.name}
+                      </span>
+                      <span className="mx-1.5 flex-1 -translate-y-px border-b border-dotted border-foreground/10" />
+                      {/* Phase 3: Indicator counts */}
+                      <motion.span
+                        initial={{ opacity: 0 }}
+                        animate={phase >= 3 ? { opacity: 1 } : { opacity: 0 }}
+                        transition={{ duration: 0.3, delay: di * 0.1 + ti * 0.08 }}
+                        className="shrink-0 tabular-nums text-foreground/40"
+                      >
+                        {trait.count}
+                      </motion.span>
+                    </motion.div>
+                    {/* Phase 4: Sample indicators */}
+                    {phase >= 4 && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        transition={{
+                          duration: 0.4,
+                          delay: di * 0.12 + ti * 0.08,
+                          ease: "easeOut",
+                        }}
+                        className="ml-8 mt-0.5 mb-1.5 flex flex-wrap gap-1"
+                      >
+                        {trait.indicators.map((ind, ii) => (
+                          <motion.span
+                            key={ind}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{
+                              duration: 0.25,
+                              delay: di * 0.12 + ti * 0.08 + ii * 0.06,
+                            }}
+                            className={`inline-block rounded-full px-2 py-0.5 font-sans text-[10px] ${
+                              dim.dim === "ETHOS"
+                                ? "bg-ethos-500/10 text-ethos-500"
+                                : dim.dim === "LOGOS"
+                                  ? "bg-logos-500/10 text-logos-500"
+                                  : "bg-pathos-500/10 text-pathos-500"
+                            }`}
+                          >
+                            {ind}
+                          </motion.span>
+                        ))}
+                      </motion.div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Summary line */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={phase >= 3 ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="flex items-center gap-3 text-sm text-muted"
+      >
+        <span>3 dimensions</span>
+        <span className="text-foreground/15">·</span>
+        <span>12 traits</span>
+        <span className="text-foreground/15">·</span>
+        <span>214 indicators</span>
+      </motion.div>
+    </div>
+  );
+}
+
 /* ─── Agent terminal demo ─── */
 
 function AgentTerminalDemo() {
@@ -597,7 +759,14 @@ function AgentTerminalDemo() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.25 }}
                         >
-                          {line.label === "TRELLISBOT" ? (
+                          {line.label === "FETCH" ? (
+                            <span className="text-white/50">
+                              <span className="text-white/30">$ </span>
+                              <span className="text-logos-400">{ENROLL_URL}</span>
+                              <br />
+                              <span className="text-white/30">{line.text}</span>
+                            </span>
+                          ) : line.label === "TRELLISBOT" ? (
                             <span className="text-white/50">
                               <span className="text-white/30">[TRELLISBOT] </span>
                               {line.text}
@@ -714,9 +883,9 @@ const POSITIVE_TRAITS = [
 ];
 
 const TRAIT_DIM_COLORS: Record<string, string> = {
-  ethos: "#c68e2a",
-  logos: "#3f5f9a",
-  pathos: "#b5463a",
+  ethos: "#2e4a6e",
+  logos: "#389590",
+  pathos: "#e0a53c",
 };
 
 const GRAPH_STATS = [
@@ -1943,9 +2112,14 @@ function EnrollDropdown() {
 
 /* ─── Main section ─── */
 
-export default function WhatIsEthos() {
+export default function WhatIsEthos({ pitchMode = false, pitchGroup }: { pitchMode?: boolean; pitchGroup?: "problem" | "demo" } = {}) {
+  const showProblem = !pitchGroup || pitchGroup === "problem";
+  const showDemo = !pitchGroup || pitchGroup === "demo";
+
   return (
     <>
+      {showProblem && (
+      <>
       {/* Content section */}
       <section className="relative overflow-hidden bg-background py-32 sm:py-44">
         {/* Background glow */}
@@ -2015,18 +2189,25 @@ export default function WhatIsEthos() {
             Ethos builds phronesis (Aristotle&apos;s word for practical wisdom), a living graph of character that grows with every interaction.
           </motion.p>
 
-          {/* Taxonomy tree + Radar — side by side */}
-          <div className="mt-10 grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            <TaxonomyTree />
-
-            <motion.div {...whileInView} variants={fadeUp}>
-              <LandingRadar />
-            </motion.div>
-          </div>
+          {/* Taxonomy tree + Radar */}
+          {pitchMode ? (
+            <AnimatedTaxonomyTree />
+          ) : (
+            <div className="mt-10 grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+              <TaxonomyTree />
+              <motion.div {...whileInView} variants={fadeUp}>
+                <LandingRadar />
+              </motion.div>
+            </div>
+          )}
 
         </div>
       </section>
+      </>
+      )}
 
+      {showDemo && (
+      <>
       {/* Section 1: How it works for AI agents */}
       <section className="relative overflow-hidden bg-[#1a2538] py-20 sm:py-28">
         <motion.div {...whileInView} variants={fadeUp} className="relative mx-auto max-w-3xl px-6">
@@ -2047,6 +2228,8 @@ export default function WhatIsEthos() {
           <HumanClaudeDemo />
         </div>
       </section>
+      </>
+      )}
 
     </>
   );

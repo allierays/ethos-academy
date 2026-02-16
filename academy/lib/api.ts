@@ -27,6 +27,7 @@ import type {
 } from "./types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8917";
+const API_KEY = process.env.NEXT_PUBLIC_ETHOS_API_KEY || "";
 
 /**
  * Recursively transform snake_case keys to camelCase.
@@ -68,9 +69,11 @@ async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
   const timeout = setTimeout(() => controller.abort("Request timed out after 15s"), 15_000);
 
   try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (API_KEY) headers["Authorization"] = `Bearer ${API_KEY}`;
     const res = await fetch(`${API_URL}${path}`, {
-      headers: { "Content-Type": "application/json" },
       ...options,
+      headers: { ...headers, ...options?.headers },
       signal: controller.signal,
     });
 

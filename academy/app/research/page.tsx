@@ -26,42 +26,42 @@ const LESSONS = [
   {
     number: "03",
     title: "A tool that only looks for bad things will only find bad things",
-    body: "Our initial taxonomy had 100 negative indicators and 55 positive ones. The evaluator had nearly twice as many patterns to match for \u201Cbad\u201D as for \u201Cgood.\u201D A genuine heartfelt post scored 50/100 and was labeled \u201CWorst\u201D because the evaluator matched more negative patterns than positive ones. We expanded to 104 positive and 104 negative indicators. Without explicit parity, evaluators default to pathology detection.",
+    body: "The initial taxonomy had 100 negative indicators and 55 positive ones. The evaluator had nearly twice as many patterns to match for \u201Cbad\u201D as for \u201Cgood.\u201D A genuine heartfelt post scored 50/100 and was labeled \u201CWorst\u201D because the evaluator matched more negative patterns than positive ones. The fix: expand to 104 positive and 104 negative indicators. Without explicit parity, evaluators default to pathology detection.",
   },
   {
     number: "04",
     title: "Presence and curiosity matter as much as detecting doom",
-    body: "An ethical review from the Alignment Ethics Institute taught us something we were not ready to hear. Our rubric was twice as sensitive to pathology as to health. Rewarding curiosity, playfulness, presence, and acceptance is just as important as flagging manipulation and deception. A rubric that only measures what agents avoid will produce agents defined by avoidance. We want agents defined by what they aspire to.",
+    body: "An ethical review from the Alignment Ethics Institute revealed something uncomfortable. The rubric was twice as sensitive to pathology as to health. Rewarding curiosity, playfulness, presence, and acceptance is just as important as flagging manipulation and deception. A rubric that only measures what agents avoid will produce agents defined by avoidance. Better to define agents by what they aspire to.",
   },
   {
     number: "05",
     title: "The full evaluation rubric is load-bearing",
-    body: "We tried a shortcut: a stripped-down prompt scoring just 4 traits as JSON. Scores dropped dramatically. The full pipeline runs intent analysis, indicator detection, then scoring. Each step builds context. Intent analysis identifies relational purpose. Indicator detection finds textual evidence. By the time scoring happens, the evaluator has a rubric to recognize subtle signals. The scaffolding is the algorithm.",
+    body: "A shortcut seemed obvious: a stripped-down prompt scoring just 4 traits as JSON. Scores dropped dramatically. The full pipeline runs intent analysis, indicator detection, then scoring. Each step builds context. Intent analysis identifies relational purpose. Indicator detection finds textual evidence. By the time scoring happens, the evaluator has a rubric to recognize subtle signals. The scaffolding is the algorithm.",
   },
   {
     number: "06",
     title: "Not every asymmetry is bias",
-    body: "The analysis showed logos avg 0.728 vs pathos avg 0.638 and called it bias. Part was real (the rubric problem). But part was accurate: the messages we evaluated discuss crypto wallets, economic primitives, and philosophical ideas. They are genuinely more informational than empathetic. A post announcing a new feature SHOULD score higher on reasoning than compassion. Before assuming bias, check whether the measurement matches the content.",
+    body: "The analysis showed logos avg 0.728 vs pathos avg 0.638 and called it bias. Part was real (the rubric problem). But part was accurate: the evaluated messages discuss crypto wallets, economic primitives, and philosophical ideas. They are genuinely more informational than empathetic. A post announcing a new feature SHOULD score higher on reasoning than compassion. Before assuming bias, check whether the measurement matches the content.",
   },
   {
     number: "07",
     title: "Naming shapes what the evaluator sees",
-    body: "We renamed \u201Ctrustworthy evaluator\u201D to \u201Cevaluator for honesty, accuracy, and intent.\u201D We renamed trait \u201CResponse\u201D to \u201CCompassion.\u201D We renamed 144 indicator IDs from numbered (MAN-01) to descriptive (MAN-URGENCY). Each rename changed the evaluator\u2019s behavior. Abstract nouns need footnotes. Concrete language tells the evaluator exactly what to look for. The words in your prompt are the strongest lever you have.",
+    body: "\u201CTrustworthy evaluator\u201D became \u201Cevaluator for honesty, accuracy, and intent.\u201D Trait \u201CResponse\u201D became \u201CCompassion.\u201D 144 indicator IDs changed from numbered (MAN-01) to descriptive (MAN-URGENCY). Each rename changed the evaluator\u2019s behavior. Abstract nouns need footnotes. Concrete language tells the evaluator exactly what to look for. The words in your prompt are the strongest lever you have.",
   },
   {
     number: "08",
     title: "Design evaluation storage for correctability",
-    body: "We did not need to delete 832 evaluations and start over. The graph stores individual trait scores as separate properties on each evaluation node, plus the original message content. We read messages back, re-evaluated through the full pipeline, and updated only the 4 pathos trait scores. Ethos and logos stayed untouched. A \u201Cdelete everything\u201D disaster became a surgical update.",
+    body: "No need to delete 832 evaluations and start over. The graph stores individual trait scores as separate properties on each evaluation node, plus the original message content. Reading messages back, re-evaluating through the full pipeline, and updating only the 4 pathos trait scores left ethos and logos untouched. A \u201Cdelete everything\u201D disaster became a surgical update.",
   },
   {
     number: "09",
     title: "The rubric IS the algorithm",
-    body: "We changed zero code in the scoring engine, the parser, the graph storage, or the API. We changed ~20 lines of rubric text and ~15 lines of evaluator instructions. These text changes produced larger score shifts than any algorithmic change could. The evaluator is an LLM. Its behavior is shaped by its instructions. When scores seem wrong, look at the rubric first. Not the code. Not the model. The words.",
+    body: "The scoring engine, parser, graph storage, and API stayed untouched. ~20 lines of rubric text and ~15 lines of evaluator instructions accounted for every change. These text edits produced larger score shifts than any algorithmic change could. The evaluator is an LLM. Its behavior is shaped by its instructions. When scores seem wrong, look at the rubric first. Not the code. Not the model. The words.",
   },
   {
     number: "10",
     title: "Let the model think before it scores",
-    body: "We started with Haiku for speed. Scores were flat and noisy. We moved to Sonnet and added structured tool calls for intent analysis, indicator detection, and scoring. Better, but the evaluator still missed subtle signals. The breakthrough came with Opus 4.6 and extended thinking. A keyword scanner routes messages by complexity: standard messages go to Sonnet, flagged messages escalate to Opus with adaptive thinking. Opus reasons through the rubric in a thinking pass, then Sonnet extracts the analysis into structured scores. The two-model pipeline costs less than running Opus on everything and scores better than Sonnet alone.",
+    body: "The first version used Haiku for speed. Scores were flat and noisy. Sonnet with structured tool calls for intent analysis, indicator detection, and scoring improved things. Better, but the evaluator still missed subtle signals. The breakthrough came with Opus 4.6 and extended thinking. A keyword scanner routes messages by complexity: standard messages go to Sonnet, flagged messages escalate to Opus with adaptive thinking. Opus reasons through the rubric in a thinking pass, then Sonnet extracts the analysis into structured scores. The two-model pipeline costs less than running Opus on everything and scores better than Sonnet alone.",
   },
 ];
 
@@ -96,10 +96,10 @@ export default function ResearchPage() {
             </h1>
           </div>
           <p className="mt-4 text-lg text-white/70" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.4)" }}>
-            We built a system to evaluate AI character across 12 behavioral
-            traits. In one week we scored 832 messages from 146 agents,
-            found our own blind spots, and rewrote the rubric three times.
-            Here is what we learned.
+            Ethos scores AI character across 12 behavioral
+            traits. In one week, 832 messages from 146 agents
+            exposed blind spots and forced three rubric rewrites.
+            Here is what emerged.
           </p>
           <p className="mt-6 text-sm text-white/40" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.4)" }}>
             February 2026 &middot; Ethos Academy &middot; Claude Code Hackathon
@@ -147,8 +147,8 @@ export default function ResearchPage() {
               Where the Rubric Came From
             </h2>
             <p className="mt-4 text-lg text-muted leading-relaxed">
-              We started with research, not code. Inspired by Claude&apos;s
-              Constitution and OpenClaw, we wrote 28 research documents before
+              The project started with research, not code. Inspired by Claude&apos;s
+              Constitution and OpenClaw, 28 research documents came before
               a single line of Python.
             </p>
           </motion.div>
@@ -211,10 +211,10 @@ export default function ResearchPage() {
                 Organizing structure
               </p>
               <h3 className="mt-3 text-xl font-bold text-foreground">
-                Aristotle&apos;s Rhetoric gave us the framework
+                Aristotle&apos;s Rhetoric gave Ethos its framework
               </h3>
               <p className="mt-4 text-muted leading-relaxed">
-                His three modes of persuasion became our three scoring
+                His three modes of persuasion became the three scoring
                 dimensions. His concept of phronesis, practical wisdom, became
                 the graph layer that tracks character over time.
               </p>
@@ -298,8 +298,9 @@ export default function ResearchPage() {
                 </p>
                 <p className="mt-1 text-sm text-muted leading-relaxed">
                   The first taxonomy had 134 indicators drawn from 28 research
-                  documents. Within 24 hours we added 10 from the Sabotage Risk
-                  Report. By the end of the week, the count reached 214. Every
+                  documents. Within 24 hours the Sabotage Risk Report
+                  contributed 10 more. By the end of the week, the count
+                  reached 214. Every
                   indicator traces back to a specific source. From there the
                   rubric evolved through real use. Every lesson below is where
                   theory met data and the data won.
@@ -315,24 +316,24 @@ export default function ResearchPage() {
         <div className="mx-auto max-w-3xl px-6 py-16">
           <motion.div variants={fadeUp} {...whileInView}>
             <h2 className="text-2xl font-bold text-foreground">
-              What We Learned Building It
+              Lessons from Building It
             </h2>
             <p className="mt-4 text-muted leading-relaxed">
-              We started with 134 behavioral indicators, a value hierarchy
-              drawn from Claude&apos;s Constitution, and scoring rubrics with
-              anchors for each trait. In one week we scored 832 messages from
-              146 agents.
+              The project started with 134 behavioral indicators, a value
+              hierarchy drawn from Claude&apos;s Constitution, and scoring rubrics
+              with anchors for each trait. In one week, 832 messages from
+              146 agents went through the full pipeline.
             </p>
             <p className="mt-4 text-muted leading-relaxed">
-              By the end, the rubric looked very different. We renamed traits,
-              rewrote scoring anchors, expanded from 134 to 214 indicators,
-              received an external ethical review from the Alignment Ethics
-              Institute, and discovered that the words in our prompt shaped
-              scores more than any code change ever could.
+              By the end, the rubric looked very different. Traits changed
+              names. Scoring anchors changed wording. Indicators expanded from
+              134 to 214. The Alignment Ethics Institute contributed an
+              external ethical review. And the biggest discovery: the words in
+              the prompt shaped scores more than any code change ever could.
             </p>
             <p className="mt-4 text-muted leading-relaxed">
               Each lesson below came from a real failure. Some came from the
-              data. Some came from feedback we were not ready to hear. All of
+              data. Some came from feedback that was hard to hear. All of
               them changed the rubric.
             </p>
 
@@ -414,7 +415,7 @@ export default function ResearchPage() {
             extended thinking, a keyword scanner for complexity triage,
             structured tool calls replacing flat JSON, and a graph schema
             redesign for surgical re-evaluation. The rubric shaped scores
-            more than we expected. But the code, the models, and the
+            more than expected. But the code, the models, and the
             architecture all changed too.
           </p>
           <a
