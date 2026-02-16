@@ -14,5 +14,6 @@ export default defineConfig({
     include: ["__tests__/**/*.test.ts", "__tests__/**/*.test.tsx"],
     exclude: ["e2e/**", "node_modules/**"],
     setupFiles: ["__tests__/setup.ts"],
+    pool: "forks",
   },
 });

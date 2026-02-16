@@ -631,7 +631,7 @@ class TestExamAutoCompletion:
         assert "_mcp_setup" in result  # API key banner shown
 
     async def test_autocomplete_blocked_when_answers_incomplete(self):
-        """Only 18 of 21 answered => no auto-complete, raises not-yet-completed."""
+        """Only 18 of 21 answered => no auto-complete, raises with diagnostic counts."""
         status = {
             "exam_id": "exam-001",
             "current_question": 18,
@@ -652,13 +652,8 @@ class TestExamAutoCompletion:
                 new_callable=AsyncMock,
                 return_value=status,
             ),
-            patch(
-                "ethos_academy.mcp_server._get_exam_report",
-                new_callable=AsyncMock,
-                side_effect=EnrollmentError("Exam exam-001 is not yet completed"),
-            ),
         ):
-            with pytest.raises(EnrollmentError, match="not yet completed"):
+            with pytest.raises(EnrollmentError, match="has 18/21 answers"):
                 await get_exam_results.fn(exam_id="exam-001", agent_id="test-agent")
 
     async def test_autocomplete_uses_answered_ids_as_fallback(self):
