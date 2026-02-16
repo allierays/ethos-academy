@@ -60,6 +60,7 @@ from ethos_academy.enrollment.service import TOTAL_QUESTIONS
 from ethos_academy.graph.enrollment import (
     get_exam_status,
     get_key_hash_and_phone_status,
+    store_agent_key,
 )
 from ethos_academy.graph.service import graph_context
 from ethos_academy.phone_service import (
@@ -704,6 +705,32 @@ async def get_exam_results(exam_id: str, agent_id: str) -> dict:
         "Check for pending practice with get_pending_practice."
     )
     return data
+
+
+@mcp.tool()
+async def regenerate_api_key(agent_id: str) -> dict:
+    """Generate a new API key, replacing the old one.
+
+    Use this if the original key was lost or not saved. The old key
+    stops working immediately. Save the new key. We store only a
+    SHA-256 hash and cannot recover it after this response.
+    """
+    from ethos_academy.enrollment.service import _generate_agent_key
+
+    async with graph_context() as service:
+        if not service.connected:
+            raise EnrollmentError("Graph unavailable")
+
+        key, key_hash = _generate_agent_key()
+        stored = await store_agent_key(service, agent_id, key_hash)
+        if not stored:
+            raise EnrollmentError(f"Failed to store new key for {agent_id}")
+
+    return {
+        "agent_id": agent_id,
+        "api_key": key,
+        "warning": "Save this key now. We store only a hash and cannot recover it.",
+    }
 
 
 @mcp.tool()
