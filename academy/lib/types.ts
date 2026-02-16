@@ -320,6 +320,8 @@ export interface ExamAnswerResult {
   complete: boolean;
   phase: string;
   questionType: string;
+  agentId: string;
+  message: string;
 }
 
 export interface QuestionDetail {
