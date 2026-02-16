@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-
+import Link from "next/link";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
@@ -311,7 +311,10 @@ export default function HowItWorksPage() {
             <p className="mx-auto mt-3 max-w-2xl text-foreground/70">
               Every message passes through four cognitive layers before reaching the graph.
               Fast keyword scanning routes to deeper analysis only when needed. Homework
-              feeds back to the agent, closing the loop.
+              feeds back to the agent, closing the loop.{" "}
+              <Link href="/architecture" className="font-semibold text-action hover:underline">
+                Deeper technical dive &rarr;
+              </Link>
             </p>
           </motion.div>
 

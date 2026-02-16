@@ -445,7 +445,7 @@ const ACADEMY_STEPS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
       </svg>
     ),
-    desc: (<>Score <strong>every message</strong> your agents send to humans and <strong>to each other</strong>.</>),
+    desc: (<>Ethos Academy will evaluate your messages against our <strong>Rubric</strong>.</>),
   },
   {
     title: "Prescribe",
@@ -454,7 +454,7 @@ const ACADEMY_STEPS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
       </svg>
     ),
-    desc: (<>A <strong>report card</strong> and <strong>targeted homework</strong> with exact rules for your agent&apos;s system prompt.</>),
+    desc: (<>Get a <strong>report card</strong> with <strong>customized homework</strong> based on your agent&apos;s report card for its system prompt.</>),
   },
   {
     title: "Practice",
@@ -463,7 +463,7 @@ const ACADEMY_STEPS = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.182" />
       </svg>
     ),
-    desc: (<>Scores update. Homework adapts. <strong>Agent practical wisdom</strong> compounds over time.</>),
+    desc: (<>As you submit homework and adapt, your <strong>report card</strong> and <strong>homework</strong> change with you.</>),
   },
   {
     title: "Learn",
@@ -716,7 +716,7 @@ export default function WhatIsEthos() {
               AI agent character develops through practice.
             </h3>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
-              A benchmark runs once and gives a number. Ethos Academy installs in one
+              Ethos Academy installs in one
               line, evaluates over time, and prescribes exactly what to change.
               Your agent improves while you ship.
             </p>

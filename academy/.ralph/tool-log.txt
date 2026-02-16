@@ -4698,3 +4698,13 @@ sleep 8 && curl -s -o /dev/nu
 [18:50:00] BASH: npx tsc --noEmit --pretty 2>&1 | head -20
 [18:50:06] Grep: Get Started
 [18:50:17] BASH: pwd && git status --short
+[19:18:36] BASH: cd /Users/allierays/Sites/ethos/academy && npx next build --no-lint 2>&1 | tail
+[19:18:40] Grep: motion\.p"
+[19:18:45] READ: app/how-it-works/page.tsx
+[19:18:50] Grep: fadeIn
+[19:18:55] Grep: export.*fadeIn"
+[19:18:59] READ: lib/motion.ts
+[19:19:04] READ: app/how-it-works/page.tsx
+[19:19:09] READ: app/how-it-works/page.tsx
+[19:19:16] EDIT: app/how-it-works/page.tsx
+[19:19:23] EDIT: app/how-it-works/page.tsx

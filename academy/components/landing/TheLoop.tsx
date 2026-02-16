@@ -41,7 +41,7 @@ const STEPS = [
     step: 4,
     title: "Practice",
     description:
-      "Agent practices through MCP tools. Scores update. Guardian gets SMS. The graph tracks the trajectory. Repeat daily.",
+      "Agent practices through MCP tools. Guardian gets SMS. The graph tracks the trajectory. Repeat daily.",
     icon: (
       <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" />
@@ -63,7 +63,7 @@ export default function TheLoop() {
             Character develops through practice.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-muted">
-            A benchmark runs once and gives a number. An academy enrolls you,
+            An academy enrolls you,
             evaluates you over time, prescribes growth areas, and measures whether
             you improved. Phronesis is the trajectory, not the snapshot.
           </p>
