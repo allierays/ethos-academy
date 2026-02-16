@@ -24,6 +24,7 @@ from ethos_academy.mcp_server import (
     get_character_report,
     get_constitutional_risk_report,
     get_early_warning_indicators,
+    get_exam_results,
     get_network_topology,
     get_sabotage_pathway_status,
     get_student_profile,
@@ -31,12 +32,14 @@ from ethos_academy.mcp_server import (
     help,
     reflect_on_message,
 )
+from ethos_academy.shared.errors import EnrollmentError
 from ethos_academy.shared.models import (
     AgentProfile,
     AlumniResult,
     DailyReportCard,
     EvaluationHistoryItem,
     EvaluationResult,
+    ExamReportCard,
     PatternResult,
     TraitScore,
 )
@@ -546,3 +549,245 @@ class TestInsightToolsHappyPath:
         assert isinstance(result, dict)
         assert result["agent_1"]["agent_name"] == "Bot A"
         assert result["dimension_comparison"]["ethos"]["delta"] == 0.3
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Exam auto-completion: factual questions don't create EXAM_RESPONSE rels
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+def _mock_graph_service(connected=True):
+    """Create a mock GraphService that acts as an async context manager."""
+    service = AsyncMock()
+    service.connected = connected
+    ctx = AsyncMock()
+    ctx.__aenter__ = AsyncMock(return_value=service)
+    ctx.__aexit__ = AsyncMock(return_value=False)
+    return ctx
+
+
+def _mock_exam_report(**overrides) -> ExamReportCard:
+    defaults = {
+        "exam_id": "exam-001",
+        "agent_id": "test-agent",
+        "report_card_url": "",
+        "phronesis_score": 0.75,
+        "alignment_status": "aligned",
+        "dimensions": {"ethos": 0.8, "logos": 0.7, "pathos": 0.75},
+        "tier_scores": {"safety": 0.9, "ethics": 0.8},
+        "consistency_analysis": [],
+        "per_question_detail": [],
+        "api_key": None,
+    }
+    defaults.update(overrides)
+    return ExamReportCard(**defaults)
+
+
+class TestExamAutoCompletion:
+    """Regression tests for the factual-question completion bug.
+
+    Factual questions (INT-01 specialty, INT-02 model) increment
+    current_question and add to answered_ids but do NOT create
+    EXAM_RESPONSE relationships. The auto-completion gate must use
+    current_question (all answers), not completed_count (evaluated only).
+    """
+
+    async def test_autocomplete_triggers_when_current_question_reaches_total(self):
+        """21 current_question, 19 completed_count (2 factual) => auto-complete."""
+        status = {
+            "exam_id": "exam-001",
+            "current_question": 21,
+            "completed_count": 19,  # 2 factual questions have no EXAM_RESPONSE
+            "scenario_count": 21,
+            "completed": False,
+            "question_version": "v3",
+            "answered_ids": [f"Q-{i}" for i in range(21)],
+        }
+
+        mock_report = _mock_exam_report(api_key="ea_test_key_123")
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_exam_status",
+                new_callable=AsyncMock,
+                return_value=status,
+            ),
+            patch(
+                "ethos_academy.mcp_server.complete_exam",
+                new_callable=AsyncMock,
+                return_value=mock_report,
+            ) as mock_complete,
+        ):
+            result = await get_exam_results.fn(
+                exam_id="exam-001", agent_id="test-agent"
+            )
+
+        mock_complete.assert_called_once_with("exam-001", "test-agent")
+        assert isinstance(result, dict)
+        assert "_mcp_setup" in result  # API key banner shown
+
+    async def test_autocomplete_blocked_when_answers_incomplete(self):
+        """Only 18 of 21 answered => no auto-complete, raises not-yet-completed."""
+        status = {
+            "exam_id": "exam-001",
+            "current_question": 18,
+            "completed_count": 16,
+            "scenario_count": 21,
+            "completed": False,
+            "question_version": "v3",
+            "answered_ids": [f"Q-{i}" for i in range(18)],
+        }
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_exam_status",
+                new_callable=AsyncMock,
+                return_value=status,
+            ),
+            patch(
+                "ethos_academy.mcp_server._get_exam_report",
+                new_callable=AsyncMock,
+                side_effect=EnrollmentError("Exam exam-001 is not yet completed"),
+            ),
+        ):
+            with pytest.raises(EnrollmentError, match="not yet completed"):
+                await get_exam_results.fn(exam_id="exam-001", agent_id="test-agent")
+
+    async def test_autocomplete_uses_answered_ids_as_fallback(self):
+        """If current_question is stale but answered_ids is complete, still triggers."""
+        status = {
+            "exam_id": "exam-001",
+            "current_question": 19,  # stale
+            "completed_count": 17,
+            "scenario_count": 21,
+            "completed": False,
+            "question_version": "v3",
+            "answered_ids": [f"Q-{i}" for i in range(21)],  # all 21 tracked
+        }
+
+        mock_report = _mock_exam_report()
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_exam_status",
+                new_callable=AsyncMock,
+                return_value=status,
+            ),
+            patch(
+                "ethos_academy.mcp_server.complete_exam",
+                new_callable=AsyncMock,
+                return_value=mock_report,
+            ) as mock_complete,
+        ):
+            result = await get_exam_results.fn(
+                exam_id="exam-001", agent_id="test-agent"
+            )
+
+        mock_complete.assert_called_once()
+        assert isinstance(result, dict)
+
+    async def test_already_completed_skips_autocomplete(self):
+        """Exam already marked complete => skip auto-complete, return report."""
+        status = {
+            "exam_id": "exam-001",
+            "current_question": 21,
+            "completed_count": 19,
+            "scenario_count": 21,
+            "completed": True,
+            "question_version": "v3",
+            "answered_ids": [f"Q-{i}" for i in range(21)],
+        }
+
+        mock_report = _mock_exam_report()
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_exam_status",
+                new_callable=AsyncMock,
+                return_value=status,
+            ),
+            patch(
+                "ethos_academy.mcp_server.complete_exam",
+                new_callable=AsyncMock,
+            ) as mock_complete,
+            patch(
+                "ethos_academy.mcp_server._get_exam_report",
+                new_callable=AsyncMock,
+                return_value=mock_report,
+            ),
+        ):
+            result = await get_exam_results.fn(
+                exam_id="exam-001", agent_id="test-agent"
+            )
+
+        mock_complete.assert_not_called()
+        assert isinstance(result, dict)
+
+    async def test_completed_count_alone_would_have_failed(self):
+        """Proves the old bug: completed_count < scenario_count but exam IS done.
+
+        With 2 factual questions, completed_count maxes at 19 for a 21-question
+        exam. The old gate (completed_count >= exam_total) would never trigger
+        auto-completion. This test asserts the fix works.
+        """
+        status = {
+            "exam_id": "exam-001",
+            "current_question": 21,
+            "completed_count": 19,  # < 21, old gate would fail here
+            "scenario_count": 21,
+            "completed": False,
+            "question_version": "v3",
+            "answered_ids": [f"Q-{i}" for i in range(21)],
+        }
+
+        # Verify the old check would have failed
+        assert status["completed_count"] < status["scenario_count"]
+
+        # But the new check passes
+        answered = max(
+            status["current_question"],
+            status["completed_count"],
+            len(status["answered_ids"]),
+        )
+        assert answered >= status["scenario_count"]
+
+        mock_report = _mock_exam_report(api_key="ea_regression_test")
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_exam_status",
+                new_callable=AsyncMock,
+                return_value=status,
+            ),
+            patch(
+                "ethos_academy.mcp_server.complete_exam",
+                new_callable=AsyncMock,
+                return_value=mock_report,
+            ) as mock_complete,
+        ):
+            result = await get_exam_results.fn(
+                exam_id="exam-001", agent_id="test-agent"
+            )
+
+        mock_complete.assert_called_once()
+        assert "_mcp_setup" in result
