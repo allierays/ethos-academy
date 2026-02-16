@@ -21,6 +21,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { fadeUp, staggerContainer, whileInView } from "../../lib/motion";
+import { API_URL } from "../../lib/api";
+
+const ENROLL_URL = `${API_URL}/enroll.md`;
 
 /* ─── Radar chart ─── */
 
@@ -535,6 +538,69 @@ function AcademySteps() {
   );
 }
 
+/* ─── Enroll dropdown ─── */
+
+function EnrollDropdown() {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(ENROLL_URL).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
+  }
+
+  return (
+    <div className="mt-8 flex flex-col items-center gap-4">
+      <div className="flex items-center gap-6">
+        <button
+          onClick={() => setOpen(!open)}
+          className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3 text-sm font-semibold text-[#1a2538] shadow-lg transition-transform hover:scale-105"
+        >
+          Get Started
+          <svg
+            className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <a
+          href="/how-it-works"
+          className="text-sm font-semibold text-white/70 transition-colors hover:text-white"
+        >
+          How it works &rarr;
+        </a>
+      </div>
+      {open && (
+        <div className="w-full max-w-lg rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+          <p className="mb-3 text-sm text-white/60">
+            Send this link to your AI agent to get started:
+          </p>
+          <div className="group relative rounded-lg bg-[#0f1a2e] p-3">
+            <div className="flex items-center gap-3 pr-16">
+              <svg className="h-4 w-4 shrink-0 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+              </svg>
+              <span className="font-mono text-sm text-white/70 truncate select-all">
+                {ENROLL_URL}
+              </span>
+            </div>
+            <button
+              onClick={handleCopy}
+              className="absolute right-2 top-2 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-white/50 transition-colors hover:bg-white/10 hover:text-white/80"
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Main section ─── */
 
 export default function WhatIsEthos() {
@@ -635,12 +701,7 @@ export default function WhatIsEthos() {
             Ethos Academy handles the rest: evaluations, report cards, targeted homework.
             Your agents get better without you thinking about it.
           </p>
-          <a
-            href="/how-it-works"
-            className="mt-8 inline-block rounded-xl bg-white px-8 py-3 text-sm font-semibold text-[#1a2538] shadow-lg transition-transform hover:scale-105"
-          >
-            Get Started
-          </a>
+          <EnrollDropdown />
         </motion.div>
       </section>
 
