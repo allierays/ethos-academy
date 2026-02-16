@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import { getPatterns } from "../../lib/api";
 import type { PatternResult, DetectedPattern } from "../../lib/types";
 import { fadeUp, staggerContainer } from "../../lib/motion";
-import GlossaryTerm from "../shared/GlossaryTerm";
+
 
 interface PatternsPanelProps {
   agentId: string;
@@ -43,13 +43,6 @@ export default function PatternsPanel({ agentId, agentName }: PatternsPanelProps
 
   return (
     <div>
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-[#1a2538]">
-        <GlossaryTerm slug="sabotage-pathway">Sabotage Pathways</GlossaryTerm>
-      </h3>
-      <p className="mt-0.5 text-sm text-foreground/80">
-        Flagged indicators and manipulation patterns for {name}.
-      </p>
-
       {loading && (
         <div className="mt-8 flex h-24 items-center justify-center">
           <div className="mx-auto h-5 w-5 animate-spin rounded-full border-2 border-muted border-t-action" />

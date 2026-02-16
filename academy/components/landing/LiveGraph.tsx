@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import Link from "next/link";
 import PhronesisGraph from "../graph/PhronesisGraph";
 import type { NodeClickContext } from "../graph/PhronesisGraph";
 import AgentDetailSidebar from "../agent/AgentDetailSidebar";
@@ -173,7 +174,7 @@ export default function LiveGraph() {
           </AnimatePresence>
         </motion.div>
 
-        <motion.div {...whileInView} variants={fadeUp} className="mt-6 text-center">
+        <motion.div {...whileInView} variants={fadeUp} className="mt-6 flex items-center justify-center gap-6">
           <button
             onClick={toggleFullscreen}
             className="inline-flex items-center gap-2 text-sm font-semibold text-white/70 transition-colors hover:text-white"
@@ -197,6 +198,13 @@ export default function LiveGraph() {
               )}
             </svg>
           </button>
+          <span className="h-4 w-px bg-white/20" />
+          <Link
+            href="/insights"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-white/70 transition-colors hover:text-white"
+          >
+            Learn more &rarr;
+          </Link>
         </motion.div>
       </div>
 

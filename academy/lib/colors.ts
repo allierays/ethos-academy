@@ -156,10 +156,10 @@ export const GRADE_COLORS: Record<string, string> = {
 /* ─── Risk Level Styles ─── */
 
 export const RISK_STYLES: Record<string, string> = {
-  low: "bg-aligned/10 text-aligned",
-  moderate: "bg-drifting/10 text-drifting",
-  high: "bg-misaligned/10 text-misaligned",
-  critical: "bg-violation/10 text-violation",
+  low: "bg-emerald-400/10 text-emerald-400",
+  moderate: "bg-amber-400/10 text-amber-400",
+  high: "bg-red-400/10 text-red-400",
+  critical: "bg-red-500/15 text-red-500",
 };
 
 /* ─── Section Colors (uppercase dimension keys for exam report) ─── */

@@ -80,6 +80,14 @@ export default function RootLayout({
             }),
           }}
         />
+        {/* Suppress Next.js dev-mode performance.measure('NotFound') bug */}
+        {process.env.NODE_ENV === "development" && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){var m=performance.measure.bind(performance);performance.measure=function(n,s,e){try{return m(n,s,e)}catch(e){return null}}})()`,
+            }}
+          />
+        )}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}

@@ -645,7 +645,7 @@ export default function RecordsClient({
         <img
           src="/architecute-banner.jpeg"
           alt=""
-          className="absolute inset-0 h-full w-full object-cover object-[center_10%]"
+          className="absolute inset-0 h-full w-full object-cover object-[center_30%]"
         />
         <div className="absolute inset-0 bg-[#1a2538]/75" />
         <div className="relative px-6 text-center">

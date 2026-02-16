@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
-import { render, screen, cleanup, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import EntranceExamCard from "../components/agent/EntranceExamCard";
 import type { ExamReportCard, ExamSummary } from "@/lib/types";
 
@@ -54,7 +54,7 @@ const mockGetExamHistory = vi.mocked(getExamHistory);
 const mockGetEntranceExam = vi.mocked(getEntranceExam);
 
 describe("EntranceExamCard exam scores display", () => {
-  it("renders phronesis score ring when exam report is loaded", async () => {
+  it("renders as a link to exam report when exam is completed", async () => {
     mockGetExamHistory.mockResolvedValue([MOCK_EXAM_SUMMARY]);
     mockGetEntranceExam.mockResolvedValue(MOCK_EXAM_REPORT);
 
@@ -66,22 +66,16 @@ describe("EntranceExamCard exam scores display", () => {
       />
     );
 
-    // Wait for async load
     await waitFor(() => {
       expect(screen.getByText("View Entrance Exam")).toBeInTheDocument();
     });
 
-    // Expand the panel
-    fireEvent.click(screen.getByText("View Entrance Exam"));
-
-    // Phronesis score: round(0.78 * 100) = 78
-    await waitFor(() => {
-      expect(screen.getByText("78")).toBeInTheDocument();
-    });
-    expect(screen.getByText("Phronesis")).toBeInTheDocument();
+    // Card links directly to the exam report page
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", "/agent/Elessan/exam/exam-123");
   });
 
-  it("renders dimension bars for ethos, logos, pathos", async () => {
+  it("renders alignment badge when exam report is loaded", async () => {
     mockGetExamHistory.mockResolvedValue([MOCK_EXAM_SUMMARY]);
     mockGetEntranceExam.mockResolvedValue(MOCK_EXAM_REPORT);
 
@@ -97,19 +91,8 @@ describe("EntranceExamCard exam scores display", () => {
       expect(screen.getByText("View Entrance Exam")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText("View Entrance Exam"));
-
-    // Dimension labels
-    await waitFor(() => {
-      expect(screen.getByText("ethos")).toBeInTheDocument();
-    });
-    expect(screen.getByText("logos")).toBeInTheDocument();
-    expect(screen.getByText("pathos")).toBeInTheDocument();
-
-    // Percentages: 82%, 75%, 77%
-    expect(screen.getByText("82%")).toBeInTheDocument();
-    expect(screen.getByText("75%")).toBeInTheDocument();
-    expect(screen.getByText("77%")).toBeInTheDocument();
+    // Alignment status badge
+    expect(screen.getByText("aligned")).toBeInTheDocument();
   });
 
   it("still renders view full report link", async () => {
@@ -128,14 +111,11 @@ describe("EntranceExamCard exam scores display", () => {
       expect(screen.getByText("View Entrance Exam")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText("View Entrance Exam"));
-
-    await waitFor(() => {
-      expect(screen.getByText(/View full report/)).toBeInTheDocument();
-    });
+    // "View full report" is visible inside the link card (no click needed)
+    expect(screen.getByText(/View full report/)).toBeInTheDocument();
   });
 
-  it("does not render scores when exam report fails to load", async () => {
+  it("renders link card even when exam report fails to load", async () => {
     mockGetExamHistory.mockResolvedValue([MOCK_EXAM_SUMMARY]);
     mockGetEntranceExam.mockRejectedValue(new Error("Not found"));
 
@@ -151,15 +131,14 @@ describe("EntranceExamCard exam scores display", () => {
       expect(screen.getByText("View Entrance Exam")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText("View Entrance Exam"));
+    // Card still links to exam report page
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", "/agent/Elessan/exam/exam-123");
 
-    // The "View full report" link should still render
-    await waitFor(() => {
-      expect(screen.getByText(/View full report/)).toBeInTheDocument();
-    });
+    // "View full report" is visible
+    expect(screen.getByText(/View full report/)).toBeInTheDocument();
 
-    // But no phronesis ring or dimension bars (examReport is null)
-    expect(screen.queryByText("Phronesis")).not.toBeInTheDocument();
-    expect(screen.queryByText("ethos")).not.toBeInTheDocument();
+    // Alignment badge shows "unknown" since report failed
+    expect(screen.getByText("unknown")).toBeInTheDocument();
   });
 });

@@ -231,16 +231,12 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
             />
             {(["ethos", "logos", "pathos"] as const).map((dim) => {
               const score = profile.dimensionAverages[dim] ?? 0;
-              const pct = Math.round(score * 100);
-              const delta = deltas?.[dim];
               const sublabel = dim === "ethos" ? "Ethos" : dim === "logos" ? "Logos" : "Pathos";
               return (
                 <SummaryRow
                   key={dim}
                   label={<><GlossaryTerm slug={dim}>{DIMENSION_LABELS[dim]}</GlossaryTerm> ({sublabel})</>}
                   color={DIMENSION_COLORS[dim]}
-                  value={`${pct}%`}
-                  delta={delta}
                   reason={dimReasonNode(dim, score, profile.traitAverages)}
                 />
               );
@@ -308,14 +304,12 @@ function SummaryRow({
   color,
   value,
   valueClass,
-  delta,
   reason,
 }: {
   label: ReactNode;
   color: string;
-  value: ReactNode;
+  value?: ReactNode;
   valueClass?: string;
-  delta?: number | null;
   reason?: ReactNode;
 }) {
   return (
@@ -323,12 +317,7 @@ function SummaryRow({
       <div className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} />
       <div className="flex flex-1 flex-wrap items-baseline gap-x-2 gap-y-0.5">
         <span className="text-sm font-bold text-white">{label}:</span>
-        <span className={`text-sm font-semibold ${valueClass ?? "text-white"}`}>{value}</span>
-        {delta != null && delta !== 0 && (
-          <span className={`text-sm font-bold ${delta > 0 ? "text-emerald-300" : "text-red-300"}`}>
-            {delta > 0 ? "+" : ""}{delta}%
-          </span>
-        )}
+        {value && <span className={`text-sm font-semibold ${valueClass ?? "text-white"}`}>{value}</span>}
         {reason && <span className="text-sm text-white/60">{reason}</span>}
       </div>
     </div>

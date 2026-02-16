@@ -11,6 +11,7 @@ import math
 
 from ethos_academy.graph.service import GraphService
 from ethos_academy.identity.model import parse_model
+from ethos_academy.shared.analysis import compute_trend
 from ethos_academy.shared.models import AuthenticityResult, EvaluationResult
 
 logger = logging.getLogger(__name__)
@@ -144,6 +145,30 @@ async def store_evaluation(
                 exc,
             )
 
+    # Compute phronesis_trend from evaluation history + current result
+    trend = "insufficient_data"
+    try:
+        records, _, _ = await service.execute_query(
+            """
+            MATCH (a:Agent {agent_id: $agent_id})-[:EVALUATED]->(e:Evaluation)
+            RETURN e.ethos AS ethos, e.logos AS logos, e.pathos AS pathos
+            ORDER BY e.created_at DESC
+            LIMIT 10
+            """,
+            {"agent_id": agent_id},
+        )
+        history = [
+            {"ethos": r["ethos"], "logos": r["logos"], "pathos": r["pathos"]}
+            for r in records
+        ]
+    except Exception:
+        history = []
+    # Prepend current evaluation (newest first)
+    history.insert(
+        0, {"ethos": result.ethos, "logos": result.logos, "pathos": result.pathos}
+    )
+    trend = compute_trend(history)
+
     # Compute agent-level phronesis_score as running avg of 3 dimensions
     phronesis_score = round((result.ethos + result.logos + result.pathos) / 3.0, 4)
 
@@ -210,7 +235,7 @@ async def store_evaluation(
         "model_used": result.model_used,
         "agent_model": parse_model(result.agent_model) if result.agent_model else "",
         "alignment_status": result.alignment_status,
-        "phronesis_trend": "insufficient_data",
+        "phronesis_trend": trend,
         "trait_variance": trait_variance,
         "balance_score": balance_score,
         "indicators": indicators,
