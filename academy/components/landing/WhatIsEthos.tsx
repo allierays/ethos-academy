@@ -251,10 +251,11 @@ function AgentTicker() {
         const w = containerRef.current.offsetWidth;
         const next = new Set<number>();
 
+        const margin = w < 500 ? 80 : 250;
         for (let i = 0; i < doubled.length; i++) {
           if (!doubled[i].flag) continue;
           const left = i * CARD_W - offset;
-          if (left > 250 && left < w - 60) {
+          if (left > margin && left < w - 60) {
             next.add(i);
           }
         }
@@ -300,7 +301,7 @@ function AgentTicker() {
               {/* Chat bubble with problematic quote */}
               {isDinged && agent.quote && (
                 <motion.div
-                  className="absolute -top-13 left-1/2 z-20 w-44 -translate-x-1/2"
+                  className="absolute -top-13 left-1/2 z-20 w-44 -translate-x-1/2 max-sm:left-0 max-sm:translate-x-0"
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -1348,9 +1349,9 @@ function VisualizePhase() {
         </div>
 
         {/* Split panes */}
-        <div className="flex min-h-[440px]">
+        <div className="flex flex-col sm:flex-row sm:min-h-[440px]">
           {/* Left pane: chat */}
-          <div className="flex w-[45%] flex-col border-r border-border/30">
+          <div className="flex w-full sm:w-[45%] flex-col border-b sm:border-b-0 sm:border-r border-border/30">
             <div className="flex-1 space-y-4 p-4">
               <AnimatePresence>
                 {HUMAN_DEMO_MESSAGES.map((msg, i) => (
@@ -1406,7 +1407,7 @@ function VisualizePhase() {
           </div>
 
           {/* Right pane: artifact */}
-          <div className="flex w-[55%] flex-col bg-gray-50/30">
+          <div className="flex w-full sm:w-[55%] flex-col bg-gray-50/30">
             <div className="flex items-center justify-between border-b border-border/30 px-4 py-2">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-medium text-foreground/60">Ethos traits</span>

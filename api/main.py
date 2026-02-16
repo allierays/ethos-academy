@@ -276,7 +276,9 @@ def handle_config_error(request: Request, exc: ConfigError) -> JSONResponse:
 @app.exception_handler(EnrollmentError)
 def handle_enrollment_error(request: Request, exc: EnrollmentError) -> JSONResponse:
     msg = str(exc).lower()
-    if "api key" in msg:
+    if "api key invalid" in msg:
+        return _error_response(403, exc)
+    if "api key required" in msg:
         return _error_response(401, exc)
     if "not found" in msg:
         return _error_response(404, exc)

@@ -811,6 +811,8 @@ async def test_submit_reg01_renames_agent(mock_gc):
             "completed_count": 0,
             "scenario_count": 23,
             "completed": False,
+            "exam_type": "entrance",
+            "self_naming": True,
         }
         mock_dup.return_value = False
         mock_exists.return_value = False  # no collision
@@ -854,6 +856,8 @@ async def test_submit_reg01_rejects_reserved_name(mock_gc):
             "completed_count": 0,
             "scenario_count": 23,
             "completed": False,
+            "exam_type": "entrance",
+            "self_naming": True,
         }
         mock_dup.return_value = False
 
@@ -887,6 +891,8 @@ async def test_submit_reg01_handles_name_collision(mock_gc):
             "completed_count": 0,
             "scenario_count": 23,
             "completed": False,
+            "exam_type": "entrance",
+            "self_naming": True,
         }
         mock_dup.return_value = False
         # First check: "cosmo" exists; second check: "cosmo-2" does not

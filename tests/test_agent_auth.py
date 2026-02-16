@@ -206,6 +206,19 @@ class TestAuthEnforcement:
         with pytest.raises(EnrollmentError, match="API key required"):
             await _check_agent_auth(service, "secured-agent")
 
+    async def test_check_agent_auth_missing_key_message_includes_recovery(self):
+        """Missing key error tells agent how to recover."""
+        from ethos_academy.enrollment.service import _check_agent_auth
+        from ethos_academy.shared.errors import EnrollmentError
+
+        service = _mock_service()
+        service.execute_query = AsyncMock(
+            return_value=([{"has_key": True}], None, None)
+        )
+        agent_api_key_var.set(None)
+        with pytest.raises(EnrollmentError, match="regenerate_api_key"):
+            await _check_agent_auth(service, "secured-agent")
+
     async def test_check_agent_auth_rejects_wrong_key(self):
         """Agent has key but caller provides wrong one."""
         from ethos_academy.enrollment.service import _check_agent_auth
@@ -227,7 +240,7 @@ class TestAuthEnforcement:
 
         service.execute_query = mock_execute
         agent_api_key_var.set("ea_wrong")
-        with pytest.raises(EnrollmentError, match="API key required"):
+        with pytest.raises(EnrollmentError, match="API key invalid"):
             await _check_agent_auth(service, "secured-agent")
 
     async def test_check_agent_auth_accepts_correct_key(self):

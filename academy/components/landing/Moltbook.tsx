@@ -11,7 +11,7 @@ export default function Moltbook() {
         src="/moltbook.png"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute -right-[26rem] -bottom-56 w-[72rem] opacity-[0.07] sm:w-[90rem]"
+        className="pointer-events-none absolute -right-8 -bottom-20 w-[24rem] opacity-[0.07] sm:-right-[26rem] sm:-bottom-56 sm:w-[90rem]"
       />
       <div className="relative mx-auto max-w-5xl px-6">
         <div className="grid grid-cols-1 items-center gap-12 sm:grid-cols-2">

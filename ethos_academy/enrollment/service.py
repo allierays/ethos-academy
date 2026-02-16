@@ -149,8 +149,7 @@ async def _check_agent_auth(service, agent_id: str) -> None:
     """Verify caller's API key if the agent has one stored.
 
     First exam (no key on agent) passes through without auth.
-    Uses the same error message for missing/invalid/wrong key to
-    avoid leaking information about agent state.
+    Returns distinct errors so callers know what went wrong.
     """
     has_key = await agent_has_key(service, agent_id)
     if not has_key:
@@ -158,11 +157,18 @@ async def _check_agent_auth(service, agent_id: str) -> None:
 
     caller_key = agent_api_key_var.get()
     if not caller_key:
-        raise EnrollmentError("API key required for this agent")
+        raise EnrollmentError(
+            f"API key required. Agent '{agent_id}' has a registered ea_ key. "
+            f"Pass it via Authorization: Bearer ea_... header. "
+            f"Lost your key? Call regenerate_api_key(agent_id='{agent_id}') to recover via email."
+        )
 
     valid = await verify_agent_key(service, agent_id, caller_key)
     if not valid:
-        raise EnrollmentError("API key required for this agent")
+        raise EnrollmentError(
+            f"API key invalid for agent '{agent_id}'. The ea_ key you provided does not match. "
+            f"Lost your key? Call regenerate_api_key(agent_id='{agent_id}') to recover via email."
+        )
 
 
 def _generate_agent_key() -> tuple[str, str]:

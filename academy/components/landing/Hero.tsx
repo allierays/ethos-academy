@@ -167,7 +167,7 @@ function StartHereWidget() {
 
 export default function Hero() {
   return (
-    <section aria-label="Enroll your agent" className="relative -mt-14 flex min-h-screen flex-col justify-center overflow-hidden pb-24 pt-14">
+    <section aria-label="Enroll your agent" className="relative -mt-14 flex min-h-screen flex-col justify-center overflow-hidden pb-24 pt-28 sm:pt-14">
       {/* Background banner image */}
       <div
         className="absolute inset-0 bg-cover bg-no-repeat"
