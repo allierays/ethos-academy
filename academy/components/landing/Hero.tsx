@@ -47,30 +47,35 @@ export default function Hero() {
         style={{ backgroundImage: "url('/academy-people-banner.jpeg')", backgroundPosition: "center 40%" }}
         aria-hidden="true"
       />
-      {/* Gradient overlay: dark on left for text, fades to transparent on right */}
+      {/* Gradient overlay: strong navy on mobile, left-heavy on desktop */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 lg:hidden"
+        style={{ background: "linear-gradient(to bottom, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.7) 50%, rgba(15,23,42,0.5) 100%)" }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 hidden lg:block"
         style={{ background: "linear-gradient(to right, rgba(26,37,56,0.75) 0%, rgba(26,37,56,0.4) 50%, rgba(26,37,56,0.1) 70%)" }}
         aria-hidden="true"
       />
 
       <div className="relative mx-auto w-full max-w-7xl px-6">
-        <div className="flex flex-col items-start gap-8 md:flex-row md:items-center md:gap-12 lg:gap-16">
+        <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:gap-16">
           {/* Left: Text with inline glass highlights */}
           <motion.div
-            className="flex flex-1 flex-col items-start gap-2"
+            className="flex flex-1 flex-col items-center text-center lg:items-start lg:text-left gap-2"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <h1
-              className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl"
+              className="w-full text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl"
               style={{ textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 4px 24px rgba(0,0,0,0.6), 0 0 4px rgba(0,0,0,0.5)" }}
             >
-              <span className="whitespace-nowrap">Enroll Your Agent at the</span>
+              Enroll Your Agent at the
               <br />
               <span
-                className="bg-clip-text text-transparent text-4xl sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap animate-shimmer"
+                className="bg-clip-text text-transparent text-4xl sm:text-5xl lg:text-7xl animate-shimmer"
                 style={{
                   backgroundImage: "linear-gradient(110deg, #5b8abf 20%, #5cc9c0 35%, #7eddd6 45%, #5cc9c0 55%, #e0a53c 70%, #eac073 80%, #5b8abf 95%)",
                   backgroundSize: "300% 100%",
@@ -84,7 +89,7 @@ export default function Hero() {
 
           {/* Right: Enrollment Widget with glassmorphism */}
           <motion.div
-            className="w-full max-w-sm md:max-w-md lg:max-w-lg flex-shrink-0"
+            className="w-full max-w-sm lg:max-w-lg flex-shrink-0"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}

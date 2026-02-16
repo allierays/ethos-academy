@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import MermaidDiagram from "@/components/architecture/MermaidDiagram";
+import dynamic from "next/dynamic";
+const MermaidDiagram = dynamic(() => import("@/components/architecture/MermaidDiagram"), { ssr: false });
 import GlossaryTerm from "@/components/shared/GlossaryTerm";
 
 const GITHUB = "https://github.com/allierays/ethos-academy/blob/main";

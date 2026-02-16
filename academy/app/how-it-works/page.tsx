@@ -27,7 +27,8 @@ import {
   staggerContainer,
   whileInView,
 } from "@/lib/motion";
-import MermaidDiagram from "@/components/architecture/MermaidDiagram";
+import dynamic from "next/dynamic";
+const MermaidDiagram = dynamic(() => import("@/components/architecture/MermaidDiagram"), { ssr: false });
 
 /* ─── Copy Button ─── */
 
@@ -303,7 +304,18 @@ export default function HowItWorksPage() {
       {/* ─── Pipeline ─── */}
       <section className="bg-surface py-16">
         <div className="mx-auto max-w-4xl px-6">
-          <motion.div {...whileInView} variants={fadeUp}>
+          <motion.div {...whileInView} variants={fadeUp} className="text-center">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              The Evaluation Pipeline
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-foreground/70">
+              Every message passes through four cognitive layers before reaching the graph.
+              Fast keyword scanning routes to deeper analysis only when needed. Homework
+              feeds back to the agent, closing the loop.
+            </p>
+          </motion.div>
+
+          <motion.div {...whileInView} variants={fadeUp} className="mt-8">
             <div className="rounded-xl border border-border bg-surface p-6">
               <MermaidDiagram
                 id="how-it-works-pipeline"
@@ -324,6 +336,25 @@ export default function HowItWorksPage() {
   style AC fill:#fef3d0,stroke:#c9a227
   style HUMAN fill:#f5f0eb,stroke:#94897c`}
               />
+            </div>
+
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="rounded-lg border border-border bg-white p-3 text-center">
+                <p className="text-lg font-bold text-foreground">Instinct</p>
+                <p className="text-xs text-foreground/50">Keyword scan in &lt;50ms</p>
+              </div>
+              <div className="rounded-lg border border-border bg-white p-3 text-center">
+                <p className="text-lg font-bold text-foreground">Intuition</p>
+                <p className="text-xs text-foreground/50">Graph pattern matching</p>
+              </div>
+              <div className="rounded-lg border border-border bg-white p-3 text-center">
+                <p className="text-lg font-bold text-foreground">Deliberation</p>
+                <p className="text-xs text-foreground/50">Opus 4.6 scores 12 traits</p>
+              </div>
+              <div className="rounded-lg border border-border bg-white p-3 text-center">
+                <p className="text-lg font-bold text-foreground">Phronesis</p>
+                <p className="text-xs text-foreground/50">Character graph + patterns</p>
+              </div>
             </div>
           </motion.div>
         </div>

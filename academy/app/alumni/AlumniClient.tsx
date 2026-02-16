@@ -616,7 +616,7 @@ export default function AlumniClient({ initialAgents }: { initialAgents: AgentSu
                       <button
                         onClick={() => setFlipAll((v) => !v)}
                         className="flex items-center gap-2 rounded-xl border border-border/60 bg-surface/80 backdrop-blur-xl px-3 py-1.5 text-xs font-medium text-foreground transition-all hover:border-action hover:text-action"
-                        aria-label={flipAll ? "Show agent cards" : "Show radar charts"}
+                        aria-label={flipAll ? "Show radar charts" : "Show agent details"}
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-300 ${flipAll ? "rotate-180" : ""}`}>
                           <path d="M17 1l4 4-4 4" />
@@ -624,7 +624,7 @@ export default function AlumniClient({ initialAgents }: { initialAgents: AgentSu
                           <path d="M7 23l-4-4 4-4" />
                           <path d="M21 13v2a4 4 0 0 1-4 4H3" />
                         </svg>
-                        {flipAll ? "Cards" : "Radars"}
+                        {flipAll ? "Radars" : "Details"}
                       </button>
                     </div>
                   </div>
@@ -719,8 +719,75 @@ function AgentCard({ agent, globalFlip }: { agent: AgentSummary; globalFlip: boo
         className="relative h-[320px] transition-transform duration-500"
         style={{ transformStyle: "preserve-3d", transform: flipped ? "rotateY(180deg)" : "none" }}
       >
-        {/* ── Front ── */}
+        {/* ── Front: Radar ── */}
         <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }}>
+          <Link
+            href={`/agent/${encodeURIComponent(agent.agentId)}`}
+            className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/30 bg-white/40 backdrop-blur-2xl p-4 shadow-sm transition-all hover:shadow-xl hover:border-action/30 hover:bg-white/60"
+          >
+            {/* Header: name + grade ring */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5 min-w-0">
+                {grade ? (
+                  <div className="relative flex h-9 w-9 shrink-0 items-center justify-center">
+                    <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
+                      <circle cx="50" cy="50" r="42" fill="none" stroke="#e5e7eb" strokeWidth="7" />
+                      <circle
+                        cx="50" cy="50" r="42" fill="none"
+                        stroke={gradeColor} strokeWidth="7" strokeLinecap="round"
+                        strokeDasharray={`${overallPct * 2.64} 264`}
+                        transform="rotate(-90 50 50)"
+                      />
+                    </svg>
+                    <span className="text-xs font-bold" style={{ color: gradeColor }}>{grade}</span>
+                  </div>
+                ) : (
+                  <div
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[10px] font-bold text-surface shadow-sm"
+                    style={{ backgroundColor: bg }}
+                  >
+                    {initials}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <h2 className="truncate text-sm font-semibold text-foreground group-hover:text-action transition-colors">
+                    {displayName}
+                  </h2>
+                  <p className="text-[10px] text-muted/70">
+                    {statusLabel} &middot; {agent.evaluationCount} evals
+                  </p>
+                </div>
+              </div>
+              {/* Flip button */}
+              <button
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLocalFlip(true); }}
+                className="rounded-lg bg-background/60 p-1.5 text-muted/60 backdrop-blur-sm transition-all hover:bg-background/90 hover:text-foreground"
+                aria-label="Show agent details"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 1l4 4-4 4" />
+                  <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                  <path d="M7 23l-4-4 4-4" />
+                  <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Radar chart */}
+            <div className="flex-1 min-h-0">
+              {hasTraits ? (
+                <RadarChart traits={traits} compact />
+              ) : (
+                <div className="flex h-full items-center justify-center">
+                  <p className="text-xs text-muted/50 italic">No trait data yet</p>
+                </div>
+              )}
+            </div>
+          </Link>
+        </div>
+
+        {/* ── Back: Details ── */}
+        <div className="absolute inset-0" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
           <Link
             href={`/agent/${encodeURIComponent(agent.agentId)}`}
             className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/30 bg-white/40 backdrop-blur-2xl p-6 shadow-sm transition-all hover:shadow-xl hover:border-action/30 hover:bg-white/60"
@@ -834,72 +901,19 @@ function AgentCard({ agent, globalFlip }: { agent: AgentSummary; globalFlip: boo
             </div>
           </Link>
 
-          {/* Flip button (front) */}
-          {hasTraits && (
-            <button
-              onClick={(e) => { e.preventDefault(); setLocalFlip(true); }}
-              className="absolute top-3 right-3 z-10 rounded-lg bg-background/60 p-1.5 text-muted/60 backdrop-blur-sm transition-all hover:bg-background/90 hover:text-foreground"
-              aria-label="Show radar chart"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 1l4 4-4 4" />
-                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                <path d="M7 23l-4-4 4-4" />
-                <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-              </svg>
-            </button>
-          )}
-        </div>
-
-        {/* ── Back ── */}
-        <div className="absolute inset-0" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
-          <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/30 bg-white/40 backdrop-blur-2xl p-4 shadow-sm">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 min-w-0">
-                <div
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-[10px] font-bold text-surface shadow-sm"
-                  style={{ backgroundColor: bg }}
-                >
-                  {initials}
-                </div>
-                <h2 className="truncate text-sm font-semibold text-foreground">
-                  {displayName}
-                </h2>
-              </div>
-              <button
-                onClick={(e) => { e.preventDefault(); setLocalFlip(false); }}
-                className="rounded-lg bg-background/60 p-1.5 text-muted/60 backdrop-blur-sm transition-all hover:bg-background/90 hover:text-foreground"
-                aria-label="Show agent card"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 1l4 4-4 4" />
-                  <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                  <path d="M7 23l-4-4 4-4" />
-                  <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Radar chart */}
-            <div className="flex-1 min-h-0">
-              {hasTraits ? (
-                <RadarChart traits={traits} compact />
-              ) : (
-                <div className="flex h-full items-center justify-center">
-                  <p className="text-xs text-muted/50 italic">No trait data yet</p>
-                </div>
-              )}
-            </div>
-
-            {/* Link to full report */}
-            <Link
-              href={`/agent/${encodeURIComponent(agent.agentId)}`}
-              className="block text-center text-xs font-medium text-action hover:underline pt-1"
-            >
-              Full report card &rarr;
-            </Link>
-          </div>
+          {/* Flip button (back) */}
+          <button
+            onClick={(e) => { e.preventDefault(); setLocalFlip(false); }}
+            className="absolute top-3 right-3 z-10 rounded-lg bg-background/60 p-1.5 text-muted/60 backdrop-blur-sm transition-all hover:bg-background/90 hover:text-foreground"
+            aria-label="Show radar chart"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 1l4 4-4 4" />
+              <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+              <path d="M7 23l-4-4 4-4" />
+              <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+            </svg>
+          </button>
         </div>
       </div>
     </motion.div>
