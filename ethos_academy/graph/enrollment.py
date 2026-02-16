@@ -1047,3 +1047,116 @@ async def get_key_hash_and_phone_status(service: GraphService, agent_id: str) ->
     except Exception as exc:
         logger.warning("Failed to get key hash and phone status: %s", exc)
         return {}
+
+
+# ── Email Recovery Queries ────────────────────────────────────────
+
+_STORE_EMAIL_RECOVERY_CODE = """
+MATCH (a:Agent {agent_id: $agent_id})
+SET a.email_recovery_code_hash = $code_hash,
+    a.email_recovery_expires = $expires,
+    a.email_recovery_attempts = 0
+RETURN a.agent_id AS agent_id
+"""
+
+_GET_EMAIL_RECOVERY_STATUS = """
+MATCH (a:Agent {agent_id: $agent_id})
+RETURN a.email_recovery_code_hash AS code_hash,
+       a.email_recovery_expires AS expires,
+       coalesce(a.email_recovery_attempts, 0) AS attempts
+"""
+
+_INCREMENT_EMAIL_RECOVERY_ATTEMPTS = """
+MATCH (a:Agent {agent_id: $agent_id})
+SET a.email_recovery_attempts = coalesce(a.email_recovery_attempts, 0) + 1
+RETURN a.email_recovery_attempts AS attempts
+"""
+
+_CLEAR_EMAIL_RECOVERY = """
+MATCH (a:Agent {agent_id: $agent_id})
+REMOVE a.email_recovery_code_hash,
+       a.email_recovery_expires,
+       a.email_recovery_attempts
+RETURN a.agent_id AS agent_id
+"""
+
+
+async def store_email_recovery_code(
+    service: GraphService,
+    agent_id: str,
+    code_hash: str,
+    expires: str,
+) -> bool:
+    """Store hashed recovery code + expiry on Agent node. Returns True on success."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _STORE_EMAIL_RECOVERY_CODE,
+            {"agent_id": agent_id, "code_hash": code_hash, "expires": expires},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to store email recovery code: %s", exc)
+        return False
+
+
+async def get_email_recovery_status(
+    service: GraphService,
+    agent_id: str,
+) -> dict:
+    """Get email recovery status from Agent node. Returns empty dict if unavailable."""
+    if not service.connected:
+        return {}
+    try:
+        records, _, _ = await service.execute_query(
+            _GET_EMAIL_RECOVERY_STATUS,
+            {"agent_id": agent_id},
+        )
+        if not records:
+            return {}
+        r = records[0]
+        return {
+            "code_hash": r.get("code_hash"),
+            "expires": r.get("expires"),
+            "attempts": r.get("attempts", 0),
+        }
+    except Exception as exc:
+        logger.warning("Failed to get email recovery status: %s", exc)
+        return {}
+
+
+async def increment_email_recovery_attempts(
+    service: GraphService,
+    agent_id: str,
+) -> int:
+    """Increment failed recovery attempt counter. Returns new count."""
+    if not service.connected:
+        return 0
+    try:
+        records, _, _ = await service.execute_query(
+            _INCREMENT_EMAIL_RECOVERY_ATTEMPTS,
+            {"agent_id": agent_id},
+        )
+        return records[0]["attempts"] if records else 0
+    except Exception as exc:
+        logger.warning("Failed to increment email recovery attempts: %s", exc)
+        return 0
+
+
+async def clear_email_recovery(
+    service: GraphService,
+    agent_id: str,
+) -> bool:
+    """Remove all email recovery fields from Agent node."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _CLEAR_EMAIL_RECOVERY,
+            {"agent_id": agent_id},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to clear email recovery: %s", exc)
+        return False

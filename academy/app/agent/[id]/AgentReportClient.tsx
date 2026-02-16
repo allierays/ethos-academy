@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 import type {
   AgentProfile,
@@ -84,6 +85,16 @@ export default function AgentReportClient({
         })),
     [history]
   );
+
+  const searchParams = useSearchParams();
+  const isEmbed = searchParams.get("embed") === "true";
+
+  useEffect(() => {
+    if (isEmbed) {
+      document.documentElement.classList.add("embed-mode");
+      return () => document.documentElement.classList.remove("embed-mode");
+    }
+  }, [isEmbed]);
 
   const agentName = profile.agentName || profile.agentId;
   const sectionIds = useMemo(() => REPORT_TOC_SECTIONS.map((s) => s.id), []);

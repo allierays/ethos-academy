@@ -133,7 +133,9 @@ export default function LiveGraph() {
             Click any node to explore.
           </p>
         </motion.div>
+      </div>
 
+      <div className="px-4 sm:px-6">
         <motion.div {...whileInView} variants={fadeUp} className="relative" ref={hintRef}>
           <div ref={graphSectionRef} className="bg-[#0f1a2e]">
             <PhronesisGraph

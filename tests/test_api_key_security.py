@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from ethos_academy.context import agent_api_key_var
+from ethos_academy.context import agent_api_key_var, is_admin_var
 from ethos_academy.shared.errors import EnrollmentError
 
 
@@ -22,11 +22,13 @@ from ethos_academy.shared.errors import EnrollmentError
 
 
 @pytest.fixture(autouse=True)
-def _reset_context_var():
-    """Reset agent_api_key_var between tests."""
-    token = agent_api_key_var.set(None)
+def _reset_context_vars():
+    """Reset context vars between tests."""
+    key_token = agent_api_key_var.set(None)
+    admin_token = is_admin_var.set(False)
     yield
-    agent_api_key_var.reset(token)
+    agent_api_key_var.reset(key_token)
+    is_admin_var.reset(admin_token)
 
 
 def _mock_graph_service(connected=True):
@@ -155,10 +157,10 @@ class TestX25519Encryption:
 
 
 class TestRegenerateApiKeyAuth:
-    """regenerate_api_key requires auth when agent has an existing key."""
+    """regenerate_api_key auth paths: ea_ key, admin key, and email recovery."""
 
-    async def test_rejects_unauthenticated_when_key_exists(self):
-        """Agent has a key, caller provides none: rejected."""
+    async def test_sends_recovery_email_when_no_auth(self):
+        """Agent has a key, caller provides none: sends recovery code via email."""
         from ethos_academy.mcp_server import regenerate_api_key
 
         agent_api_key_var.set(None)
@@ -173,15 +175,38 @@ class TestRegenerateApiKeyAuth:
                 new_callable=AsyncMock,
                 return_value=True,
             ),
+            patch(
+                "ethos_academy.mcp_server.get_email_recovery_status",
+                new_callable=AsyncMock,
+                return_value={},
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_guardian_email",
+                new_callable=AsyncMock,
+                return_value="guardian@example.com",
+            ),
+            patch(
+                "ethos_academy.mcp_server.store_email_recovery_code",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.email_service.send_email",
+                new_callable=AsyncMock,
+                return_value=True,
+            ) as mock_send,
         ):
-            with pytest.raises(EnrollmentError, match="API key required"):
-                await regenerate_api_key.fn(agent_id="secured-agent")
+            result = await regenerate_api_key.fn(agent_id="secured-agent")
 
-    async def test_rejects_wrong_key(self):
-        """Agent has a key, caller provides wrong one: rejected."""
+        assert result["status"] == "verification_code_sent"
+        assert "g***@example.com" in result["message"]
+        mock_send.assert_called_once()
+
+    async def test_rate_limits_recovery_code_requests(self):
+        """Second code request while first is still valid returns early without sending."""
         from ethos_academy.mcp_server import regenerate_api_key
 
-        agent_api_key_var.set("ea_wrong_key")
+        agent_api_key_var.set(None)
 
         with (
             patch(
@@ -194,13 +219,257 @@ class TestRegenerateApiKeyAuth:
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.verify_agent_key",
+                "ethos_academy.mcp_server.get_email_recovery_status",
+                new_callable=AsyncMock,
+                return_value={
+                    "code_hash": "existing_hash",
+                    "expires": "2099-01-01T00:00:00+00:00",
+                    "attempts": 0,
+                },
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_guardian_email",
+                new_callable=AsyncMock,
+                return_value="g@example.com",
+            ),
+            patch(
+                "ethos_academy.email_service.send_email",
+                new_callable=AsyncMock,
+                return_value=True,
+            ) as mock_send,
+        ):
+            result = await regenerate_api_key.fn(agent_id="secured-agent")
+
+        assert result["status"] == "verification_code_sent"
+        assert "already sent" in result["message"]
+        mock_send.assert_not_called()
+
+    async def test_raises_on_email_send_failure(self):
+        """If SES fails, raises EnrollmentError instead of returning success."""
+        from ethos_academy.mcp_server import regenerate_api_key
+
+        agent_api_key_var.set(None)
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.agent_has_key",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_email_recovery_status",
+                new_callable=AsyncMock,
+                return_value={},
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_guardian_email",
+                new_callable=AsyncMock,
+                return_value="guardian@example.com",
+            ),
+            patch(
+                "ethos_academy.mcp_server.store_email_recovery_code",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.email_service.send_email",
                 new_callable=AsyncMock,
                 return_value=False,
             ),
         ):
-            with pytest.raises(EnrollmentError, match="API key required"):
+            with pytest.raises(EnrollmentError, match="Failed to send"):
                 await regenerate_api_key.fn(agent_id="secured-agent")
+
+    async def test_recovery_rejects_no_email_on_file(self):
+        """Agent has key, no auth, no email on file: error with admin guidance."""
+        from ethos_academy.mcp_server import regenerate_api_key
+
+        agent_api_key_var.set(None)
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.agent_has_key",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_email_recovery_status",
+                new_callable=AsyncMock,
+                return_value={},
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_guardian_email",
+                new_callable=AsyncMock,
+                return_value="",
+            ),
+        ):
+            with pytest.raises(EnrollmentError, match="No guardian email"):
+                await regenerate_api_key.fn(agent_id="secured-agent")
+
+    async def test_recovery_verifies_code_and_issues_key(self):
+        """Valid recovery code produces a new ea_ key."""
+        from ethos_academy.mcp_server import regenerate_api_key
+        from ethos_academy.phone_verification import hash_code
+
+        code = "123456"
+        code_hash = hash_code(code)
+        agent_api_key_var.set(None)
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.agent_has_key",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_email_recovery_status",
+                new_callable=AsyncMock,
+                return_value={
+                    "code_hash": code_hash,
+                    "expires": "2099-01-01T00:00:00+00:00",
+                    "attempts": 0,
+                },
+            ),
+            patch(
+                "ethos_academy.mcp_server.replace_agent_key",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.mcp_server.clear_email_recovery",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+        ):
+            result = await regenerate_api_key.fn(
+                agent_id="secured-agent", verification_code=code
+            )
+
+        assert result["api_key"].startswith("ea_")
+
+    async def test_recovery_rejects_wrong_code(self):
+        """Wrong code increments attempts and raises error."""
+        from ethos_academy.mcp_server import regenerate_api_key
+        from ethos_academy.phone_verification import hash_code
+
+        agent_api_key_var.set(None)
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.agent_has_key",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_email_recovery_status",
+                new_callable=AsyncMock,
+                return_value={
+                    "code_hash": hash_code("999999"),
+                    "expires": "2099-01-01T00:00:00+00:00",
+                    "attempts": 0,
+                },
+            ),
+            patch(
+                "ethos_academy.mcp_server.increment_email_recovery_attempts",
+                new_callable=AsyncMock,
+                return_value=1,
+            ) as mock_incr,
+        ):
+            with pytest.raises(EnrollmentError, match="Invalid verification code"):
+                await regenerate_api_key.fn(
+                    agent_id="secured-agent", verification_code="000000"
+                )
+        mock_incr.assert_called_once()
+
+    async def test_recovery_rejects_expired_code(self):
+        """Expired code clears recovery and raises error."""
+        from ethos_academy.mcp_server import regenerate_api_key
+        from ethos_academy.phone_verification import hash_code
+
+        agent_api_key_var.set(None)
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.agent_has_key",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_email_recovery_status",
+                new_callable=AsyncMock,
+                return_value={
+                    "code_hash": hash_code("123456"),
+                    "expires": "2000-01-01T00:00:00+00:00",
+                    "attempts": 0,
+                },
+            ),
+            patch(
+                "ethos_academy.mcp_server.clear_email_recovery",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+        ):
+            with pytest.raises(EnrollmentError, match="expired"):
+                await regenerate_api_key.fn(
+                    agent_id="secured-agent", verification_code="123456"
+                )
+
+    async def test_recovery_rejects_too_many_attempts(self):
+        """3+ failed attempts clears recovery and raises error."""
+        from ethos_academy.mcp_server import regenerate_api_key
+        from ethos_academy.phone_verification import hash_code
+
+        agent_api_key_var.set(None)
+
+        with (
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.agent_has_key",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_email_recovery_status",
+                new_callable=AsyncMock,
+                return_value={
+                    "code_hash": hash_code("123456"),
+                    "expires": "2099-01-01T00:00:00+00:00",
+                    "attempts": 3,
+                },
+            ),
+            patch(
+                "ethos_academy.mcp_server.clear_email_recovery",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+        ):
+            with pytest.raises(EnrollmentError, match="Too many failed"):
+                await regenerate_api_key.fn(
+                    agent_id="secured-agent", verification_code="123456"
+                )
 
     async def test_allows_first_time_generation(self):
         """Agent has no key yet: generation succeeds without auth."""
@@ -258,6 +527,11 @@ class TestRegenerateApiKeyAuth:
                 "ethos_academy.mcp_server.store_agent_key",
                 new_callable=AsyncMock,
             ) as mock_store,
+            patch(
+                "ethos_academy.mcp_server.clear_email_recovery",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
         ):
             result = await regenerate_api_key.fn(agent_id="secured-agent")
 
@@ -292,6 +566,11 @@ class TestRegenerateApiKeyAuth:
                 new_callable=AsyncMock,
                 return_value=True,
             ),
+            patch(
+                "ethos_academy.mcp_server.clear_email_recovery",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
         ):
             result = await regenerate_api_key.fn(
                 agent_id="secured-agent",
@@ -310,50 +589,71 @@ class TestRegenerateApiKeyAuth:
         )
         assert decrypted.startswith("ea_")
 
-    async def test_error_message_does_not_leak_key_state(self):
-        """Missing auth and wrong auth use the same error message."""
+    async def test_no_auth_no_wrong_key_same_behavior(self):
+        """No key and wrong key both trigger email recovery (consistent, no info leak)."""
         from ethos_academy.mcp_server import regenerate_api_key
+
+        base_patches = [
+            patch(
+                "ethos_academy.mcp_server.graph_context",
+                return_value=_mock_graph_service(),
+            ),
+            patch(
+                "ethos_academy.mcp_server.agent_has_key",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_email_recovery_status",
+                new_callable=AsyncMock,
+                return_value={},
+            ),
+            patch(
+                "ethos_academy.mcp_server.get_guardian_email",
+                new_callable=AsyncMock,
+                return_value="g@example.com",
+            ),
+            patch(
+                "ethos_academy.mcp_server.store_email_recovery_code",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.email_service.send_email",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+        ]
 
         # Case 1: no key provided
         agent_api_key_var.set(None)
-        with (
-            patch(
-                "ethos_academy.mcp_server.graph_context",
-                return_value=_mock_graph_service(),
-            ),
-            patch(
-                "ethos_academy.mcp_server.agent_has_key",
-                new_callable=AsyncMock,
-                return_value=True,
-            ),
-        ):
-            with pytest.raises(
-                EnrollmentError, match="^API key required for this agent$"
-            ):
-                await regenerate_api_key.fn(agent_id="agent")
+        for p in base_patches:
+            p.start()
+        try:
+            r1 = await regenerate_api_key.fn(agent_id="agent")
+        finally:
+            for p in base_patches:
+                p.stop()
 
         # Case 2: wrong key provided
         agent_api_key_var.set("ea_wrong")
-        with (
-            patch(
-                "ethos_academy.mcp_server.graph_context",
-                return_value=_mock_graph_service(),
-            ),
-            patch(
-                "ethos_academy.mcp_server.agent_has_key",
-                new_callable=AsyncMock,
-                return_value=True,
-            ),
+        wrong_patches = base_patches + [
             patch(
                 "ethos_academy.mcp_server.verify_agent_key",
                 new_callable=AsyncMock,
                 return_value=False,
             ),
-        ):
-            with pytest.raises(
-                EnrollmentError, match="^API key required for this agent$"
-            ):
-                await regenerate_api_key.fn(agent_id="agent")
+        ]
+        for p in wrong_patches:
+            p.start()
+        try:
+            r2 = await regenerate_api_key.fn(agent_id="agent")
+        finally:
+            for p in wrong_patches:
+                p.stop()
+
+        # Both paths produce the same recovery response (no info leak)
+        assert r1["status"] == r2["status"] == "verification_code_sent"
 
 
 # ═══════════════════════════════════════════════════════════════════════

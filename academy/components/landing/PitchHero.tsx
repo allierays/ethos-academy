@@ -5,13 +5,18 @@ import { motion } from "motion/react";
 export default function PitchHero() {
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#1a2538] px-6">
-      {/* Subtle background glow */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div
-          className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[160px]"
-          style={{ background: "radial-gradient(circle, rgba(91,138,191,0.15) 0%, rgba(92,201,192,0.08) 50%, transparent 70%)" }}
-        />
-      </div>
+      {/* Background banner image */}
+      <div
+        className="absolute inset-0 bg-cover bg-no-repeat"
+        style={{ backgroundImage: "url('/academy-people-banner.jpeg')", backgroundPosition: "center 40%" }}
+        aria-hidden="true"
+      />
+      {/* Gradient overlay: dark center for text readability, fading to reveal image at edges */}
+      <div
+        className="absolute inset-0"
+        style={{ background: "radial-gradient(ellipse at center, rgba(26,37,56,0.92) 0%, rgba(26,37,56,0.75) 50%, rgba(26,37,56,0.45) 100%)" }}
+        aria-hidden="true"
+      />
 
       <div className="relative flex flex-col items-center text-center">
         {/* Ethos Academy */}

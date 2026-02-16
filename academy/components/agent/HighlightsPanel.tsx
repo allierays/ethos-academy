@@ -49,7 +49,7 @@ interface HighlightsPanelProps {
   agentName?: string;
 }
 
-/** Clean markdown syntax from text. */
+/** Strip markdown to plain text (for single-line previews). */
 function cleanMarkdown(text: string): string {
   return text
     .replace(/\*\*([^*]+)\*\*/g, "$1")
@@ -63,6 +63,14 @@ function cleanMarkdown(text: string): string {
     .replace(/\*\*[^*]*$/g, "")
     .replace(/\uFFFD/g, "")
     .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, "")
+    .trim();
+}
+
+/** Sanitize content for rich rendering (keep markdown, strip unsafe HTML). */
+function sanitizeContent(text: string): string {
+  return text
+    .replace(/<[^>]+>/g, "")
+    .replace(/\uFFFD/g, "")
     .trim();
 }
 
@@ -231,7 +239,7 @@ function ExpandedHighlight({ item }: { item: HighlightItem }) {
         {item.messageContent && (
           <DetailSection title="Original Message" icon={faEnvelope} accent="#64748b">
             <AnnotatedMessage
-              content={cleanMarkdown(item.messageContent)}
+              content={sanitizeContent(item.messageContent)}
               indicators={item.indicators}
               scoringReasoning={item.scoringReasoning}
               intentClassification={item.intentClassification}

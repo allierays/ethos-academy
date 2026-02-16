@@ -147,9 +147,11 @@ export default function ResearchPage() {
               Where the Rubric Came From
             </h2>
             <p className="mt-4 text-lg text-muted leading-relaxed">
-              The project started with research, not code. Inspired by Claude&apos;s
-              Constitution and OpenClaw, 28 research documents came before
-              a single line of Python.
+              The project started with research, not code. Claude&apos;s Agent
+              Teams worked in parallel, producing 28 research documents before
+              a single line of Python. They cross-referenced Claude&apos;s
+              Constitution, OpenClaw, Cialdini, Konnikova, and Anthropic&apos;s
+              safety reports simultaneously.
             </p>
           </motion.div>
 

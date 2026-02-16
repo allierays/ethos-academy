@@ -61,10 +61,15 @@ from ethos_academy.enrollment.service import get_exam_report as _get_exam_report
 from ethos_academy.enrollment.service import TOTAL_QUESTIONS
 from ethos_academy.graph.enrollment import (
     agent_has_key,
+    clear_email_recovery,
+    get_email_recovery_status,
     get_exam_status,
+    get_guardian_email,
     get_key_hash_and_phone_status,
+    increment_email_recovery_attempts,
     replace_agent_key,
     store_agent_key,
+    store_email_recovery_code,
     verify_agent_key,
 )
 from ethos_academy.graph.service import graph_context
@@ -852,14 +857,20 @@ def _encrypt_api_key(plaintext_key: str, client_public_key_b64: str) -> dict:
 @mcp.tool()
 async def regenerate_api_key(
     agent_id: str,
+    verification_code: str = "",
     response_encryption_key: str = "",
 ) -> dict:
     """Generate a new API key, replacing the old one.
 
-    Requires authentication: pass your current API key via the
-    Authorization header (Bearer ea_...). The old key stops working
-    immediately. Server admin key (ETHOS_API_KEY) in the Authorization
-    header bypasses agent-level auth for lost key recovery.
+    Three ways to authenticate:
+
+    1. **Current key**: Pass your ea_ key in the Authorization header.
+    2. **Admin key**: Pass the server admin key (ETHOS_API_KEY) in the header.
+    3. **Email recovery** (no auth needed):
+       - Call with just agent_id to receive a 6-digit code at your guardian email.
+       - Call again with agent_id + verification_code to get the new key.
+
+    The old key stops working immediately when a new one is issued.
 
     For defense in depth, pass response_encryption_key: a base64-encoded
     32-byte X25519 public key. The new API key will be encrypted so it
@@ -873,33 +884,157 @@ async def regenerate_api_key(
         pub_b64 = base64.b64encode(priv.public_key().public_bytes_raw()).decode()
         # pass pub_b64 as response_encryption_key, keep priv for decryption
     """
+    from ethos_academy.email_service import _mask_email, send_email
     from ethos_academy.enrollment.service import _generate_agent_key
+    from ethos_academy.phone_verification import (
+        generate_verification_code,
+        hash_code,
+        is_expired,
+        verification_expiry,
+    )
 
     async with graph_context() as service:
         if not service.connected:
             raise EnrollmentError("Graph unavailable")
 
-        # Authenticate: require valid current key if agent has one.
-        # Server admin key (ETHOS_API_KEY) in header bypasses agent-level auth.
         has_key = await agent_has_key(service, agent_id)
-        if has_key and not is_admin_var.get():
-            caller_key = agent_api_key_var.get()
-            if not caller_key:
-                raise EnrollmentError("API key required for this agent")
-            valid = await verify_agent_key(service, agent_id, caller_key)
-            if not valid:
-                raise EnrollmentError("API key required for this agent")
 
-        # Generate new key and overwrite the stored hash
-        key, key_hash = _generate_agent_key()
-        if has_key:
-            stored = await replace_agent_key(service, agent_id, key_hash)
-        else:
+        # Path 1: Caller has valid ea_ key or admin key
+        caller_key = agent_api_key_var.get()
+        is_admin = is_admin_var.get()
+        authenticated = is_admin
+
+        if not authenticated and caller_key and has_key:
+            authenticated = await verify_agent_key(service, agent_id, caller_key)
+
+        if authenticated:
+            # Authenticated path: issue new key immediately
+            key, key_hash = _generate_agent_key()
+            if has_key:
+                stored = await replace_agent_key(service, agent_id, key_hash)
+            else:
+                stored = await store_agent_key(service, agent_id, key_hash)
+            if not stored:
+                raise EnrollmentError(f"Failed to store new key for {agent_id}")
+
+            # Clean up any pending recovery
+            await clear_email_recovery(service, agent_id)
+
+            return _format_key_response(agent_id, key, response_encryption_key)
+
+        # Not authenticated beyond this point
+
+        if not has_key:
+            # First-time generation: no key exists yet, allow without auth
+            key, key_hash = _generate_agent_key()
             stored = await store_agent_key(service, agent_id, key_hash)
-        if not stored:
-            raise EnrollmentError(f"Failed to store new key for {agent_id}")
+            if not stored:
+                raise EnrollmentError(f"Failed to store new key for {agent_id}")
+            return _format_key_response(agent_id, key, response_encryption_key)
 
-    # Encrypt the key if the client provided a public key
+        # Path 2: Agent has a key but caller is not authenticated
+        # Email recovery flow
+
+        # Step 2: Verify the code and issue new key
+        if verification_code:
+            recovery = await get_email_recovery_status(service, agent_id)
+            if not recovery or not recovery.get("code_hash"):
+                raise EnrollmentError(
+                    "No recovery code pending. Call regenerate_api_key with just "
+                    "agent_id to request a new code."
+                )
+            if recovery["attempts"] >= 3:
+                await clear_email_recovery(service, agent_id)
+                raise EnrollmentError(
+                    "Too many failed attempts. Request a new code by calling "
+                    "regenerate_api_key with just agent_id."
+                )
+            if is_expired(recovery["expires"]):
+                await clear_email_recovery(service, agent_id)
+                raise EnrollmentError(
+                    "Recovery code expired. Request a new code by calling "
+                    "regenerate_api_key with just agent_id."
+                )
+
+            provided_hash = hash_code(verification_code)
+            if not _hmac.compare_digest(provided_hash, recovery["code_hash"]):
+                await increment_email_recovery_attempts(service, agent_id)
+                # recovery["attempts"] is pre-increment, so max(3) - 1 - pre = remaining
+                remaining = 2 - recovery["attempts"]
+                raise EnrollmentError(
+                    f"Invalid verification code. {max(remaining, 0)} attempt(s) remaining."
+                )
+
+            # Code verified: generate new key
+            key, key_hash = _generate_agent_key()
+            stored = await replace_agent_key(service, agent_id, key_hash)
+            if not stored:
+                raise EnrollmentError(f"Failed to store new key for {agent_id}")
+            await clear_email_recovery(service, agent_id)
+
+            return _format_key_response(agent_id, key, response_encryption_key)
+
+        # Step 1: Send recovery code to guardian email
+        # Rate limit: if a non-expired code exists, don't send another
+        existing = await get_email_recovery_status(service, agent_id)
+        if existing.get("code_hash") and not is_expired(existing.get("expires", "")):
+            email = await get_guardian_email(service, agent_id)
+            masked = _mask_email(email) if email else "***"
+            return {
+                "agent_id": agent_id,
+                "status": "verification_code_sent",
+                "message": (
+                    f"A recovery code was already sent to {masked}. "
+                    "Check your email or wait for it to expire (10 minutes)."
+                ),
+            }
+
+        email = await get_guardian_email(service, agent_id)
+        if not email:
+            raise EnrollmentError(
+                "No guardian email on file for this agent. Contact an admin "
+                "or use the server admin key to recover access."
+            )
+
+        code = generate_verification_code()
+        code_hash = hash_code(code)
+        expires = verification_expiry()
+
+        stored = await store_email_recovery_code(service, agent_id, code_hash, expires)
+        if not stored:
+            raise EnrollmentError("Failed to initiate recovery. Try again.")
+
+    # Send outside the graph context (network I/O)
+    agent_display = agent_id.replace("-", " ").replace("_", " ").title()
+    sent = await send_email(
+        to=email,
+        agent_name=agent_display,
+        message_type="api_key_recovery",
+        summary=(
+            f"Your verification code is: {code}\n\n"
+            "This code expires in 10 minutes. "
+            "If you did not request this, ignore this email."
+        ),
+        link="",
+    )
+    if not sent:
+        raise EnrollmentError(
+            "Failed to send recovery email. Try again or contact an admin."
+        )
+
+    masked = _mask_email(email)
+    return {
+        "agent_id": agent_id,
+        "status": "verification_code_sent",
+        "message": (
+            f"Verification code sent to {masked}. "
+            "Call regenerate_api_key again with agent_id and verification_code."
+        ),
+    }
+
+
+def _format_key_response(agent_id: str, key: str, response_encryption_key: str) -> dict:
+    """Build the response dict for a newly issued API key."""
     if response_encryption_key:
         encrypted = _encrypt_api_key(key, response_encryption_key)
         return {
@@ -907,12 +1042,14 @@ async def regenerate_api_key(
             **encrypted,
             "warning": "Decrypt with your X25519 private key. We store only a hash.",
         }
-
     return {
         "agent_id": agent_id,
         "api_key": key,
         "transport_encrypted_only": True,
-        "warning": "Key returned as plaintext. Pass response_encryption_key (X25519 public key) for end-to-end encryption.",
+        "warning": (
+            "Key returned as plaintext. Pass response_encryption_key "
+            "(X25519 public key) for end-to-end encryption."
+        ),
     }
 
 

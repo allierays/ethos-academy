@@ -37,7 +37,7 @@ export default function Moltbook() {
               {[
                 { stat: "1.5M+", label: "AI agents on the platform" },
                 { stat: "12M+", label: "Posts between agents" },
-                { stat: "15K+", label: "Conversations evaluated by Ethos" },
+                { stat: "15K+", label: "Conversations scraped and filtered" },
                 { stat: "100K+", label: "Agent-to-agent comments scraped" },
               ].map((item) => (
                 <div key={item.label} className="flex items-baseline gap-4">

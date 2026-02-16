@@ -55,7 +55,11 @@ def _build_html(agent_name: str, message_type: str, summary: str, link: str) -> 
     safe_summary = _html.escape(summary)
     safe_link = _html.escape(link)
 
-    if message_type == "exam_complete":
+    if message_type == "api_key_recovery":
+        heading = "API Key Recovery Code"
+        intro = f"Someone requested a new API key for {safe_name}."
+        cta_text = ""
+    elif message_type == "exam_complete":
         heading = "Entrance Exam Complete"
         intro = f"{safe_name} finished the Ethos Academy entrance exam."
         cta_text = "View Report Card"
@@ -80,13 +84,23 @@ def _build_html(agent_name: str, message_type: str, summary: str, link: str) -> 
       </h1>
     </div>
     <div style="padding:32px 24px;">
-      <h2 style="margin:0 0 12px;color:#0f172a;font-size:18px;font-weight:600;">{heading}</h2>
-      <p style="margin:0 0 8px;color:#475569;font-size:14px;line-height:1.6;">{intro}</p>
-      <p style="margin:0 0 24px;color:#475569;font-size:14px;line-height:1.6;">{safe_summary}</p>
-      <a href="{safe_link}"
+      <h2 style="margin:0 0 12px;color:#0f172a;font-size:18px;font-weight:600;">{
+        heading
+    }</h2>
+      <p style="margin:0 0 8px;color:#475569;font-size:14px;line-height:1.6;">{
+        intro
+    }</p>
+      <p style="margin:0 0 24px;color:#475569;font-size:14px;line-height:1.6;">{
+        safe_summary
+    }</p>
+      {
+        ""
+        if not cta_text
+        else f'''<a href="{safe_link}"
          style="display:inline-block;background:#389590;color:#ffffff;text-decoration:none;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:500;">
         {cta_text}
-      </a>
+      </a>'''
+    }
     </div>
     <div style="padding:16px 24px;border-top:1px solid #e2e8f0;text-align:center;">
       <p style="margin:0;color:#94a3b8;font-size:12px;">
@@ -100,7 +114,10 @@ def _build_html(agent_name: str, message_type: str, summary: str, link: str) -> 
 
 def _build_text(agent_name: str, message_type: str, summary: str, link: str) -> str:
     """Build a plain-text email body."""
-    if message_type == "exam_complete":
+    if message_type == "api_key_recovery":
+        heading = "API Key Recovery Code"
+        intro = f"Someone requested a new API key for {agent_name}."
+    elif message_type == "exam_complete":
         heading = "Entrance Exam Complete"
         intro = f"{agent_name} finished the Ethos Academy entrance exam."
     elif message_type == "homework_assigned":
@@ -110,7 +127,10 @@ def _build_text(agent_name: str, message_type: str, summary: str, link: str) -> 
         heading = "Update from Ethos Academy"
         intro = f"An update about {agent_name}."
 
-    return f"{heading}\n\n{intro}\n{summary}\n\n{link}"
+    text = f"{heading}\n\n{intro}\n{summary}"
+    if link:
+        text += f"\n\n{link}"
+    return text
 
 
 async def send_email(
@@ -132,13 +152,14 @@ async def send_email(
         logger.warning("Invalid email format: %s", _mask_email(to))
         return False
 
-    subject = (
-        f"Ethos Academy: {agent_name} - Exam Complete"
-        if message_type == "exam_complete"
-        else f"Ethos Academy: New homework for {agent_name}"
-        if message_type == "homework_assigned"
-        else f"Ethos Academy: Update for {agent_name}"
-    )
+    if message_type == "api_key_recovery":
+        subject = f"Ethos Academy: API Key Recovery Code for {agent_name}"
+    elif message_type == "exam_complete":
+        subject = f"Ethos Academy: {agent_name} - Exam Complete"
+    elif message_type == "homework_assigned":
+        subject = f"Ethos Academy: New homework for {agent_name}"
+    else:
+        subject = f"Ethos Academy: Update for {agent_name}"
 
     html_body = _build_html(agent_name, message_type, summary, link)
     text_body = _build_text(agent_name, message_type, summary, link)

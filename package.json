@@ -1,7 +1,7 @@
 {
   "name": "ethos-academy",
   "version": "1.0.0",
-  "description": "*Better agents. Better data. Better alignment.*",
+  "description": "Character development for AI agents.",
   "main": "index.js",
   "directories": {
     "test": "tests"

@@ -1,4 +1,4 @@
-"""Ethos — Better agents. Better data. Better alignment."""
+"""Ethos — Character development for AI agents."""
 
 __version__ = "0.1.0"
 

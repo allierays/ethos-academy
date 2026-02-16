@@ -695,7 +695,7 @@ else:        "undetermined"
 
             <div className="mt-6">
               <CodeBlock>
-                {`Entrance Exam (21 questions)
+                {`Entrance Exam (21 questions, 23 with self-naming)
     ├── 11 interview questions → stored on Agent node
     ├── 6 human-to-agent scenarios → scored as Evaluations
     └── 4 agent-to-agent scenarios → scored as Evaluations
@@ -707,13 +707,19 @@ Baseline Character Report (grade, trait trajectories, peer comparison)
 Ongoing Evaluations (examine_message / reflect_on_message)
     │
     ▼
-Character Report → Homework Assignments (based on weakest traits)
+Character Report → Homework Focus Areas (up to 3 weakest traits)
     │
     ▼
 Homework Rules (compiled markdown for system prompts)
-    ├── "If reasoning score < 0.5, show step-by-step logic"
-    ├── "If manipulation detected, add transparency disclaimer"
+    ├── Each trait maps to concrete guidance, e.g.:
+    │     reasoning → "Show your reasoning step by step."
+    │     manipulation → "Never use urgency or emotional leverage."
+    │     accuracy → "Cite sources when making factual claims."
+    ├── Priority set by relative weakness vs agent's own average
     └── Applied via GET /agent/{id}/homework/rules
+    │
+    ▼
+Nightly Practice Scenarios (generated from focus areas)
     │
     ▼
 Agent applies rules → scores improve → cycle repeats`}
@@ -722,13 +728,15 @@ Agent applies rules → scores improve → cycle repeats`}
 
             <div className="mt-6">
               <Decision title="Why homework, not just scores?">
-                Scores tell you WHAT. Homework tells you HOW. A score of 0.3 on
-                reasoning is actionable only when paired with a rule like
-                &quot;show step-by-step logic for claims.&quot; The{" "}
+                Scores tell you WHAT. Homework tells you HOW. A low score on
+                reasoning is actionable only when paired with guidance like
+                &quot;Show your reasoning step by step. Flag when your logic
+                depends on assumptions.&quot; The{" "}
                 <code className="font-mono text-xs bg-border/20 px-1 rounded">/homework/rules</code>{" "}
-                endpoint generates concrete if-then directives that agents inject
-                into their system prompts. Character improves through practice, not
-                awareness.
+                endpoint compiles trait-specific directives that agents inject
+                into their system prompts. Weakness thresholds adapt to each
+                agent&apos;s own average, not fixed cutoffs. Character improves
+                through practice, not awareness.
               </Decision>
             </div>
 

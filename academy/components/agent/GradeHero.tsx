@@ -180,8 +180,8 @@ export default function GradeHero({ profile, report, timeline = [] }: GradeHeroP
           </motion.div>
 
           {/* Right: stat cards + help */}
-          <motion.div className="flex items-start gap-3" variants={fadeUp}>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <motion.div className="flex items-start gap-2 sm:gap-3 min-w-0 w-full sm:w-auto" variants={fadeUp}>
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-4 flex-1 min-w-0">
             <StatCard label={<GlossaryTerm slug="evaluation">Evaluations</GlossaryTerm>} value={String(evalCount)} href="#habits" />
             <StatCard
               label={<GlossaryTerm slug="trend">Trend</GlossaryTerm>} value={trend.arrow} sublabel={trend.label}
@@ -268,18 +268,18 @@ function StatCard({
       {isRiskBadge ? (
         <span className={valueClass}>{value}</span>
       ) : (
-        <p className={`text-xl font-bold ${valueClass ?? "text-white"}`}>
+        <p className={`text-base sm:text-xl font-bold ${valueClass ?? "text-white"}`}>
           {value}
         </p>
       )}
-      {sublabel && <p className="text-xs text-slate-200">{sublabel}</p>}
-      <p className="mt-0.5 text-[11px] uppercase tracking-wider text-slate-300">
+      {sublabel && <p className="text-[9px] sm:text-xs text-slate-200 truncate w-full text-center">{sublabel}</p>}
+      <p className="mt-0.5 text-[8px] sm:text-[11px] uppercase tracking-normal sm:tracking-wider text-slate-300 text-center leading-tight">
         {label}
       </p>
     </>
   );
 
-  const className = "flex flex-col items-center justify-center rounded-lg bg-white/10 backdrop-blur-xl border border-white/20 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-colors hover:bg-white/15 cursor-pointer";
+  const className = "flex flex-col items-center justify-center rounded-lg bg-white/10 backdrop-blur-xl border border-white/20 px-1.5 py-2.5 sm:px-5 sm:py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-colors hover:bg-white/15 cursor-pointer min-w-0 overflow-hidden";
 
   if (href) {
     return (

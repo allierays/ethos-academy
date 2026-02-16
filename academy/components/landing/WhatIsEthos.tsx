@@ -512,10 +512,10 @@ function AnimatedTaxonomyTree() {
   useEffect(() => {
     if (!inView) return;
     const timers = [
-      setTimeout(() => setPhase(1), 1800),
-      setTimeout(() => setPhase(2), 3200),
-      setTimeout(() => setPhase(3), 4600),
-      setTimeout(() => setPhase(4), 6000),
+      setTimeout(() => setPhase(1), 600),
+      setTimeout(() => setPhase(2), 1100),
+      setTimeout(() => setPhase(3), 1600),
+      setTimeout(() => setPhase(4), 2100),
     ];
     return () => timers.forEach(clearTimeout);
   }, [inView]);
@@ -526,7 +526,7 @@ function AnimatedTaxonomyTree() {
       <motion.div
         initial={{ opacity: 0, scale: 0.85 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
         className="relative rounded-2xl border border-[#1a2538]/10 bg-[#1a2538] px-10 py-5 text-center shadow-lg"
       >
         <p className="text-xl font-bold tracking-tight text-white sm:text-2xl">
@@ -554,7 +554,7 @@ function AnimatedTaxonomyTree() {
                 ? { opacity: 1, y: 0 }
                 : { opacity: 0, y: 30 }
             }
-            transition={{ duration: 0.6, delay: di * 0.2, ease: "easeOut" }}
+            transition={{ duration: 0.4, delay: di * 0.1, ease: "easeOut" }}
             className="rounded-2xl border border-border/50 bg-white/80 p-5 backdrop-blur-sm"
           >
             {/* Dimension header */}
@@ -581,8 +581,8 @@ function AnimatedTaxonomyTree() {
                           : { opacity: 0, x: -12 }
                       }
                       transition={{
-                        duration: 0.4,
-                        delay: di * 0.15 + ti * 0.1,
+                        duration: 0.3,
+                        delay: di * 0.08 + ti * 0.05,
                         ease: "easeOut",
                       }}
                       className="flex items-baseline"
@@ -598,7 +598,7 @@ function AnimatedTaxonomyTree() {
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={phase >= 3 ? { opacity: 1 } : { opacity: 0 }}
-                        transition={{ duration: 0.3, delay: di * 0.1 + ti * 0.08 }}
+                        transition={{ duration: 0.2, delay: di * 0.05 + ti * 0.04 }}
                         className="shrink-0 tabular-nums text-foreground/40"
                       >
                         {trait.count}
@@ -610,8 +610,8 @@ function AnimatedTaxonomyTree() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         transition={{
-                          duration: 0.4,
-                          delay: di * 0.12 + ti * 0.08,
+                          duration: 0.25,
+                          delay: di * 0.06 + ti * 0.04,
                           ease: "easeOut",
                         }}
                         className="ml-8 mt-0.5 mb-1.5 flex flex-wrap gap-1"
@@ -622,8 +622,8 @@ function AnimatedTaxonomyTree() {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{
-                              duration: 0.25,
-                              delay: di * 0.12 + ti * 0.08 + ii * 0.06,
+                              duration: 0.2,
+                              delay: di * 0.06 + ti * 0.04 + ii * 0.03,
                             }}
                             className={`inline-block rounded-full px-2 py-0.5 font-sans text-[10px] ${
                               dim.dim === "ETHOS"

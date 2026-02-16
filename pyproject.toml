@@ -1,7 +1,7 @@
 [project]
 name = "ethos-academy"
 version = "0.1.0"
-description = "Better agents. Better data. Better alignment."
+description = "Character development for AI agents."
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.11"
