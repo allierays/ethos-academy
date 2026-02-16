@@ -22,6 +22,7 @@ import BalanceThesis from "../../../components/agent/BalanceThesis";
 import GlossaryTerm from "../../../components/shared/GlossaryTerm";
 import GraphHelpButton from "../../../components/shared/GraphHelpButton";
 import { fadeUp, staggerContainer } from "../../../lib/motion";
+import { exportReportCard } from "../../../lib/export-markdown";
 
 /* ─── Timeline data point ─── */
 
@@ -88,6 +89,19 @@ export default function AgentReportClient({
           <div className="absolute bottom-1/4 left-1/4 h-[350px] w-[350px] rounded-full bg-pathos-200/25 blur-3xl" />
         </div>
       <main className="relative mx-auto max-w-7xl px-6 py-8">
+        <div className="mb-4 flex justify-end">
+          <button
+            onClick={() => exportReportCard(profile, report, history)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-foreground/10 bg-white/60 px-3 py-1.5 text-xs font-medium text-foreground/60 backdrop-blur-sm transition-colors hover:bg-white hover:text-foreground"
+          >
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export as Markdown
+          </button>
+        </div>
         <motion.div
           className="space-y-8"
           variants={staggerContainer}
