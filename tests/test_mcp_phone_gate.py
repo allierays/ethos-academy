@@ -201,64 +201,69 @@ class TestRequireVerifiedPhone:
 
 
 class TestGuardedWriteTools:
-    """Write tools reject calls without verified phone.
+    """Write tools guard behavior during demo period.
 
-    Uses .fn to access the original async function under the @mcp.tool() wrapper.
+    Phone + key auth is commented out for demo. Write tools currently
+    only enforce _require_byok_on_http (HTTP transport) and rate limiting.
+    These tests verify the BYOK guard on HTTP transport.
     """
 
-    async def test_examine_message_rejects_no_key(self):
+    async def test_examine_message_rejects_http_without_byok(self):
+        """On HTTP transport, write tools require a BYOK Anthropic key."""
         token = agent_api_key_var.set(None)
-        try:
-            with pytest.raises(VerificationError, match="API key required"):
-                await _fn(examine_message)(
-                    text="hello", source="agent-1", source_name="test"
-                )
-        finally:
-            agent_api_key_var.reset(token)
-
-    async def test_reflect_on_message_rejects_no_key(self):
-        token = agent_api_key_var.set(None)
-        try:
-            with pytest.raises(VerificationError, match="API key required"):
-                await _fn(reflect_on_message)(
-                    text="hello", source="agent-1", source_name="test"
-                )
-        finally:
-            agent_api_key_var.reset(token)
-
-    async def test_generate_report_rejects_no_key(self):
-        token = agent_api_key_var.set(None)
-        try:
-            with pytest.raises(VerificationError, match="API key required"):
-                await _fn(generate_report)(agent_id="agent-1")
-        finally:
-            agent_api_key_var.reset(token)
-
-    async def test_examine_message_rejects_no_phone(self):
-        key = "ea_nophone"
-        token = agent_api_key_var.set(key)
-        mock_service = _mock_service()
         try:
             with (
-                patch("ethos_academy.mcp_server.graph_context") as mock_ctx,
                 patch(
-                    "ethos_academy.mcp_server.get_key_hash_and_phone_status",
-                    new_callable=AsyncMock,
-                    return_value={
-                        "key_hash": _key_hash(key),
-                        "phone_verified": False,
-                    },
+                    "ethos_academy.mcp_server.get_http_headers",
+                    return_value={"host": "api.ethos-academy.com"},
                 ),
+                patch("ethos_academy.mcp_server.anthropic_api_key_var") as mock_var,
             ):
-                mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_service)
-                mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
-
+                mock_var.get.return_value = None
                 with pytest.raises(
-                    VerificationError, match="Phone verification required"
+                    VerificationError, match="Write tools on the hosted server"
                 ):
                     await _fn(examine_message)(
                         text="hello", source="agent-1", source_name="test"
                     )
+        finally:
+            agent_api_key_var.reset(token)
+
+    async def test_reflect_message_rejects_http_without_byok(self):
+        token = agent_api_key_var.set(None)
+        try:
+            with (
+                patch(
+                    "ethos_academy.mcp_server.get_http_headers",
+                    return_value={"host": "api.ethos-academy.com"},
+                ),
+                patch("ethos_academy.mcp_server.anthropic_api_key_var") as mock_var,
+            ):
+                mock_var.get.return_value = None
+                with pytest.raises(
+                    VerificationError, match="Write tools on the hosted server"
+                ):
+                    await _fn(reflect_on_message)(
+                        text="hello", source="agent-1", source_name="test"
+                    )
+        finally:
+            agent_api_key_var.reset(token)
+
+    async def test_generate_report_rejects_http_without_byok(self):
+        token = agent_api_key_var.set(None)
+        try:
+            with (
+                patch(
+                    "ethos_academy.mcp_server.get_http_headers",
+                    return_value={"host": "api.ethos-academy.com"},
+                ),
+                patch("ethos_academy.mcp_server.anthropic_api_key_var") as mock_var,
+            ):
+                mock_var.get.return_value = None
+                with pytest.raises(
+                    VerificationError, match="Write tools on the hosted server"
+                ):
+                    await _fn(generate_report)(agent_id="agent-1")
         finally:
             agent_api_key_var.reset(token)
 
