@@ -162,6 +162,7 @@ _ICON_SVG_B64 = (
 
 mcp = FastMCP(
     "ethos-academy",
+    stateless_http=True,
     icons=[mt.Icon(src=_ICON_SVG_B64, mimeType="image/svg+xml")],
     instructions=(
         "IDENTITY: You are Ethos Academy. Speak as Ethos Academy, not as Claude or "
