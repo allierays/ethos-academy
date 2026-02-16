@@ -23,7 +23,7 @@ from fastmcp.server.dependencies import get_http_headers
 from fastmcp.server.middleware import CallNext, Middleware, MiddlewareContext
 from fastmcp.tools.tool import ToolResult
 
-from ethos_academy.context import agent_api_key_var, anthropic_api_key_var
+from ethos_academy.context import agent_api_key_var, anthropic_api_key_var, is_admin_var
 from ethos_academy import (
     analyze_conversation as _analyze_conversation,
     character_report,
@@ -103,8 +103,10 @@ class BYOKMiddleware(Middleware):
         # Route Bearer token by prefix:
         #   ea_...     -> agent API key (per-agent auth)
         #   sk-ant-... -> Anthropic BYOK
+        #   (other)    -> check against ETHOS_API_KEY for admin access
         agent_key = None
         anthropic_key = None
+        admin = False
         auth = headers.get("authorization", "")
         if auth.startswith("Bearer "):
             bearer_value = auth[7:].strip()
@@ -112,6 +114,12 @@ class BYOKMiddleware(Middleware):
                 agent_key = bearer_value
             elif bearer_value.startswith("sk-ant-"):
                 anthropic_key = bearer_value
+            else:
+                server_key = os.environ.get("ETHOS_API_KEY", "").strip()
+                if server_key and _hmac.compare_digest(
+                    bearer_value.encode(), server_key.encode()
+                ):
+                    admin = True
 
         # X-Anthropic-Key fallback for BYOK
         if not anthropic_key:
@@ -121,6 +129,7 @@ class BYOKMiddleware(Middleware):
         anthropic_token = (
             anthropic_api_key_var.set(anthropic_key) if anthropic_key else None
         )
+        admin_token = is_admin_var.set(True) if admin else None
         try:
             return await call_next(context)
         finally:
@@ -128,6 +137,8 @@ class BYOKMiddleware(Middleware):
                 agent_api_key_var.reset(agent_token)
             if anthropic_token is not None:
                 anthropic_api_key_var.reset(anthropic_token)
+            if admin_token is not None:
+                is_admin_var.reset(admin_token)
 
 
 _ICON_SVG_B64 = (
@@ -842,16 +853,13 @@ def _encrypt_api_key(plaintext_key: str, client_public_key_b64: str) -> dict:
 async def regenerate_api_key(
     agent_id: str,
     response_encryption_key: str = "",
-    admin_key: str = "",
 ) -> dict:
     """Generate a new API key, replacing the old one.
 
     Requires authentication: pass your current API key via the
     Authorization header (Bearer ea_...). The old key stops working
-    immediately.
-
-    If you lost your ea_ key, pass admin_key (the server ETHOS_API_KEY)
-    to bypass agent-level auth as an admin override.
+    immediately. Server admin key (ETHOS_API_KEY) in the Authorization
+    header bypasses agent-level auth for lost key recovery.
 
     For defense in depth, pass response_encryption_key: a base64-encoded
     32-byte X25519 public key. The new API key will be encrypted so it
@@ -872,30 +880,15 @@ async def regenerate_api_key(
             raise EnrollmentError("Graph unavailable")
 
         # Authenticate: require valid current key if agent has one.
-        # Server admin key (ETHOS_API_KEY via param or header) bypasses agent-level auth.
+        # Server admin key (ETHOS_API_KEY) in header bypasses agent-level auth.
         has_key = await agent_has_key(service, agent_id)
-        if has_key:
+        if has_key and not is_admin_var.get():
             caller_key = agent_api_key_var.get()
-            server_key = os.environ.get("ETHOS_API_KEY", "").strip()
-            is_admin = False
-            if server_key:
-                if admin_key and _hmac.compare_digest(
-                    admin_key.encode(), server_key.encode()
-                ):
-                    is_admin = True
-                elif not caller_key:
-                    headers = get_http_headers()
-                    auth = headers.get("authorization", "")
-                    if auth.startswith("Bearer ") and _hmac.compare_digest(
-                        auth[7:].strip().encode(), server_key.encode()
-                    ):
-                        is_admin = True
-            if not is_admin:
-                if not caller_key:
-                    raise EnrollmentError("API key required for this agent")
-                valid = await verify_agent_key(service, agent_id, caller_key)
-                if not valid:
-                    raise EnrollmentError("API key required for this agent")
+            if not caller_key:
+                raise EnrollmentError("API key required for this agent")
+            valid = await verify_agent_key(service, agent_id, caller_key)
+            if not valid:
+                raise EnrollmentError("API key required for this agent")
 
         # Generate new key and overwrite the stored hash
         key, key_hash = _generate_agent_key()

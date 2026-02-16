@@ -26,3 +26,7 @@ request_id_var: ContextVar[str | None] = ContextVar("request_id", default=None)
 # Per-agent API key for write operations (ea_ prefix).
 # Set by API/MCP middleware, verified by enrollment service.
 agent_api_key_var: ContextVar[str | None] = ContextVar("agent_api_key", default=None)
+
+# True when the caller authenticated with the server admin key (ETHOS_API_KEY).
+# Set by MCP middleware, checked by regenerate_api_key for lost key recovery.
+is_admin_var: ContextVar[bool] = ContextVar("is_admin", default=False)
