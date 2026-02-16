@@ -54,6 +54,7 @@ services:
       context: ./academy
       args:
         NEXT_PUBLIC_API_URL: https://api.ethos-academy.com
+        NEXT_PUBLIC_ETHOS_API_KEY: ${ETHOS_API_KEY}
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
