@@ -1,3 +1,7 @@
+www.ethos-academy.com {
+	redir https://ethos-academy.com{uri} permanent
+}
+
 ethos-academy.com {
 	reverse_proxy academy:3000
 }
