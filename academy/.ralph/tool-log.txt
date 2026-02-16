@@ -4659,3 +4659,5 @@ echo "Dev server started"
 [18:20:35] WRITE: components/landing/PoweredByOpus.tsx
 [18:21:35] BASH: cd /Users/allierays/Sites/ethos/academy && npx next build --no-lint 2>&1 | tail
 [18:21:42] BASH: npx tsc --noEmit --pretty 2>&1 | head -30
+[18:23:27] WRITE: components/landing/PoweredByOpus.tsx
+[18:24:23] READ: /var/folders/zn/yzyf7mpn0pv5qjwj948tgfv40000gn/T/chrome-devtools-mcp-X7R6Np/screenshot.png

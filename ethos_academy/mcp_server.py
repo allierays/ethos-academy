@@ -15,7 +15,6 @@ import hmac as _hmac
 import logging
 
 import mcp.types as mt
-from dotenv import load_dotenv
 from fastmcp import FastMCP
 from fastmcp.server.dependencies import get_http_headers
 from fastmcp.server.middleware import CallNext, Middleware, MiddlewareContext
@@ -61,8 +60,6 @@ from ethos_academy.phone_service import (
 from ethos_academy.shared.errors import EnrollmentError, VerificationError
 
 logger = logging.getLogger(__name__)
-
-load_dotenv()
 
 
 # ── BYOK middleware ─────────────────────────────────────────────────
@@ -729,6 +726,10 @@ def main():
     """Entry point for the ethos-mcp console script."""
     import argparse
     import sys
+
+    from dotenv import load_dotenv
+
+    load_dotenv()
 
     # Force unbuffered output so Docker captures logs before crashes
     sys.stdout.reconfigure(line_buffering=True)
