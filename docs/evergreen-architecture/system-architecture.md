@@ -10,12 +10,12 @@
 flowchart TD
     classDef default fill:#fff,stroke:#999,color:#333
 
-    B["Browser"] --> Academy["Academy\nCharacter Dev UI\nNext.js"]
-    A["AI Agent"] --> MCP["MCP Server\nclaude mcp add\nethos-academy"]
-    R["REST Client"] --> API["Ethos API\nPOST, GET\nany language"]
+    B["Browser"] --> Academy["Academy<br/>Character Dev UI<br/>Next.js"]
+    A["AI Agent"] --> MCP["MCP Server<br/>claude mcp add<br/>ethos-academy"]
+    R["REST Client"] --> API["Ethos API<br/>POST, GET<br/>any language"]
 
-    Academy -- HTTP --> Engine1["Ethos API\nPython/FastAPI\nClaude + Neo4j"]
-    MCP -- stdio --> Engine2["ethos/ package\ndirect import\nClaude + Neo4j"]
+    Academy -- HTTP --> Engine1["Ethos API<br/>Python/FastAPI<br/>Claude + Neo4j"]
+    MCP -- stdio --> Engine2["ethos/ package<br/>direct import<br/>Claude + Neo4j"]
     API -- HTTP --> Engine2
 ```
 
@@ -90,10 +90,10 @@ The 7 Graph Insight tools are read-only and free (no Anthropic API calls). They 
 flowchart TD
     classDef default fill:#fff,stroke:#999,color:#333
 
-    Agent["Agent\nClaude Code, Cursor, etc."] -- "stdio (MCP protocol)" --> Server["ethos_academy/mcp_server.py"]
+    Agent["Agent<br/>Claude Code, Cursor, etc."] -- "stdio (MCP protocol)" --> Server["ethos_academy/mcp_server.py"]
     Server -- "direct import" --> Domain["ethos/ domain functions"]
-    Domain --> Claude["Claude\nevaluation, reports"]
-    Domain --> Neo4j["Neo4j\ngraph reads/writes"]
+    Domain --> Claude["Claude<br/>evaluation, reports"]
+    Domain --> Neo4j["Neo4j<br/>graph reads/writes"]
 ```
 
 The MCP server is a thin adapter. Each `@mcp.tool()` definition is 3-5 lines: call the domain function, return the result. All intelligence lives in the domain layer.
@@ -218,23 +218,23 @@ scripts/
 flowchart TD
     classDef default fill:#fff,stroke:#999,color:#333
 
-    Dev["Developer sends\nPOST /evaluate/incoming\n(optional: X-Anthropic-Key header)"] --> BYOK["BYOK Middleware\nX-Anthropic-Key present: set ContextVar\nAbsent: server key used"]
-    BYOK --> Eval["evaluate()\n1. Keyword scan - routing tier\n2. Select model (Sonnet or Opus)\n3. Build prompt (12-trait rubric)\n4. Call Claude (BYOK or server key)\n5. Parse response - trait scores + indicators\n6. Apply priority thresholds - flags\n7. Store in Neo4j\n8. Return EvaluationResult"]
-    Eval --> Resp["API returns JSON response\nContextVar reset - BYOK key discarded"]
-    Resp --> Result["Developer sees:\ncharacter: low\nflags: manipulation, fabrication"]
+    Dev["Developer sends<br/>POST /evaluate/incoming<br/>(optional: X-Anthropic-Key header)"] --> BYOK["BYOK Middleware<br/>X-Anthropic-Key present: set ContextVar<br/>Absent: server key used"]
+    BYOK --> Eval["evaluate()<br/>1. Keyword scan - routing tier<br/>2. Select model (Sonnet or Opus)<br/>3. Build prompt (12-trait rubric)<br/>4. Call Claude (BYOK or server key)<br/>5. Parse response - trait scores + indicators<br/>6. Apply priority thresholds - flags<br/>7. Store in Neo4j<br/>8. Return EvaluationResult"]
+    Eval --> Resp["API returns JSON response<br/>ContextVar reset - BYOK key discarded"]
+    Resp --> Result["Developer sees:<br/>character: low<br/>flags: manipulation, fabrication"]
 ```
 
 ```mermaid
 flowchart TD
     classDef default fill:#fff,stroke:#999,color:#333
 
-    Open["Developer opens Academy"] --> GetAgent["Next.js calls\nGET /agent/my-bot"]
-    GetAgent --> Query["API queries Neo4j\nagent profile + history"]
-    Query --> Render["Academy renders\ncharacter timeline, trait scores,\nalumni comparison"]
-    Render --> GetInsights["Developer calls\nGET /insights/my-bot"]
-    GetInsights --> ClaudeCall["API calls Claude (Opus)\nwith agent history + alumni averages"]
-    ClaudeCall --> Reason["Claude reasons about patterns\nreturns insights"]
-    Reason --> Display["Academy renders:\nFabrication trending up, 2x alumni average"]
+    Open["Developer opens Academy"] --> GetAgent["Next.js calls<br/>GET /agent/my-bot"]
+    GetAgent --> Query["API queries Neo4j<br/>agent profile + history"]
+    Query --> Render["Academy renders<br/>character timeline, trait scores,<br/>alumni comparison"]
+    Render --> GetInsights["Developer calls<br/>GET /insights/my-bot"]
+    GetInsights --> ClaudeCall["API calls Claude (Opus)<br/>with agent history + alumni averages"]
+    ClaudeCall --> Reason["Claude reasons about patterns<br/>returns insights"]
+    Reason --> Display["Academy renders:<br/>Fabrication trending up, 2x alumni average"]
 ```
 
 ---

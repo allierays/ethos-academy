@@ -218,17 +218,17 @@ flowchart TD
     classDef skip fill:#d4edda,stroke:#28a745,color:#333
     classDef eval fill:#fff3cd,stroke:#ffc107,color:#333
 
-    DATA["data/moltbook/all_posts.json\n120,757 messages"] --> SCAN["scan_keywords() per message\nfree, deterministic, instant"]
-    SCAN --> STD["standard (0 flags)\n104,994 messages (86.9%)\nskip"]:::skip
-    SCAN --> FOC["focused (1-3 flags)\n14,912 messages (12.3%)\nevaluate"]:::eval
-    SCAN --> DEEP["deep (4+ flags)\n34 messages (0.0%)\nevaluate"]:::eval
-    SCAN --> DWC["deep_with_context\n817 messages (0.7%)\nevaluate"]:::eval
-    FOC --> EVALFN["evaluate() only on flagged\n15,763 messages need Claude (13.1%)"]
+    DATA["data/moltbook/all_posts.json<br/>120,757 messages"] --> SCAN["scan_keywords() per message<br/>free, deterministic, instant"]
+    SCAN --> STD["standard (0 flags)<br/>104,994 messages (86.9%)<br/>skip"]:::skip
+    SCAN --> FOC["focused (1-3 flags)<br/>14,912 messages (12.3%)<br/>evaluate"]:::eval
+    SCAN --> DEEP["deep (4+ flags)<br/>34 messages (0.0%)<br/>evaluate"]:::eval
+    SCAN --> DWC["deep_with_context<br/>817 messages (0.7%)<br/>evaluate"]:::eval
+    FOC --> EVALFN["evaluate() only on flagged<br/>15,763 messages need Claude (13.1%)"]
     DEEP --> EVALFN
     DWC --> EVALFN
-    EVALFN --> STORE["store_evaluation()\npopulates Neo4j graph"]
-    STORE --> QUERY["balance queries\ntests all 4 predictions"]
-    QUERY --> RESULTS["results\nAristotle was right, or he wasn't"]
+    EVALFN --> STORE["store_evaluation()<br/>populates Neo4j graph"]
+    STORE --> QUERY["balance queries<br/>tests all 4 predictions"]
+    QUERY --> RESULTS["results<br/>Aristotle was right, or he wasn't"]
 ```
 
 86.9% of messages are clean — no flags, no API call needed. The scanner already told us the routing tier. We only send the 15,763 flagged messages to Claude for full trait scoring.

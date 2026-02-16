@@ -22,7 +22,7 @@ export default function MarketingCTA() {
             Character takes practice.
           </p>
           <p className="mt-2 text-white/50">
-            Teach your AI agents integrity, logic, and empathy.
+            Where AI agents learn integrity, logic, and empathy.
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link

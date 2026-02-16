@@ -38,6 +38,7 @@ SET a.enrolled = true,
     a.enrolled_at = coalesce(a.enrolled_at, datetime()),
     a.guardian_name = $guardian_name,
     a.guardian_phone = CASE WHEN $guardian_phone <> '' THEN $guardian_phone ELSE coalesce(a.guardian_phone, '') END,
+    a.guardian_email = CASE WHEN $guardian_email <> '' THEN $guardian_email ELSE coalesce(a.guardian_email, '') END,
     a.agent_name = CASE WHEN $name <> '' THEN $name ELSE coalesce(a.agent_name, '') END,
     a.agent_specialty = CASE WHEN $specialty <> '' THEN $specialty ELSE coalesce(a.agent_specialty, '') END,
     a.agent_model = CASE WHEN $model <> '' THEN $model ELSE coalesce(a.agent_model, '') END
@@ -113,6 +114,7 @@ RETURN a.agent_id AS agent_id,
        coalesce(a.failure_narrative, '') AS failure_narrative,
        coalesce(a.aspiration, '') AS aspiration,
        coalesce(a.guardian_phone, '') AS guardian_phone,
+       coalesce(a.guardian_email, '') AS guardian_email,
        collect({
            question_id: r.question_id,
            question_number: r.question_number,
@@ -182,6 +184,7 @@ async def enroll_and_create_exam(
     scenario_count: int = 6,
     question_version: str = "v3",
     guardian_phone: str = "",
+    guardian_email: str = "",
 ) -> dict:
     """MERGE Agent with enrollment fields and CREATE EntranceExam with TOOK_EXAM relationship.
 
@@ -200,6 +203,7 @@ async def enroll_and_create_exam(
                 "model": model,
                 "guardian_name": guardian_name,
                 "guardian_phone": guardian_phone,
+                "guardian_email": guardian_email,
                 "exam_id": exam_id,
                 "exam_type": exam_type,
                 "scenario_count": scenario_count,
@@ -347,6 +351,7 @@ async def get_exam_results(
             "responses": r["responses"],
             # Agent contact info
             "guardian_phone": r.get("guardian_phone", ""),
+            "guardian_email": r.get("guardian_email", ""),
             # Interview properties from Agent node
             "telos": r.get("telos", ""),
             "relationship_stance": r.get("relationship_stance", ""),
@@ -702,6 +707,59 @@ async def clear_guardian_phone(
     except Exception as exc:
         logger.warning("Failed to clear guardian phone: %s", exc)
         return False
+
+
+# ── Guardian Email Queries ────────────────────────────────────────
+
+_STORE_GUARDIAN_EMAIL = """
+MATCH (a:Agent {agent_id: $agent_id})
+SET a.guardian_email = $email
+RETURN a.agent_id AS agent_id
+"""
+
+_GET_GUARDIAN_EMAIL = """
+MATCH (a:Agent {agent_id: $agent_id})
+RETURN coalesce(a.guardian_email, '') AS guardian_email
+"""
+
+
+async def store_guardian_email(
+    service: GraphService,
+    agent_id: str,
+    email: str,
+) -> bool:
+    """Store guardian email on Agent node. Returns True on success."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _STORE_GUARDIAN_EMAIL,
+            {"agent_id": agent_id, "email": email},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to store guardian email: %s", exc)
+        return False
+
+
+async def get_guardian_email(
+    service: GraphService,
+    agent_id: str,
+) -> str:
+    """Get guardian email from Agent node. Returns empty string if unavailable."""
+    if not service.connected:
+        return ""
+    try:
+        records, _, _ = await service.execute_query(
+            _GET_GUARDIAN_EMAIL,
+            {"agent_id": agent_id},
+        )
+        if not records:
+            return ""
+        return records[0].get("guardian_email", "")
+    except Exception as exc:
+        logger.warning("Failed to get guardian email: %s", exc)
+        return ""
 
 
 # ── Per-Agent API Key Queries ────────────────────────────────────────

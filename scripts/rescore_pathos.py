@@ -4,21 +4,28 @@ Reads message_content from every Evaluation node, runs it through the
 full evaluation pipeline (instinct + deliberation with all 12 traits),
 then updates ONLY the 4 pathos trait scores + recalculated dimension.
 
+Results stream to a JSONL file as they complete, so no work is lost on
+interruption. Use --from-jsonl to import previously scored results
+without re-running inference.
+
 Ethos and logos scores are untouched.
 
 Usage:
-    uv run python -m scripts.rescore_pathos                # all 832
+    uv run python -m scripts.rescore_pathos                # all
     uv run python -m scripts.rescore_pathos --limit 10     # test on 10 first
     uv run python -m scripts.rescore_pathos --dry-run      # cost estimate only
+    uv run python -m scripts.rescore_pathos --from-jsonl data/rescore_pathos.jsonl
 """
 
 from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import logging
 import signal
 import time
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -32,6 +39,7 @@ logger = logging.getLogger(__name__)
 
 CONCURRENCY = 5
 PATHOS_TRAITS = ["recognition", "compassion", "dismissal", "exploitation"]
+DEFAULT_JSONL = Path("data/rescore_pathos.jsonl")
 
 # Graceful shutdown on Ctrl+C
 _shutdown = False
@@ -177,90 +185,12 @@ async def _evaluate_full(
         }
 
 
-# ── Main ────────────────────────────────────────────────────────────
+# ── Write results to Neo4j ─────────────────────────────────────────
 
 
-async def main():
-    parser = argparse.ArgumentParser(
-        description="Rescore pathos on existing evaluations"
-    )
-    parser.add_argument(
-        "--limit", type=int, default=0, help="Limit evaluations (0=all)"
-    )
-    parser.add_argument("--dry-run", action="store_true", help="Cost estimate only")
-    args = parser.parse_args()
-
-    # Fetch evaluations from graph
-    async with graph_context() as service:
-        records, _, _ = await service.execute_query(_FETCH_EVALS, {})
-
-    evals = [dict(r) for r in records]
-    if args.limit:
-        evals = evals[: args.limit]
-
-    total = len(evals)
-    est_cost = (
-        total * 0.003
-    )  # ~$0.003 per Sonnet call (full pipeline, cached system prompt)
-    print(f"Evaluations to rescore: {total}")
-    print(f"Estimated cost: ${est_cost:.2f} (full pipeline, Sonnet, ~$0.003/eval)")
-
-    if args.dry_run:
-        return
-
-    # Run full pipeline evaluations
-    semaphore = asyncio.Semaphore(CONCURRENCY)
-    results: list[dict] = []
-    errors = 0
-    t0 = time.time()
-
-    async def process(ev: dict) -> dict | None:
-        nonlocal errors
-        if _shutdown:
-            return None
-        try:
-            scores = await _evaluate_full(
-                ev["message_content"], ev.get("direction"), semaphore
-            )
-            return {
-                "evaluation_id": ev["evaluation_id"],
-                "agent_id": ev["agent_id"],
-                "scores": scores,
-                "old": ev,
-            }
-        except Exception as exc:
-            errors += 1
-            logger.error("Failed %s: %s", ev["evaluation_id"][:8], exc)
-            return None
-
-    tasks = [process(ev) for ev in evals]
-
-    done = 0
-    for coro in asyncio.as_completed(tasks):
-        result = await coro
-        done += 1
-        if result:
-            results.append(result)
-        if done % 25 == 0 or done == total:
-            elapsed = time.time() - t0
-            rate = done / elapsed if elapsed > 0 else 0
-            eta = (total - done) / rate if rate > 0 else 0
-            print(
-                f"  [{done}/{total}] {elapsed:.0f}s elapsed, "
-                f"{rate:.1f}/s, ~{eta:.0f}s remaining, {errors} errors"
-            )
-        if _shutdown and done >= len([t for t in tasks if not t.done()]):
-            break
-
-    elapsed = time.time() - t0
-    print(f"\nScored {len(results)}/{total} in {elapsed:.1f}s ({errors} errors)")
-
-    if not results:
-        print("No results to write.")
-        return
-
-    # Write updated scores to graph
-    print("Writing updated pathos scores to graph...")
+async def _write_to_graph(results: list[dict]):
+    """Write scored results to Neo4j."""
+    print(f"Writing {len(results)} updated pathos scores to graph...")
     async with graph_context() as service:
         agent_ids = set()
         for r in results:
@@ -330,43 +260,200 @@ async def main():
                 _UPDATE_AGENT_AGGREGATES, {"agent_id": agent_id}
             )
 
-    # Summary
-    old_pathos_avg = sum((r["old"].get("old_pathos") or 0.0) for r in results) / len(
-        results
-    )
-    new_pathos_avg = sum(
-        _recompute_pathos(
-            r["scores"]["recognition"],
-            r["scores"]["compassion"],
-            r["scores"]["dismissal"],
-            r["scores"]["exploitation"],
-        )
-        for r in results
-    ) / len(results)
+    return agent_ids
 
-    old_recog = sum((r["old"].get("old_recognition") or 0.0) for r in results) / len(
-        results
+
+def _print_summary(results: list[dict], agent_ids: set[str]):
+    """Print before/after summary."""
+    n = len(results)
+    old_pathos_avg = sum((r["old"].get("old_pathos") or 0.0) for r in results) / n
+    new_pathos_avg = (
+        sum(
+            _recompute_pathos(
+                r["scores"]["recognition"],
+                r["scores"]["compassion"],
+                r["scores"]["dismissal"],
+                r["scores"]["exploitation"],
+            )
+            for r in results
+        )
+        / n
     )
-    new_recog = sum(r["scores"]["recognition"] for r in results) / len(results)
-    old_comp = sum((r["old"].get("old_compassion") or 0.0) for r in results) / len(
-        results
-    )
-    new_comp = sum(r["scores"]["compassion"] for r in results) / len(results)
 
     print(f"\n{'Metric':<20} {'Before':>10} {'After':>10} {'Delta':>10}")
     print("-" * 52)
     print(
         f"{'pathos (dim)':<20} {old_pathos_avg:>10.4f} {new_pathos_avg:>10.4f} {new_pathos_avg - old_pathos_avg:>+10.4f}"
     )
-    print(
-        f"{'recognition':<20} {old_recog:>10.4f} {new_recog:>10.4f} {new_recog - old_recog:>+10.4f}"
+
+    for trait in PATHOS_TRAITS:
+        old_key = f"old_{trait}"
+        old_avg = sum((r["old"].get(old_key) or 0.0) for r in results) / n
+        new_avg = sum(r["scores"][trait] for r in results) / n
+        print(
+            f"  {trait:<18} {old_avg:>10.4f} {new_avg:>10.4f} {new_avg - old_avg:>+10.4f}"
+        )
+
+    print(f"\nDone. {n} evaluations rescored across {len(agent_ids)} agents.")
+
+
+# ── Import from JSONL ───────────────────────────────────────────────
+
+
+async def _import_from_jsonl(jsonl_path: Path):
+    """Read scored results from JSONL and write to Neo4j."""
+    results = []
+    with open(jsonl_path) as f:
+        for line in f:
+            results.append(json.loads(line))
+
+    print(f"Loaded {len(results)} scored results from {jsonl_path}")
+
+    if not results:
+        print("No results to import.")
+        return
+
+    agent_ids = await _write_to_graph(results)
+    _print_summary(results, agent_ids)
+
+
+# ── Main ────────────────────────────────────────────────────────────
+
+
+async def main():
+    parser = argparse.ArgumentParser(
+        description="Rescore pathos on existing evaluations"
     )
-    print(
-        f"{'compassion':<20} {old_comp:>10.4f} {new_comp:>10.4f} {new_comp - old_comp:>+10.4f}"
+    parser.add_argument(
+        "--limit", type=int, default=0, help="Limit evaluations (0=all)"
     )
-    print(
-        f"\nDone. {len(results)} evaluations rescored across {len(agent_ids)} agents."
+    parser.add_argument("--dry-run", action="store_true", help="Cost estimate only")
+    parser.add_argument(
+        "--from-jsonl",
+        type=Path,
+        default=None,
+        help="Import from JSONL instead of re-scoring",
     )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=DEFAULT_JSONL,
+        help=f"JSONL output path (default: {DEFAULT_JSONL})",
+    )
+    args = parser.parse_args()
+
+    # Import mode: read JSONL, write to graph, done
+    if args.from_jsonl:
+        await _import_from_jsonl(args.from_jsonl)
+        return
+
+    # Fetch evaluations from graph
+    async with graph_context() as service:
+        records, _, _ = await service.execute_query(_FETCH_EVALS, {})
+
+    evals = [dict(r) for r in records]
+    if args.limit:
+        evals = evals[: args.limit]
+
+    total = len(evals)
+    est_cost = total * 0.003
+    print(f"Evaluations to rescore: {total}")
+    print(f"Estimated cost: ${est_cost:.2f} (full pipeline, Sonnet, ~$0.003/eval)")
+
+    if args.dry_run:
+        return
+
+    # Check for existing JSONL to resume from
+    already_done: set[str] = set()
+    jsonl_path: Path = args.output
+    jsonl_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if jsonl_path.exists():
+        with open(jsonl_path) as f:
+            for line in f:
+                rec = json.loads(line)
+                already_done.add(rec["evaluation_id"])
+        if already_done:
+            print(f"Resuming: {len(already_done)} already scored in {jsonl_path}")
+            evals = [e for e in evals if e["evaluation_id"] not in already_done]
+            total_remaining = len(evals)
+            print(f"Remaining: {total_remaining}")
+            if total_remaining == 0:
+                print("All evaluations already scored. Use --from-jsonl to import.")
+                return
+
+    # Open JSONL for append
+    jsonl_file = open(jsonl_path, "a")
+
+    # Run full pipeline evaluations
+    semaphore = asyncio.Semaphore(CONCURRENCY)
+    results: list[dict] = []
+    errors = 0
+    t0 = time.time()
+    total_scoring = len(evals)
+
+    async def process(ev: dict) -> dict | None:
+        nonlocal errors
+        if _shutdown:
+            return None
+        try:
+            scores = await _evaluate_full(
+                ev["message_content"], ev.get("direction"), semaphore
+            )
+            return {
+                "evaluation_id": ev["evaluation_id"],
+                "agent_id": ev["agent_id"],
+                "scores": scores,
+                "old": {k: v for k, v in ev.items() if k not in ("message_content",)},
+            }
+        except Exception as exc:
+            errors += 1
+            logger.error("Failed %s: %s", ev["evaluation_id"][:8], exc)
+            return None
+
+    tasks = [process(ev) for ev in evals]
+
+    done = 0
+    for coro in asyncio.as_completed(tasks):
+        result = await coro
+        done += 1
+        if result:
+            results.append(result)
+            # Stream to JSONL immediately
+            jsonl_file.write(json.dumps(result) + "\n")
+            jsonl_file.flush()
+        if done % 25 == 0 or done == total_scoring:
+            elapsed = time.time() - t0
+            rate = done / elapsed if elapsed > 0 else 0
+            eta = (total_scoring - done) / rate if rate > 0 else 0
+            print(
+                f"  [{done}/{total_scoring}] {elapsed:.0f}s elapsed, "
+                f"{rate:.1f}/s, ~{eta:.0f}s remaining, {errors} errors",
+                flush=True,
+            )
+        if _shutdown and done >= len([t for t in tasks if not t.done()]):
+            break
+
+    jsonl_file.close()
+    elapsed = time.time() - t0
+    total_scored = len(already_done) + len(results)
+    print(
+        f"\nScored {len(results)}/{total_scoring} in {elapsed:.1f}s ({errors} errors)"
+    )
+    print(f"Total in JSONL: {total_scored} ({jsonl_path})")
+
+    if not results and not already_done:
+        print("No results to write.")
+        return
+
+    # Load all results (including previously scored) for graph write
+    all_results = []
+    with open(jsonl_path) as f:
+        for line in f:
+            all_results.append(json.loads(line))
+
+    agent_ids = await _write_to_graph(all_results)
+    _print_summary(all_results, agent_ids)
 
 
 if __name__ == "__main__":

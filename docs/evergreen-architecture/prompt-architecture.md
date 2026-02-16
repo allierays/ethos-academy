@@ -16,9 +16,9 @@ The evaluation prompt is built dynamically from the taxonomy. It is not a static
 flowchart TD
     classDef default fill:#fff,stroke:#999,color:#333
 
-    A["traits.py\nTrait definitions, polarities, dimensions"]
-    B["rubrics.py\n5-point scoring anchors per trait"]
-    C["constitution.py\nConstitutional value hierarchy"]
+    A["traits.py<br/>Trait definitions, polarities, dimensions"]
+    B["rubrics.py<br/>5-point scoring anchors per trait"]
+    C["constitution.py<br/>Constitutional value hierarchy"]
     D["build_evaluation_prompt()"]
     E["system_prompt"]
     F["user_prompt"]

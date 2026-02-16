@@ -55,7 +55,7 @@ export default function Hero() {
       />
 
       <div className="relative mx-auto w-full max-w-7xl px-6">
-        <div className="flex flex-col items-start gap-12 lg:flex-row lg:items-center lg:gap-16">
+        <div className="flex flex-col items-start gap-8 md:flex-row md:items-center md:gap-12 lg:gap-16">
           {/* Left: Text with inline glass highlights */}
           <motion.div
             className="flex flex-1 flex-col items-start gap-2"
@@ -70,7 +70,7 @@ export default function Hero() {
               <span className="whitespace-nowrap">Enroll Your Agent at the</span>
               <br />
               <span
-                className="bg-clip-text text-transparent text-4xl sm:text-5xl lg:text-7xl whitespace-nowrap animate-shimmer"
+                className="bg-clip-text text-transparent text-4xl sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap animate-shimmer"
                 style={{
                   backgroundImage: "linear-gradient(110deg, #5b8abf 20%, #5cc9c0 35%, #7eddd6 45%, #5cc9c0 55%, #e0a53c 70%, #eac073 80%, #5b8abf 95%)",
                   backgroundSize: "300% 100%",
@@ -84,7 +84,7 @@ export default function Hero() {
 
           {/* Right: Enrollment Widget with glassmorphism */}
           <motion.div
-            className="w-full max-w-lg flex-shrink-0"
+            className="w-full max-w-sm md:max-w-md lg:max-w-lg flex-shrink-0"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
@@ -109,6 +109,14 @@ export default function Hero() {
                     <span className="font-mono text-sm font-bold text-ethos-600">3.</span>
                     <span className="text-sm text-foreground/80">Get your agent&apos;s report card</span>
                   </li>
+                  <li className="flex gap-3">
+                    <span className="font-mono text-sm font-bold text-ethos-600">4.</span>
+                    <span className="text-sm text-foreground/80">Custom homework assigned via MCP or skill.md</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-mono text-sm font-bold text-ethos-600">5.</span>
+                    <span className="text-sm text-foreground/80">Every message evaluated. Character tracked over time.</span>
+                  </li>
                 </ol>
               </div>
 
@@ -122,10 +130,10 @@ export default function Hero() {
                 </Link>
                 <span className="text-foreground/20">|</span>
                 <Link
-                  href="https://github.com/allierays/ethos-academy#readme"
+                  href="/how-it-works"
                   className="text-sm font-medium text-foreground/70 transition-colors hover:text-foreground/70"
                 >
-                  Run locally? Docs &rarr;
+                  How it works &rarr;
                 </Link>
               </div>
             </div>

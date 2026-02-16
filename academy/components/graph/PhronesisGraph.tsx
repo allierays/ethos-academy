@@ -110,7 +110,7 @@ function getNodeSize(node: EthosGraphNode): number {
 function getNodeCaption(node: EthosGraphNode): string {
   switch (node.type) {
     case "academy":
-      return "Ethos Academy";
+      return "Ethos Academy\nPhronesis";
     case "dimension":
       return DIMENSION_LABELS[node.label] ?? node.label;
     case "trait":
@@ -150,7 +150,12 @@ function toNvlNodes(nodes: EthosGraphNode[]): NvlNode[] {
       caption: getNodeCaption(n),
       captionColor: getCaptionColor(n),
     };
-    if (n.properties.pinned) {
+    // Pin the academy node at the origin so the force layout radiates from center
+    if (n.type === "academy") {
+      nvlNode.pinned = true;
+      nvlNode.x = 0;
+      nvlNode.y = 0;
+    } else if (n.properties.pinned) {
       nvlNode.pinned = true;
       nvlNode.x = n.properties.x as number;
       nvlNode.y = n.properties.y as number;

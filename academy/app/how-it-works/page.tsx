@@ -177,7 +177,7 @@ function ConnectTabs() {
             {tab.content}
           </pre>
         ) : (
-          <code className="block pr-16 font-mono text-sm leading-relaxed text-ethos-300 break-all">
+          <code className="block pr-12 sm:pr-16 font-mono text-sm leading-relaxed text-ethos-300 break-all">
             {tab.content}
           </code>
         )}
@@ -263,7 +263,7 @@ export default function HowItWorksPage() {
   return (
     <main>
       {/* ─── 1. Hero ─── */}
-      <section className="relative overflow-hidden py-20 sm:py-24">
+      <section className="relative overflow-hidden py-20 sm:py-24 lg:py-32">
         {/* Background image */}
         <img
           src="/ethos-academy.jpeg"

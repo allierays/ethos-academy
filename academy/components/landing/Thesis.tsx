@@ -28,7 +28,7 @@ export default function Thesis() {
             </p>
 
             <motion.div
-              className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3"
+              className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
               {...whileInView}
               variants={staggerContainer}
             >
@@ -79,7 +79,7 @@ export default function Thesis() {
             <img
               src="/homepage.png"
               alt="Aristotle"
-              className="h-64 w-64 sm:h-72 sm:w-72 rounded-3xl object-cover shadow-lg"
+              className="h-48 w-48 sm:h-64 sm:w-64 md:h-72 md:w-72 lg:h-80 lg:w-80 rounded-3xl object-cover shadow-lg"
             />
 
             <div className="w-full max-w-sm rounded-2xl border border-border bg-background p-6">

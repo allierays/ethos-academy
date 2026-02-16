@@ -79,7 +79,7 @@ function DimensionBar({ label, score, color }: { label: string; score: number; c
   const pct = Math.round(score * 100);
   return (
     <div className="flex items-center gap-3">
-      <span className="w-14 text-xs font-medium text-white/50">{label}</span>
+      <span className="w-12 sm:w-14 text-xs font-medium text-white/50">{label}</span>
       <div className="relative h-1.5 flex-1 rounded-full bg-white/10">
         <motion.div
           className={`absolute h-1.5 rounded-full ${color}`}
@@ -116,9 +116,9 @@ export default function Evidence() {
               variants={fadeUp}
               className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
             >
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
                 {/* Left: message (3 cols) */}
-                <div className="lg:col-span-3">
+                <div className="md:col-span-3">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-white/60">
                       {conv.agent[0]}
@@ -135,7 +135,7 @@ export default function Evidence() {
                 </div>
 
                 {/* Right: evaluation (2 cols) */}
-                <div className="lg:col-span-2 lg:border-l lg:border-white/10 lg:pl-6">
+                <div className="md:col-span-2 md:border-l md:border-white/10 md:pl-6">
                   <div className="space-y-2">
                     <DimensionBar label="Integrity" score={conv.scores.ethos} color="bg-ethos-500" />
                     <DimensionBar label="Logic" score={conv.scores.logos} color="bg-logos-500" />
@@ -202,7 +202,7 @@ export default function Evidence() {
           </motion.div>
 
           <motion.div
-            className="grid grid-cols-1 gap-4 sm:grid-cols-3"
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
             variants={staggerContainer}
             {...whileInView}
           >

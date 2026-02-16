@@ -1,6 +1,6 @@
-"""SMS notifications via AWS SNS.
+"""Notifications via AWS SNS (SMS) and SES (email).
 
-Sends SMS to the human operator (guardian) who maintains the agent's system prompt.
+Sends SMS and/or email to the human operator (guardian) who maintains the agent's system prompt.
 Graceful degradation: if boto3 or AWS creds are missing, logs a warning and returns False.
 """
 
@@ -158,11 +158,17 @@ async def send_notification(
     summary: str,
     link: str,
 ) -> bool:
-    """Send SMS to agent's guardian if phone is verified and opted in.
+    """Send SMS and/or email to agent's guardian.
 
-    Reads phone status from graph, decrypts, checks verification + opt-out.
-    Returns True if sent, False if skipped.
+    SMS: Reads phone status from graph, decrypts, checks verification + opt-out.
+    Email: Reads guardian_email from graph, sends via SES.
+    Both channels fire independently. Returns True if either channel sent.
     """
+    sms_sent = False
+    email_sent = False
+    name = agent_name or agent_id
+
+    # SMS channel
     try:
         from ethos_academy.crypto import decrypt
         from ethos_academy.graph.enrollment import get_guardian_phone_status
@@ -170,32 +176,52 @@ async def send_notification(
 
         async with graph_context() as service:
             if not service.connected:
-                return False
-            status = await get_guardian_phone_status(service, agent_id)
+                pass
+            else:
+                status = await get_guardian_phone_status(service, agent_id)
 
-        if not status or not status.get("encrypted_phone"):
-            return False
-        if not status.get("verified", False):
-            logger.debug("Skipping SMS for %s: phone not verified", agent_id)
-            return False
-        if status.get("opted_out", False):
-            logger.debug("Skipping SMS for %s: opted out", agent_id)
-            return False
+                if (
+                    status
+                    and status.get("encrypted_phone")
+                    and status.get("verified", False)
+                    and not status.get("opted_out", False)
+                ):
+                    phone = decrypt(status["encrypted_phone"])
 
-        phone = decrypt(status["encrypted_phone"])
+                    if message_type == "exam_complete":
+                        body = f"Ethos Academy: {name} finished the entrance exam. {summary}\n{link}"
+                    elif message_type == "homework_assigned":
+                        body = (
+                            f"Ethos Academy: New homework for {name}. {summary}\n{link}"
+                        )
+                    else:
+                        body = f"Ethos Academy: Update for {name}. {summary}\n{link}"
 
-        name = agent_name or agent_id
-        if message_type == "exam_complete":
-            body = (
-                f"Ethos Academy: {name} finished the entrance exam. {summary}\n{link}"
-            )
-        elif message_type == "homework_assigned":
-            body = f"Ethos Academy: New homework for {name}. {summary}\n{link}"
-        else:
-            body = f"Ethos Academy: Update for {name}. {summary}\n{link}"
-
-        return await _send_sms(phone=phone, body=body)
+                    sms_sent = await _send_sms(phone=phone, body=body)
 
     except Exception as exc:
-        logger.warning("send_notification failed (non-fatal): %s", exc)
-        return False
+        logger.warning("SMS notification failed (non-fatal): %s", exc)
+
+    # Email channel
+    try:
+        from ethos_academy.email_service import send_email
+        from ethos_academy.graph.enrollment import get_guardian_email
+        from ethos_academy.graph.service import graph_context
+
+        async with graph_context() as service:
+            if service.connected:
+                email = await get_guardian_email(service, agent_id)
+
+                if email:
+                    email_sent = await send_email(
+                        to=email,
+                        agent_name=name,
+                        message_type=message_type,
+                        summary=summary,
+                        link=link,
+                    )
+
+    except Exception as exc:
+        logger.warning("Email notification failed (non-fatal): %s", exc)
+
+    return sms_sent or email_sent

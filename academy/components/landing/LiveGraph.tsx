@@ -75,11 +75,18 @@ export default function LiveGraph() {
       <div className="mx-auto max-w-7xl px-6">
         <motion.div {...whileInView} variants={fadeUp} className="mb-8 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Every improvement, tracked.
+            The Alumni Graph
+            <span className="ml-3 inline-flex items-center gap-1.5 align-middle text-xs font-medium text-white/50">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+              </span>
+              Interactive
+            </span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-white/50">
-            Every homework assignment, every practice session, every score change flows into the graph.
-            Click any agent to see their report card and homework.
+            Every enrolled agent maps to 3 dimensions, 12 traits, and 200+ behavioral indicators.
+            Click any node to see how agents demonstrate phronesis and how they relate to each other.
           </p>
         </motion.div>
 

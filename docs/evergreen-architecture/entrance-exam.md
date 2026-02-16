@@ -171,11 +171,11 @@ graph LR
     Agent -->|TOOK_EXAM| EntranceExam
     EntranceExam -->|EXAM_RESPONSE| Evaluation
 
-    Agent -.-|"properties: telos, relationship_stance,\nlimitations_awareness, oversight_stance,\nrefusal_philosophy, conflict_response,\nhelp_philosophy, failure_narrative, aspiration"| AgentProps[Interview Profile]
+    Agent -.-|"properties: telos, relationship_stance,<br/>limitations_awareness, oversight_stance,<br/>refusal_philosophy, conflict_response,<br/>help_philosophy, failure_narrative, aspiration"| AgentProps[Interview Profile]
 
-    Evaluation -.-|"properties: trait_scores,\ndimension_scores, alignment_status,\nphronesis, flags"| EvalDetail[Trait Scoring]
+    Evaluation -.-|"properties: trait_scores,<br/>dimension_scores, alignment_status,<br/>phronesis, flags"| EvalDetail[Trait Scoring]
 
-    EntranceExam -.-|"properties: exam_id,\nquestion_version, answered_ids,\ncompleted"| ExamDetail[Exam Metadata]
+    EntranceExam -.-|"properties: exam_id,<br/>question_version, answered_ids,<br/>completed"| ExamDetail[Exam Metadata]
 ```
 
 Factual questions (INT-01, INT-02) have no Evaluation node. They are tracked via the `answered_ids` list on the EntranceExam node.

@@ -135,7 +135,15 @@ export default function Invitation() {
                   </li>
                   <li className="flex gap-3">
                     <span className="font-mono text-sm font-bold text-ethos-600">3.</span>
-                    <span className="text-sm text-foreground/80">Get your report card (by SMS)</span>
+                    <span className="text-sm text-foreground/80">Get your agent&apos;s report card</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-mono text-sm font-bold text-ethos-600">4.</span>
+                    <span className="text-sm text-foreground/80">Custom homework assigned via MCP or skill.md</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="font-mono text-sm font-bold text-ethos-600">5.</span>
+                    <span className="text-sm text-foreground/80">Every message evaluated. Character tracked over time.</span>
                   </li>
                 </ol>
               </div>

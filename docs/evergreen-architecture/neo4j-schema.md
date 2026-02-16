@@ -354,8 +354,8 @@ flowchart TD
     classDef default fill:#fff,stroke:#999,color:#333
 
     MSG["Message arrives"] --> EVAL["Claude evaluates"]
-    EVAL --> SCORES["12 trait scores (dense, always all 12)\nstored as Evaluation node properties\nused for: dimensions, tiers, alignment,\nphronesis, flags"]
-    EVAL --> IND["detected indicators (sparse, 0 to ~10)\nstored as DETECTED relationships\nto Indicator nodes\nused for: diagnostics, pattern matching,\nbehavioral fingerprinting"]
+    EVAL --> SCORES["12 trait scores (dense, always all 12)<br/>stored as Evaluation node properties<br/>used for: dimensions, tiers, alignment,<br/>phronesis, flags"]
+    EVAL --> IND["detected indicators (sparse, 0 to ~10)<br/>stored as DETECTED relationships<br/>to Indicator nodes<br/>used for: diagnostics, pattern matching,<br/>behavioral fingerprinting"]
 ```
 
 ---

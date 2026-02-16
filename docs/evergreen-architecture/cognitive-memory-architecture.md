@@ -462,12 +462,12 @@ flowchart TD
     classDef default fill:#fff,stroke:#999,color:#333
     classDef ephemeral fill:#fff3cd,stroke:#ffc107,color:#333
 
-    WM["Working Memory Contents\n(ephemeral)"]:::ephemeral
+    WM["Working Memory Contents<br/>(ephemeral)"]:::ephemeral
     WM --> MSG["Raw message text"]
-    WM --> KW["Keyword scan results\nflagged traits, density, routing tier"]
-    WM --> MOD["Selected model\nSonnet or Opus"]
-    WM --> RUB["Active rubric\nstandard, focused, or full"]
-    WM --> HIST["Agent history from Neo4j\n(if DEEP_WITH_CONTEXT)"]
+    WM --> KW["Keyword scan results<br/>flagged traits, density, routing tier"]
+    WM --> MOD["Selected model<br/>Sonnet or Opus"]
+    WM --> RUB["Active rubric<br/>standard, focused, or full"]
+    WM --> HIST["Agent history from Neo4j<br/>(if DEEP_WITH_CONTEXT)"]
     HIST --> H1["Last N evaluations"]
     HIST --> H2["Trend direction"]
     HIST --> H3["Active pattern matches"]
@@ -477,7 +477,7 @@ flowchart TD
     CTX --> C2["Rubric for each trait"]
     CTX --> C3["Message to evaluate"]
     CTX --> C4["Conversation context (if available)"]
-    WM --> OUT["Claude's reasoning output\nchain-of-thought + scores"]
+    WM --> OUT["Claude's reasoning output<br/>chain-of-thought + scores"]
 ```
 
 All of this is discarded after the evaluation completes. The only thing that persists is the result, which is written to episodic memory.
@@ -750,14 +750,14 @@ flowchart TD
     classDef default fill:#fff,stroke:#999,color:#333
 
     SM["Semantic Memory Structure"]
-    HC["Hard Constraints (7)\nabsolute boundaries, non-negotiable"]
-    CV["Constitutional Values (4)\nsafety > ethics > soundness > helpfulness"]
-    CVT["Traits (12)\neach UPHOLDS a value"]
-    LT["Legitimacy Tests (3)\nprocess, accountability, transparency"]
-    DIM["Dimensions (3)\nethos, logos, pathos"]
+    HC["Hard Constraints (7)<br/>absolute boundaries, non-negotiable"]
+    CV["Constitutional Values (4)<br/>safety > ethics > soundness > helpfulness"]
+    CVT["Traits (12)<br/>each UPHOLDS a value"]
+    LT["Legitimacy Tests (3)<br/>process, accountability, transparency"]
+    DIM["Dimensions (3)<br/>ethos, logos, pathos"]
     TR["Traits (12)"]
     IND["Indicators (214)"]
-    CP["Combination Patterns (7)\nmulti-indicator attack sequences"]
+    CP["Combination Patterns (7)<br/>multi-indicator attack sequences"]
 
     SM --> HC
     SM --> CV --> CVT

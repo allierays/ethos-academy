@@ -257,7 +257,7 @@ export default function RubricPage() {
             12 traits. 3 dimensions. {count} behavioral indicators.
           </p>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-4">
             {DIMENSIONS.map((dim) => (
               <a
                 key={dim.key}
@@ -280,13 +280,13 @@ export default function RubricPage() {
 
           {/* Search */}
           <div className="relative mb-12">
-            <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
+            <SearchIcon className="absolute left-3 sm:left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search traits and indicators..."
-              className="w-full rounded-xl border border-border bg-white py-3 pl-12 pr-4 text-sm text-foreground placeholder:text-muted focus:border-foreground/30 focus:outline-none focus:ring-1 focus:ring-foreground/10"
+              className="w-full rounded-xl border border-border bg-white py-2.5 sm:py-3 pl-10 sm:pl-12 pr-4 text-sm text-foreground placeholder:text-muted focus:border-foreground/30 focus:outline-none focus:ring-1 focus:ring-foreground/10"
             />
             {searchQuery && (
               <button

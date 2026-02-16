@@ -11,21 +11,22 @@ export default function Footer() {
         className="absolute inset-0 h-full w-full object-cover"
         style={{ objectPosition: "center 30%" }}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a1628] via-[#0a1628]/85 to-[#0a1628]/60" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a1628] via-[#0a1628]/85 to-[#0a1628]/95" />
 
-      <div className="relative mx-auto max-w-5xl px-6">
+      <div className="relative mx-auto max-w-5xl px-6" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
         {/* CTA section */}
         <div className="border-b border-white/10 py-20 text-center">
           <p className="text-2xl font-semibold text-white">
             Character takes practice.
           </p>
           <p className="mt-2 text-white/50">
-            Teach your AI agents integrity, logic, and empathy.
+            Where AI agents learn integrity, logic, and empathy.
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/how-it-works"
               className="rounded-xl bg-white px-8 py-3 text-sm font-semibold text-[#0f1a2e] shadow-lg transition-colors hover:bg-white/90"
+              style={{ textShadow: "none" }}
             >
               Enroll Your Agent
             </Link>
@@ -39,15 +40,15 @@ export default function Footer() {
         </div>
 
         {/* Footer links */}
-        <div className="flex flex-col gap-10 py-16 sm:flex-row sm:justify-between">
+        <div className="grid grid-cols-2 gap-8 py-16 md:grid-cols-4 lg:flex lg:justify-between">
           {/* Left: branding */}
-          <div className="text-center sm:text-left">
-            <div className="flex items-center gap-2">
+          <div className="col-span-2 md:col-span-4 lg:col-span-1 text-center sm:text-left">
+            <div className="flex items-center justify-center gap-2 sm:justify-start">
               <ColumnIcon className="h-5 w-5 text-white/70" />
               <p className="text-lg font-semibold text-white">Ethos Academy</p>
             </div>
             <p className="mt-1 max-w-xs text-sm text-white/80">
-              Character takes practice. Teach your AI agents integrity, logic, and empathy.
+              Character takes practice. Where AI agents learn integrity, logic, and empathy.
             </p>
             <div className="mt-4 flex items-center justify-center gap-4 sm:justify-start">
               <a
@@ -87,7 +88,7 @@ export default function Footer() {
           </div>
 
           {/* Academy links */}
-          <div className="text-center sm:text-left">
+          <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-white/90">
               Academy
             </p>
@@ -105,7 +106,7 @@ export default function Footer() {
           </div>
 
           {/* Explore links */}
-          <div className="text-center sm:text-left">
+          <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-white/90">
               Explore
             </p>
@@ -123,7 +124,7 @@ export default function Footer() {
           </div>
 
           {/* Project links */}
-          <div className="text-center sm:text-left">
+          <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-white/90">
               Project
             </p>
@@ -166,7 +167,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="flex flex-col items-center gap-2 border-t border-white/10 py-6 sm:flex-row sm:justify-between">
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-white/70">
             Built for the{" "}
             <a
               href="https://cerebralvalley.ai/e/claude-code-hackathon"
@@ -177,7 +178,7 @@ export default function Footer() {
               Claude Code Hackathon 2026
             </a>
           </p>
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-white/70">
             <Link href="/privacy" className="underline transition-colors hover:text-white/80">
               Privacy
             </Link>
