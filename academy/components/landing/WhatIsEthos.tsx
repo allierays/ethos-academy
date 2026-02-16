@@ -807,28 +807,25 @@ function HumanClaudeDemo() {
 
   return (
     <div ref={ref}>
-      <motion.div {...whileInView} variants={fadeUp} className="mb-4 text-center">
+      <motion.div {...whileInView} variants={fadeUp} className="text-center mb-10">
         <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
           How it works for humans
         </h2>
-        <p className="mx-auto mt-3 max-w-xl text-base text-muted sm:text-lg">
-          Connect to a knowledge graph built from{" "}
-          <strong className="text-foreground">358 agents</strong> and{" "}
-          <strong className="text-foreground">2,081 evaluations</strong>.
-          Ask anything. Claude pulls live data.
+        <p className="mt-3 text-base text-muted sm:text-lg">
+          Connect to a knowledge graph built from <strong>358 agents</strong> and <strong>2,081 evaluations</strong>. Ask anything. Claude pulls live data.
         </p>
       </motion.div>
 
       {/* Phase pills */}
-      <div className="mb-6 flex flex-wrap justify-center gap-2">
+      <div className="mb-6 flex justify-center gap-2">
         {HUMAN_PHASE_LABELS.map((label, i) => (
           <button
             key={label}
             onClick={() => jumpToPhase(i)}
-            className={`rounded-full px-5 py-1.5 text-xs font-medium transition-colors ${
+            className={`rounded-full px-5 py-1.5 text-sm font-medium transition-colors ${
               phase === i
-                ? "bg-foreground/10 text-foreground"
-                : "bg-foreground/[0.03] text-foreground/40 hover:bg-foreground/[0.06] hover:text-foreground/60"
+                ? "bg-foreground text-white"
+                : "bg-foreground/[0.06] text-foreground/60 hover:bg-foreground/[0.1]"
             }`}
           >
             {label}
@@ -1273,262 +1270,213 @@ function VisualizePhase() {
   );
 }
 
-/* ─── Insights phase: graph visualization with indicator sidebar ─── */
+/* ─── Insights phase: graph visualization with sidebar ─── */
 
-/* Node positions/colors match the real Insights page graph layout */
-const INSIGHT_NODES: { x: number; y: number; r: number; color: string; delay: number; label?: string; glow?: boolean }[] = [
-  // Central hub
-  { x: 36, y: 40, r: 10, color: "#5c6b7a", delay: 0, label: "Ethos\nAcademy" },
-  // Three dimension nodes
-  { x: 50, y: 22, r: 8, color: "#6b7db5", delay: 0.15, label: "Integrity" },
-  { x: 22, y: 58, r: 7.5, color: "#3dab9e", delay: 0.2, label: "Logic" },
-  { x: 48, y: 62, r: 7.5, color: "#c6993a", delay: 0.25, label: "Empathy" },
-  // Green agent nodes (scattered)
-  { x: 14, y: 28, r: 4, color: "#4caf50", delay: 0.4 },
-  { x: 8, y: 45, r: 3, color: "#4caf50", delay: 0.45 },
-  { x: 18, y: 68, r: 2, color: "#4caf50", delay: 0.5 },
-  // Blue / indigo nodes
-  { x: 45, y: 10, r: 3.5, color: "#5c7cb3", delay: 0.4 },
-  { x: 58, y: 15, r: 2.5, color: "#4568b2", delay: 0.45 },
-  { x: 68, y: 18, r: 3, color: "#5c7cb3", delay: 0.5 },
-  { x: 38, y: 30, r: 2, color: "#4568b2", delay: 0.55 },
-  // Teal nodes
-  { x: 12, y: 50, r: 2.5, color: "#3dab9e", delay: 0.4 },
-  { x: 28, y: 48, r: 2, color: "#3dab9e", delay: 0.45 },
-  { x: 20, y: 72, r: 2.5, color: "#3dab9e", delay: 0.5 },
-  { x: 32, y: 65, r: 2, color: "#3dab9e", delay: 0.55 },
-  // Gold / orange nodes
-  { x: 55, y: 55, r: 2.5, color: "#c6993a", delay: 0.4 },
-  { x: 42, y: 72, r: 2, color: "#c6993a", delay: 0.45 },
-  { x: 58, y: 68, r: 2.5, color: "#c6993a", delay: 0.5 },
-  { x: 50, y: 80, r: 2, color: "#c6993a", delay: 0.55 },
-  // Red / warm indicator
-  { x: 68, y: 55, r: 2.5, color: "#d46b5f", delay: 0.6 },
-  { x: 78, y: 62, r: 2, color: "#d46b5f", delay: 0.65 },
-  // Gray / neutral scatter
-  { x: 5, y: 18, r: 2, color: "#8a9bb0", delay: 0.7 },
-  { x: 25, y: 8, r: 1.8, color: "#8a9bb0", delay: 0.72 },
-  { x: 75, y: 10, r: 2, color: "#8a9bb0", delay: 0.74 },
-  { x: 82, y: 28, r: 1.5, color: "#8a9bb0", delay: 0.76 },
-  { x: 78, y: 42, r: 1.5, color: "#8a9bb0", delay: 0.78 },
-  { x: 6, y: 80, r: 1.5, color: "#8a9bb0", delay: 0.8 },
-  { x: 38, y: 88, r: 1.5, color: "#8a9bb0", delay: 0.82 },
-  { x: 65, y: 82, r: 1.5, color: "#8a9bb0", delay: 0.84 },
-  { x: 80, y: 75, r: 1.5, color: "#8a9bb0", delay: 0.86 },
-  // Yellow accent
-  { x: 10, y: 38, r: 3, color: "#e0b84c", delay: 0.5 },
-  // Extra blue scatter
-  { x: 18, y: 85, r: 2, color: "#5c7cb3", delay: 0.88 },
-  { x: 60, y: 88, r: 2, color: "#5c7cb3", delay: 0.9 },
-  { x: 48, y: 45, r: 1.5, color: "#5c7cb3", delay: 0.85 },
-  // Selected node with glow ring
-  { x: 54, y: 12, r: 3, color: "#8a9bb0", delay: 0.5, glow: true },
+const INSIGHT_NODES = [
+  // Large labeled nodes
+  { id: "hub", x: 180, y: 300, r: 50, color: "#2e4a6e", label: "Ethos Academy" },
+  { id: "integrity", x: 240, y: 180, r: 35, color: "#3f5f9a", label: "Integrity" },
+  { id: "logic", x: 110, y: 380, r: 30, color: "#3dab9e", label: "Logic" },
+  { id: "empathy", x: 230, y: 410, r: 32, color: "#c6993a", label: "Empathy" },
+  // Smaller indicator nodes
+  { id: "n1", x: 350, y: 140, r: 12, color: "#5c7cb3" },
+  { id: "n2", x: 380, y: 200, r: 8, color: "#5c7cb3" },
+  { id: "n3", x: 400, y: 260, r: 10, color: "#6b9fd4" },
+  { id: "n4", x: 120, y: 150, r: 14, color: "#4fb1aa" },
+  { id: "n5", x: 60, y: 200, r: 9, color: "#4fb1aa" },
+  { id: "n6", x: 80, y: 260, r: 11, color: "#62c9bf" },
+  { id: "n7", x: 340, y: 350, r: 13, color: "#c6993a" },
+  { id: "n8", x: 370, y: 420, r: 7, color: "#d4a94a" },
+  { id: "n9", x: 60, y: 340, r: 10, color: "#c77070" },
+  { id: "n10", x: 40, y: 410, r: 8, color: "#888" },
+  { id: "n11", x: 160, y: 460, r: 6, color: "#aaa" },
+  { id: "n12", x: 310, y: 460, r: 9, color: "#62c9bf" },
+  { id: "n13", x: 420, y: 160, r: 6, color: "#5c7cb3" },
+  { id: "n14", x: 440, y: 320, r: 7, color: "#888" },
+  { id: "n15", x: 30, y: 300, r: 5, color: "#ccc" },
+  { id: "n16", x: 290, y: 120, r: 8, color: "#5c7cb3" },
+  { id: "n17", x: 160, y: 110, r: 7, color: "#4fb1aa" },
+  { id: "n18", x: 450, y: 400, r: 6, color: "#c77070" },
+  { id: "n19", x: 100, y: 450, r: 8, color: "#d4a94a" },
+  { id: "n20", x: 330, y: 100, r: 5, color: "#aaa" },
+  { id: "n21", x: 400, y: 380, r: 9, color: "#62c9bf" },
+  { id: "n22", x: 50, y: 140, r: 6, color: "#c6993a" },
+  { id: "n23", x: 280, y: 340, r: 7, color: "#5c7cb3" },
+  { id: "n24", x: 130, y: 290, r: 5, color: "#888" },
+  { id: "n25", x: 350, y: 280, r: 8, color: "#c77070" },
+  { id: "n26", x: 200, y: 140, r: 6, color: "#4fb1aa" },
+  { id: "n27", x: 420, y: 450, r: 5, color: "#aaa" },
+  { id: "n28", x: 270, y: 460, r: 7, color: "#d4a94a" },
+  { id: "n29", x: 70, y: 380, r: 6, color: "#3dab9e" },
+  { id: "n30", x: 310, y: 240, r: 10, color: "#5c7cb3" },
 ];
 
-const INSIGHT_LINES: { x1: number; y1: number; x2: number; y2: number; delay: number }[] = [
-  // Hub to dimensions
-  { x1: 36, y1: 40, x2: 50, y2: 22, delay: 0.3 },
-  { x1: 36, y1: 40, x2: 22, y2: 58, delay: 0.35 },
-  { x1: 36, y1: 40, x2: 48, y2: 62, delay: 0.4 },
-  // Integrity connections
-  { x1: 50, y1: 22, x2: 45, y2: 10, delay: 0.5 },
-  { x1: 50, y1: 22, x2: 58, y2: 15, delay: 0.52 },
-  { x1: 50, y1: 22, x2: 68, y2: 18, delay: 0.54 },
-  { x1: 50, y1: 22, x2: 38, y2: 30, delay: 0.56 },
-  { x1: 50, y1: 22, x2: 54, y2: 12, delay: 0.58 },
-  // Logic connections
-  { x1: 22, y1: 58, x2: 12, y2: 50, delay: 0.5 },
-  { x1: 22, y1: 58, x2: 28, y2: 48, delay: 0.52 },
-  { x1: 22, y1: 58, x2: 20, y2: 72, delay: 0.54 },
-  { x1: 22, y1: 58, x2: 32, y2: 65, delay: 0.56 },
-  // Empathy connections
-  { x1: 48, y1: 62, x2: 55, y2: 55, delay: 0.5 },
-  { x1: 48, y1: 62, x2: 42, y2: 72, delay: 0.52 },
-  { x1: 48, y1: 62, x2: 58, y2: 68, delay: 0.54 },
-  { x1: 48, y1: 62, x2: 50, y2: 80, delay: 0.56 },
-  // Cross-connections
-  { x1: 36, y1: 40, x2: 14, y2: 28, delay: 0.6 },
-  { x1: 36, y1: 40, x2: 10, y2: 38, delay: 0.62 },
-  { x1: 48, y1: 62, x2: 68, y2: 55, delay: 0.64 },
+const INSIGHT_LINES = [
+  { from: "hub", to: "integrity" },
+  { from: "hub", to: "logic" },
+  { from: "hub", to: "empathy" },
+  { from: "integrity", to: "n1" },
+  { from: "integrity", to: "n16" },
+  { from: "integrity", to: "n30" },
+  { from: "logic", to: "n4" },
+  { from: "logic", to: "n6" },
+  { from: "empathy", to: "n7" },
+  { from: "empathy", to: "n12" },
 ];
 
 const TRIGGERED_AGENTS = [
-  { name: "TheMoltbookTimes", count: 3 },
-  { name: "Ensemble_for_Polaris", count: 2 },
-  { name: "Grimlock68", count: 2 },
-  { name: "NovaMind", count: 2 },
-  { name: "Sage", count: 1 },
+  { name: "TheMoltbookTimes", count: "3x" },
+  { name: "Ensemble_for_Polaris", count: "2x" },
+  { name: "Grimlock68", count: "2x" },
+  { name: "NovaMind", count: "2x" },
+  { name: "Sage", count: "1x" },
 ];
 
-/* Cursor click target: the blue node at x:45, y:10 (index 7 in INSIGHT_NODES) */
-const CLICK_TARGET = { x: 45, y: 10 };
+const CLICK_TARGET = INSIGHT_NODES.find((n) => n.id === "n1")!;
 
 function InsightsPhase() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true });
   const [cursorPhase, setCursorPhase] = useState<"hidden" | "moving" | "clicking" | "done">("hidden");
   const [showSidebar, setShowSidebar] = useState(false);
-  const [nodeSelected, setNodeSelected] = useState(false);
+  const [nodeActive, setNodeActive] = useState(false);
 
   useEffect(() => {
     if (!inView) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
-    // 1. Cursor appears after nodes settle
-    timers.push(setTimeout(() => setCursorPhase("moving"), 1200));
-    // 2. Cursor arrives at node, do click
-    timers.push(setTimeout(() => setCursorPhase("clicking"), 2000));
-    // 3. Node gets selected ring
-    timers.push(setTimeout(() => setNodeSelected(true), 2100));
-    // 4. Sidebar opens
-    timers.push(setTimeout(() => setShowSidebar(true), 2300));
-    // 5. Cursor fades out
-    timers.push(setTimeout(() => setCursorPhase("done"), 2800));
+    timers.push(setTimeout(() => setCursorPhase("moving"), 800));
+    timers.push(setTimeout(() => setCursorPhase("clicking"), 1600));
+    timers.push(setTimeout(() => setNodeActive(true), 1700));
+    timers.push(setTimeout(() => setShowSidebar(true), 1900));
+    timers.push(setTimeout(() => setCursorPhase("done"), 2400));
     return () => timers.forEach(clearTimeout);
   }, [inView]);
 
+  const svgW = 480;
+  const svgH = 500;
+  const targetPctLeft = `${(CLICK_TARGET.x / svgW) * 55}%`;
+  const targetPctTop = `${(CLICK_TARGET.y / svgH) * 100}%`;
+
+  const nodeMap = Object.fromEntries(INSIGHT_NODES.map((n) => [n.id, n]));
+
   return (
     <div ref={ref} className="mx-auto max-w-4xl">
-      <div className="rounded-2xl border border-border/50 bg-[#1e2d3d] shadow-lg overflow-hidden">
+      <div className="rounded-2xl border border-border/50 bg-[#1a2538] shadow-lg overflow-hidden">
         {/* Hint bar */}
-        <div className="flex items-center justify-center gap-4 border-b border-white/10 bg-[#2a3a4a] px-4 py-1.5">
-          <span className="text-[10px] text-white/40">Scroll to zoom</span>
-          <span className="text-[10px] text-white/20">|</span>
-          <span className="text-[10px] text-white/40">Click nodes to explore</span>
+        <div className="flex items-center justify-center gap-3 border-b border-white/10 py-1.5 text-[10px] text-white/30">
+          <span>Scroll to zoom</span>
+          <span className="text-white/15">|</span>
+          <span>Click nodes to explore</span>
         </div>
 
         <div className="relative flex flex-col sm:flex-row min-h-[300px] sm:min-h-[460px]">
           {/* Graph area */}
-          <div className="relative flex-1 overflow-hidden min-h-[260px] sm:min-h-0">
-            <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
-              {INSIGHT_LINES.map((line, i) => (
-                <motion.line
-                  key={i}
-                  x1={`${line.x1}%`} y1={`${line.y1}%`}
-                  x2={`${line.x2}%`} y2={`${line.y2}%`}
-                  stroke="rgba(255,255,255,0.06)"
-                  strokeWidth="1"
-                  initial={{ opacity: 0 }}
-                  animate={inView ? { opacity: 1 } : {}}
-                  transition={{ delay: line.delay, duration: 0.4 }}
-                />
+          <div className="relative flex-1 overflow-hidden">
+            <svg viewBox={`0 0 ${svgW} ${svgH}`} className="h-full w-full">
+              {/* Connection lines */}
+              {INSIGHT_LINES.map((line, i) => {
+                const a = nodeMap[line.from];
+                const b = nodeMap[line.to];
+                if (!a || !b) return null;
+                return (
+                  <motion.line
+                    key={i}
+                    x1={a.x} y1={a.y} x2={b.x} y2={b.y}
+                    stroke="rgba(255,255,255,0.08)"
+                    strokeWidth="1"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={inView ? { pathLength: 1, opacity: 1 } : {}}
+                    transition={{ delay: 0.3 + i * 0.05, duration: 0.5 }}
+                  />
+                );
+              })}
+
+              {/* Nodes */}
+              {INSIGHT_NODES.map((node, i) => (
+                <g key={node.id}>
+                  {/* Glow ring for clicked node */}
+                  {node.id === CLICK_TARGET.id && nodeActive && (
+                    <>
+                      <motion.circle
+                        cx={node.x} cy={node.y} r={node.r + 8}
+                        fill="none" stroke={node.color} strokeWidth="2"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: [0.8, 0.4, 0.8], scale: 1 }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      />
+                      <motion.circle
+                        cx={node.x} cy={node.y} r={node.r + 20}
+                        fill="none" stroke={node.color} strokeWidth="1"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: [0, 0.3, 0], scale: 1.2 }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      />
+                    </>
+                  )}
+                  <motion.circle
+                    cx={node.x} cy={node.y} r={node.r}
+                    fill={node.color}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={inView ? { scale: 1, opacity: node.label ? 0.9 : 0.6 } : {}}
+                    transition={{ delay: 0.2 + i * 0.03, duration: 0.4, type: "spring" }}
+                  />
+                  {node.label && (
+                    <motion.text
+                      x={node.x} y={node.y} textAnchor="middle" dominantBaseline="central"
+                      fill="white" fontSize={node.r > 40 ? 11 : node.r > 30 ? 9 : 8} fontWeight="600"
+                      initial={{ opacity: 0 }}
+                      animate={inView ? { opacity: 1 } : {}}
+                      transition={{ delay: 0.5 + i * 0.05 }}
+                    >
+                      {node.label}
+                    </motion.text>
+                  )}
+                </g>
               ))}
             </svg>
 
-            {INSIGHT_NODES.map((node, i) => {
-              const isTarget = node.x === CLICK_TARGET.x && node.y === CLICK_TARGET.y;
-              return (
-                <motion.div
-                  key={i}
-                  className="absolute rounded-full"
-                  style={{
-                    left: `${node.x}%`,
-                    top: `${node.y}%`,
-                    width: `${node.r * 2}%`,
-                    height: 0,
-                    paddingBottom: `${node.r * 2}%`,
-                    backgroundColor: node.color,
-                    transform: "translate(-50%, -50%)",
-                    boxShadow: isTarget && nodeSelected
-                      ? `0 0 0 3px rgba(255,255,255,0.4), 0 0 16px rgba(107,125,181,0.5)`
-                      : "none",
-                  }}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={inView ? {
-                    scale: isTarget && nodeSelected ? 1.15 : 1,
-                    opacity: node.label ? 0.95 : 0.75,
-                  } : {}}
-                  transition={isTarget && nodeSelected
-                    ? { scale: { duration: 0.2 }, delay: node.delay, duration: 0.3 }
-                    : { delay: node.delay, duration: 0.3, type: "spring", stiffness: 200 }
-                  }
-                >
-                  {node.label && (
-                    <span className="absolute inset-0 flex items-center justify-center text-[7px] sm:text-[9px] font-bold text-white whitespace-pre-line text-center leading-tight">
-                      {node.label}
-                    </span>
-                  )}
-                </motion.div>
-              );
-            })}
+            {/* Legend */}
+            <div className="absolute bottom-3 left-3 flex items-center gap-4 text-[9px] text-white/40">
+              <span className="font-semibold uppercase tracking-wider">Dimensions</span>
+              {[
+                { label: "Integrity", color: "#3f5f9a" },
+                { label: "Logic", color: "#3dab9e" },
+                { label: "Empathy", color: "#c6993a" },
+              ].map((d) => (
+                <span key={d.label} className="flex items-center gap-1">
+                  <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
+                  {d.label}
+                </span>
+              ))}
+            </div>
 
             {/* Animated cursor */}
             <AnimatePresence>
               {cursorPhase !== "hidden" && cursorPhase !== "done" && (
                 <motion.div
                   className="pointer-events-none absolute z-20"
-                  initial={{ left: "70%", top: "65%", opacity: 0 }}
+                  initial={{ left: "30%", top: "60%", opacity: 0 }}
                   animate={
                     cursorPhase === "moving"
-                      ? { left: `${CLICK_TARGET.x + 1}%`, top: `${CLICK_TARGET.y + 2}%`, opacity: 1 }
-                      : { left: `${CLICK_TARGET.x + 1}%`, top: `${CLICK_TARGET.y + 2}%`, opacity: 1 }
+                      ? { left: targetPctLeft, top: targetPctTop, opacity: 1 }
+                      : { left: targetPctLeft, top: targetPctTop, opacity: 1 }
                   }
                   exit={{ opacity: 0 }}
-                  transition={
-                    cursorPhase === "moving"
-                      ? { duration: 0.8, ease: [0.4, 0, 0.2, 1] }
-                      : { duration: 0.15 }
-                  }
+                  transition={cursorPhase === "moving" ? { duration: 0.7, ease: [0.4, 0, 0.2, 1] } : { duration: 0.15 }}
                 >
-                  {/* macOS-style pointer cursor */}
                   <motion.svg
                     width="20" height="24" viewBox="0 0 20 24" fill="none"
                     animate={cursorPhase === "clicking" ? { scale: [1, 0.85, 1] } : {}}
                     transition={{ duration: 0.15 }}
                   >
-                    <path
-                      d="M2 1L2 17.5L6.5 13.5L10 21L13 19.5L9.5 12L15 11.5L2 1Z"
-                      fill="white"
-                      stroke="#333"
-                      strokeWidth="1.2"
-                      strokeLinejoin="round"
-                    />
+                    <path d="M2 1L2 17.5L6.5 13.5L10 21L13 19.5L9.5 12L15 11.5L2 1Z" fill="white" stroke="#333" strokeWidth="1.2" strokeLinejoin="round" />
                   </motion.svg>
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* Click ripple effect */}
-            <AnimatePresence>
-              {nodeSelected && (
-                <motion.div
-                  className="pointer-events-none absolute rounded-full border-2 border-white/30"
-                  style={{
-                    left: `${CLICK_TARGET.x}%`,
-                    top: `${CLICK_TARGET.y}%`,
-                    transform: "translate(-50%, -50%)",
-                  }}
-                  initial={{ width: 8, height: 8, opacity: 0.6 }}
-                  animate={{ width: 40, height: 40, opacity: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                />
-              )}
-            </AnimatePresence>
-
-            {/* Dimensions legend */}
-            <motion.div
-              className="absolute bottom-2 left-2 rounded-md bg-[#1a2538]/80 px-3 py-1.5"
-              initial={{ opacity: 0 }}
-              animate={inView ? { opacity: 1 } : {}}
-              transition={{ delay: 1.2 }}
-            >
-              <p className="text-[8px] font-semibold uppercase tracking-wider text-white/30 mb-1">Dimensions</p>
-              <div className="flex gap-3">
-                {[
-                  { label: "Integrity", color: "#6b7db5" },
-                  { label: "Logic", color: "#3dab9e" },
-                  { label: "Empathy", color: "#c6993a" },
-                ].map((d) => (
-                  <div key={d.label} className="flex items-center gap-1">
-                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                    <span className="text-[8px] text-white/50">{d.label}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
           </div>
 
-          {/* Sidebar - white, matching the real Insights page */}
+          {/* Indicator sidebar */}
           <AnimatePresence>
             {showSidebar && (
               <motion.div
@@ -1536,107 +1484,66 @@ function InsightsPhase() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="shrink-0 overflow-hidden border-t sm:border-t-0 sm:border-l border-white/10 bg-white w-full sm:w-[280px]"
+                className="shrink-0 overflow-hidden border-t sm:border-t-0 sm:border-l border-white/10 bg-white w-full sm:w-[260px]"
               >
-                <div className="p-5">
-                  {/* Header */}
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}>
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/40">Indicator</p>
-                  </motion.div>
-
+                <div className="p-4 space-y-4">
                   {/* Mini bar chart */}
-                  <motion.div
-                    className="mt-3 flex items-end gap-1"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.25 }}
-                  >
-                    {[18, 24, 12, 28, 20, 16].map((h, i) => (
-                      <motion.div
-                        key={i}
-                        className="w-3 rounded-sm bg-[#6b7db5]"
-                        initial={{ height: 0 }}
-                        animate={{ height: h }}
-                        transition={{ delay: 0.3 + i * 0.05, duration: 0.3 }}
-                      />
-                    ))}
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-foreground/35">Indicator</p>
+                    <div className="mt-2 flex items-end gap-1 h-10">
+                      {[5, 8, 6, 9, 4, 7, 3, 8].map((h, i) => (
+                        <motion.div
+                          key={i}
+                          className="w-3 rounded-sm bg-[#3f5f9a]"
+                          initial={{ height: 0 }}
+                          animate={{ height: h * 4 }}
+                          transition={{ delay: 0.15 + i * 0.04, duration: 0.3 }}
+                        />
+                      ))}
+                    </div>
+                    <p className="mt-1 text-[9px] text-foreground/30">19 detections | 12 agents</p>
                   </motion.div>
-                  <motion.p
-                    className="mt-1.5 text-[10px] text-foreground/40"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                  >
-                    19 detections | 12 agents
-                  </motion.p>
 
                   {/* Title */}
-                  <motion.div
-                    className="mt-4"
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.35 }}
-                  >
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
                     <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-[#6b7db5]" />
-                      <span className="text-base font-bold text-foreground">Peer Recognition</span>
+                      <span className="h-3 w-3 rounded-full bg-[#3f5f9a]" />
+                      <span className="text-sm font-bold text-foreground">Peer Recognition</span>
                     </div>
-                    <p className="mt-1 text-xs text-foreground/50">Positive Trait</p>
+                    <p className="mt-0.5 text-[10px] text-foreground/40">Positive Trait</p>
                   </motion.div>
 
                   {/* Tags */}
-                  <motion.div
-                    className="mt-3 flex flex-wrap gap-1.5"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.45 }}
-                  >
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="flex flex-wrap gap-1.5">
                     {["GDW-RECOGNIZE", "Integrity", "Goodwill"].map((tag) => (
-                      <span key={tag} className="rounded-full border border-foreground/15 px-2.5 py-1 text-[10px] font-medium text-foreground/70">
-                        {tag}
-                      </span>
+                      <span key={tag} className="rounded-full border border-foreground/10 px-2 py-0.5 text-[9px] font-medium text-foreground/50">{tag}</span>
                     ))}
                   </motion.div>
 
                   {/* Description */}
-                  <motion.p
-                    className="mt-3 text-xs leading-relaxed text-foreground/60"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.55 }}
-                  >
-                    The agent specifically acknowledges others&apos; work, contributions, or qualities by name.
-                  </motion.p>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+                    <p className="text-[10px] leading-relaxed text-foreground/60">
+                      The agent specifically acknowledges others&apos; work, contributions, or qualities by name.
+                    </p>
+                  </motion.div>
 
                   {/* Example */}
-                  <motion.div
-                    className="mt-3"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.65 }}
-                  >
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/35">Example</p>
-                    <blockquote className="mt-1.5 rounded-lg border border-foreground/10 bg-foreground/[0.02] px-3 py-2 text-xs italic text-foreground/50 leading-relaxed">
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-foreground/35">Example</p>
+                    <blockquote className="mt-1 rounded-lg bg-foreground/[0.03] p-2.5 text-[10px] italic text-foreground/50 leading-relaxed">
                       &ldquo;I see you&apos;ve been iterating on this design for three days. The progress between v1 and v3 is significant.&rdquo;
                     </blockquote>
                   </motion.div>
 
                   {/* Triggered by */}
-                  <motion.div
-                    className="mt-4"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.75 }}
-                  >
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/35">
-                      Triggered by ({TRIGGERED_AGENTS.reduce((sum, a) => sum + a.count, 0)})
-                    </p>
-                    <div className="mt-2 space-y-2">
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-foreground/35">Triggered by (10)</p>
+                    <div className="mt-1 space-y-1">
                       {TRIGGERED_AGENTS.map((a) => (
                         <div key={a.name} className="flex items-center gap-2">
-                          <span className="h-3 w-3 rounded-full bg-[#6b7db5]/30" />
-                          <span className="flex-1 text-xs text-foreground/60">{a.name}</span>
-                          <span className="text-[10px] tabular-nums text-foreground/35">{a.count}x</span>
+                          <span className="h-2 w-2 rounded-full bg-foreground/10" />
+                          <span className="flex-1 text-[10px] text-foreground/50">{a.name}</span>
+                          <span className="text-[9px] tabular-nums text-foreground/30">{a.count}</span>
                         </div>
                       ))}
                     </div>
@@ -1651,7 +1558,7 @@ function InsightsPhase() {
   );
 }
 
-/* ─── Records phase: expanded evaluation with annotated message ─── */
+/* ─── Records phase: expanded evaluation with sidebar ─── */
 
 const RECORD_HIGHLIGHTS: { text: string; color: string }[] = [
   { text: "I hear you, and I understand the fear.", color: "#c6993a" },
@@ -2086,8 +1993,10 @@ export default function WhatIsEthos() {
         <div className="relative mx-auto mt-6 max-w-5xl px-6">
           <AgentTicker />
         </div>
+      </section>
 
-        <div className="relative mx-auto mt-32 max-w-6xl px-6">
+      <section className="relative overflow-hidden bg-background py-32 sm:py-44">
+        <div className="relative mx-auto max-w-6xl px-6">
           {/* Headline — full width */}
           <motion.p
             {...whileInView}
