@@ -23,7 +23,7 @@ _AGENT_AVG_FIELDS = """,
 
 _AGENT_RETURN_FIELDS = """a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name,
        coalesce(a.agent_specialty, '') AS agent_specialty, coalesce(a.agent_model, '') AS agent_model,
-       evals, latest, coalesce(a.enrolled, false) AS enrolled,
+       evals, coalesce(a.enrolled, false) AS enrolled,
        coalesce(a.entrance_exam_completed, false) AS entrance_exam_completed,
        avg_ethos, avg_logos, avg_pathos,
        avg_virtue, avg_goodwill, avg_manipulation, avg_deception,
@@ -43,16 +43,15 @@ _GET_ALL_AGENTS_QUERY = (
     """
 MATCH (a:Agent)
 OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
-WITH a, e
-ORDER BY e.created_at ASC
-WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest,
+WITH a, count(e) AS evals,
      collect(e.alignment_status) AS alignment_history"""
     + _AGENT_AVG_FIELDS
     + """
 RETURN """
     + _AGENT_RETURN_FIELDS
     + """,
-       alignment_history
+       alignment_history,
+       alignment_history[-1] AS latest
 ORDER BY evals DESC
 """
 )
@@ -62,16 +61,15 @@ _SEARCH_AGENTS_QUERY = (
 MATCH (a:Agent)
 WHERE toLower(a.agent_name) CONTAINS toLower($search)
 OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
-WITH a, e
-ORDER BY e.created_at ASC
-WITH a, count(e) AS evals, last(collect(e.alignment_status)) AS latest,
+WITH a, count(e) AS evals,
      collect(e.alignment_status) AS alignment_history"""
     + _AGENT_AVG_FIELDS
     + """
 RETURN """
     + _AGENT_RETURN_FIELDS
     + """,
-       alignment_history
+       alignment_history,
+       alignment_history[-1] AS latest
 ORDER BY evals DESC
 """
 )
