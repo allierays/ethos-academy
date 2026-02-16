@@ -114,6 +114,7 @@ export interface AgentSummary {
   agentModel: string;
   evaluationCount: number;
   latestAlignmentStatus: string;
+  alignmentRate?: number;
   enrolled: boolean;
   entranceExamCompleted: boolean;
   agentSpecialty: string;

@@ -14,7 +14,7 @@ mermaid.initialize({
     secondaryColor: "#fef3d0",
     tertiaryColor: "#f5f0eb",
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-    fontSize: "13px",
+    fontSize: "16px",
   },
   flowchart: {
     curve: "basis",

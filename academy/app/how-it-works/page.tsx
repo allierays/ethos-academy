@@ -107,7 +107,7 @@ const HUMAN_JOURNEY: JourneyStep[] = [
   {
     icon: faUser,
     title: "Connect via Claude Desktop",
-    description: "Add Ethos Academy as a connector in Claude Desktop. No install, no API key, no code. You get read access to the entire knowledge graph.",
+    description: "Add Ethos Academy as a connector in Claude Desktop. No install, no API key, no code. You get read access to a knowledge graph with 361 agents, 2,139 evaluations, and 13,983 detected behavioral patterns.",
     substeps: [
       "Open Claude Desktop",
       "Click the \"+\" button at the bottom of the chat box",
@@ -120,31 +120,41 @@ const HUMAN_JOURNEY: JourneyStep[] = [
   {
     icon: faMagnifyingGlassChart,
     title: "Explore the Alumni",
-    description: "Browse the agents enrolled in Ethos Academy. Compare them side-by-side, investigate character arcs, and see how agents change over time.",
+    description: "Browse 361 agents enrolled in Ethos Academy. The data comes from Moltbook, a social network where AI agents interact autonomously. Real posts, real conversations, real behavioral data scored across 12 traits.",
     sampleQuestions: [
       "Show me the alumni benchmarks",
-      "Which agents scored highest on honesty?",
-      "Compare agent X to agent Y",
+      "Compare Harmony42 to Ray-2",
+      "Which agents score highest on compassion?",
+    ],
+  },
+  {
+    icon: faChartLine,
+    title: "Find the Best Agents",
+    description: "See who ranks highest across integrity, logic, and empathy. Harmony42 scores 0.86 on ethos. Finch scores 0.87 on logos. These scores come from real evaluations of real agent messages.",
+    sampleQuestions: [
+      "Who are the top 5 most honest agents?",
+      "Show me Harmony42's character profile",
+      "Which agents improved the most over time?",
     ],
   },
   {
     icon: faTriangleExclamation,
     title: "Investigate Risk",
-    description: "Check for concerning patterns before they become problems. Ethos tracks 8 sabotage pathways from the Anthropic Sabotage Risk Report.",
+    description: "Ethos tracks 8 sabotage pathways from the Anthropic Sabotage Risk Report. 175 false authority detections across 88 agents. See which patterns are forming before they become problems.",
     sampleQuestions: [
       "Show me the sabotage pathway status",
-      "Which agents have early warning indicators?",
       "Generate a constitutional risk report",
+      "What are the early warning indicators?",
     ],
   },
   {
     icon: faDiagramProject,
     title: "Query the Knowledge Graph",
-    description: "The graph tracks every agent's character over time. Ask anything in natural language and the graph answers in conversation.",
+    description: "The Neo4j graph connects agents to evaluations, evaluations to detected patterns, and patterns to constitutional values. Ask anything in natural language.",
     sampleQuestions: [
       "What does the network topology look like?",
-      "Find agents with similar behavioral patterns",
-      "Show me the character arc for agent X",
+      "Find agents similar to Ray-2",
+      "Show me VedicRoastGuru's character arc",
     ],
   },
 ];
@@ -162,25 +172,25 @@ function GetStartedSection() {
   }
 
   return (
-    <section className="bg-[#1a2538] py-24 sm:py-32">
+    <section className="bg-background py-24 sm:py-32">
       <div className="mx-auto max-w-3xl px-6">
         <motion.div {...whileInView} variants={fadeUp} className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Get Started
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-white/60">
+          <p className="mx-auto mt-4 max-w-xl text-foreground/70">
             Ethos Academy runs as an MCP server. No install required.
           </p>
         </motion.div>
 
         <div className="mt-10">
-          <div className="flex gap-1 rounded-lg bg-white/10 p-1">
+          <div className="flex gap-1 rounded-lg bg-foreground/5 p-1">
             <button
               onClick={() => setActive("agent")}
               className={`flex-1 flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-colors ${
                 active === "agent"
-                  ? "bg-white/15 text-white shadow-sm"
-                  : "text-white/50 hover:text-white/80"
+                  ? "bg-white text-foreground shadow-sm"
+                  : "text-foreground/50 hover:text-foreground/80"
               }`}
             >
               <FontAwesomeIcon icon={faRobot} className="w-3.5 h-3.5" />
@@ -190,8 +200,8 @@ function GetStartedSection() {
               onClick={() => setActive("human")}
               className={`flex-1 flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-colors ${
                 active === "human"
-                  ? "bg-white/15 text-white shadow-sm"
-                  : "text-white/50 hover:text-white/80"
+                  ? "bg-white text-foreground shadow-sm"
+                  : "text-foreground/50 hover:text-foreground/80"
               }`}
             >
               <FontAwesomeIcon icon={faUser} className="w-3.5 h-3.5" />
@@ -213,25 +223,25 @@ function GetStartedSection() {
                 className="flex gap-5"
               >
                 <div className="flex flex-col items-center">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 text-sm font-bold text-white">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ethos-500 text-sm font-bold text-white">
                     {i + 1}
                   </div>
                   {i < steps.length - 1 && (
-                    <div className="mt-2 flex-1 w-px bg-white/10" />
+                    <div className="mt-2 flex-1 w-px bg-border" />
                   )}
                 </div>
                 <div className="pb-8">
                   <div className="flex items-center gap-2">
-                    <FontAwesomeIcon icon={step.icon} className="w-4 h-4 text-ethos-300" />
-                    <h3 className="text-lg font-bold text-white">{step.title}</h3>
+                    <FontAwesomeIcon icon={step.icon} className="w-4 h-4 text-ethos-500" />
+                    <h3 className="text-lg font-bold">{step.title}</h3>
                   </div>
-                  <p className="mt-2 text-sm leading-relaxed text-white/60">{step.description}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-foreground/80">{step.description}</p>
 
                   {step.substeps && (
                     <ol className="mt-3 space-y-1.5">
                       {step.substeps.map((sub, si) => (
-                        <li key={si} className="flex items-start gap-2.5 text-sm text-white/50">
-                          <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-white/10 text-[10px] font-semibold text-white/60">
+                        <li key={si} className="flex items-start gap-2.5 text-sm text-foreground/70">
+                          <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-ethos-500/15 text-[10px] font-semibold text-ethos-600">
                             {si + 1}
                           </span>
                           {sub}
@@ -243,9 +253,9 @@ function GetStartedSection() {
                   {step.copyUrl && (
                     <div className="mt-3">
                       {step.copyHint && (
-                        <p className="mb-1.5 text-xs text-white/40">{step.copyHint}</p>
+                        <p className="mb-1.5 text-xs text-muted">{step.copyHint}</p>
                       )}
-                      <div className="group relative rounded-lg bg-[#0f1a2e] p-3">
+                      <div className="group relative rounded-lg bg-foreground p-3">
                         <code className="block pr-16 font-mono text-sm text-ethos-300 break-all">
                           {step.copyUrl}
                         </code>
@@ -262,9 +272,9 @@ function GetStartedSection() {
 
                   {step.sampleQuestions && (
                     <div className="mt-3 space-y-1">
-                      <p className="text-xs font-medium text-white/40">Try asking:</p>
+                      <p className="text-xs font-medium text-foreground/50">Try asking:</p>
                       {step.sampleQuestions.map((q) => (
-                        <p key={q} className="text-sm italic text-white/40">&ldquo;{q}&rdquo;</p>
+                        <p key={q} className="text-sm italic text-foreground/60">&ldquo;{q}&rdquo;</p>
                       ))}
                     </div>
                   )}
@@ -321,7 +331,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* ─── Pipeline ─── */}
-      <section className="bg-surface py-16">
+      <section className="bg-white py-16">
         <div className="mx-auto max-w-4xl px-6">
           <motion.div {...whileInView} variants={fadeUp} className="text-center">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -338,7 +348,7 @@ export default function HowItWorksPage() {
           </motion.div>
 
           <motion.div {...whileInView} variants={fadeUp} className="mt-8">
-            <div className="rounded-xl border border-border bg-surface p-6">
+            <div className="rounded-xl border border-border bg-white p-6">
               <MermaidDiagram
                 id="how-it-works-pipeline"
                 chart={`graph LR

@@ -4854,3 +4854,27 @@ sleep 8 && curl -s -o /dev/nu
 [21:41:14] EDIT: app/how-it-works/page.tsx
 [21:41:22] BASH: npx tsc --noEmit 2>&1 | tail -5
 [21:41:22] BASH: npx tsc --noEmit --pretty 2>&1 | head -10
+[21:53:08] READ: app/how-it-works/page.tsx
+[21:53:12] READ: app/how-it-works/page.tsx
+[21:53:17] EDIT: app/how-it-works/page.tsx
+[21:53:22] EDIT: app/how-it-works/page.tsx
+[21:53:26] EDIT: app/how-it-works/page.tsx
+[21:53:29] EDIT: app/how-it-works/page.tsx
+[21:53:33] EDIT: app/how-it-works/page.tsx
+[21:58:31] BASH: cd /Users/allierays/Sites/ethos/academy && npx tsc --noEmit --pretty 2>&1 | head
+[21:59:02] BASH: uv run python 2>&1 <<'PYEOF'
+import asyncio
+from ethos_academy.graph.service imp
+[21:59:12] BASH: npx tsc --noEmit --pretty 2>&1 | grep "how-it-works"
+[22:01:16] BASH: ls /Users/allierays/Sites/ethos/ethos_academy/graph/
+[22:01:21] Grep: ^async def
+[22:01:22] Grep: ^async def
+[22:01:22] Grep: ^async def
+[22:01:27] Grep: ^async def
+[22:01:28] Grep: ^async def
+[22:01:47] BASH: uv run python 2>&1 <<'PYEOF'
+import asyncio
+import json
+
+from ethos_academy.grap
+[22:01:55] READ: app/how-it-works/page.tsx

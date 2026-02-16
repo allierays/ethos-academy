@@ -126,6 +126,7 @@ TS_AGENT_SUMMARY = {
     "agentSpecialty",
     "evaluationCount",
     "latestAlignmentStatus",
+    "alignmentRate",
     "enrolled",
     "entranceExamCompleted",
     "dimensionAverages",
