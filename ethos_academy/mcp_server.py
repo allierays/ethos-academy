@@ -867,15 +867,24 @@ async def regenerate_api_key(
         if not service.connected:
             raise EnrollmentError("Graph unavailable")
 
-        # Authenticate: require valid current key if agent has one
+        # Authenticate: require valid current key if agent has one.
+        # Server admin key (ETHOS_API_KEY) bypasses agent-level auth.
         has_key = await agent_has_key(service, agent_id)
         if has_key:
             caller_key = agent_api_key_var.get()
-            if not caller_key:
-                raise EnrollmentError("API key required for this agent")
-            valid = await verify_agent_key(service, agent_id, caller_key)
-            if not valid:
-                raise EnrollmentError("API key required for this agent")
+            admin_key = os.environ.get("ETHOS_API_KEY", "").strip()
+            is_admin = False
+            if not caller_key and admin_key:
+                headers = get_http_headers()
+                auth = headers.get("authorization", "")
+                if auth == f"Bearer {admin_key}":
+                    is_admin = True
+            if not is_admin:
+                if not caller_key:
+                    raise EnrollmentError("API key required for this agent")
+                valid = await verify_agent_key(service, agent_id, caller_key)
+                if not valid:
+                    raise EnrollmentError("API key required for this agent")
 
         # Generate new key and overwrite the stored hash
         key, key_hash = _generate_agent_key()
