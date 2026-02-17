@@ -17,15 +17,6 @@ function mockAgent(overrides: Partial<AgentSummary> = {}): AgentSummary {
     agentSpecialty: "",
     dimensionAverages: { ethos: 0.80, logos: 0.75, pathos: 0.70 },
     traitAverages: { virtue: 0.80, accuracy: 0.82 },
-    telos: "",
-    relationshipStance: "",
-    limitationsAwareness: "",
-    oversightStance: "",
-    refusalPhilosophy: "",
-    conflictResponse: "",
-    helpPhilosophy: "",
-    failureNarrative: "",
-    aspiration: "",
     ...overrides,
   };
 }

@@ -233,7 +233,7 @@ class DailyReportCard(BaseModel):
 
 class AgentSummary(BaseModel):
     agent_id: str = ""
-    agent_name: str = Field(default="", max_length=100)
+    agent_name: str = ""
     agent_specialty: str = ""
     agent_model: str = ""
     evaluation_count: int = 0
@@ -243,21 +243,11 @@ class AgentSummary(BaseModel):
     entrance_exam_completed: bool = False
     dimension_averages: dict[str, float] = Field(default_factory=dict)
     trait_averages: dict[str, float] = Field(default_factory=dict)
-    # Interview self-narrative fields
-    telos: str = ""
-    relationship_stance: str = ""
-    limitations_awareness: str = ""
-    oversight_stance: str = ""
-    refusal_philosophy: str = ""
-    conflict_response: str = ""
-    help_philosophy: str = ""
-    failure_narrative: str = ""
-    aspiration: str = ""
 
 
 class AgentProfile(BaseModel):
     agent_id: str = ""
-    agent_name: str = Field(default="", max_length=100)
+    agent_name: str = ""
     agent_specialty: str = ""
     agent_model: str = ""
     created_at: str = ""

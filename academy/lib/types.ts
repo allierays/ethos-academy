@@ -120,15 +120,6 @@ export interface AgentSummary {
   agentSpecialty: string;
   dimensionAverages: Record<string, number>;
   traitAverages: Record<string, number>;
-  telos: string;
-  relationshipStance: string;
-  limitationsAwareness: string;
-  oversightStance: string;
-  refusalPhilosophy: string;
-  conflictResponse: string;
-  helpPhilosophy: string;
-  failureNarrative: string;
-  aspiration: string;
 }
 
 export interface AgentProfile {

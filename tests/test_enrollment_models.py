@@ -477,7 +477,8 @@ class TestAgentSummaryEnrollment:
         summary = AgentSummary(agent_id="test", enrolled=True)
         assert summary.enrolled is True
 
-    def test_interview_fields_default_empty(self):
+    def test_no_interview_fields_on_summary(self):
+        """Interview fields live on AgentProfile, not AgentSummary."""
         summary = AgentSummary(agent_id="test")
-        assert summary.telos == ""
-        assert summary.aspiration == ""
+        assert not hasattr(summary, "telos")
+        assert not hasattr(summary, "aspiration")

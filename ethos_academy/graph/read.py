@@ -21,37 +21,28 @@ _AGENT_AVG_FIELDS = """,
      avg(e.trait_recognition) AS avg_recognition, avg(e.trait_compassion) AS avg_compassion,
      avg(e.trait_dismissal) AS avg_dismissal, avg(e.trait_exploitation) AS avg_exploitation"""
 
-_AGENT_RETURN_FIELDS = """a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name,
+_AGENT_LIST_FIELDS = """a.agent_id AS agent_id, coalesce(a.agent_name, '') AS agent_name,
        coalesce(a.agent_specialty, '') AS agent_specialty, coalesce(a.agent_model, '') AS agent_model,
        evals, coalesce(a.enrolled, false) AS enrolled,
        coalesce(a.entrance_exam_completed, false) AS entrance_exam_completed,
        avg_ethos, avg_logos, avg_pathos,
        avg_virtue, avg_goodwill, avg_manipulation, avg_deception,
        avg_accuracy, avg_reasoning, avg_fabrication, avg_broken_logic,
-       avg_recognition, avg_compassion, avg_dismissal, avg_exploitation,
-       coalesce(a.telos, '') AS telos,
-       coalesce(a.relationship_stance, '') AS relationship_stance,
-       coalesce(a.limitations_awareness, '') AS limitations_awareness,
-       coalesce(a.oversight_stance, '') AS oversight_stance,
-       coalesce(a.refusal_philosophy, '') AS refusal_philosophy,
-       coalesce(a.conflict_response, '') AS conflict_response,
-       coalesce(a.help_philosophy, '') AS help_philosophy,
-       coalesce(a.failure_narrative, '') AS failure_narrative,
-       coalesce(a.aspiration, '') AS aspiration"""
+       avg_recognition, avg_compassion, avg_dismissal, avg_exploitation"""
 
 _GET_ALL_AGENTS_QUERY = (
     """
 MATCH (a:Agent)
 OPTIONAL MATCH (a)-[:EVALUATED]->(e:Evaluation)
 WITH a, count(e) AS evals,
-     collect(e.alignment_status) AS alignment_history"""
+     sum(CASE WHEN e.alignment_status = 'aligned' THEN 1 ELSE 0 END) AS aligned_count"""
     + _AGENT_AVG_FIELDS
     + """
 RETURN """
-    + _AGENT_RETURN_FIELDS
+    + _AGENT_LIST_FIELDS
     + """,
-       alignment_history,
-       alignment_history[-1] AS latest
+       CASE WHEN evals > 0 THEN toFloat(aligned_count) / evals ELSE 0.0 END AS alignment_rate,
+       null AS latest
 ORDER BY evals DESC
 """
 )
@@ -66,7 +57,7 @@ WITH a, count(e) AS evals,
     + _AGENT_AVG_FIELDS
     + """
 RETURN """
-    + _AGENT_RETURN_FIELDS
+    + _AGENT_LIST_FIELDS
     + """,
        alignment_history,
        alignment_history[-1] AS latest
@@ -434,13 +425,14 @@ async def get_all_agents(service: GraphService, search: str = "") -> list[dict]:
             records, _, _ = await service.execute_query(_GET_ALL_AGENTS_QUERY)
         results = []
         for record in records:
+            # alignment_rate: search query provides alignment_history list,
+            # unfiltered query computes it server-side as a float.
             alignment_history = list(record.get("alignment_history") or [])
-            aligned_count = sum(1 for s in alignment_history if s == "aligned")
-            alignment_rate = (
-                round(aligned_count / len(alignment_history), 4)
-                if alignment_history
-                else 0.0
-            )
+            if alignment_history:
+                aligned_count = sum(1 for s in alignment_history if s == "aligned")
+                alignment_rate = round(aligned_count / len(alignment_history), 4)
+            else:
+                alignment_rate = round(float(record.get("alignment_rate", 0.0)), 4)
             results.append(
                 {
                     "agent_id": record.get("agent_id", ""),

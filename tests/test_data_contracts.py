@@ -131,15 +131,6 @@ TS_AGENT_SUMMARY = {
     "entranceExamCompleted",
     "dimensionAverages",
     "traitAverages",
-    "telos",
-    "relationshipStance",
-    "limitationsAwareness",
-    "oversightStance",
-    "refusalPhilosophy",
-    "conflictResponse",
-    "helpPhilosophy",
-    "failureNarrative",
-    "aspiration",
 }
 
 TS_AGENT_PROFILE = {

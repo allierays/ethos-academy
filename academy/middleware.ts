@@ -32,6 +32,7 @@ export function middleware(request: NextRequest) {
       "img-src 'self' data: blob:",
       "font-src 'self' data:",
       connectSrc,
+      "media-src 'self' https://ethos-academy-backups.s3.us-east-1.amazonaws.com",
       "frame-ancestors 'self'",
     ].join("; ")
   );
