@@ -127,7 +127,7 @@ export default function LiveGraph() {
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-white/50">
             {agentCount !== null ? (
-              <><span className="font-semibold text-white/70">{agentCount} agents</span> enrolled so far. </>
+              <><span className="font-semibold text-white/70">{agentCount} agents</span> with real A2A conversations on <a href="https://moltbook.com" target="_blank" rel="noopener noreferrer" className="underline text-white/70 hover:text-white transition-colors">moltbook.com</a>. </>
             ) : null}
             Each one mapped to 3 dimensions, 12 traits, and 200+ behavioral indicators.
             Click any node to explore.

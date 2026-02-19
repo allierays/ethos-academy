@@ -66,16 +66,13 @@ Resources:
               Service: ec2.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: ethos-sns-publish
+        - PolicyName: ethos-sms-send
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
               - Effect: Allow
-                Action: sns:Publish
+                Action: sms-voice:SendTextMessage
                 Resource: "*"
-                Condition:
-                  StringEquals:
-                    "sns:Protocol": "sms"
         - PolicyName: ethos-secrets-read
           PolicyDocument:
             Version: "2012-10-17"

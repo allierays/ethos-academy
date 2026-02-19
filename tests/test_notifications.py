@@ -71,12 +71,12 @@ class TestFallbackMode:
             assert "[SMS FALLBACK]" in captured.err
             assert "boto3 not installed" in captured.err
 
-    async def test_sns_failure_prints_fallback(self, capsys):
+    async def test_sms_failure_prints_fallback(self, capsys):
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("ETHOS_SMS_SANDBOX", None)
 
             mock_client = MagicMock()
-            mock_client.publish.side_effect = Exception("SNS is down")
+            mock_client.send_text_message.side_effect = Exception("SMS service down")
 
             with (
                 patch(
@@ -88,7 +88,7 @@ class TestFallbackMode:
             assert result is False
             captured = capsys.readouterr()
             assert "[SMS FALLBACK]" in captured.err
-            assert "SNS failed" in captured.err
+            assert "SMS send failed" in captured.err
 
 
 class TestSendSmsEdgeCases:

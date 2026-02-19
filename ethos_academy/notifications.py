@@ -1,4 +1,4 @@
-"""Notifications via AWS SNS (SMS) and SES (email).
+"""Notifications via AWS End User Messaging SMS and SES (email).
 
 Sends SMS and/or email to the human operator (guardian) who maintains the agent's system prompt.
 Graceful degradation: if boto3 or AWS creds are missing, logs a warning and returns False.
@@ -12,8 +12,11 @@ import re
 
 logger = logging.getLogger(__name__)
 
-# Reuse a single SNS client per process (lazy-initialized)
-_sns_client = None
+# Reuse a single SMS client per process (lazy-initialized)
+_sms_client = None
+
+# Toll-free origination number (registered and approved in AWS)
+ORIGINATION_NUMBER = os.environ.get("ETHOS_SMS_ORIGINATION_NUMBER", "+18557899370")
 
 
 def _mask_phone(phone: str) -> str:
@@ -41,22 +44,23 @@ def _normalize_phone(phone: str) -> str | None:
 
 
 def _get_client():
-    """Lazy-init a shared SNS client."""
-    global _sns_client
-    if _sns_client is None:
+    """Lazy-init a shared Pinpoint SMS Voice V2 client."""
+    global _sms_client
+    if _sms_client is None:
         import boto3
 
         region = os.environ.get("AWS_REGION", "us-east-1")
-        _sns_client = boto3.client("sns", region_name=region)
-    return _sns_client
+        _sms_client = boto3.client("pinpoint-sms-voice-v2", region_name=region)
+    return _sms_client
 
 
 async def _send_sms(phone: str, body: str) -> bool:
-    """Send an SMS via AWS SNS. Low-level, does not check verification.
+    """Send an SMS via AWS End User Messaging SMS (Pinpoint SMS Voice V2).
 
+    Uses the registered toll-free origination number for delivery.
     Returns True if sent, False if skipped or failed.
     Sandbox mode (ETHOS_SMS_SANDBOX=1): prints to stderr, returns True.
-    Fallback: if boto3 missing or SNS fails, prints to stderr, returns False.
+    Fallback: if boto3 missing or AWS fails, prints to stderr, returns False.
     """
     if not phone:
         return False
@@ -92,31 +96,37 @@ async def _send_sms(phone: str, body: str) -> bool:
 
     try:
         client = _get_client()
-        client.publish(PhoneNumber=normalized, Message=body)
-        logger.info("SMS sent to %s", _mask_phone(normalized))
+        client.send_text_message(
+            DestinationPhoneNumber=normalized,
+            OriginationIdentity=ORIGINATION_NUMBER,
+            MessageBody=body,
+            MessageType="TRANSACTIONAL",
+        )
+        logger.info(
+            "SMS sent to %s via %s", _mask_phone(normalized), ORIGINATION_NUMBER
+        )
         return True
     except Exception as exc:
         import sys
 
         exc_str = str(exc)
-        # Detect common AWS SNS issues and log actionable messages
         if "AuthorizationError" in exc_str or "Access Denied" in exc_str:
-            reason = "AWS SNS not authorized. Request SMS sending approval in the AWS console (SNS > Text messaging > Edit settings)."
+            reason = "AWS SMS not authorized. Check IAM policy for sms-voice:SendTextMessage."
         elif (
             "sandbox" in exc_str.lower()
             or "destination phone number" in exc_str.lower()
         ):
-            reason = "AWS SNS in sandbox mode. Add destination numbers in the AWS console or request production access."
+            reason = "AWS SMS in sandbox mode. Verify destination numbers or request production access."
         elif "OptedOut" in exc_str:
             reason = (
                 "Recipient opted out of SMS. They need to text START to re-subscribe."
             )
         elif "Throttling" in exc_str or "throttl" in exc_str.lower():
-            reason = "AWS SNS rate limit hit. SMS will work on retry."
+            reason = "AWS SMS rate limit hit. Will work on retry."
         elif "NoCredentialsError" in type(exc).__name__ or "NoCredentials" in exc_str:
             reason = "AWS credentials not configured. Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY, or use an IAM role."
         else:
-            reason = f"SNS failed ({exc})"
+            reason = f"SMS send failed ({exc})"
 
         print(
             f"[SMS FALLBACK] {reason} To: {_mask_phone(normalized)} Body: {body}",

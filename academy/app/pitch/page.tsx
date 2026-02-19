@@ -17,7 +17,7 @@ import type { AgentSummary } from "../../lib/types";
 const s = "min-h-screen flex flex-col justify-center";
 
 export default async function PitchPage() {
-  const videoSrc = process.env.PITCH_VIDEO || "";
+  const videoSrc = process.env.PITCH_VIDEO || "/feb-16-demo-video.mp4";
 
   let agents: AgentSummary[] = [];
   try {
