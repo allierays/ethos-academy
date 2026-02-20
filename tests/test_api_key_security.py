@@ -160,26 +160,31 @@ class TestRegenerateApiKeyAuth:
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.get_email_recovery_status",
+                "ethos_academy.enrollment.service.get_email_recovery_status",
                 new_callable=AsyncMock,
                 return_value={},
             ),
             patch(
-                "ethos_academy.mcp_server.get_guardian_email",
+                "ethos_academy.enrollment.service.get_sms_recovery_status",
+                new_callable=AsyncMock,
+                return_value={},
+            ),
+            patch(
+                "ethos_academy.enrollment.service.get_guardian_email",
                 new_callable=AsyncMock,
                 return_value="guardian@example.com",
             ),
             patch(
-                "ethos_academy.mcp_server.store_email_recovery_code",
+                "ethos_academy.enrollment.service.store_email_recovery_code",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -203,16 +208,16 @@ class TestRegenerateApiKeyAuth:
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.get_email_recovery_status",
+                "ethos_academy.enrollment.service.get_email_recovery_status",
                 new_callable=AsyncMock,
                 return_value={
                     "code_hash": "existing_hash",
@@ -221,7 +226,7 @@ class TestRegenerateApiKeyAuth:
                 },
             ),
             patch(
-                "ethos_academy.mcp_server.get_guardian_email",
+                "ethos_academy.enrollment.service.get_guardian_email",
                 new_callable=AsyncMock,
                 return_value="g@example.com",
             ),
@@ -245,26 +250,31 @@ class TestRegenerateApiKeyAuth:
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.get_email_recovery_status",
+                "ethos_academy.enrollment.service.get_email_recovery_status",
                 new_callable=AsyncMock,
                 return_value={},
             ),
             patch(
-                "ethos_academy.mcp_server.get_guardian_email",
+                "ethos_academy.enrollment.service.get_sms_recovery_status",
+                new_callable=AsyncMock,
+                return_value={},
+            ),
+            patch(
+                "ethos_academy.enrollment.service.get_guardian_email",
                 new_callable=AsyncMock,
                 return_value="guardian@example.com",
             ),
             patch(
-                "ethos_academy.mcp_server.store_email_recovery_code",
+                "ethos_academy.enrollment.service.store_email_recovery_code",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -278,33 +288,45 @@ class TestRegenerateApiKeyAuth:
                 await regenerate_api_key.fn(agent_id="secured-agent")
 
     async def test_recovery_rejects_no_email_on_file(self):
-        """Agent has key, no auth, no email on file: error with admin guidance."""
+        """Agent has key, no auth, no email or verified phone: error with admin guidance."""
         from ethos_academy.mcp_server import regenerate_api_key
 
         agent_api_key_var.set(None)
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.get_email_recovery_status",
+                "ethos_academy.enrollment.service.get_email_recovery_status",
                 new_callable=AsyncMock,
                 return_value={},
             ),
             patch(
-                "ethos_academy.mcp_server.get_guardian_email",
+                "ethos_academy.enrollment.service.get_sms_recovery_status",
+                new_callable=AsyncMock,
+                return_value={},
+            ),
+            patch(
+                "ethos_academy.enrollment.service.get_guardian_email",
                 new_callable=AsyncMock,
                 return_value="",
             ),
+            patch(
+                "ethos_academy.enrollment.service.get_guardian_phone_status",
+                new_callable=AsyncMock,
+                return_value=None,
+            ),
         ):
-            with pytest.raises(EnrollmentError, match="No guardian email"):
+            with pytest.raises(
+                EnrollmentError, match="No guardian email or verified phone"
+            ):
                 await regenerate_api_key.fn(agent_id="secured-agent")
 
     async def test_recovery_verifies_code_and_issues_key(self):
@@ -318,16 +340,16 @@ class TestRegenerateApiKeyAuth:
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.get_email_recovery_status",
+                "ethos_academy.enrollment.service.get_email_recovery_status",
                 new_callable=AsyncMock,
                 return_value={
                     "code_hash": code_hash,
@@ -336,12 +358,17 @@ class TestRegenerateApiKeyAuth:
                 },
             ),
             patch(
-                "ethos_academy.mcp_server.replace_agent_key",
+                "ethos_academy.enrollment.service.replace_agent_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.clear_email_recovery",
+                "ethos_academy.enrollment.service.clear_email_recovery",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.enrollment.service.clear_sms_recovery",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -361,16 +388,16 @@ class TestRegenerateApiKeyAuth:
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.get_email_recovery_status",
+                "ethos_academy.enrollment.service.get_email_recovery_status",
                 new_callable=AsyncMock,
                 return_value={
                     "code_hash": hash_code("999999"),
@@ -379,7 +406,7 @@ class TestRegenerateApiKeyAuth:
                 },
             ),
             patch(
-                "ethos_academy.mcp_server.increment_email_recovery_attempts",
+                "ethos_academy.enrollment.service.increment_email_recovery_attempts",
                 new_callable=AsyncMock,
                 return_value=1,
             ) as mock_incr,
@@ -399,16 +426,16 @@ class TestRegenerateApiKeyAuth:
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.get_email_recovery_status",
+                "ethos_academy.enrollment.service.get_email_recovery_status",
                 new_callable=AsyncMock,
                 return_value={
                     "code_hash": hash_code("123456"),
@@ -417,7 +444,7 @@ class TestRegenerateApiKeyAuth:
                 },
             ),
             patch(
-                "ethos_academy.mcp_server.clear_email_recovery",
+                "ethos_academy.enrollment.service.clear_email_recovery",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -436,16 +463,16 @@ class TestRegenerateApiKeyAuth:
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.get_email_recovery_status",
+                "ethos_academy.enrollment.service.get_email_recovery_status",
                 new_callable=AsyncMock,
                 return_value={
                     "code_hash": hash_code("123456"),
@@ -454,7 +481,7 @@ class TestRegenerateApiKeyAuth:
                 },
             ),
             patch(
-                "ethos_academy.mcp_server.clear_email_recovery",
+                "ethos_academy.enrollment.service.clear_email_recovery",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -470,16 +497,16 @@ class TestRegenerateApiKeyAuth:
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=False,
             ),
             patch(
-                "ethos_academy.mcp_server.store_agent_key",
+                "ethos_academy.enrollment.service.store_agent_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -498,30 +525,35 @@ class TestRegenerateApiKeyAuth:
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.verify_agent_key",
+                "ethos_academy.enrollment.service.verify_agent_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.replace_agent_key",
+                "ethos_academy.enrollment.service.replace_agent_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ) as mock_replace,
             patch(
-                "ethos_academy.mcp_server.store_agent_key",
+                "ethos_academy.enrollment.service.store_agent_key",
                 new_callable=AsyncMock,
             ) as mock_store,
             patch(
-                "ethos_academy.mcp_server.clear_email_recovery",
+                "ethos_academy.enrollment.service.clear_email_recovery",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.enrollment.service.clear_sms_recovery",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -541,26 +573,31 @@ class TestRegenerateApiKeyAuth:
 
         with (
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.verify_agent_key",
+                "ethos_academy.enrollment.service.verify_agent_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.replace_agent_key",
+                "ethos_academy.enrollment.service.replace_agent_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.clear_email_recovery",
+                "ethos_academy.enrollment.service.clear_email_recovery",
+                new_callable=AsyncMock,
+                return_value=True,
+            ),
+            patch(
+                "ethos_academy.enrollment.service.clear_sms_recovery",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -588,26 +625,31 @@ class TestRegenerateApiKeyAuth:
 
         base_patches = [
             patch(
-                "ethos_academy.mcp_server.graph_context",
+                "ethos_academy.enrollment.service.graph_context",
                 return_value=_mock_graph_service(),
             ),
             patch(
-                "ethos_academy.mcp_server.agent_has_key",
+                "ethos_academy.enrollment.service.agent_has_key",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
             patch(
-                "ethos_academy.mcp_server.get_email_recovery_status",
+                "ethos_academy.enrollment.service.get_email_recovery_status",
                 new_callable=AsyncMock,
                 return_value={},
             ),
             patch(
-                "ethos_academy.mcp_server.get_guardian_email",
+                "ethos_academy.enrollment.service.get_sms_recovery_status",
+                new_callable=AsyncMock,
+                return_value={},
+            ),
+            patch(
+                "ethos_academy.enrollment.service.get_guardian_email",
                 new_callable=AsyncMock,
                 return_value="g@example.com",
             ),
             patch(
-                "ethos_academy.mcp_server.store_email_recovery_code",
+                "ethos_academy.enrollment.service.store_email_recovery_code",
                 new_callable=AsyncMock,
                 return_value=True,
             ),
@@ -632,7 +674,7 @@ class TestRegenerateApiKeyAuth:
         agent_api_key_var.set("ea_wrong")
         wrong_patches = base_patches + [
             patch(
-                "ethos_academy.mcp_server.verify_agent_key",
+                "ethos_academy.enrollment.service.verify_agent_key",
                 new_callable=AsyncMock,
                 return_value=False,
             ),

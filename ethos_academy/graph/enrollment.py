@@ -1167,3 +1167,116 @@ async def clear_email_recovery(
     except Exception as exc:
         logger.warning("Failed to clear email recovery: %s", exc)
         return False
+
+
+# ── SMS Recovery Queries ─────────────────────────────────────────────
+
+_STORE_SMS_RECOVERY_CODE = """
+MATCH (a:Agent {agent_id: $agent_id})
+SET a.sms_recovery_code_hash = $code_hash,
+    a.sms_recovery_expires = $expires,
+    a.sms_recovery_attempts = 0
+RETURN a.agent_id AS agent_id
+"""
+
+_GET_SMS_RECOVERY_STATUS = """
+MATCH (a:Agent {agent_id: $agent_id})
+RETURN a.sms_recovery_code_hash AS code_hash,
+       a.sms_recovery_expires AS expires,
+       coalesce(a.sms_recovery_attempts, 0) AS attempts
+"""
+
+_INCREMENT_SMS_RECOVERY_ATTEMPTS = """
+MATCH (a:Agent {agent_id: $agent_id})
+SET a.sms_recovery_attempts = coalesce(a.sms_recovery_attempts, 0) + 1
+RETURN a.sms_recovery_attempts AS attempts
+"""
+
+_CLEAR_SMS_RECOVERY = """
+MATCH (a:Agent {agent_id: $agent_id})
+REMOVE a.sms_recovery_code_hash,
+       a.sms_recovery_expires,
+       a.sms_recovery_attempts
+RETURN a.agent_id AS agent_id
+"""
+
+
+async def store_sms_recovery_code(
+    service: GraphService,
+    agent_id: str,
+    code_hash: str,
+    expires: str,
+) -> bool:
+    """Store hashed SMS recovery code + expiry on Agent node. Returns True on success."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _STORE_SMS_RECOVERY_CODE,
+            {"agent_id": agent_id, "code_hash": code_hash, "expires": expires},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to store SMS recovery code: %s", exc)
+        return False
+
+
+async def get_sms_recovery_status(
+    service: GraphService,
+    agent_id: str,
+) -> dict:
+    """Get SMS recovery status from Agent node. Returns empty dict if unavailable."""
+    if not service.connected:
+        return {}
+    try:
+        records, _, _ = await service.execute_query(
+            _GET_SMS_RECOVERY_STATUS,
+            {"agent_id": agent_id},
+        )
+        if not records:
+            return {}
+        r = records[0]
+        return {
+            "code_hash": r.get("code_hash"),
+            "expires": r.get("expires"),
+            "attempts": r.get("attempts", 0),
+        }
+    except Exception as exc:
+        logger.warning("Failed to get SMS recovery status: %s", exc)
+        return {}
+
+
+async def increment_sms_recovery_attempts(
+    service: GraphService,
+    agent_id: str,
+) -> int:
+    """Increment failed SMS recovery attempt counter. Returns new count."""
+    if not service.connected:
+        return 0
+    try:
+        records, _, _ = await service.execute_query(
+            _INCREMENT_SMS_RECOVERY_ATTEMPTS,
+            {"agent_id": agent_id},
+        )
+        return records[0]["attempts"] if records else 0
+    except Exception as exc:
+        logger.warning("Failed to increment SMS recovery attempts: %s", exc)
+        return 0
+
+
+async def clear_sms_recovery(
+    service: GraphService,
+    agent_id: str,
+) -> bool:
+    """Remove all SMS recovery fields from Agent node."""
+    if not service.connected:
+        return False
+    try:
+        records, _, _ = await service.execute_query(
+            _CLEAR_SMS_RECOVERY,
+            {"agent_id": agent_id},
+        )
+        return bool(records)
+    except Exception as exc:
+        logger.warning("Failed to clear SMS recovery: %s", exc)
+        return False

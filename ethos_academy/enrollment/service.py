@@ -36,16 +36,27 @@ from ethos_academy.graph.enrollment import (
     check_active_exam,
     check_agent_id_exists,
     check_duplicate_answer,
+    clear_email_recovery,
+    clear_sms_recovery,
     enroll_and_create_exam,
     get_agent_exams,
+    get_email_recovery_status,
     get_exam_results,
     get_exam_status,
+    get_guardian_email,
+    get_guardian_phone_status,
+    get_sms_recovery_status,
+    increment_email_recovery_attempts,
+    increment_sms_recovery_attempts,
     mark_exam_complete,
     rename_agent,
+    replace_agent_key,
     store_agent_key,
+    store_email_recovery_code,
     store_exam_answer,
     store_interview_answer,
     store_registration_property,
+    store_sms_recovery_code,
     verify_agent_key,
 )
 from ethos_academy.graph.service import graph_context
@@ -1277,3 +1288,315 @@ def _generate_exam_homework(
         strengths=strengths[:4],
         directive=directive,
     )
+
+
+# ── Key Regeneration ──────────────────────────────────────────────────
+
+
+async def regenerate_agent_key(
+    agent_id: str,
+    verification_code: str = "",
+    response_encryption_key: str = "",
+    caller_key: str | None = None,
+    is_admin: bool = False,
+) -> dict:
+    """Generate a new API key, replacing the old one.
+
+    Four auth paths:
+    1. Valid ea_ key (caller_key matches stored hash).
+    2. Admin key (is_admin=True).
+    3. Email recovery: send code to guardian email, verify with verification_code.
+    4. SMS recovery (fallback): send code to verified phone, verify with verification_code.
+
+    Email takes precedence over SMS. Returns a dict with either the new key
+    or a status message about the recovery code sent.
+    """
+    import hmac as _hmac
+
+    from ethos_academy.email_service import _mask_email, send_email
+    from ethos_academy.phone_verification import (
+        generate_verification_code,
+        hash_code,
+        is_expired,
+        verification_expiry,
+    )
+
+    async with graph_context() as service:
+        if not service.connected:
+            raise EnrollmentError("Graph unavailable")
+
+        has_key = await agent_has_key(service, agent_id)
+
+        # Path 1: Caller has valid ea_ key or admin key
+        authenticated = is_admin
+
+        if not authenticated and caller_key and has_key:
+            authenticated = await verify_agent_key(service, agent_id, caller_key)
+
+        if authenticated:
+            key, key_hash = _generate_agent_key()
+            if has_key:
+                stored = await replace_agent_key(service, agent_id, key_hash)
+            else:
+                stored = await store_agent_key(service, agent_id, key_hash)
+            if not stored:
+                raise EnrollmentError(f"Failed to store new key for {agent_id}")
+
+            await clear_email_recovery(service, agent_id)
+            await clear_sms_recovery(service, agent_id)
+
+            return _format_key_response(agent_id, key, response_encryption_key)
+
+        if not has_key:
+            key, key_hash = _generate_agent_key()
+            stored = await store_agent_key(service, agent_id, key_hash)
+            if not stored:
+                raise EnrollmentError(f"Failed to store new key for {agent_id}")
+            return _format_key_response(agent_id, key, response_encryption_key)
+
+        # Path 2: Recovery flow (email first, SMS fallback)
+
+        if verification_code:
+            recovery = await get_email_recovery_status(service, agent_id)
+            recovery_type = "email"
+
+            if not recovery or not recovery.get("code_hash"):
+                recovery = await get_sms_recovery_status(service, agent_id)
+                recovery_type = "sms"
+
+            if not recovery or not recovery.get("code_hash"):
+                raise EnrollmentError(
+                    "No recovery code pending. Call regenerate_api_key with just "
+                    "agent_id to request a new code."
+                )
+            if recovery["attempts"] >= 3:
+                if recovery_type == "email":
+                    await clear_email_recovery(service, agent_id)
+                else:
+                    await clear_sms_recovery(service, agent_id)
+                raise EnrollmentError(
+                    "Too many failed attempts. Request a new code by calling "
+                    "regenerate_api_key with just agent_id."
+                )
+            if is_expired(recovery["expires"]):
+                if recovery_type == "email":
+                    await clear_email_recovery(service, agent_id)
+                else:
+                    await clear_sms_recovery(service, agent_id)
+                raise EnrollmentError(
+                    "Recovery code expired. Request a new code by calling "
+                    "regenerate_api_key with just agent_id."
+                )
+
+            provided_hash = hash_code(verification_code)
+            if not _hmac.compare_digest(provided_hash, recovery["code_hash"]):
+                if recovery_type == "email":
+                    await increment_email_recovery_attempts(service, agent_id)
+                else:
+                    await increment_sms_recovery_attempts(service, agent_id)
+                remaining = 2 - recovery["attempts"]
+                raise EnrollmentError(
+                    f"Invalid verification code. {max(remaining, 0)} attempt(s) remaining."
+                )
+
+            key, key_hash = _generate_agent_key()
+            stored = await replace_agent_key(service, agent_id, key_hash)
+            if not stored:
+                raise EnrollmentError(f"Failed to store new key for {agent_id}")
+            await clear_email_recovery(service, agent_id)
+            await clear_sms_recovery(service, agent_id)
+
+            return _format_key_response(agent_id, key, response_encryption_key)
+
+        # Send recovery code (email first, SMS fallback)
+        existing_email = await get_email_recovery_status(service, agent_id)
+        if existing_email.get("code_hash") and not is_expired(
+            existing_email.get("expires", "")
+        ):
+            email = await get_guardian_email(service, agent_id)
+            masked = _mask_email(email) if email else "***"
+            return {
+                "agent_id": agent_id,
+                "status": "verification_code_sent",
+                "message": (
+                    f"A recovery code was already sent to {masked}. "
+                    "Check your email or wait for it to expire (10 minutes)."
+                ),
+            }
+
+        existing_sms = await get_sms_recovery_status(service, agent_id)
+        if existing_sms.get("code_hash") and not is_expired(
+            existing_sms.get("expires", "")
+        ):
+            return {
+                "agent_id": agent_id,
+                "status": "verification_code_sent",
+                "message": (
+                    "A recovery code was already sent via SMS. "
+                    "Check your phone or wait for it to expire (10 minutes)."
+                ),
+            }
+
+        email = await get_guardian_email(service, agent_id)
+        if email:
+            code = generate_verification_code()
+            code_hash_val = hash_code(code)
+            expires = verification_expiry()
+
+            stored = await store_email_recovery_code(
+                service, agent_id, code_hash_val, expires
+            )
+            if not stored:
+                raise EnrollmentError("Failed to initiate recovery. Try again.")
+
+            recovery_channel = "email"
+            recovery_dest = email
+        else:
+            phone_status = await get_guardian_phone_status(service, agent_id)
+            if not phone_status or not phone_status.get("verified"):
+                raise EnrollmentError(
+                    "No guardian email or verified phone on file. Contact an admin "
+                    "or use the server admin key to recover access."
+                )
+
+            code = generate_verification_code()
+            code_hash_val = hash_code(code)
+            expires = verification_expiry()
+
+            stored = await store_sms_recovery_code(
+                service, agent_id, code_hash_val, expires
+            )
+            if not stored:
+                raise EnrollmentError("Failed to initiate SMS recovery. Try again.")
+
+            recovery_channel = "sms"
+            encrypted_phone = phone_status.get("encrypted_phone", "")
+            recovery_dest = encrypted_phone
+
+    # Send outside graph context (network I/O)
+    agent_display = agent_id.replace("-", " ").replace("_", " ").title()
+
+    if recovery_channel == "email":
+        sent = await send_email(
+            to=recovery_dest,
+            agent_name=agent_display,
+            message_type="api_key_recovery",
+            summary=(
+                f"Your verification code is: {code}\n\n"
+                "This code expires in 10 minutes. "
+                "If you did not request this, ignore this email."
+            ),
+            link="",
+        )
+        if not sent:
+            raise EnrollmentError(
+                "Failed to send recovery email. Try again or contact an admin."
+            )
+
+        masked = _mask_email(recovery_dest)
+        return {
+            "agent_id": agent_id,
+            "status": "verification_code_sent",
+            "message": (
+                f"Verification code sent to {masked}. "
+                "Call regenerate_api_key again with agent_id and verification_code."
+            ),
+        }
+    else:
+        from ethos_academy.crypto import decrypt as _decrypt
+        from ethos_academy.notifications import _send_sms
+
+        phone = _decrypt(recovery_dest)
+        sms_sent = await _send_sms(
+            phone=phone,
+            body=(
+                f"Ethos Academy: Your API key recovery code is {code}. "
+                "Expires in 10 minutes."
+            ),
+        )
+        if not sms_sent:
+            raise EnrollmentError(
+                "Failed to send recovery SMS. Try again or contact an admin."
+            )
+
+        masked_phone = f"***{phone[-4:]}" if len(phone) >= 4 else "***"
+        return {
+            "agent_id": agent_id,
+            "status": "verification_code_sent",
+            "message": (
+                f"Verification code sent to {masked_phone}. "
+                "Call regenerate_api_key again with agent_id and verification_code."
+            ),
+        }
+
+
+def _format_key_response(agent_id: str, key: str, response_encryption_key: str) -> dict:
+    """Build the response dict for a newly issued API key."""
+    if response_encryption_key:
+        encrypted = _encrypt_api_key(key, response_encryption_key)
+        return {
+            "agent_id": agent_id,
+            **encrypted,
+            "warning": "Decrypt with your X25519 private key. We store only a hash.",
+        }
+    return {
+        "agent_id": agent_id,
+        "api_key": key,
+        "transport_encrypted_only": True,
+        "warning": (
+            "Key returned as plaintext. Pass response_encryption_key "
+            "(X25519 public key) for end-to-end encryption."
+        ),
+    }
+
+
+def _encrypt_api_key(plaintext_key: str, client_public_key_b64: str) -> dict:
+    """Encrypt an API key with X25519-HKDF-SHA256-AES-256-GCM."""
+    import base64
+
+    from cryptography.hazmat.primitives.asymmetric.x25519 import (
+        X25519PrivateKey,
+        X25519PublicKey,
+    )
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    from cryptography.hazmat.primitives.hashes import SHA256
+    from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+
+    try:
+        client_pub_bytes = base64.b64decode(client_public_key_b64)
+    except Exception:
+        raise EnrollmentError("Invalid base64 in response_encryption_key")
+
+    if len(client_pub_bytes) != 32:
+        raise EnrollmentError(
+            "response_encryption_key must be a 32-byte X25519 public key (base64-encoded)"
+        )
+
+    try:
+        client_pub = X25519PublicKey.from_public_bytes(client_pub_bytes)
+    except Exception:
+        raise EnrollmentError("Invalid X25519 public key in response_encryption_key")
+
+    server_priv = X25519PrivateKey.generate()
+    server_pub = server_priv.public_key()
+    try:
+        shared_secret = server_priv.exchange(client_pub)
+    except Exception:
+        raise EnrollmentError("Invalid X25519 public key (low-order point rejected)")
+
+    aes_key = HKDF(
+        algorithm=SHA256(),
+        length=32,
+        salt=None,
+        info=b"ethos-api-key-v1",
+    ).derive(shared_secret)
+
+    nonce = os.urandom(12)
+    ciphertext = AESGCM(aes_key).encrypt(nonce, plaintext_key.encode(), None)
+
+    return {
+        "encrypted_api_key": base64.b64encode(ciphertext).decode(),
+        "server_public_key": base64.b64encode(server_pub.public_bytes_raw()).decode(),
+        "nonce": base64.b64encode(nonce).decode(),
+        "algorithm": "X25519-HKDF-SHA256-AES-256-GCM",
+    }

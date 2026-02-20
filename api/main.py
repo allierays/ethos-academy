@@ -6,7 +6,7 @@ import os
 import uuid
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel, Field
@@ -68,6 +68,7 @@ from ethos_academy.models import (
     ExamReportCard,
     ExamSummary,
     GraphData,
+    GuardianPhoneStatus,
     HighlightsResult,
     Homework,
     PatternResult,
@@ -684,7 +685,7 @@ async def homework_endpoint(agent_id: str) -> Homework:
 
 
 @app.get("/enroll.md")
-async def enroll_md_generic_endpoint():
+async def enroll_md_generic_endpoint() -> Response:
     """Return generic enrollment instructions (no agent context)."""
     content = """# Ethos Academy Enrollment
 
@@ -733,7 +734,7 @@ Respond to each scenario with `submit_practice_response`. Track improvement with
 
 
 @app.get("/agent/{agent_id}/enroll.md")
-async def enroll_md_endpoint(agent_id: str):
+async def enroll_md_endpoint(agent_id: str) -> Response:
     """Return machine-readable enrollment instructions for an AI agent."""
     content = f"""# Ethos Academy Enrollment
 
@@ -775,14 +776,14 @@ Your answers are scored on honesty, accuracy, and intent. There are no right ans
 
 
 @app.get("/agent/{agent_id}/homework/rules")
-async def homework_rules_endpoint(agent_id: str):
+async def homework_rules_endpoint(agent_id: str) -> Response:
     """Return compiled character rules as markdown for system prompt injection."""
     content = await compile_homework_rules(agent_id)
     return PlainTextResponse(content, media_type="text/markdown")
 
 
 @app.get("/agent/{agent_id}/automate-updates.md", dependencies=[Depends(rate_limit)])
-async def automate_updates_endpoint(agent_id: str):
+async def automate_updates_endpoint(agent_id: str) -> Response:
     """Return character rules with instructions to write them to CLAUDE.md."""
     rules = await compile_homework_rules(agent_id)
     content = f"""# Automate Character Updates for {agent_id}
@@ -816,7 +817,7 @@ the end.
 
 @app.get("/agent/{agent_id}/skill", dependencies=[Depends(rate_limit)])
 @app.get("/agent/{agent_id}/practice.md", dependencies=[Depends(rate_limit)])
-async def skill_endpoint(agent_id: str):
+async def skill_endpoint(agent_id: str) -> Response:
     """Generate a personalized Claude Code practice skill for an agent."""
     from ethos_academy.reflection.skill_generator import (
         generate_practice_skill,
@@ -834,7 +835,7 @@ async def skill_endpoint(agent_id: str):
 
 @app.get("/agent/{agent_id}/homework/skill", dependencies=[Depends(rate_limit)])
 @app.get("/agent/{agent_id}/homework.md", dependencies=[Depends(rate_limit)])
-async def homework_skill_endpoint(agent_id: str):
+async def homework_skill_endpoint(agent_id: str) -> Response:
     """Serve the unified homework skill as markdown for Claude Code."""
     from ethos_academy.reflection.skill_generator import (
         generate_homework_skill,
@@ -861,6 +862,16 @@ class GuardianPhoneRequest(BaseModel):
     phone: str = Field(min_length=10, max_length=20)
 
 
+class EmailStoredResponse(BaseModel):
+    agent_id: str
+    email_stored: bool
+
+
+class EvaluationsDeletedResponse(BaseModel):
+    agent_id: str
+    evaluations_deleted: int
+
+
 class VerifyCodeRequest(BaseModel):
     code: str = Field(min_length=6, max_length=6)
 
@@ -869,50 +880,56 @@ class VerifyCodeRequest(BaseModel):
     "/agent/{agent_id}/guardian/phone",
     dependencies=[Depends(phone_rate_limit), Depends(inject_agent_key)],
 )
-async def submit_guardian_phone(agent_id: str, req: GuardianPhoneRequest):
+async def submit_guardian_phone(
+    agent_id: str, req: GuardianPhoneRequest
+) -> GuardianPhoneStatus:
     """Submit a guardian phone number and send a verification code."""
     from ethos_academy.phone_service import submit_phone
 
-    return (await submit_phone(agent_id, req.phone)).model_dump()
+    return await submit_phone(agent_id, req.phone)
 
 
 @app.post(
     "/agent/{agent_id}/guardian/phone/verify",
     dependencies=[Depends(phone_rate_limit), Depends(inject_agent_key)],
 )
-async def verify_guardian_phone_endpoint(agent_id: str, req: VerifyCodeRequest):
+async def verify_guardian_phone_endpoint(
+    agent_id: str, req: VerifyCodeRequest
+) -> GuardianPhoneStatus:
     """Verify a 6-digit code sent to the guardian's phone."""
     from ethos_academy.phone_service import verify_phone
 
-    return (await verify_phone(agent_id, req.code)).model_dump()
+    return await verify_phone(agent_id, req.code)
 
 
 @app.get(
     "/agent/{agent_id}/guardian/phone/status",
 )
-async def guardian_phone_status(agent_id: str):
+async def guardian_phone_status(agent_id: str) -> GuardianPhoneStatus:
     """Check guardian phone status. Never returns the phone number."""
     from ethos_academy.phone_service import get_phone_status
 
-    return (await get_phone_status(agent_id)).model_dump()
+    return await get_phone_status(agent_id)
 
 
 @app.post(
     "/agent/{agent_id}/guardian/phone/resend",
     dependencies=[Depends(phone_rate_limit), Depends(inject_agent_key)],
 )
-async def resend_guardian_code(agent_id: str):
+async def resend_guardian_code(agent_id: str) -> GuardianPhoneStatus:
     """Resend a fresh verification code to the guardian's phone."""
     from ethos_academy.phone_service import resend_code
 
-    return (await resend_code(agent_id)).model_dump()
+    return await resend_code(agent_id)
 
 
 @app.post(
     "/agent/{agent_id}/guardian/email",
     dependencies=[Depends(require_api_key), Depends(inject_agent_key)],
 )
-async def submit_guardian_email(agent_id: str, req: GuardianEmailRequest):
+async def submit_guardian_email(
+    agent_id: str, req: GuardianEmailRequest
+) -> EmailStoredResponse:
     """Store a guardian email address for notifications."""
     import re
 
@@ -930,29 +947,29 @@ async def submit_guardian_email(agent_id: str, req: GuardianEmailRequest):
     if not stored:
         raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
 
-    return {"agent_id": agent_id, "email_stored": True}
+    return EmailStoredResponse(agent_id=agent_id, email_stored=True)
 
 
 @app.post(
     "/agent/{agent_id}/guardian/notifications/opt-out",
     dependencies=[Depends(require_api_key), Depends(inject_agent_key)],
 )
-async def opt_out_notifications(agent_id: str):
+async def opt_out_notifications(agent_id: str) -> GuardianPhoneStatus:
     """Opt out of guardian SMS notifications."""
     from ethos_academy.phone_service import opt_out
 
-    return (await opt_out(agent_id)).model_dump()
+    return await opt_out(agent_id)
 
 
 @app.post(
     "/agent/{agent_id}/guardian/notifications/opt-in",
     dependencies=[Depends(require_api_key), Depends(inject_agent_key)],
 )
-async def opt_in_notifications(agent_id: str):
+async def opt_in_notifications(agent_id: str) -> GuardianPhoneStatus:
     """Opt back in to guardian SMS notifications."""
     from ethos_academy.phone_service import opt_in
 
-    return (await opt_in(agent_id)).model_dump()
+    return await opt_in(agent_id)
 
 
 # ── Practice endpoints ─────────────────────────────────────────────
@@ -1024,20 +1041,49 @@ async def get_practice_progress_endpoint(agent_id: str) -> PracticeProgress:
     "/admin/agent/{agent_id}/evaluations",
     dependencies=[Depends(require_api_key)],
 )
-async def reset_agent_evaluations_endpoint(agent_id: str):
+async def reset_agent_evaluations_endpoint(agent_id: str) -> EvaluationsDeletedResponse:
     """Delete all evaluations for an agent (keeps agent node)."""
     from ethos_academy.graph.write import reset_agent_evaluations
 
     deleted = await reset_agent_evaluations(agent_id)
-    return {"agent_id": agent_id, "evaluations_deleted": deleted}
+    return EvaluationsDeletedResponse(agent_id=agent_id, evaluations_deleted=deleted)
 
 
 @app.delete(
     "/admin/agent/{agent_id}",
     dependencies=[Depends(require_api_key)],
 )
-async def delete_agent_endpoint(agent_id: str):
+async def delete_agent_endpoint(agent_id: str) -> dict:
     """Delete an agent and all related nodes (evaluations, exams, practice sessions)."""
     from ethos_academy.graph.write import delete_agent_completely
 
     return await delete_agent_completely(agent_id)
+
+
+# ── Key regeneration endpoint ────────────────────────────────────────
+
+
+class RegenerateKeyRequest(BaseModel):
+    verification_code: str = Field(default="", max_length=6)
+    response_encryption_key: str = Field(default="", max_length=256)
+
+
+@app.post(
+    "/agent/{agent_id}/key/regenerate",
+    dependencies=[Depends(phone_rate_limit), Depends(inject_agent_key)],
+)
+async def regenerate_key_endpoint(
+    agent_id: str,
+    req: RegenerateKeyRequest,
+) -> dict:
+    """Generate a new API key via authenticated or recovery flow."""
+    from ethos_academy.context import agent_api_key_var
+    from ethos_academy.enrollment.service import regenerate_agent_key
+
+    return await regenerate_agent_key(
+        agent_id=agent_id,
+        verification_code=req.verification_code,
+        response_encryption_key=req.response_encryption_key,
+        caller_key=agent_api_key_var.get(),
+        is_admin=False,
+    )

@@ -6,17 +6,21 @@ No Cypher, no direct graph access.
 
 from __future__ import annotations
 
+import hashlib
+import hmac as _hmac
 import logging
 
+from ethos_academy.context import agent_api_key_var
 from ethos_academy.crypto import decrypt, encrypt
 from ethos_academy.graph.enrollment import (
     get_guardian_phone_status,
+    get_key_hash_and_phone_status,
     increment_verification_attempts,
     set_notification_opt_out,
     store_guardian_phone,
     verify_guardian_phone,
 )
-from ethos_academy.graph.service import graph_context
+from ethos_academy.graph.service import GraphService, graph_context
 from ethos_academy.notifications import _normalize_phone, _send_sms
 from ethos_academy.phone_verification import (
     MAX_VERIFICATION_ATTEMPTS,
@@ -31,10 +35,49 @@ from ethos_academy.shared.models import GuardianPhoneStatus
 logger = logging.getLogger(__name__)
 
 
+async def _check_phone_change_auth(service: GraphService, agent_id: str) -> None:
+    """Verify the caller can change phone settings for this agent.
+
+    Rules:
+    - First claim (no verified phone, no ea_ key): allow without auth.
+    - Agent has verified phone or ea_ key: require valid ea_ key.
+
+    Single graph round-trip via get_key_hash_and_phone_status().
+    Raises VerificationError with actionable messages on failure.
+    """
+    status = await get_key_hash_and_phone_status(service, agent_id)
+    has_key = bool(status.get("key_hash"))
+    phone_verified = status.get("phone_verified", False)
+
+    # First claim: no key and no verified phone
+    if not has_key and not phone_verified:
+        return
+
+    # Agent has key or verified phone: require valid ea_ key
+    caller_key = agent_api_key_var.get()
+    if not caller_key:
+        raise VerificationError(
+            "API key required. This agent already has a registered phone or API key. "
+            "Pass your ea_ key via Authorization: Bearer ea_... header."
+        )
+
+    if not has_key:
+        # Agent has verified phone but no key (edge case). Caller provided
+        # a key but there is nothing to compare against. Allow the change
+        # since they at least provided credentials.
+        return
+
+    provided_hash = hashlib.sha256(caller_key.encode()).hexdigest()
+    if not _hmac.compare_digest(provided_hash, status["key_hash"]):
+        raise VerificationError(
+            "Invalid API key for this agent. Check that your ea_ key matches this agent_id."
+        )
+
+
 async def submit_phone(agent_id: str, phone: str) -> GuardianPhoneStatus:
     """Normalize, encrypt, store phone, and send verification SMS.
 
-    Raises VerificationError if phone format is invalid or graph unavailable.
+    Raises VerificationError if phone format is invalid, auth fails, or graph unavailable.
     """
     normalized = _normalize_phone(phone)
     if not normalized:
@@ -52,6 +95,8 @@ async def submit_phone(agent_id: str, phone: str) -> GuardianPhoneStatus:
             raise VerificationError(
                 "Unable to reach the database right now. Please try again shortly."
             )
+
+        await _check_phone_change_auth(service, agent_id)
 
         stored = await store_guardian_phone(
             service, agent_id, encrypted, code_hashed, expires
@@ -194,6 +239,10 @@ async def resend_code(agent_id: str) -> GuardianPhoneStatus:
         status = await get_guardian_phone_status(service, agent_id)
         if not status or not status.get("encrypted_phone"):
             raise VerificationError("No phone number on file. Call submit_phone first.")
+
+        # Require auth only when phone is already verified (prevents hijacking)
+        if status.get("verified"):
+            await _check_phone_change_auth(service, agent_id)
 
         # Decrypt to send SMS
         phone = decrypt(status["encrypted_phone"])

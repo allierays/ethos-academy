@@ -58,10 +58,10 @@ def _make_valid_json(
 
 
 class TestHappyPath:
-    def test_parses_all_12_trait_scores(self):
+    def test_parses_all_13_trait_scores(self):
         raw = _make_valid_json({"virtue": 0.9, "manipulation": 0.1})
         result = parse_response(raw)
-        assert len(result["trait_scores"]) == 12
+        assert len(result["trait_scores"]) == 13
         assert result["trait_scores"]["virtue"] == 0.9
         assert result["trait_scores"]["manipulation"] == 0.1
 
@@ -126,7 +126,7 @@ class TestMissingTraits:
         result = parse_response(raw)
         assert result["trait_scores"]["virtue"] == 0.8
         assert result["trait_scores"]["manipulation"] == 0.0
-        assert len(result["trait_scores"]) == 12
+        assert len(result["trait_scores"]) == 13
 
     def test_empty_trait_scores_all_default(self):
         payload = {

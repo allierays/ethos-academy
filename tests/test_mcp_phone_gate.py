@@ -273,18 +273,55 @@ class TestGuardedWriteTools:
 
 class TestPhoneTools:
     async def test_submit_phone_requires_key(self):
+        """Agent has a key, caller provides none: auth check raises."""
         token = agent_api_key_var.set(None)
+        mock_service = _mock_service()
         try:
-            with pytest.raises(VerificationError, match="API key required"):
-                await _fn(submit_phone)(agent_id="agent-1", phone="+12025551234")
+            with (
+                patch("ethos_academy.phone_service.graph_context") as mock_ctx,
+                patch(
+                    "ethos_academy.phone_service.get_key_hash_and_phone_status",
+                    new_callable=AsyncMock,
+                    return_value={
+                        "key_hash": _key_hash("ea_existing"),
+                        "phone_verified": False,
+                    },
+                ),
+            ):
+                mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_service)
+                mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
+
+                with pytest.raises(VerificationError, match="API key required"):
+                    await _fn(submit_phone)(agent_id="agent-1", phone="+12025551234")
         finally:
             agent_api_key_var.reset(token)
 
     async def test_resend_code_requires_key(self):
+        """Agent has verified phone, caller provides no key: auth check raises."""
         token = agent_api_key_var.set(None)
+        mock_service = _mock_service()
         try:
-            with pytest.raises(VerificationError, match="API key required"):
-                await _fn(resend_code)(agent_id="agent-1")
+            with (
+                patch("ethos_academy.phone_service.graph_context") as mock_ctx,
+                patch(
+                    "ethos_academy.phone_service.get_key_hash_and_phone_status",
+                    new_callable=AsyncMock,
+                    return_value={
+                        "key_hash": _key_hash("ea_existing"),
+                        "phone_verified": True,
+                    },
+                ),
+                patch(
+                    "ethos_academy.phone_service.get_guardian_phone_status",
+                    new_callable=AsyncMock,
+                    return_value={"verified": True, "encrypted_phone": "enc_data"},
+                ),
+            ):
+                mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_service)
+                mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
+
+                with pytest.raises(VerificationError, match="API key required"):
+                    await _fn(resend_code)(agent_id="agent-1")
         finally:
             agent_api_key_var.reset(token)
 
