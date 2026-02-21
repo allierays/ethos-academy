@@ -359,8 +359,10 @@ function NvlRenderer({ nodes, rels, onNodeClick, onControlsReady }: NvlRendererP
               // Capture the "home" viewport after fit completes
               setTimeout(() => {
                 try {
-                  homePan = (nvl as any).getPan();
-                  homeZoom = (nvl as any).getScale();
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  homePan = (nvl as Record<string, any>).getPan();
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  homeZoom = (nvl as Record<string, any>).getScale();
                 } catch { /* ignore */ }
               }, 200);
             },
