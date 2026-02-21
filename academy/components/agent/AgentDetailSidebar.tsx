@@ -3,9 +3,90 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
-import { getAgent } from "../../lib/api";
-import { DIMENSION_COLORS, TREND_DISPLAY, ALIGNMENT_STYLES } from "../../lib/colors";
-import type { AgentProfile } from "../../lib/types";
+import { getAgent, getHighlights } from "../../lib/api";
+import { DIMENSION_COLORS, TRAIT_DIMENSIONS, TRAIT_LABELS, TREND_DISPLAY, ALIGNMENT_STYLES } from "../../lib/colors";
+import type { AgentProfile, HighlightsResult } from "../../lib/types";
+
+/* ─── Trait radar chart ─── */
+
+const TRAIT_ORDER = [
+  "virtue", "goodwill", "manipulation", "deception",
+  "accuracy", "reasoning", "fabrication", "brokenLogic",
+  "recognition", "compassion", "dismissal", "exploitation",
+] as const;
+
+const NEGATIVE_TRAITS = new Set(["manipulation", "deception", "fabrication", "brokenLogic", "dismissal", "exploitation"]);
+
+const DIM_HEX: Record<string, string> = {
+  ethos: "#3f5f9a",
+  logos: "#389590",
+  pathos: "#c68e2a",
+};
+
+function AgentRadar({ traitAverages }: { traitAverages: Record<string, number> }) {
+  const traits = TRAIT_ORDER.map((key) => ({
+    key,
+    label: TRAIT_LABELS[key] ?? key,
+    score: traitAverages[key] ?? 0,
+    dimension: TRAIT_DIMENSIONS[key] ?? "ethos",
+    negative: NEGATIVE_TRAITS.has(key),
+  }));
+
+  const cx = 150;
+  const cy = 150;
+  const r = 88;
+  const levels = 4;
+  const count = traits.length;
+  const angleStep = (2 * Math.PI) / count;
+
+  const gridCircles = Array.from({ length: levels }, (_, i) => (
+    <circle key={i} cx={cx} cy={cy} r={(r * (i + 1)) / levels}
+      fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.1" />
+  ));
+
+  const axes = traits.map((_, i) => {
+    const angle = angleStep * i - Math.PI / 2;
+    return (
+      <line key={i} x1={cx} y1={cy}
+        x2={cx + r * Math.cos(angle)} y2={cy + r * Math.sin(angle)}
+        stroke="currentColor" strokeWidth="0.5" opacity="0.08" />
+    );
+  });
+
+  const points = traits.map((t, i) => {
+    const val = t.negative ? 1 - t.score : t.score;
+    const angle = angleStep * i - Math.PI / 2;
+    return `${cx + r * val * Math.cos(angle)},${cy + r * val * Math.sin(angle)}`;
+  }).join(" ");
+
+  const labels = traits.map((t, i) => {
+    const angle = angleStep * i - Math.PI / 2;
+    const labelR = r + 22;
+    const dimColor = DIM_HEX[t.dimension] ?? "#94a3b8";
+    return (
+      <text key={t.key} x={cx + labelR * Math.cos(angle)} y={cy + labelR * Math.sin(angle)}
+        fill={dimColor} fontSize="7" fontWeight="500"
+        textAnchor="middle" dominantBaseline="middle" opacity="0.85">
+        {t.label}
+      </text>
+    );
+  });
+
+  return (
+    <div>
+      <p className="text-xs font-medium uppercase tracking-wider text-muted">
+        Trait Profile
+      </p>
+      <svg viewBox="0 0 300 300" className="mt-2 w-full">
+        {gridCircles}
+        {axes}
+        <polygon points={points} fill="rgba(56,149,144,0.12)" stroke="#389590"
+          strokeWidth="1.2" strokeLinejoin="round" />
+        {labels}
+      </svg>
+    </div>
+  );
+}
 
 interface AgentDetailSidebarProps {
   agentId: string | null;
@@ -19,6 +100,7 @@ export default function AgentDetailSidebar({
   onClose,
 }: AgentDetailSidebarProps) {
   const [profile, setProfile] = useState<AgentProfile | null>(null);
+  const [highlights, setHighlights] = useState<HighlightsResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,11 +110,18 @@ export default function AgentDetailSidebar({
     setLoading(true);
     setError(null);
     setProfile(null);
+    setHighlights(null);
 
     async function fetchAgent() {
       try {
-        const data = await getAgent(agentId!);
-        if (!cancelled) setProfile(data);
+        const [data, hl] = await Promise.all([
+          getAgent(agentId!),
+          getHighlights(agentId!).catch(() => null),
+        ]);
+        if (!cancelled) {
+          setProfile(data);
+          setHighlights(hl);
+        }
       } catch (err) {
         if (!cancelled) {
           setError(
@@ -179,6 +268,27 @@ export default function AgentDetailSidebar({
                     })}
                   </div>
                 </div>
+
+                {/* Trait Radar */}
+                {Object.keys(profile.traitAverages).length > 0 && (
+                  <AgentRadar traitAverages={profile.traitAverages} />
+                )}
+
+                {/* Sample Quote */}
+                {(() => {
+                  const sample = highlights?.exemplary?.[0] ?? highlights?.concerning?.[0];
+                  if (!sample?.messageContent) return null;
+                  return (
+                    <div data-quote>
+                      <p className="text-xs font-medium uppercase tracking-wider text-muted">
+                        Sample Message
+                      </p>
+                      <blockquote className="mt-2 rounded-lg border border-border bg-muted/5 px-3 py-2.5 text-xs leading-relaxed text-foreground italic">
+                        &ldquo;{sample.messageContent}&rdquo;
+                      </blockquote>
+                    </div>
+                  );
+                })()}
 
                 {/* Trend */}
                 <div className="flex items-center justify-between">

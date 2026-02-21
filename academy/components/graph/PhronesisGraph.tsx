@@ -237,11 +237,21 @@ function toNvlRelationships(
 /*  NVL controls ref                                                          */
 /* -------------------------------------------------------------------------- */
 
-interface NvlControls {
+export interface NvlControls {
   panBy: (dx: number, dy: number) => void;
   zoomIn: () => void;
   zoomOut: () => void;
   fitAll: () => void;
+  setPan: (x: number, y: number) => void;
+  getPan: () => { x: number; y: number };
+  fit: (nodeIds: string[]) => void;
+  smoothFit: (nodeIds: string[], durationMs?: number, onDone?: () => void) => void;
+  smoothFitAll: (durationMs?: number) => void;
+  rotateBy: (angle: number) => void;
+  getNodeScreenPos: (nodeId: string) => { x: number; y: number } | null;
+  highlightNode: (nodeId: string) => void;
+  unhighlightNode: (nodeId: string) => void;
+  simulateClick?: (nodeId: string) => void;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -330,6 +340,10 @@ function NvlRenderer({ nodes, rels, onNodeClick, onControlsReady }: NvlRendererP
 
         container.style.cursor = "grab";
 
+        // Store initial viewport after layout for smoothFitAll
+        let homePan = { x: 0, y: 0 };
+        let homeZoom = 0.25;
+
         const nvl = new NVL(container, nodes, rels, {
           layout: "d3Force",
           renderer: "canvas",
@@ -340,12 +354,24 @@ function NvlRenderer({ nodes, rels, onNodeClick, onControlsReady }: NvlRendererP
           disableWebGL: true,
           callbacks: {
             onLayoutDone: () => {
-              if (!destroyed) nvl.fit(nodeIds);
+              if (destroyed) return;
+              nvl.fit(nodeIds);
+              // Capture the "home" viewport after fit completes
+              setTimeout(() => {
+                try {
+                  homePan = (nvl as any).getPan();
+                  homeZoom = (nvl as any).getScale();
+                } catch { /* ignore */ }
+              }, 200);
             },
           },
         });
 
         nvlInstanceRef.current = nvl;
+
+        // Track highlighted node for restore
+        let highlightedId: string | null = null;
+        let highlightedOriginal: { size?: number; color?: string } | null = null;
 
         // Expose controls for pan/zoom buttons
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -371,6 +397,139 @@ function NvlRenderer({ nodes, rels, onNodeClick, onControlsReady }: NvlRendererP
           },
           fitAll: () => {
             try { nvlAny.fit(nodeIds); } catch { /* ignore */ }
+          },
+          setPan: (x: number, y: number) => {
+            try { nvlAny.setPan(x, y); } catch { /* ignore */ }
+          },
+          getPan: () => {
+            try { return nvlAny.getPan(); } catch { return { x: 0, y: 0 }; }
+          },
+          fit: (ids: string[]) => {
+            try { nvlAny.fit(ids); } catch { /* ignore */ }
+          },
+          smoothFit: (ids: string[], durationMs = 1200, onDone?: () => void) => {
+            try {
+              const startPan = nvlAny.getPan();
+              const startZoom = nvlAny.getScale();
+
+              // Hide canvas while we sample NVL's fit target (prevents flash).
+              const el = containerRef.current;
+              if (el) el.style.opacity = "0";
+
+              nvlAny.fit(ids);
+              setTimeout(() => {
+                const endPan = nvlAny.getPan();
+                const endZoom = Math.min(nvlAny.getScale(), homeZoom * 6);
+
+                // Restore start position and show canvas.
+                nvlAny.setZoom(startZoom);
+                nvlAny.setPan(startPan.x, startPan.y);
+                if (el) el.style.opacity = "1";
+
+                const startTime = performance.now();
+                function step() {
+                  const t = Math.min(1, (performance.now() - startTime) / durationMs);
+                  const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+                  const z = startZoom + (endZoom - startZoom) * ease;
+                  const px = startPan.x + (endPan.x - startPan.x) * ease;
+                  const py = startPan.y + (endPan.y - startPan.y) * ease;
+                  nvlAny.setZoom(z); nvlAny.setPan(px, py);
+                  if (t < 1) {
+                    requestAnimationFrame(step);
+                  } else {
+                    onDone?.();
+                  }
+                }
+                requestAnimationFrame(step);
+              }, 50);
+            } catch { /* ignore */ }
+          },
+          smoothFitAll: (durationMs = 1200) => {
+            try {
+              const startPan = nvlAny.getPan();
+              const startZoom = nvlAny.getScale();
+              const startTime = performance.now();
+              function step() {
+                const t = Math.min(1, (performance.now() - startTime) / durationMs);
+                const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+                const z = startZoom + (homeZoom - startZoom) * ease;
+                const px = startPan.x + (homePan.x - startPan.x) * ease;
+                const py = startPan.y + (homePan.y - startPan.y) * ease;
+                nvlAny.setZoom(z); nvlAny.setPan(px, py);
+                if (t < 1) requestAnimationFrame(step);
+              }
+              requestAnimationFrame(step);
+            } catch { /* ignore */ }
+          },
+          rotateBy: (angle: number) => {
+            try {
+              const current = nvlAny.getNodes();
+              if (!current || current.length === 0) return;
+              // Find the academy node as rotation center
+              const center = current.find((n: NvlNode) => n.id === "academy");
+              const cx = center?.x ?? 0;
+              const cy = center?.y ?? 0;
+              const cos = Math.cos(angle);
+              const sin = Math.sin(angle);
+              const updated = current
+                .filter((n: NvlNode) => n.id !== "academy" && n.x != null && n.y != null)
+                .map((n: NvlNode) => {
+                  const dx = n.x! - cx;
+                  const dy = n.y! - cy;
+                  return {
+                    id: n.id,
+                    x: cx + dx * cos - dy * sin,
+                    y: cy + dx * sin + dy * cos,
+                  };
+                });
+              nvlAny.updateElementsInGraph(updated, []);
+            } catch { /* ignore */ }
+          },
+          getNodeScreenPos: (nodeId: string) => {
+            try {
+              const allNodes = nvlAny.getNodes();
+              const node = allNodes.find((n: NvlNode) => n.id === nodeId);
+              if (!node || node.x == null || node.y == null) return null;
+              const pan = nvlAny.getPan();
+              const zoom = nvlAny.getScale();
+              return {
+                x: node.x * zoom + pan.x,
+                y: node.y * zoom + pan.y,
+              };
+            } catch { return null; }
+          },
+          highlightNode: (nodeId: string) => {
+            try {
+              // Unhighlight previous node first
+              if (highlightedId && highlightedOriginal) {
+                nvlAny.updateElementsInGraph(
+                  [{ id: highlightedId, size: highlightedOriginal.size, color: highlightedOriginal.color }],
+                  []
+                );
+              }
+              const allNodes = nvlAny.getNodes();
+              const node = allNodes.find((n: NvlNode) => n.id === nodeId);
+              if (!node) return;
+              highlightedId = nodeId;
+              highlightedOriginal = { size: node.size, color: node.color };
+              // Make the node larger and bright white with a ring effect
+              nvlAny.updateElementsInGraph(
+                [{ id: nodeId, size: (node.size || 20) * 1.6, color: "#3b82f6" }],
+                []
+              );
+            } catch { /* ignore */ }
+          },
+          unhighlightNode: (nodeId: string) => {
+            try {
+              if (highlightedId === nodeId && highlightedOriginal) {
+                nvlAny.updateElementsInGraph(
+                  [{ id: nodeId, size: highlightedOriginal.size, color: highlightedOriginal.color }],
+                  []
+                );
+                highlightedId = null;
+                highlightedOriginal = null;
+              }
+            } catch { /* ignore */ }
           },
         });
 
@@ -526,16 +685,31 @@ export interface NodeClickContext {
 interface PhronesisGraphProps {
   onNodeClick?: (nodeId: string, nodeType: string, nodeLabel: string, context?: NodeClickContext) => void;
   className?: string;
+  onControlsReady?: (controls: NvlControls | null) => void;
+  onGraphReady?: (info: { agentNodeIds: string[]; allShowcaseNodes: { id: string; type: string; label: string }[] }) => void;
 }
 
 const DEFAULT_HEIGHT = "h-[350px] sm:h-[450px] md:h-[600px]";
 
-export default function PhronesisGraph({ onNodeClick, className }: PhronesisGraphProps) {
+export default function PhronesisGraph({ onNodeClick, className, onControlsReady: onControlsReadyProp, onGraphReady }: PhronesisGraphProps) {
   const heightClass = className ?? DEFAULT_HEIGHT;
   const [graphData, setGraphData] = useState<GraphData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nvlControls, setNvlControls] = useState<NvlControls | null>(null);
+
+  // Ref to expose handleNodeClick to controls (set after handleNodeClick is created)
+  const handleNodeClickRef = useRef<((_: unknown, node: { id: string }) => void) | null>(null);
+
+  const handleControlsReady = useCallback((c: NvlControls | null) => {
+    if (c) {
+      c.simulateClick = (nodeId: string) => {
+        handleNodeClickRef.current?.(null, { id: nodeId });
+      };
+    }
+    setNvlControls(c);
+    onControlsReadyProp?.(c);
+  }, [onControlsReadyProp]);
 
   useEffect(() => {
     let cancelled = false;
@@ -653,8 +827,8 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
         const dimensionTraits: DimensionTraitInfo[] = [];
 
         for (const rel of graphData.relationships) {
-          if (rel.type === "BELONGS_TO" && rel.toId === ethosNode.id) {
-            const traitNode = nodeMap.get(rel.fromId);
+          if (rel.type === "BELONGS_TO" && rel.fromId === ethosNode.id) {
+            const traitNode = nodeMap.get(rel.toId);
             if (traitNode && traitNode.type === "trait") {
               let indicatorCount = 0;
               for (const r2 of graphData.relationships) {
@@ -683,6 +857,9 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
     [onNodeClick, graphData]
   );
 
+  // Keep ref in sync so simulateClick always calls the latest handleNodeClick
+  handleNodeClickRef.current = handleNodeClick;
+
   const { nvlNodes, nvlRels, stats } = useMemo(() => {
     if (!graphData || graphData.nodes.length === 0) {
       return { nvlNodes: [], nvlRels: [], stats: { indicators: 0, detected: 0, detections: 0, agents: 0 } };
@@ -709,6 +886,27 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
     };
   }, [graphData]);
 
+  const onGraphReadyRef = useRef(onGraphReady);
+  onGraphReadyRef.current = onGraphReady;
+
+  useEffect(() => {
+    if (graphData && graphData.nodes.length > 0 && onGraphReadyRef.current) {
+      const agentIds = graphData.nodes
+        .filter((n) => n.type === "agent")
+        .map((n) => n.id);
+      const showcaseTypes = new Set(["agent", "trait", "indicator"]);
+      const allShowcaseNodes = graphData.nodes
+        .filter((n) => {
+          if (!showcaseTypes.has(n.type)) return false;
+          // Only include indicators that have been detected
+          if (n.type === "indicator") return ((n.properties.detectionCount as number) ?? 0) > 0;
+          return true;
+        })
+        .map((n) => ({ id: n.id, type: n.type, label: n.label }));
+      onGraphReadyRef.current({ agentNodeIds: agentIds, allShowcaseNodes });
+    }
+  }, [graphData]);
+
   function handleRetry() {
     setLoading(true);
     setError(null);
@@ -720,7 +918,7 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
 
   if (loading) {
     return (
-      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-gray-200`} style={{ backgroundColor: "#f2f0ec" }} data-testid="graph-loading">
+      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-gray-200`} style={{ backgroundColor: "#ffffff" }} data-testid="graph-loading">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-action border-t-transparent" />
           <p className="mt-3 text-sm text-gray-400">Loading Phronesis Graph...</p>
@@ -731,7 +929,7 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
 
   if (error) {
     return (
-      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-gray-200`} style={{ backgroundColor: "#f2f0ec" }} data-testid="graph-error">
+      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-gray-200`} style={{ backgroundColor: "#ffffff" }} data-testid="graph-error">
         <div className="text-center">
           <p className="text-sm text-misaligned">{error}</p>
           <button type="button" onClick={handleRetry} className="mt-3 rounded-lg bg-action px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-action-hover" data-testid="graph-retry">
@@ -744,7 +942,7 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
 
   if (!graphData || graphData.nodes.length === 0) {
     return (
-      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-gray-200`} style={{ backgroundColor: "#f2f0ec" }} data-testid="graph-empty">
+      <div className={`flex ${heightClass} items-center justify-center rounded-xl border border-gray-200`} style={{ backgroundColor: "#ffffff" }} data-testid="graph-empty">
         <div className="text-center">
           <p className="text-sm text-gray-400">No graph data yet. Seed evaluations first.</p>
         </div>
@@ -753,8 +951,8 @@ export default function PhronesisGraph({ onNodeClick, className }: PhronesisGrap
   }
 
   return (
-    <div className={`relative ${heightClass} rounded-xl border border-gray-200`} style={{ backgroundColor: "#f2f0ec" }} data-testid="phronesis-graph">
-      <NvlRenderer nodes={nvlNodes} rels={nvlRels} onNodeClick={handleNodeClick} onControlsReady={setNvlControls} />
+    <div className={`relative ${heightClass} rounded-xl border border-gray-200`} style={{ backgroundColor: "#ffffff" }} data-testid="phronesis-graph">
+      <NvlRenderer nodes={nvlNodes} rels={nvlRels} onNodeClick={handleNodeClick} onControlsReady={handleControlsReady} />
       <div className="absolute top-3 right-3">
         <GraphHelpButton slug="guide-phronesis-graph" />
       </div>
